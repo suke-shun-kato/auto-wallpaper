@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">AutoWallpaper</string>
-    <string name="setting_btn">設定へ</string>
+    <string name="setting_btn">To Setting</string>
+    <string name="setting_from">from</string>
+    <string name="setting_from_dir_onoff_title">From Directory</string>
+    <string name="setting_form_dir_onoff_summary">App gets wallpaper from the directory.</string>
 </resources>

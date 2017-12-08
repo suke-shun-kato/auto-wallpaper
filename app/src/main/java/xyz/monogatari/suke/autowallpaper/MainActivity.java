@@ -8,7 +8,8 @@ import android.view.View;
 public class MainActivity extends AppCompatActivity {
 
     /************************************
-     * @param savedInstanceState
+     * アクティビティ作成時
+     * @param savedInstanceState 画像回転時などにアクティビティ破棄時に保存した値
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,9 +18,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /************************************
+     * 設定画面へのボタンをクリックしたとき
      * @param view
      */
-    public void toSetting_onClick(View view) {
+    @SuppressWarnings("JavaDoc")
+    public void toSetting_onClick(@SuppressWarnings("unused") View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         this.startActivity(intent);
     }
