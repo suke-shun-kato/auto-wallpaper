@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">AutoWallpaper</string>
-    <string name="hallo">Hello World</string>
+    <string name="setting_btn">設定へ</string>
 </resources>
