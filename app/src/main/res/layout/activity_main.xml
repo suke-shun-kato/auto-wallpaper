@@ -1,14 +1,21 @@
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context="xyz.monogatari.suke.autowallpaper.MainActivity">
 
     <Button
         android:id="@+id/main_to_setting"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="toSetting_onClick"
-        android:text="@string/setting_btn" />
-</RelativeLayout>
+        android:text="@string/main_to_setting" />
+    <Button
+        android:id="@+id/btnTest"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="dellSp_onClick"
+        android:text="@string/main_dell_sp" />
+</LinearLayout>

@@ -1,9 +1,12 @@
 package xyz.monogatari.suke.autowallpaper;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,11 +22,25 @@ public class MainActivity extends AppCompatActivity {
 
     /************************************
      * 設定画面へのボタンをクリックしたとき
-     * @param view
+     * @param view 押されたボタンのビュー
      */
-    @SuppressWarnings("JavaDoc")
     public void toSetting_onClick(@SuppressWarnings("unused") View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         this.startActivity(intent);
+    }
+
+    /************************************
+     * 設定を消去ボタンをクリックしたとき
+     * @param view 押されたボタンのビュー
+     */
+    public void dellSp_onClick(@SuppressWarnings("unused") View view) {
+        // SharedPreferenceを削除
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+        editor.clear().apply();
+
+        //
+        Toast.makeText(this, "設定を削除（初期化）しました", Toast.LENGTH_SHORT)
+                .show();
+
     }
 }
