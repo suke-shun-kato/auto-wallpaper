@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.suke.autowallpaper.util;
 
 import java.io.File;
 import java.net.URI;
@@ -34,7 +34,7 @@ public class FileExtended extends File {
      * ディレクトリは最後に/を付ける
      * 親ディレクトリのパス「../」も入れる
      * ディレクトリ→ファイルの順番に並んでいる
-     * @return ディレクトリ＆ファイル一覧
+     * @return ディレクトリ＆ファイル一覧, this がファイルのときはnullを返す
      */
     public List<String> listDirFile() {
         // ----------------------------------
@@ -49,7 +49,7 @@ public class FileExtended extends File {
         // ----------------------------------
         File[] childrenFilesAry = this.listFiles();
 
-        // 例外処理
+        // 例外処理, ファイルだと一覧がないのでnullを返す
         if (childrenFilesAry == null) {
             return null;
         }
