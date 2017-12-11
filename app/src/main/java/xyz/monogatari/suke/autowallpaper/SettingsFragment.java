@@ -4,8 +4,12 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * 設定画面のフラグメント
@@ -32,6 +36,23 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた");
 
         // 設定xmlを読み込む
         this.addPreferencesFromResource(R.xml.preferences);
+    }
+
+    /************************************
+     *
+     */
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences( this.getActivity() );
+
+        //// 選択ディレクトリ
+        Preference keyFromDirPathPref = this.findPreference(KEY_FROM_DIR_PATH);
+        String str = sp.getString(KEY_FROM_DIR_PATH, this.getString(R.string.setting_from_dir_which_default_summary) );
+
+
+        keyFromDirPathPref.setSummary( str );
+
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     /************************************

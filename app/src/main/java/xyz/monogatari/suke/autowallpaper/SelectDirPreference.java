@@ -28,11 +28,15 @@ public class SelectDirPreference extends DialogPreference {
     // フィールド
     // --------------------------------------------------------------------
     /** 設定値のディレクトリパス */
-    private String dirPath = DEFAULT_DIR_PATH;
+    private String dirPath = null;
+
+    /** デフォルトのディレクトリパス,ここはnullで初期化しないこと */
+    private String dDirPath;
 
     /** ダイアログのビューのルート */
-    private View dialogDirView;
-    
+    private View dialogDirView = null;
+
+
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
@@ -46,9 +50,9 @@ public class SelectDirPreference extends DialogPreference {
     /** ダイアログのレイアウトXML内の現在のディレクトリ一覧を表示する要素のID */
     private static final int R_ID_DIALOG_FILE_LIST = R.id.dirDialog_file_list;
 
-    /** ディレクトリパスのデフォルト値, マイピクチャーのディレクトリ */
-    private static final String DEFAULT_DIR_PATH
-            = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath()
+    /** XMLでデフォルト値が設定されていないときのデフォルト値 */
+    private static final String DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
+            = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()
             + System.getProperty("file.separator");
 
     // --------------------------------------------------------------------
@@ -60,9 +64,21 @@ public class SelectDirPreference extends DialogPreference {
      * @param attrs XMLの属性のセット
      */
     public SelectDirPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
+        super(context, attrs);  //XMLにデフォルト値があるなら、onGetDefaultValue() がここで呼ばれる
 Log.d("○"+this.getClass().getSimpleName(), "コンストラクタ呼ばれた"+this.hashCode());
 
+        // ----------------------------------
+        // XMLでデフォルト値が設定されていない場合のデフォルト値の設定
+        // --------------------------------
+        // このクラスのデフォルト値の設定
+        if (this.dDirPath == null) {
+            this.dDirPath = DEFAULT_DIR_PATH_WHEN_NO_DEFAULT;
+            this.setDefaultValue(DEFAULT_DIR_PATH_WHEN_NO_DEFAULT);
+        }
+
+        // ----------------------------------
+        // ダイアログの設定
+        // ----------------------------------
         // ダイアログのタイトルを設定
         this.setDialogTitle( this.getContext().getString(R_DIALOG_TITLE) );
 
@@ -92,14 +108,13 @@ Log.d("○"+this.getClass().getSimpleName(), "コンストラクタ呼ばれた"
         // ダイアログの表示を更新（初期化）する
         // ----------------------------------
         this.updateDialogDisplay(
-                this.getPersistedString(DEFAULT_DIR_PATH),
+                this.dirPath,
                 this
         );
 
         // ----------------------------------
         // ダイアログ表示に対するイベントリスナーの設置
         // ----------------------------------
-//        ListView dirListLv = (ListView) this.dialogDirView.findViewById(R_ID_DIALOG_FILE_LIST);
         ListView dirListLv = this.dialogDirView.findViewById(R_ID_DIALOG_FILE_LIST);
         dirListLv.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
@@ -165,7 +180,7 @@ Log.d("○"+this.getClass().getSimpleName(), "l: "+ l);
         try {
             normalizeDirPath = newDirFile.getCanonicalPath() + System.getProperty("file.separator");
         } catch (IOException e) {
-            normalizeDirPath = DEFAULT_DIR_PATH;
+            normalizeDirPath = this.dDirPath;
         }
 
         //// 初期化
@@ -209,28 +224,57 @@ Log.d("○"+this.getClass().getSimpleName(), "onDialogClosed() が呼ばれた: 
     // メソッド
     // --------------------------------------------------------------------
     /************************************
-     * 現在の値を初期化する、onGetDefaultValue()の後に呼ばれる
-     * ※onGetDefaultValue() で値がreturnされないときは呼ばれない
+     * 現在の値を初期化する、コンストラクタの処理終了の後に呼ばれる
+     * ※このクラスのデフォルト値が設定されていない場合は呼ばれない
+     * （onGetDefaultValue() で値がreturnされないとき、setDefaultValue() でデフォルト値が設定されていないとき
      * @param restorePersistedValue true: 保存された設定値があるとき、false: ないとき
      * @param defaultValue デフォルト値、this.onGetDefaultValue()の戻り値（保存された値がある場合は常にnullになる）
      */
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
 Log.d("○"+this.getClass().getSimpleName(), "onSetInitialValue() が呼ばれた: " + restorePersistedValue);
+        if ( restorePersistedValue ) {
+            this.dirPath = this.getPersistedString(null);
+        } else {
+            this.persistString( (String)defaultValue );
+            this.dirPath = (String) defaultValue;
+        }
     }
 
     /**********************************
-     * onSetInitialValue()にデフォルト値を提供する, <Preference>が表示されたとき呼ばれる
-     * ※デフォルト値が設定されていないときは呼ばれない
+     * onSetInitialValue()にデフォルト値を提供する, コンストラクタでsuper() したときに呼ばれる
+     * ※XMLにデフォルト値が設定されていないときは呼ばれない
      * @param tArray <Preference>の属性の全ての配列
      * @param index  <Preference>の属性配列に対する「defaultValue」属性のインデックス
-     * @return 初期値の文字列
+     * @return このクラスのデフォルト値
      */
     @Override
     protected Object onGetDefaultValue(TypedArray tArray, int index) {
 Log.d("○"+this.getClass().getSimpleName(), "onGetDefaultValue() が呼ばれた: " + tArray.getString(index));
-        return tArray.getString(index);
-//        return super.onGetDefaultValue(tArray, index);
+
+        //// 特殊文字の時初期値を加工
+        String defaultStr = tArray.getString(index);
+        //noinspection ConstantConditions
+        switch (defaultStr) {
+            case "DCIM":
+                this.dDirPath = Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
+                        .getAbsolutePath()
+                        + System.getProperty("file.separator");
+                break;
+            case "PICTURES":
+                this.dDirPath = Environment
+                        .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+                        .getAbsolutePath()
+                        + System.getProperty("file.separator");
+                break;
+            default:
+                this.dDirPath = defaultStr;
+                break;
+        }
+
+
+        return this.dDirPath;
     }
 
     /******************************
