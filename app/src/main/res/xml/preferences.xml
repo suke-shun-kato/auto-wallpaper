@@ -14,4 +14,13 @@
             android:key="from_dir_path"
             android:title="@string/setting_form_dir_which_title" />
     </PreferenceCategory>
+    <PreferenceCategory
+        android:key="when"
+        android:title="@string/setting_when">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="when_turnOn"
+            android:summary="@string/setting_when_turnOn_summary"
+            android:title="@string/setting_when_turnOn_title" />
+    </PreferenceCategory>
 </PreferenceScreen>
