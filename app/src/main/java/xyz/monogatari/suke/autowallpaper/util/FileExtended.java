@@ -1,9 +1,11 @@
 package xyz.monogatari.suke.autowallpaper.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * 拡張Fileクラス、ファイル＆ディレクトリ一覧取得部分を改造
@@ -79,4 +81,122 @@ public class FileExtended extends File {
 
         return childrenDirPathList;
     }
+
+    /************************************
+     * 再帰的に子ファイルのFileを取得する関数
+     * @param filterExtensionAry 絞り込みの拡張子の文字列の配列, nullだと絞込を行わない
+     * @return 取得したFileのリスト
+     */
+    @SuppressWarnings("WeakerAccess")
+    public List<File> getAllFileList(String[] filterExtensionAry) {
+        List<File> fileList = new ArrayList<>();
+
+        // このディレクトリの指定拡張子のファイルと全ての子ディレクトリを取得
+        File[] childrenFiles = this.listFiles(
+                new MyFileFilter(filterExtensionAry, true)
+        );
+
+        for(File childFile: childrenFiles) {
+            if ( childFile.isDirectory() ) {
+                fileList.addAll(
+                        new FileExtended(childFile.getPath()).getAllFileList(filterExtensionAry)
+                );
+            } else {
+                fileList.add(childFile);
+            }
+        }
+
+        return fileList;
+    }
+
+    /************************************
+     * 再帰的に子ファイルの絶対パスを取得する関数
+     * @param filterExtensionAry 絞り込みの拡張子の文字列の配列, nullだと絞込を行わない
+     * @return 取得したファイルの絶対パスのリスト
+     */
+    public List<String> getAllFilePathList(String[] filterExtensionAry) {
+        List<File> allFilesList = this.getAllFileList(filterExtensionAry);
+
+        List<String> allFilePathList = new ArrayList<>();
+        for(File file : allFilesList) {
+            allFilePathList.add(file.getAbsolutePath());
+        }
+        return allFilePathList;
+    }
+
+    /************************************
+     * File.listFiles() 用のクラス、絞込み用
+     */
+    public static class MyFileFilter implements FileFilter {
+        private final String[] extensionAry;
+        private final boolean dirOk;
+
+        public MyFileFilter(String[] extensionAry, @SuppressWarnings("SameParameterValue") boolean dirOk) {
+            if (extensionAry == null) {
+                this.extensionAry = null;
+            } else {
+                this.extensionAry = extensionAry.clone();
+            }
+            this.dirOk = dirOk;
+        }
+
+        /************************************
+         * ここでtruを返せば絞り込みに残る
+         */
+        @Override
+        public boolean accept(File file) {
+            // ----------------------------------
+            // 例外処理
+            // ----------------------------------
+            if (this.extensionAry == null) {
+                return true;
+            }
+            // ----------------------------------
+            // 通常処理
+            // ----------------------------------
+            for (String extensionStr : this.extensionAry) {
+                // ディレクトリOK設定の時でディレクトリの時trueを返す
+                if ( file.isDirectory() && this.dirOk) {
+                    return true;
+                }
+
+                // 拡張子があっている時trueを返す
+                if (file.getName().toLowerCase(Locale.ENGLISH).endsWith(
+                        "." + extensionStr.toLowerCase(Locale.ENGLISH)
+                ) ) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+//    /************************************
+//     * このファイルが指定拡張子を持っているか
+//     * @param extensionAry 拡張子の配列 {"jpg", "png"}, nullだと全てtrueが返る
+//     * @return 指定拡張をを持っていたらtrue
+//     */
+//    public boolean hasExtension(String[] extensionAry) {
+//        // ----------------------------------
+//        // 例外処理
+//        // ----------------------------------
+//        if (extensionAry == null) {
+//            return true;
+//        }
+//
+//        // ----------------------------------
+//        // 通常処理
+//        // ----------------------------------
+//        for (String extensionStr : extensionAry) {
+//            if ( this.getName().toLowerCase(Locale.ENGLISH).endsWith(
+//                    "." + extensionStr.toLowerCase(Locale.ENGLISH)
+//            )) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
+
+
+
 }
