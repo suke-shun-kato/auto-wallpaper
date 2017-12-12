@@ -61,7 +61,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた");
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);    //これ絶対呼ばないとダメ、selectDirのonSaveInstanceが呼ばれない
-        outState.putString("aaaaaaaaaaaaaa", "dataContext");
 Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれた");
     }
 
@@ -69,7 +68,8 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
     // メソッド、設定の変更感知用
     // --------------------------------------------------------------------
     /************************************
-     * フラグメントが利用可能状態になったとき、アクティビティがフォアグラウンドになるとき
+     * フラグメントが利用可能状態になったとき、アク
+     * ティビティがフォアグラウンドになるとき
      */
     @Override
     public void onResume() {

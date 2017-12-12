@@ -34,7 +34,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2"
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-outState.putString("ccccccccccccccc", "dataContext");
 Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれた");
         super.onSaveInstanceState(outState);
     }

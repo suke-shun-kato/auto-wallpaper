@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
+    <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="xyz.monogatari.suke.autowallpaper.SelectDirPreference.SavedState CREATOR" />
+      <entry_point TYPE="field" FQNAME="xyz.monogatari.suke.autowallpaper.SelectDirPreference.MySavedState CREATOR" />
+    </entry_points>
     <pattern value="xyz.monogatari.suke.autowallpaper.FileExtended" method="FileExtended" />
     <pattern value="xyz.monogatari.suke.autowallpaper.util.FileExtended" method="FileExtended" />
   </component>
