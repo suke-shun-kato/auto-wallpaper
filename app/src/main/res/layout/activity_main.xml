@@ -5,7 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="xyz.monogatari.suke.autowallpaper.MainActivity">
-
+    <Button
+        android:id="@+id/main_onOff_service"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onOffService_onClick" />
     <Button
         android:id="@+id/main_to_setting"
         android:layout_width="match_parent"
