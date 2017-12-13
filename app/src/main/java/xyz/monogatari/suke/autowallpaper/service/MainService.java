@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.suke.autowallpaper.service;
 
 import android.app.Service;
 import android.content.Intent;
@@ -29,7 +29,7 @@ public class MainService extends Service {
          * バインド先からこのサービスを取得（バインド先から自由にサービスのメソッドを使えるようにするため）
          * @return このクラスのインスタンス
          */
-        MainService getService() {
+        public MainService getService() {
             // 自分のサービスを返す
             return MainService.this;
 
