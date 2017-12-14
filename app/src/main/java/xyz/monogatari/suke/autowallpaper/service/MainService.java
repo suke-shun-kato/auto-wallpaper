@@ -2,16 +2,33 @@ package xyz.monogatari.suke.autowallpaper.service;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 
 /**
  * Created by k-shunsuke on 2017/12/12.
  * 裏で壁紙を変更するサービス
  */
 public class MainService extends Service {
+    // --------------------------------------------------------------------
+    // フィールド、Util
+    // --------------------------------------------------------------------
+    /** 通常の開始されたサービスが実行中か？ */
+    private boolean isStarted = false;
+
+    /** ブロードキャストレシーバーのインスタンス */
+    private final ScreenOnOffBcastReceiver onOffReceiver = new ScreenOnOffBcastReceiver();
+
+    /** SharedPreference */
+    private SharedPreferences sp;
+
     // --------------------------------------------------------------------
     // フィールド（バインド用）
     // --------------------------------------------------------------------
@@ -45,6 +62,8 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        this.sp = PreferenceManager.getDefaultSharedPreferences(this);
+
 Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode: " + this.hashCode());
     }
 
@@ -53,11 +72,28 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode
      */
     @Override
     public void onDestroy() {
-        super.onDestroy();
 Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCode: " + this.hashCode());
+        super.onDestroy();
+
+        // ------------------------                                                                 ----------
+        // 途中で切り上げ
+        // ----------------------------------
+        if ( !this.isStarted ) {
+            return;
+        }
+
+        // ----------------------------------
+        //
+        // ----------------------------------
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+            this.unsetScreenOnListener();
+        }
+
+        this.isStarted = false;
+
     }
     // --------------------------------------------------------------------
-    // メソッド（通常サービススタートのとき）
+    // メソッド（開始されたサービス（通常サービス）のとき）
     // --------------------------------------------------------------------
     /************************************
      * 通常のサービスを開始したとき
@@ -69,12 +105,21 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCod
     public int onStartCommand(Intent intent, int flags, int startId) {
 Log.d("○"+this.getClass().getSimpleName(), "onStartCommand()が呼ばれた hashCode: " + this.hashCode());
 Log.d("○"+this.getClass().getSimpleName(), "  flags: "+flags + ", startId: "+ startId);
+        this.isStarted = true;
+
+        // ----------------------------------
+        //
+        // ----------------------------------
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+            this.setScreenOnListener();
+        }
+
         return START_STICKY;
     }
 
 
     // --------------------------------------------------------------------
-    // メソッド（バインドサービススタートのとき）
+    // メソッド（バインドサービス関連）
     // --------------------------------------------------------------------
     /************************************
      * バインドでサービス開始したとき使用、設定画面が表示されたとき
@@ -107,4 +152,57 @@ Log.d("○"+this.getClass().getSimpleName(), "onUnbind()が呼ばれた hashCode
 Log.d("○"+this.getClass().getSimpleName(), "onRebind()が呼ばれた hashCode: " + this.hashCode());
         super.onRebind(intent);
     }
+
+    /************************************
+     * 設定画面の値が変更されたときに呼ばれるコールバック（自作）
+     * @param key SharedPreferenceのキー名
+     */
+    public void onSPChanged(String key) {
+Log.d("○"+this.getClass().getSimpleName(), "onSPChanged()が呼ばれた hashCode: " + this.hashCode());
+Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
+
+        // ----------------------------------
+        // 例外処理
+        // ----------------------------------
+        if (!this.isStarted) {
+            //開始されたサービス（通常サービス）が起動中でないときは途中で切り上げ
+            return;
+        }
+        // 全てOFFになったとき
+
+
+        // ----------------------------------
+        // from
+        // ----------------------------------
+
+        // ----------------------------------
+        // When
+        // ----------------------------------
+        // 電源ON設定がONのとき設定
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+            this.setScreenOnListener();
+        } else {
+            this.unsetScreenOnListener();
+        }
+    }
+
+    // --------------------------------------------------------------------
+    // 自作リスナー登録
+    // --------------------------------------------------------------------
+    /************************************
+     * 画面ON時のイベントリスナーを登録
+     */
+    private void setScreenOnListener() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        this.registerReceiver(this.onOffReceiver, intentFilter);
+    }
+    /************************************
+     * 画面ON時のイベントリスナーの登録を外す
+     */
+    private void unsetScreenOnListener() {
+        this.unregisterReceiver(this.onOffReceiver);
+    }
+
 }

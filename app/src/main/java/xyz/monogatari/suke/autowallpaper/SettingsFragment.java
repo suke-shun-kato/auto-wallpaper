@@ -67,7 +67,11 @@ public class SettingsFragment extends PreferenceFragment implements SharedPrefer
     // 定数
     // --------------------------------------------------------------------
     /** ディレクトリ選択<Preference>のkey名 */
-    private static final String KEY_FROM_DIR_PATH = "from_dir_path";
+    @SuppressWarnings("unused")
+    public static final String KEY_FROM_DIR = "from_dir";
+    @SuppressWarnings("WeakerAccess")
+    public static final String KEY_FROM_DIR_PATH = "from_dir_path";
+    public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
 
     // --------------------------------------------------------------------
     // メソッド
@@ -86,7 +90,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた");
     }
 
     /************************************
-     *
+     * フラグメントが表示される直前
      */
     @Override
     public void onStart() {
@@ -102,7 +106,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた");
     }
 
     /************************************
-     *
+     * フラグメントが非表示になる直前
      */
     @Override
     public void onStop() {
@@ -118,7 +122,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
         }
     }
     /************************************
-     *
+     * フラグメントに関連づいたView層を生成する直前
      */
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -135,7 +139,8 @@ Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
     }
 
     /************************************
-     *
+     * インスタンス消失前のデータを保存するタイミング（画面回転直前）
+     * @param outState このバンドルにデータを保存ずる
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -147,8 +152,8 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
     // メソッド、設定の変更感知用
     // --------------------------------------------------------------------
     /************************************
-     * フラグメントが利用可能状態になったとき、アク
-     * ティビティがフォアグラウンドになるとき
+     * フラグメントが利用可能状態になる直前、
+     * アクティビティがフォアグラウンドになるとき
      */
     @Override
     public void onResume() {
@@ -191,8 +196,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
         }
 
         // ----------------------------------
-        // メイン処理、押されたボタンによってサービスを操作
+        // ボタンが切り替わったことをサービスに伝える
         // ----------------------------------
+        this.mainService.onSPChanged(key);
         
     }
 

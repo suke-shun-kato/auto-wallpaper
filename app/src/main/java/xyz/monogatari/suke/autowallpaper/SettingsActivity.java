@@ -1,16 +1,10 @@
 package xyz.monogatari.suke.autowallpaper;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import xyz.monogatari.suke.autowallpaper.service.MainService;
 
 /**
  * 設定画面のアクティビティ
