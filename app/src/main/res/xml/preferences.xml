@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="from"
+        android:title="@string/setting_from">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="from_dir"
+            android:summary="@string/setting_form_dir_onoff_summary"
+            android:title="@string/setting_from_dir_onoff_title" />
+        <xyz.monogatari.suke.autowallpaper.SelectDirPreference
+            android:defaultValue="PICTURES"
+            android:key="from_dir_path"
+            android:title="@string/setting_form_dir_which_title" />
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="when"
+        android:title="@string/setting_when">
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="when_turnOn"
+            android:summary="@string/setting_when_turnOn_summary"
+            android:title="@string/setting_when_turnOn_title" />
+    </PreferenceCategory>
+</PreferenceScreen>
