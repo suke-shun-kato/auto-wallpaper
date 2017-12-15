@@ -53,7 +53,7 @@ public class SelectDirPreference extends DialogPreference {
     private static final int R_ID_DIALOG_FILE_LIST = R.id.dirDialog_file_list;
 
     /** XMLでデフォルト値が設定されていないときのデフォルト値 */
-    private static final String DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
+    public static final String DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
             = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath()
             + System.getProperty("file.separator");
 
@@ -171,7 +171,9 @@ Log.d("○"+this.getClass().getSimpleName(), "l: "+ l);
         // ----------------------------------
         // 例外処理
         // ----------------------------------
-        if ( !newDirFile.isDirectory() || newDirFile.list() == null) {
+        if ( !newDirFile.isDirectory()
+                || newDirFile.list() == null
+                ) {
             // newDirFile.list() == null はマニュフェストでストレージにアクセス権限を与えていなかったときに発生
             throw new IllegalStateException ("dirPathがディレクトリではありません。もしくはファイル一覧を取得できる権限がありません");
         }
@@ -267,6 +269,9 @@ Log.d("○"+this.getClass().getSimpleName(), "onGetDefaultValue() が呼ばれ�
                         + System.getProperty("file.separator");
                 break;
             case "PICTURES":
+
+//this.dDirPath = "/sdcard/Pictures/";
+//this.dDirPath = Environment.getDataDirectory().getAbsolutePath() + System.getProperty("file.separator");
                 this.dDirPath = Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                         .getAbsolutePath()
