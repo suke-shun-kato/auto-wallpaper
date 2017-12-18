@@ -12,13 +12,13 @@ import static org.junit.Assert.assertNotEquals;
  * テスト
  * Created by k-shunsuke on 2017/12/17.
  */
-public class BitmapProcessor_doesFitX_Test {
+public class BitmapProcessor_whichFitWH_Test {
     private Method method;
 
     @Before
     public void before() throws Exception {
         this.method = BitmapProcessor.class.getDeclaredMethod(
-                "whichFitXY", int.class, int.class, int.class, int.class);
+                "whichFitWH", int.class, int.class, int.class, int.class);
         this.method.setAccessible(true);
     }
 

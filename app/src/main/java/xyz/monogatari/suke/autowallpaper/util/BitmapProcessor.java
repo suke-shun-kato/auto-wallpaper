@@ -2,9 +2,11 @@ package xyz.monogatari.suke.autowallpaper.util;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.util.Log;
 
 import static android.graphics.Bitmap.createBitmap;
 
@@ -18,6 +20,8 @@ public class BitmapProcessor {
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
+    private static final double ROTATION_BEFORE_MAG = 1.2;
+
     public static final int FIT_WIDTH = 1;
     public static final int FIT_HEIGHT = 2;
     public static final int FIT_BOTH = 3;
@@ -40,6 +44,38 @@ public class BitmapProcessor {
                 toWidth, toHeight
         );
 
+Log.d("○BitmapProcessor", "画像サイズ（回転前）: "
+        + ", width:" + fromBitmap.getWidth()
+        + " height:" + fromBitmap.getHeight());
+
+        // ----------------------------------
+        // 回転させる
+        // ----------------------------------
+        //// 回転前、回転後のフィット時の面積を求める
+        double areaBeforeR = calcArea(fromBitmap.getWidth(), fromBitmap.getHeight(), toWidth, toHeight);
+        double areaAfterR = calcArea(fromBitmap.getHeight(), fromBitmap.getWidth(), toWidth, toHeight);
+        //// 回転させる
+        if (areaBeforeR * ROTATION_BEFORE_MAG < areaAfterR) {
+            // 回転後の面積が回転前のROTATION_BEFORE_MAG倍の大きい時回転させる
+            Matrix matrix = new Matrix();
+            matrix.setRotate(90);   //90°右に回転
+            fromBitmap = Bitmap.createBitmap(
+                    fromBitmap,
+                    0, 0,
+                    fromBitmap.getWidth(), fromBitmap.getHeight(),
+                    matrix,
+                    true
+            );
+            // フィット方向を再計算
+            whichFitXY = BitmapProcessor.whichFitWH(
+                    fromBitmap.getWidth(), fromBitmap.getHeight(),
+                    toWidth, toHeight
+            );
+        }
+
+Log.d("○BitmapProcessor", "画像サイズ（回転後）: "
+        + ", width:" + fromBitmap.getWidth()
+        + " height:" + fromBitmap.getHeight());
         // ---------------------------------
         // 変換後の画像のCanvasを作成
         // ---------------------------------
@@ -83,6 +119,29 @@ public class BitmapProcessor {
         );
 
         return toBitmap;
+    }
+
+    /************************************
+     * フィットさせたときの面積を求める
+     */
+    private static double calcArea(int fromW, int fromH, int toW, int toH) {
+        int whichFit = BitmapProcessor.whichFitWH(fromW, fromH, toW, toH);
+
+        double fromNewW, fromNewH;
+        switch (whichFit) {
+            case FIT_WIDTH:
+            case FIT_BOTH:
+                fromNewW = (double) toW;
+                fromNewH = (double) fromH * toW / fromW;
+                break;
+            case FIT_HEIGHT:
+                fromNewW = (double) fromW * toH / fromH;
+                fromNewH = (double) toH;
+                break;
+            default:
+                throw new IllegalStateException("whichFitWH()がおかしいです");
+        }
+        return fromNewW * fromNewH;
     }
 
 
