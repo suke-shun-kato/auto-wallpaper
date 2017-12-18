@@ -12,5 +12,7 @@
     <string name="setting_when">WHEN</string>
     <string name="setting_when_turnOn_summary">When screen turns on, wallpaper changes.</string>
     <string name="setting_when_turnOn_title">screen turns on</string>
+    <string name="setting_other">Other</string>
+    <string name="setting_other_autoRotation_title">Auto Rotation ON/OFF</string>
     <string name="select_dir_pref_dialog_title">Select directory.</string>
 </resources>

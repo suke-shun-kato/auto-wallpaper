@@ -234,7 +234,10 @@ Log.d("○" + this.getClass().getSimpleName(), "画像サイズ（加工前）: 
         // スクリーン（画面）サイズ取得
         Point point = DisplaySizeCheck.getRealSize(this);
         // 画像加工
-        Bitmap processedWallpaperBitmap = BitmapProcessor.process(wallpaperBitmap, point.x, point.y);
+        Bitmap processedWallpaperBitmap = BitmapProcessor.process(
+                wallpaperBitmap, point.x, point.y,
+                this.sp.getBoolean("other_autoRotation", true)
+        );
 
 Log.d("○" + this.getClass().getSimpleName(), "画像サイズ（加工後）: "
         + ", width:" + processedWallpaperBitmap.getWidth()

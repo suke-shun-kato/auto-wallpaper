@@ -34,8 +34,9 @@ public class BitmapProcessor {
      * @param fromBitmap 加工元の画像のBitmap
      * @param toWidth 加工後の画像の幅
      * @param toHeight 加工後の画像の幅
+     * @param autoRotation 壁紙のサイズが「回転前の大きさ*1.2 < 回転後の大きさ」のときに自動で回転させるか
      */
-    public static Bitmap process(Bitmap fromBitmap, int toWidth, int toHeight) {
+    public static Bitmap process(Bitmap fromBitmap, int toWidth, int toHeight, boolean autoRotation) {
         // ----------------------------------
         // 縦フィット画像か横フィット画像か求める
         // ----------------------------------
@@ -55,7 +56,7 @@ Log.d("○BitmapProcessor", "画像サイズ（回転前）: "
         double areaBeforeR = calcArea(fromBitmap.getWidth(), fromBitmap.getHeight(), toWidth, toHeight);
         double areaAfterR = calcArea(fromBitmap.getHeight(), fromBitmap.getWidth(), toWidth, toHeight);
         //// 回転させる
-        if (areaBeforeR * ROTATION_BEFORE_MAG < areaAfterR) {
+        if ( autoRotation && areaBeforeR * ROTATION_BEFORE_MAG < areaAfterR) {
             // 回転後の面積が回転前のROTATION_BEFORE_MAG倍の大きい時回転させる
             Matrix matrix = new Matrix();
             matrix.setRotate(90);   //90°右に回転
