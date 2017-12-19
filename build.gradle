@@ -1,27 +1,35 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
+// プロジェクトのためのビルドスクリプトのクラスパスの設定
 buildscript {
-    
+    // 外部ライブラリのリポジトリの場所の設定
     repositories {
         google()
         jcenter()
     }
+    // 依存関係
     dependencies {
+        // android plugin for Gradle のバージョン（Gradle自体のバージョンではない）
         classpath 'com.android.tools.build:gradle:3.0.1'
-        
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
 }
 
+//// 全てのプロジェクトに適応される設定
 allprojects {
+    // 全てのプロジェクトに下記のリポジトリの設定を適用
+    // （ここではappしかサブプロジェクトがないので、それにリポジトリの設定がここで記述される）
     repositories {
         google()
         jcenter()
     }
 }
 
+//// cleanというタスクを定義
+//// プロジェクトをクリアにしたいなら、このタスクを実行すればよい
 task clean(type: Delete) {
+    // rootProject.buildDirのファイルやディレクトリを削除する
     delete rootProject.buildDir
 }

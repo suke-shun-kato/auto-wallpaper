@@ -37,8 +37,6 @@ public class FileExtended_getAllFilePathList_Test {
         tf.newFile("ccccc.txt");
         tf.newFile("ddddd.xls");
         tf.newFile("eeeee.png.txt");
-//        tf.newFolder("aaaaaa");
-//        tf.newFile("aaaaaa"+SP+"ccccc.png");
 
         // ----------------------------------
         // 準備、加工

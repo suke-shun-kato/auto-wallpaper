@@ -1,16 +1,24 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
 import android.app.Service;
+import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.io.IOException;
+
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
+import xyz.monogatari.suke.autowallpaper.util.BitmapProcessor;
+import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 
 /**
  * Created by k-shunsuke on 2017/12/12.
@@ -203,6 +211,65 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
      */
     private void unsetScreenOnListener() {
         this.unregisterReceiver(this.onOffReceiver);
+    }
+
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+    public void getAndSetNewWallpaper() {
+        // ----------------------------------
+        // 画像取得
+        // ----------------------------------
+        ImgGetter imgGetter = new ImgGetterDir(this);
+        Bitmap wallpaperBitmap = imgGetter.getImg();
+
+Log.d("○" + this.getClass().getSimpleName(), "画像サイズ（加工前）: "
++ ", width:" + wallpaperBitmap.getWidth()
++ " height:" + wallpaperBitmap.getHeight());
+        WallpaperManager wm = WallpaperManager.getInstance(this);
+
+        // ----------------------------------
+        // 画像加工
+        // ----------------------------------
+        // スクリーン（画面）サイズ取得
+        Point point = DisplaySizeCheck.getRealSize(this);
+        // 画像加工
+        Bitmap processedWallpaperBitmap = BitmapProcessor.process(
+                wallpaperBitmap, point.x, point.y,
+                this.sp.getBoolean("other_autoRotation", true)
+        );
+
+Log.d("○" + this.getClass().getSimpleName(), "画像サイズ（加工後）: "
+        + ", width:" + processedWallpaperBitmap.getWidth()
+        + " height:" + processedWallpaperBitmap.getHeight());
+Log.d("○" + this.getClass().getSimpleName(), "ディスプレイサイズ: "
+                + " width: " + point.x
+                + ", height: " + point.y);
+
+        // ----------------------------------
+        // 画像セット
+        // ----------------------------------
+        try {
+            if (Build.VERSION.SDK_INT >= 24) {
+                //APIレベル24以上の場合, Android7.0以上のとき
+                wm.setBitmap(
+                        processedWallpaperBitmap,
+                        null,
+                        false,
+                        WallpaperManager.FLAG_SYSTEM
+                );
+                wm.setBitmap(
+                        processedWallpaperBitmap,
+                        null,
+                        false,
+                        WallpaperManager.FLAG_LOCK
+                );
+            } else {
+                // 24未満のとき
+                wm.setBitmap(processedWallpaperBitmap);
+            }
+        } catch (IOException e) {
+        }
     }
 
 }

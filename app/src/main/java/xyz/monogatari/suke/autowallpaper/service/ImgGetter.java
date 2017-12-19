@@ -10,7 +10,7 @@ import android.graphics.Bitmap;
 public interface ImgGetter {
     /************************************
      * 壁紙用の画像データを取得するメソッド
-     * @retrun 取得した画像データ
+     * @return  取得した画像データ
      */
     @SuppressWarnings("UnnecessaryInterfaceModifier")
     public Bitmap getImg();

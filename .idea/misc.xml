@@ -7,6 +7,8 @@
     </entry_points>
     <pattern value="xyz.monogatari.suke.autowallpaper.FileExtended" method="FileExtended" />
     <pattern value="xyz.monogatari.suke.autowallpaper.util.FileExtended" method="FileExtended" />
+    <pattern value="xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck" method="getDisplaySize" />
+    <pattern value="xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck" method="getViewSize" />
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />

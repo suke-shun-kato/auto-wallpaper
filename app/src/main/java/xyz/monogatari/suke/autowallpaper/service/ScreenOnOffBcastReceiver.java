@@ -1,16 +1,12 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
-import android.app.WallpaperManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import java.io.IOException;
 
 /**
  * 電源ON,OFFのときのブロードキャストレシーバー
@@ -47,47 +43,8 @@ Log.d("○" + this.getClass().getSimpleName(), "電源ONになった瞬間の壁
         } else if ( inttActionStr.equals(Intent.ACTION_SCREEN_OFF) ) {
 Log.d("○" + this.getClass().getSimpleName(), "電源OFFになった瞬間の壁紙処理");
 
-            // --------------
-            // セットする
-            // --------------
-            //// 画像取得
-
-            ImgGetter imgGetter = new ImgGetterDir(context);
-            Bitmap wallpaperBitmap = imgGetter.getImg();
-
-            //// 画像加工
-
-
-            //// 画像セット
-            try {
-                WallpaperManager wm = WallpaperManager.getInstance(context);
-                int height = wm.getDesiredMinimumHeight();
-                int width = wm.getDesiredMinimumWidth();
-Log.d("○" + this.getClass().getSimpleName(), "height: " + height + ", width: " + width);
-
-                if(Build.VERSION.SDK_INT >= 24){
-                //APIレベル24以上の場合, Android7.0以上のとき
-                    wm.setBitmap(
-                            wallpaperBitmap,
-                            null,
-                            false,
-                            WallpaperManager.FLAG_SYSTEM
-                    );
-
-                    wm.setBitmap(
-                            wallpaperBitmap,
-                            null,
-                            false,
-                            WallpaperManager.FLAG_LOCK
-                    );
-                } else {
-                // 24未満のとき
-                    wm.setBitmap(
-                            wallpaperBitmap
-                    );
-                }
-            } catch (IOException e) {
-            }
+            ///////壁紙変更
+            ((MainService)context).getAndSetNewWallpaper();
         }
     }
 }
