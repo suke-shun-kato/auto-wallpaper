@@ -1,12 +1,17 @@
 package xyz.monogatari.suke.autowallpaper;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.preference.Preference;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -95,6 +100,15 @@ Log.d("○"+this.getClass().getSimpleName(), "コンストラクタ呼ばれた"
     // --------------------------------------------------------------------
     // メソッド、ダイアログ関係
     // --------------------------------------------------------------------
+
+
+    @Override
+    protected void onClick() {
+Log.d("○"+this.getClass().getSimpleName(), "onClick(): super前");
+        super.onClick();    //ここでonCreateDialogView()が呼ばれる
+Log.d("○"+this.getClass().getSimpleName(), "onClick(): super後");
+    }
+
     /************************************
      * ダイアログのViewが生成されるとき
      * @return このViewがダイアログに表示される
