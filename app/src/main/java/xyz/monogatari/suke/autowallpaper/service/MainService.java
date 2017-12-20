@@ -224,11 +224,11 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
         // 画像取得
         // ----------------------------------
         //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
-//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED) {
-//Log.d("○", "ストレージアクセス権限がない！！！");
-//            return;
-//        }
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権限がない！！！");
+            return;
+        }
         //// メイン処理
         ImgGetter imgGetter = new ImgGetterDir(this);
         Bitmap wallpaperBitmap = imgGetter.getImg();
@@ -279,7 +279,7 @@ Log.d("○" + this.getClass().getSimpleName(), "ディスプレイサイズ: "
                 wm.setBitmap(processedWallpaperBitmap);
             }
         } catch (IOException e) {
-            return;
+Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません");
         }
     }
 
