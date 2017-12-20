@@ -2,10 +2,13 @@ package xyz.monogatari.suke.autowallpaper;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -20,6 +23,39 @@ import android.widget.Toast;
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 
 public class MainActivity extends AppCompatActivity {
+//    private MainService mainService;
+//    private boolean isBound = false;
+//    /** ServiceConnectionを継承したクラスのインスタンス */
+//    private final ServiceConnection myConnection = new ServiceConnection() {
+//
+//        /**
+//         * サービスへバインドされたときのコールバック
+//         * サービス側から実行されるコールバック
+//         * @param serviceClassName サービスのクラス名
+//         * @param service サービスから送られてくるバインダー
+//         */
+//        @Override
+//        public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
+//            Log.d("○" + this.getClass().getSimpleName(), "1onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
+//
+//            MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
+//            MainActivity.this.mainService = serviceBinder.getService();
+//            MainActivity.this.isBound = true;
+//        }
+//
+//        /**
+//         * サービスのプロセスがクラッシュしたりKILLされたりしたときに呼ばれるコールバック
+//         * ※通常にアンバインドされたときは呼ばれない
+//         * @param serviceClassName サービスのクラス名
+//         */
+//        @Override
+//        public void onServiceDisconnected(ComponentName serviceClassName) {
+//            Log.d("○" + this.getClass().getSimpleName(), "1onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
+//            MainActivity.this.isBound = false;
+//        }
+//    };
+
+
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
@@ -27,6 +63,16 @@ public class MainActivity extends AppCompatActivity {
     private Intent serviceIntent;
     /** サービスON,OFFボタンのView */
     private Button serviceOnOffButton;
+
+    /** アクティビティ内で使いまわすSharedPreferences、ここでgetDefaultSharedPreferences()はダメ */
+    private SharedPreferences sp;
+
+    // --------------------------------------------------------------------
+    // 定数
+    // --------------------------------------------------------------------
+    /** パーミッションリクエスト用のリクエストコード */
+    private static final int RQ = 1;
+    private static final int RQ_ONSTA = 2;
 
     // --------------------------------------------------------------------
     // メソッド（ライフサイクル）
@@ -41,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
         this.setContentView(R.layout.activity_main);
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.layout.activity_main);
 
+        //
+        this.sp = PreferenceManager.getDefaultSharedPreferences(this);
+
         // サービス開始用のインテントを作成
         this.serviceIntent = new Intent(this, MainService.class);
 
@@ -50,6 +99,38 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         } else {
             this.serviceOnOffButton.setText(R.string.off_to_on);
         }
+    }
+    /************************************
+     * アクティビティが描画される直前
+     * ストレージのパーミッションのダイアログを表示する
+     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+Log.d("△", ""+this.isServiceRunning(MainService.class));
+        if ( this.isServiceRunning(MainService.class)//サービスが起動中
+                && this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
+                ) {
+
+            //shouldのとき
+            if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                Toast.makeText(this, this.getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
+            }
+
+            // パーミッション許可ダイアログを表示
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    RQ_ONSTA);
+        }
+    }
+    protected void onResume() {
+        super.onResume();
+Log.d("△", ""+this.isServiceRunning(MainService.class));
     }
 
     // --------------------------------------------------------------------
@@ -80,13 +161,13 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
      *
      */
     @SuppressWarnings("WeakerAccess")
-    public void onOffService_onClick(@SuppressWarnings("unused") View view){
+    public void onOffService_onClick(@SuppressWarnings("unused") View view) {
 
         // -------------------------------------------------
         // サービスが停止中のとき OFFにする
         // -------------------------------------------------
         if ( this.isServiceRunning(MainService.class) ) {
-            this.stopService(serviceIntent);
+            this.stopService(this.serviceIntent);
             this.serviceOnOffButton.setText(R.string.off_to_on);
 
         // -------------------------------------------------
@@ -97,9 +178,8 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
             // ストレージのパーミッションが許可されていないときの例外処理
             // (参考)https://developer.android.com/training/permissions/requesting.html?hl=ja
             // ----------------------------------
-            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
             // ディレクトリから壁紙取得がONのとき、かつディレクトリアクセスパーミッションがOFFのとき
-            if ( sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+            if ( this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
                     && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED
                             ) {
@@ -121,11 +201,10 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
             // ----------------------------------
             // 通常処理
             // ----------------------------------
-            this.startService(serviceIntent);
+            this.startService(this.serviceIntent);
             this.serviceOnOffButton.setText(R.string.on_to_off);
         }
     }
-    private static final int RQ = 1;
 
     /**
      * パーミッション許可のダイアログが終わった瞬間（OKもNGもある）
@@ -147,6 +226,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
                             this.findViewById(R.id.main_onOff_service) );
                 }
                 break;
+            case RQ_ONSTA:
+                // 許可しようがしまいが特になにもしない
+                break;
         }
     }
 
@@ -156,6 +238,15 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      */
     public void toSetting_onClick(@SuppressWarnings("unused") View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
+        this.startActivity(intent);
+    }
+
+    /************************************
+     * 履歴画面へのボタンをクリックしたとき
+     * @param view 押されたボタンのビュー
+     */
+    public void toHistory_onClick(View view) {
+        Intent intent = new Intent(this, HistoryActivity.class);
         this.startActivity(intent);
     }
 

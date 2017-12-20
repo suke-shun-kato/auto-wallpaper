@@ -3,6 +3,7 @@
     <string name="off_to_on">OFF→ON</string>
     <string name="on_to_off">ON→OFF</string>
     <string name="main_to_setting">To Setting</string>
+    <string name="main_to_history">To History</string>
     <string name="main_dell_sp">Dell Shared Preference</string>
     <string name="permission_toast">wants a storage permission to display a wall paper of file.</string>
     <string name="setting_from">FROM</string>
