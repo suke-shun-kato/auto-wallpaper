@@ -14,19 +14,14 @@ import android.os.IBinder;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
 import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 
@@ -175,23 +170,23 @@ Log.d("○OnPreferenceChangeL", "onPreferenceChange() 呼ばれた: "+(boolean)n
                 // ----------
                 // パーミッション許可ダイアログを出るようにしている
                 // ----------
-                //// ONになるとき、かつストレージアクセスの許可を得ていないとき
-                if (
-                     ( (boolean)newValue )
-                  && ( ContextCompat.checkSelfPermission(
-                                SettingsFragment.this.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                //// 設定がONになるとき、かつAndroid6.0のとき、かつストレージアクセスの許可を得ていないとき、
+                if ( (boolean)newValue  //設定がOFF→ONになるとき
+                  &&  Build.VERSION.SDK_INT >= 23 //Android 6.0以上のとき
+                  &&  ContextCompat.checkSelfPermission(
+                                SettingsFragment.this.getActivity(),
+                                Manifest.permission.READ_EXTERNAL_STORAGE
+                       )
                         != PackageManager.PERMISSION_GRANTED
-                     )
                 ) {
 
                     // アクセス許可を要求（ダイアログを表示）
-                    if (Build.VERSION.SDK_INT >= 23) {  //Android 6.0以上のとき
-                        SettingsFragment.this.requestPermissions(
-                                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                                RQ_CODE_FROM_DIR
-                        );
-                    }
+                    SettingsFragment.this.requestPermissions(
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            RQ_CODE_FROM_DIR
+                    );
                     return false;
+
                 } else {
                     return true;
                 }
@@ -202,10 +197,29 @@ Log.d("○OnPreferenceChangeL", "onPreferenceChange() 呼ばれた: "+(boolean)n
         // 取得元 < ディレクトリを設定 のパーミッションダイアログ表示設定
         // ----------
         this.findPreference(KEY_FROM_DIR_PATH).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+            /************************************
+             * Preferenceがクリックされたときのコールバック
+             * @param preference クリックされたプリファレンス
+             * @return true:正常にクリックされた動作が実行されるとき、false: されないとき
+             */
             @Override
             public boolean onPreferenceClick(Preference preference) {
 Log.d("○" + this.getClass().getSimpleName(), "onPreferenceClick() 呼ばれたdirPath");
-                return false;
+                if ( Build.VERSION.SDK_INT >= 23
+                  && ContextCompat.checkSelfPermission(
+                        SettingsFragment.this.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE
+                     )
+                       != PackageManager.PERMISSION_GRANTED
+                ) {
+                    // アクセス許可を要求（ダイアログを表示）
+                    SettingsFragment.this.requestPermissions(
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            RQ_CODE_FROM_DIR_PATH
+                    );
+                    return false;
+                } else {
+                    return true;
+                }
             }
         });
 
@@ -265,8 +279,10 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults
     ) {
+Log.d("○"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
         switch (requestCode) {
             case RQ_CODE_FROM_DIR:
+                // 許可をクリックしたとき
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // ディレクトリから の設定をONにする
                     ((SwitchPreference)this.findPreference(KEY_FROM_DIR)).setChecked(true);
@@ -275,6 +291,11 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
                 }
                 break;
             case RQ_CODE_FROM_DIR_PATH:
+                // 許可をクリックしたとき
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // もう一度Preferenceをクリックする
+                    ((SelectDirPreference)this.findPreference(KEY_FROM_DIR_PATH)).click();
+                }
                 break;
         }
     }
@@ -286,32 +307,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
      */
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
 Log.d("○"+this.getClass().getSimpleName(), "onSharedPreferenceChanged():");
-        // ----------------------------------
-        //
-        // ----------------------------------
-//        switch (key) {
-//            case KEY_FROM_DIR:
-//            case KEY_FROM_DIR_PATH:
-//                // リクエストコードのマップを作成
-//                Map<String, Integer> requestCodeMap = new HashMap<>();
-//                requestCodeMap.put(KEY_FROM_DIR, RQ_CODE_FROM_DIR);
-//                requestCodeMap.put(KEY_FROM_DIR_PATH, RQ_CODE_FROM_DIR_PATH);
-//
-//                //// ストレージアクセスの許可を得ていないとき
-//                if (ContextCompat.checkSelfPermission(this.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-//                        != PackageManager.PERMISSION_GRANTED) {
-//
-//                    // アクセス許可を要求（ダイアログを表示）
-//                    ActivityCompat.requestPermissions(
-//                            this.getActivity(),
-//                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-//                            requestCodeMap.get(key)
-//                    );
-//                    return;
-//                }
-//                break;
-//        }
-
         // ----------------------------------
         // 設定値をSummaryに反映
         // ----------------------------------
