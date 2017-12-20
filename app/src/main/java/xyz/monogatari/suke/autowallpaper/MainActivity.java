@@ -1,10 +1,15 @@
 package xyz.monogatari.suke.autowallpaper;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -74,15 +79,74 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
     /************************************
      *
      */
+    @SuppressWarnings("WeakerAccess")
     public void onOffService_onClick(@SuppressWarnings("unused") View view){
-        // サービスが起動中のとき
+
+        // -------------------------------------------------
+        // サービスが停止中のとき OFFにする
+        // -------------------------------------------------
         if ( this.isServiceRunning(MainService.class) ) {
             this.stopService(serviceIntent);
             this.serviceOnOffButton.setText(R.string.off_to_on);
-        // サービスが停止中のとき
+
+        // -------------------------------------------------
+        // サービスが停止中のとき ONにする
+        // -------------------------------------------------
         } else {
+            // ----------------------------------
+            // ストレージのパーミッションが許可されていないときの例外処理
+            // (参考)https://developer.android.com/training/permissions/requesting.html?hl=ja
+            // ----------------------------------
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+            // ディレクトリから壁紙取得がONのとき、かつディレクトリアクセスパーミッションがOFFのとき
+            if ( sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+                    && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED
+                            ) {
+                /////shouldのとき
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    Toast.makeText(this, this.getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
+                }
+
+                // パーミッション許可ダイアログを表示
+                ActivityCompat.requestPermissions(
+                        this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        RQ);
+                return;
+            }
+
+            // ----------------------------------
+            // 通常処理
+            // ----------------------------------
             this.startService(serviceIntent);
             this.serviceOnOffButton.setText(R.string.on_to_off);
+        }
+    }
+    private static final int RQ = 1;
+
+    /**
+     * パーミッション許可のダイアログが終わった瞬間（OKもNGもある）
+     * @param requestCode パーミッション許可リクエスト時に送ったリクエストコード
+     * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
+     * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
+     */
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
+        switch (requestCode) {
+            case RQ:
+                // パーミッションを許可したとき
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // ボタンを再度クリックする
+                    this.onOffService_onClick(
+                            this.findViewById(R.id.main_onOff_service) );
+                }
+                break;
         }
     }
 

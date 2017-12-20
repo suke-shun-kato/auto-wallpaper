@@ -17,11 +17,13 @@ import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 
@@ -155,7 +157,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
         // <Preference>のイベントリスナの設定、主にパーミッションダイアログ表示用
         // ----------------------------------
         // ----------
-        // 取得元 < ディレクトリから のパーミッションダイアログ表示設定
+        // 「ディレクトリから」 のパーミッションダイアログ表示設定
         // ----------
         // ここは setOnPreferenceClickListener() ではない
         this.findPreference(KEY_FROM_DIR).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener(){
@@ -179,6 +181,8 @@ Log.d("○OnPreferenceChangeL", "onPreferenceChange() 呼ばれた: "+(boolean)n
                        )
                         != PackageManager.PERMISSION_GRANTED
                 ) {
+                    // パーミッション必要な理由を表示
+                    toastIfShould(SettingsFragment.this);
 
                     // アクセス許可を要求（ダイアログを表示）
                     SettingsFragment.this.requestPermissions(
@@ -194,7 +198,7 @@ Log.d("○OnPreferenceChangeL", "onPreferenceChange() 呼ばれた: "+(boolean)n
         });
 
         // ----------
-        // 取得元 < ディレクトリを設定 のパーミッションダイアログ表示設定
+        // 「ディレクトリを設定」 のパーミッションダイアログ表示設定
         // ----------
         this.findPreference(KEY_FROM_DIR_PATH).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
             /************************************
@@ -211,6 +215,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onPreferenceClick() 呼ばれた
                      )
                        != PackageManager.PERMISSION_GRANTED
                 ) {
+                    // パーミッション必要な理由を表示するトーストが必要なときトーストを表示する
+                    toastIfShould(SettingsFragment.this);
+
                     // アクセス許可を要求（ダイアログを表示）
                     SettingsFragment.this.requestPermissions(
                             new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
@@ -227,6 +234,19 @@ Log.d("○" + this.getClass().getSimpleName(), "onPreferenceClick() 呼ばれた
         //
         // ----------------------------------
         return super.onCreateView(inflater, container, savedInstanceState);
+    }
+    /************************************
+     * パーミッションがいる説明をトーストで表示する（表示しないといけない場合）
+     */
+    private void toastIfShould(SettingsFragment myThis) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(
+                myThis.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                ){
+            Toast.makeText(myThis.getActivity(),
+                    myThis.getString(R.string.permission_toast),
+                    Toast.LENGTH_LONG)
+                    .show();
+        }
     }
 
     /************************************

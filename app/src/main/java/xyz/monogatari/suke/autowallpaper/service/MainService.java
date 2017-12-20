@@ -1,10 +1,12 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
+import android.Manifest;
 import android.app.Service;
 import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Binder;
@@ -12,6 +14,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
 import java.io.IOException;
@@ -220,6 +223,13 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
         // ----------------------------------
         // 画像取得
         // ----------------------------------
+        //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//                != PackageManager.PERMISSION_GRANTED) {
+//Log.d("○", "ストレージアクセス権限がない！！！");
+//            return;
+//        }
+        //// メイン処理
         ImgGetter imgGetter = new ImgGetterDir(this);
         Bitmap wallpaperBitmap = imgGetter.getImg();
 
@@ -269,6 +279,7 @@ Log.d("○" + this.getClass().getSimpleName(), "ディスプレイサイズ: "
                 wm.setBitmap(processedWallpaperBitmap);
             }
         } catch (IOException e) {
+            return;
         }
     }
 

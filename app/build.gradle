@@ -16,6 +16,9 @@ android {
     }
     // ビルドタイプの設定（リリース用のビルド、デバッグ用のなど別々に設定できる）
     buildTypes {
+        debug { //デバッグ用のビルドタイプの設定
+            debuggable true
+        }
         release {   //リリース用のビルドタイプの設定
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
