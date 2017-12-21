@@ -3,7 +3,9 @@
     <string name="off_to_on">OFF→ON</string>
     <string name="on_to_off">ON→OFF</string>
     <string name="main_to_setting">設定へ</string>
+    <string name="main_to_history">履歴へ</string>
     <string name="main_dell_sp">Dell SharedePreference</string>
+    <string name="permission_toast">壁紙のデータをファイルから取得するために許可が必要です</string>
     <string name="setting_from">取得元</string>
     <string name="setting_from_dir_onoff_title">ディレクトリから</string>
     <string name="setting_form_dir_onoff_summary">指定ディレクトリから壁紙を取得します</string>

@@ -1,12 +1,15 @@
 package xyz.monogatari.suke.autowallpaper;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
 import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.preference.Preference;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -95,12 +98,27 @@ Log.d("○"+this.getClass().getSimpleName(), "コンストラクタ呼ばれた"
     // --------------------------------------------------------------------
     // メソッド、ダイアログ関係
     // --------------------------------------------------------------------
+    @Override
+    protected void onClick() {
+Log.d("○"+this.getClass().getSimpleName(), "onClick(): super前");
+        // ----------------------------------
+        // パーミッションの要求
+        // ----------------------------------
+        if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            // パーミッションがあるときだけディレクトリ選択ダイアログが開く
+            super.onClick();    //ここでonCreateDialogView()が呼ばれる
+        }
+Log.d("○"+this.getClass().getSimpleName(), "onClick(): super後");
+    }
+
     /************************************
      * ダイアログのViewが生成されるとき
      * @return このViewがダイアログに表示される
      */
     @Override
     protected View onCreateDialogView()  {
+Log.d("○"+this.getClass().getSimpleName(), "onCreateDialogView(): 最初");
         // ----------------------------------
         // 初期化
         // ----------------------------------
@@ -223,6 +241,14 @@ Log.d("○"+this.getClass().getSimpleName(), "onDialogClosed() が呼ばれた: 
             // 設定値を保存
             this.persistString(this.dirPath);
         }
+    }
+
+    /************************************
+     * プリファレンスをクリックしたときの動作を実行
+     * （onClick()を外から実行できないのでそれを実行するための関数、Fragmentからの実行用）
+     */
+    public void click() {
+        this.onClick();
     }
 
 

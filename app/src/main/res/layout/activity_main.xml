@@ -17,6 +17,12 @@
         android:onClick="toSetting_onClick"
         android:text="@string/main_to_setting" />
     <Button
+        android:id="@+id/main_to_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="toHistory_onClick"
+        android:text="@string/main_to_history" />
+    <Button
         android:id="@+id/btnTest"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
