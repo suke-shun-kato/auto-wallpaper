@@ -9,7 +9,8 @@
         android:id="@+id/text_view_id"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
-        android:text="履歴にページになります" />
+        android:text="履歴にページになります"
+        tools:ignore="HardcodedText" />
 </LinearLayout>
 
 

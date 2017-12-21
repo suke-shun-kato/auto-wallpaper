@@ -5,6 +5,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
 /**
+ * 履歴ページ、ひとまず作成
  * Created by k-shunsuke on 2017/12/20.
  */
 
