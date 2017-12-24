@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -74,6 +75,17 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         } else {
             this.serviceOnOffButton.setText(R.string.off_to_on);
         }
+java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
+java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
+
+System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug");
+System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "debug");
+System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "debug");
+
+
+
     }
     /************************************
      * アクティビティが描画される直前
@@ -82,8 +94,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
     @Override
     protected void onStart() {
         super.onStart();
-Log.d("○△", "Field:"+this.isServiceRunning);
-Log.d("○△", "Method:"+this.isServiceRunningSystem(MainService.class));
         if ( this.isServiceRunning //サービスが起動中
                 && this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -109,8 +119,6 @@ Log.d("○△", "Method:"+this.isServiceRunningSystem(MainService.class));
      */
     protected void onResume() {
         super.onResume();
-Log.d("○△", "Field:"+this.isServiceRunning);
-Log.d("○△", "Method:"+this.isServiceRunningSystem(MainService.class));
     }
 
     // --------------------------------------------------------------------
@@ -229,8 +237,11 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      * @param view 押されたボタンのビュー
      */
     public void toHistory_onClick(@SuppressWarnings("unused") View view) {
-        Intent intent = new Intent(this, HistoryActivity.class);
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("android-suke://twitter"));
         this.startActivity(intent);
+
+//        Intent intent = new Intent(this, HistoryActivity.class);
+//        this.startActivity(intent);
     }
 
     /************************************

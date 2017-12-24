@@ -4,6 +4,7 @@
     package="xyz.monogatari.suke.autowallpaper">
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:allowBackup="true"
         android:fullBackupContent="@xml/my_backup_rules"
@@ -24,7 +25,18 @@
                 <data android:scheme="app" android:host="autowallpaper" />
             </intent-filter>
         </activity>
-        <activity android:name=".SettingsActivity" />
+        <activity
+            android:name=".SettingsActivity"
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="twitter"
+                    android:scheme="android-suke" />
+            </intent-filter>
+        </activity>
         <activity android:name=".HistoryActivity" />
         <service android:name=".service.MainService" />
     </application>

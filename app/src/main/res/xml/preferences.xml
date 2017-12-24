@@ -15,6 +15,14 @@
             android:key="from_dir_path"
             android:title="@string/setting_form_dir_which_title"
             custom:dialogTitle="@string/select_dir_pref_dialog_title" />
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="from_twitter_fav"
+            android:title="@string/setting_form_twitter_fav_title" />
+        <xyz.monogatari.suke.autowallpaper.TwitterOAuthPreference
+            android:key="from_twitter_oauth"
+            android:title="@string/setting_from_twitter_oauth" >
+        </xyz.monogatari.suke.autowallpaper.TwitterOAuthPreference>
     </PreferenceCategory>
     <PreferenceCategory
         android:key="when"

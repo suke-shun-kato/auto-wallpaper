@@ -5,12 +5,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="xyz.monogatari.suke.autowallpaper.HistoryActivity">
-    <TextView
-        android:id="@+id/text_view_id"
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        android:text="履歴にページになります"
-        tools:ignore="HardcodedText" />
+    <!--<TextView-->
+        <!--android:id="@+id/text_view_id"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:text="履歴にページになります"-->
+        <!--tools:ignore="HardcodedText" />-->
+    <WebView
+        android:id="@+id/history_webView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </LinearLayout>
 
 
