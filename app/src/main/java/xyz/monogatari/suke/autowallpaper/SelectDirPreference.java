@@ -80,12 +80,19 @@ Log.d("○"+this.getClass().getSimpleName(), "コンストラクタ呼ばれた"
             this.dDirPath = DEFAULT_DIR_PATH_WHEN_NO_DEFAULT;
             this.setDefaultValue(DEFAULT_DIR_PATH_WHEN_NO_DEFAULT);
         }
-
         // ----------------------------------
         // ダイアログの設定
         // ----------------------------------
         // ダイアログのタイトルを設定
-        this.setDialogTitle( this.getContext().getString(R_DIALOG_TITLE) );
+        TypedArray typedAry = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.SelectDirPreference,
+                0, 0);
+        try {
+            this.setDialogTitle( typedAry.getString(R.styleable.SelectDirPreference_dialogTitle) );
+        } finally {
+            typedAry.recycle();
+        }
 
         // OKボタンとCancelボタンの「文字列（テキスト）」を設置
         this.setPositiveButtonText(android.R.string.ok);
@@ -283,6 +290,8 @@ Log.d("○"+this.getClass().getSimpleName(), "onSetInitialValue() が呼ばれ�
     @Override
     protected Object onGetDefaultValue(TypedArray tArray, int index) {
 Log.d("○"+this.getClass().getSimpleName(), "onGetDefaultValue() が呼ばれた: " + tArray.getString(index));
+Log.d("○"+this.getClass().getSimpleName(), "onGetDefaultValue() が呼ばれた: " + tArray.length());
+Log.d("○"+this.getClass().getSimpleName(), "onGetDefaultValue() が呼ばれた: " + index);
 
         //// 特殊文字の時初期値を加工
         String defaultStr = tArray.getString(index);

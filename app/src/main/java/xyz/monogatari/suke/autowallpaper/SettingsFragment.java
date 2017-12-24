@@ -96,11 +96,12 @@ public class SettingsFragment extends PreferenceFragment
      */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた");
+Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた:start");
         super.onCreate(savedInstanceState);
 
         // 設定xmlを読み込む
         this.addPreferencesFromResource(R.xml.preferences);
+Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた:end");
     }
 
     /************************************
