@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res/xyz.monogatari.suke.autowallpaper">
     <PreferenceCategory
         android:key="from"
         android:title="@string/setting_from">
@@ -12,7 +13,8 @@
         <xyz.monogatari.suke.autowallpaper.SelectDirPreference
             android:defaultValue="PICTURES"
             android:key="from_dir_path"
-            android:title="@string/setting_form_dir_which_title" />
+            android:title="@string/setting_form_dir_which_title"
+            custom:dialogTitle="@string/select_dir_pref_dialog_title" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="when"

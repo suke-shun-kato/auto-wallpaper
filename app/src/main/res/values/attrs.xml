@@ -1,0 +1,5 @@
+<resources>
+    <declare-styleable name="SelectDirPreference">
+        <attr name="dialogTitle" format="string" />
+    </declare-styleable>
+</resources>
