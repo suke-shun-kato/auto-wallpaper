@@ -188,7 +188,9 @@ Log.d("○"+getClass().getSimpleName(), "onNewIntent():top");
         // ----------------------------------
         if (intent == null
                 || intent.getData() == null // intend.getData() は Uriオブジェクトが返ってくる
-                || !intent.getData().toString().startsWith(this.CALLBACK_URL)) {
+                || !intent.getData().toString().startsWith(this.CALLBACK_URL)
+                || intent.getData().getQueryParameter("oauth_verifier") == null //キャンセルボタンを押したとき
+                ) {
             return;
         }
 Log.d("○"+getClass().getSimpleName(), "intentのURI: "+intent.getData().toString());
@@ -198,6 +200,7 @@ Log.d("○"+getClass().getSimpleName(), "intentのURI: "+intent.getData().toStri
         // ----------------------------------
         // https://developer.yahoo.co.jp/other/oauth/flow.html
         String verifier = intent.getData().getQueryParameter("oauth_verifier");
+Log.d("○"+getClass().getSimpleName(), "verifier: "+verifier);
 
         AsyncTask<String, Void, AccessToken> task = new AsyncTask<String, Void, AccessToken>() {
             /************************************
