@@ -3,6 +3,7 @@ package xyz.monogatari.suke.autowallpaper;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
@@ -41,6 +42,10 @@ public class TwitterOAuthPreference extends Preference {
     private RequestToken requestToken;
     /** Twitterオブジェクト、twitter4J */
     private Twitter twitter;
+    /** Toastの文字の設定 */
+    private String textCantAccessAuthPage;
+    private String textOauthSuccess;
+    private String textOauthFailed;
 
     // --------------------------------------------------------------------
     // 定数
@@ -62,6 +67,22 @@ public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     public TwitterOAuthPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+
+
+        TypedArray typedAry = context.getTheme().obtainStyledAttributes(
+                attrs,
+                R.styleable.TwitterOAuthPreference,
+                0, 0);
+        try {
+             this.textCantAccessAuthPage
+                     = typedAry.getString(R.styleable.TwitterOAuthPreference_textCantAccessAuthPage);
+             this.textOauthSuccess
+                     = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthSuccess);
+             this.textOauthFailed
+                     = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthFailed);
+        } finally {
+            typedAry.recycle();
+        }
     }
 
 
@@ -113,8 +134,11 @@ public class TwitterOAuthPreference extends Preference {
                     Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
                     TwitterOAuthPreference.this.getContext().startActivity(intent);
                 } else {
-                    Toast.makeText(getContext(), R.string.setting_from_twitter_oauth_fail, Toast.LENGTH_SHORT)
-                            .show();
+                    Toast.makeText(
+                            getContext(),
+                            TwitterOAuthPreference.this.textCantAccessAuthPage,
+                            Toast.LENGTH_SHORT
+                    ).show();
                 }
             }
         };
@@ -223,15 +247,16 @@ Log.d("○"+getClass().getSimpleName(), "verifier: "+verifier);
              */
             @Override
             protected void onPostExecute(AccessToken accessToken) {
+// accessToken=null;
                 if (accessToken != null) {
                     // 認証成功！
                     Toast.makeText(TwitterOAuthPreference.this.getContext(),
-                            R.string.setting_from_twitter_oauth_toast_oauthOk,
+                            TwitterOAuthPreference.this.textOauthSuccess,
                             Toast.LENGTH_SHORT
                     ).show();
 
                     //アクセストークンを保存
-                    try{
+                    try {
                         JSONObject aTokenJson = new JSONObject()
                                 .put(KEY_TOKEN, accessToken.getToken())
                                 .put(KEY_TOKEN_SECRET, accessToken.getTokenSecret());
@@ -242,8 +267,9 @@ Log.d("○"+getClass().getSimpleName(), "verifier: "+verifier);
 
                 } else {
                     // 認証失敗。。。
-                    Toast.makeText(TwitterOAuthPreference.this.getContext(),
-                            R.string.setting_from_twitter_oauth_toast_oauthNo,
+                    Toast.makeText(
+                            TwitterOAuthPreference.this.getContext(),
+                            TwitterOAuthPreference.this.textOauthFailed,
                             Toast.LENGTH_SHORT
                     ).show();
                 }

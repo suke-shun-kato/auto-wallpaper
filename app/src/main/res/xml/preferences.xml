@@ -21,8 +21,10 @@
             android:title="@string/setting_form_twitter_fav_title" />
         <xyz.monogatari.suke.autowallpaper.TwitterOAuthPreference
             android:key="from_twitter_oauth"
-            android:title="@string/setting_from_twitter_oauth" >
-        </xyz.monogatari.suke.autowallpaper.TwitterOAuthPreference>
+            android:title="@string/setting_from_twitter_oauth"
+            custom:textCantAccessAuthPage="認証ページにアクセスできない"
+            custom:textOauthSuccess="成功っすね"
+            custom:textOauthFailed="失敗っすね" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="when"
