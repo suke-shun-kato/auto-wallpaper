@@ -62,29 +62,9 @@ public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     public TwitterOAuthPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        this.setTwitterInstance();
     }
 
-    /************************************
-     * twitterオブジェクト（twitter4J）を作成してフィールドにセット
-     * onCreateView()でこれを実行すると何回もセットすることになるのでコンストラクタのタイミングでセット
-     */
-    private void setTwitterInstance() {
-        // ----------------------------------
-        // Twitterクラスを作成
-        // ----------------------------------
-        this.twitter = new TwitterFactory().getInstance();
 
-        // ----------------------------------
-        // Twitterクラスにパラメータを設定
-        // ----------------------------------
-        //// コンシューマーキー、コンシューマーシークレットのセット
-        this.twitter.setOAuthConsumer(
-                this.getContext().getString(R.string.twitter_consumer_key),
-                this.getContext().getString(R.string.twitter_consumer_secret)
-        );
-    }
 
     // --------------------------------------------------------------------
     // メソッド
@@ -108,9 +88,7 @@ public class TwitterOAuthPreference extends Preference {
 //Log.d("○△", "ブロックの前");
                     // これをonCreateView()で実行すると、
                     // 認証画面から戻る押して再度クリックしたときエラーになるのでこの場所でする
-//                    TwitterOAuthPreference.this.twitter = TwitterUtils.getTwitterInstance(
-//                            TwitterOAuthPreference.this.getContext()
-//                    );
+                    setTwitterInstance();
                     TwitterOAuthPreference.this.requestToken
                             = TwitterOAuthPreference.this.twitter.getOAuthRequestToken(CALLBACK_URL);
 //Log.d("○△", requestToken.toString());
@@ -118,7 +96,7 @@ public class TwitterOAuthPreference extends Preference {
 //                } catch (TwitterException e) {
                 } catch (Exception e) {
                     e.printStackTrace();
-Log.d("○○○",e.getMessage());
+                    Log.d("○○○",e.getMessage());
                 }
 //Log.d("○△", "ブロックの後");
                 return null;
@@ -141,6 +119,26 @@ Log.d("○○○",e.getMessage());
             }
         };
         task.execute();
+    }
+
+    /************************************
+     * twitterオブジェクト（twitter4J）を作成してフィールドにセット
+     * onCreateView()でこれを実行すると何回もセットすることになるのでコンストラクタのタイミングでセット
+     */
+    private void setTwitterInstance() {
+        // ----------------------------------
+        // Twitterクラスを作成
+        // ----------------------------------
+        this.twitter = new TwitterFactory().getInstance();
+
+        // ----------------------------------
+        // Twitterクラスにパラメータを設定
+        // ----------------------------------
+        //// コンシューマーキー、コンシューマーシークレットのセット
+        this.twitter.setOAuthConsumer(
+                this.getContext().getString(R.string.twitter_consumer_key),
+                this.getContext().getString(R.string.twitter_consumer_secret)
+        );
     }
 
 //    @Override
@@ -184,7 +182,7 @@ Log.d("○○○",e.getMessage());
      * getIntent()はこのPreferenceでsetIntent()したものを取り出すのでここでは違う
      */
     public void onNewIntent(Intent intent) {
-Log.d("○△"+getClass().getSimpleName(), "onNewIntent():top");
+Log.d("○"+getClass().getSimpleName(), "onNewIntent():top");
         // ----------------------------------
         // 例外処理、途中で切り上げ
         // ----------------------------------
@@ -193,7 +191,7 @@ Log.d("○△"+getClass().getSimpleName(), "onNewIntent():top");
                 || !intent.getData().toString().startsWith(this.CALLBACK_URL)) {
             return;
         }
-Log.d("○△"+getClass().getSimpleName(), intent.getData().toString());
+Log.d("○"+getClass().getSimpleName(), "intentのURI: "+intent.getData().toString());
 
         // ----------------------------------
         // メイン処理、アクセストークンを取得→SharedPreferenceに保存
@@ -259,28 +257,16 @@ Log.d("○△"+getClass().getSimpleName(), intent.getData().toString());
         try {
             String accessToken = this.getPersistedString(null);
             if (accessToken != null) {
-                JSONObject acTokenJson = new JSONObject(
-                        accessToken
-                );
+                JSONObject acTokenJson = new JSONObject(accessToken);
                 if (acTokenJson.get(KEY_TOKEN) != null && acTokenJson.get(KEY_TOKEN_SECRET) != null) {
                     return true;
-                } else {
-                    return false;
                 }
-            } else {
-                return false;
             }
+            return false;
         } catch (JSONException e) {
             e.printStackTrace();
             return false;
         }
-//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(
-//                TwitterOAuthPreference.this.getContext()
-//        );
-//        String tokenStr = sp.getString(KEY_TOKEN, null);
-//        String tokenSecretStr = sp.getString(KEY_TOKEN_SECRET, null);
-
-
     }
 
 }

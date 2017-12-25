@@ -82,6 +82,7 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_FROM_DIR = "from_dir";
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_FROM_DIR_PATH = "from_dir_path";
+    public static final String KEY_FROM_TWITTER_FAV = "from_twitter_fav";
     public static final String KEY_FROM_TWITTER_OAUTH = "from_twitter_oauth";
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
@@ -360,17 +361,22 @@ Log.d("○"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
      * @param key 設定の値を取り出すためのkey, このkeyの設定が変更された
      */
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-Log.d("○"+this.getClass().getSimpleName(), "onSharedPreferenceChanged():");
+Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): key名:" + key);
         // ----------------------------------
         // 設定値をSummaryに反映
         // ----------------------------------
-        // ----------
-        // ディレクトリ選択
-        // ----------
-        if ( key.equals(KEY_FROM_DIR_PATH) ) {
-            Preference fromDirPathPreference = this.findPreference(key);
-            fromDirPathPreference.setSummary(sp.getString(key, ""));
+        switch (key) {
+            //// ディレクトリ選択
+            case KEY_FROM_DIR_PATH:
+                Preference fromDirPathPreference = this.findPreference(key);
+                fromDirPathPreference.setSummary(sp.getString(key, ""));
+                break;
+            //// Twitter認証
+            case KEY_FROM_TWITTER_OAUTH:    //Twitter認証完了後にサマリーが認証完了になるようにする
+                Preference fromTwitterOauthPreference = this.findPreference(key);
+                fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_done);
         }
+
 
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える
