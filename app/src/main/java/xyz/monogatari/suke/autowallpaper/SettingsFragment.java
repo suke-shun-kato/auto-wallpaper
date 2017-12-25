@@ -183,9 +183,9 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
         //// Twitter認証
         TwitterOAuthPreference twitterPref = (TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH);
         if ( twitterPref.hasAccessToken() ) {
-            twitterPref.setSummary(R.string.setting_from_twitter_oauth_done);
+            twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_done);
         } else {
-            twitterPref.setSummary(R.string.setting_from_twitter_oauth_notYet);
+            twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
         }
 
         // ----------------------------------
@@ -374,7 +374,7 @@ Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): ke
             //// Twitter認証
             case KEY_FROM_TWITTER_OAUTH:    //Twitter認証完了後にサマリーが認証完了になるようにする
                 Preference fromTwitterOauthPreference = this.findPreference(key);
-                fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_done);
+                fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
         }
 
 

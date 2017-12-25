@@ -22,9 +22,9 @@
         <xyz.monogatari.suke.autowallpaper.TwitterOAuthPreference
             android:key="from_twitter_oauth"
             android:title="@string/setting_from_twitter_oauth"
-            custom:textCantAccessAuthPage="認証ページにアクセスできない"
-            custom:textOauthSuccess="成功っすね"
-            custom:textOauthFailed="失敗っすね" />
+            custom:textCantAccessAuthPage="@string/setting_from_twitter_oauth_text_cantAccessAuthPage"
+            custom:textOauthSuccess="@string/setting_from_twitter_oauth_text_oauthSuccsess"
+            custom:textOauthFailed="@string/setting_from_twitter_oauth_text_oauthFailed" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="when"
