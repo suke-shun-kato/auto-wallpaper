@@ -2,4 +2,9 @@
     <declare-styleable name="SelectDirPreference">
         <attr name="dialogTitle" format="string" />
     </declare-styleable>
+    <declare-styleable name="TwitterOAuthPreference">
+        <attr name="textCantAccessAuthPage" format="string" />
+        <attr name="textOauthSuccess" format="string" />
+        <attr name="textOauthFailed" format="string" />
+    </declare-styleable>
 </resources>

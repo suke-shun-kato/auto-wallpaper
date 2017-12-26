@@ -82,6 +82,11 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_FROM_DIR = "from_dir";
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_FROM_DIR_PATH = "from_dir_path";
+    @SuppressWarnings("unused")
+    public static final String KEY_FROM_TWITTER_FAV = "from_twitter_fav";
+    @SuppressWarnings("WeakerAccess")
+    public static final String KEY_FROM_TWITTER_OAUTH = "from_twitter_oauth";
+
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
 
     private static final int RQ_CODE_FROM_DIR = 1;
@@ -104,21 +109,44 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた:start"
 Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた:end");
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+Log.d("○"+this.getClass().getSimpleName(), "onActivityCreated():start");
+        super.onActivityCreated(savedInstanceState);
+    }
+
     /************************************
      * フラグメントが表示される直前
      */
     @Override
     public void onStart() {
-Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた");
+Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先頭）");
         super.onStart();
+
+        Intent getIntent = this.getActivity().getIntent();
+
+        // ----------------------------------
+        // Twitter認証のコールバックのとき TwitterOAuthPreference にIntentでURLの情報を渡す
+        // コールバックではonActivityCreated()は呼ばれないのでこの場所
+        // ----------------------------------
+        // Twitter認証のコールバックのとき
+        if ( getIntent != null
+                && getIntent.getData() != null
+                && getIntent.getData().toString().startsWith(TwitterOAuthPreference.CALLBACK_URL)) {
+            ((TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH)).onNewIntent(getIntent);
+        }
 
         // ----------------------------------
         // サービスへバインドする
+        // ↓公式でonStart()のタイミングでバインドしている（Activityだけど）のでこの場所
+        // https://developer.android.com/guide/components/bound-services.html?hl=ja
         // ----------------------------------
         Activity attachedActivity = this.getActivity();
         Intent intent = new Intent(attachedActivity, MainService.class);
         attachedActivity.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
     }
+
+
 
     /************************************
      * フラグメントが非表示になる直前
@@ -142,17 +170,25 @@ Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
      */
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先頭）");
         // ----------------------------------
         // サマリーの表示の設定
         // ----------------------------------
         this.sp = PreferenceManager.getDefaultSharedPreferences( this.getActivity() );
 
         //// 選択ディレクトリ
-        Preference keyFromDirPathPref = this.findPreference(KEY_FROM_DIR_PATH);
+        Preference fromDirPathPref = this.findPreference(KEY_FROM_DIR_PATH);
         String str = this.sp.getString(KEY_FROM_DIR_PATH, this.getString(R.string.setting_from_dir_which_default_summary) );
 
+        fromDirPathPref.setSummary( str );
 
-        keyFromDirPathPref.setSummary( str );
+        //// Twitter認証
+        TwitterOAuthPreference twitterPref = (TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH);
+        if ( twitterPref.hasAccessToken() ) {
+            twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_done);
+        } else {
+            twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
+        }
 
         // ----------------------------------
         // <Preference>のイベントリスナの設定、主にパーミッションダイアログ表示用
@@ -327,17 +363,22 @@ Log.d("○"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
      * @param key 設定の値を取り出すためのkey, このkeyの設定が変更された
      */
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-Log.d("○"+this.getClass().getSimpleName(), "onSharedPreferenceChanged():");
+Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): key名:" + key);
         // ----------------------------------
         // 設定値をSummaryに反映
         // ----------------------------------
-        // ----------
-        // ディレクトリ選択
-        // ----------
-        if ( key.equals(KEY_FROM_DIR_PATH) ) {
-            Preference fromDirPathPreference = this.findPreference(key);
-            fromDirPathPreference.setSummary(sp.getString(key, ""));
+        switch (key) {
+            //// ディレクトリ選択
+            case KEY_FROM_DIR_PATH:
+                Preference fromDirPathPreference = this.findPreference(key);
+                fromDirPathPreference.setSummary(sp.getString(key, ""));
+                break;
+            //// Twitter認証
+            case KEY_FROM_TWITTER_OAUTH:    //Twitter認証完了後にサマリーが認証完了になるようにする
+                Preference fromTwitterOauthPreference = this.findPreference(key);
+                fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
         }
+
 
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える

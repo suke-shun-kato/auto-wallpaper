@@ -1,5 +1,6 @@
 package xyz.monogatari.suke.autowallpaper;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -38,27 +39,28 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2"
 
     }
 
-//    /************************************
-//     * アクティビティの画面が表示状態になるとき
-//     */
-//    @Override
-//    protected void onStart() {
-//Log.d("○" + this.getClass().getSimpleName(), "onStart() 呼ばれた");
-//        super.onStart();
-//    }
-//
-//    /************************************
-//     * 画面が非表示になるとき
-//     */
-//    @Override
-//    protected void onStop() {
-//Log.d("○" + this.getClass().getSimpleName(), "onStop() 呼ばれた");
-//Log.d("○" + this.getClass().getSimpleName(), this.isBound+"");
-//        super.onStop();
-//
-//    }
 
+    /**
+     * Handle onNewIntent() to inform the fragment manager that the
+     * state is not saved.  If you are handling new intents and may be
+     * making changes to the fragment state, you want to be sure to call
+     * through to the super-class here first.  Otherwise, if your state
+     * is saved but the activity is not stopped, you could get an
+     * onNewIntent() call which happens before onResume() and trying to
+     * perform fragment operations at that point will throw IllegalStateException
+     * because the fragment manager thinks the state is still saved.
+     *
+     * Twitterの認証ボタン押下後のコールバック用として作成した
+     * @param intent インテント
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
 
+        // 新しいIntentが来た場合Fragmentで新しいIntentを取得するためにセットする
+        // ここはTwitter認証の為に更新している
+        this.setIntent(intent);
+    }
 
     /************************************
      *

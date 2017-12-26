@@ -4,6 +4,7 @@
     <entry_points version="2.0">
       <entry_point TYPE="field" FQNAME="xyz.monogatari.suke.autowallpaper.SelectDirPreference.SavedState CREATOR" />
       <entry_point TYPE="field" FQNAME="xyz.monogatari.suke.autowallpaper.SelectDirPreference.MySavedState CREATOR" />
+      <entry_point TYPE="field" FQNAME="xyz.monogatari.suke.autowallpaper.SelectDirPreference R_DIALOG_TITLE" />
     </entry_points>
     <pattern value="xyz.monogatari.suke.autowallpaper.FileExtended" method="FileExtended" />
     <pattern value="xyz.monogatari.suke.autowallpaper.util.FileExtended" method="FileExtended" />

@@ -155,8 +155,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateDialogView(): 最初");
                      */
                     @Override
                     public void onItemClick(AdapterView<?> parentAdapterView, View view, int i, long l) {
-Log.d("○"+this.getClass().getSimpleName(), "i: "+ i);
-Log.d("○"+this.getClass().getSimpleName(), "l: "+ l);
+Log.d("○"+this.getClass().getSimpleName(), "i: "+ i + " l:" + l);
                         // ----------------------------------
                         // ファイルをクリックしたときの処理、途中で処理を切り上げ
                         // ----------------------------------
