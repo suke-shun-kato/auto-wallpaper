@@ -29,8 +29,6 @@ public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-    /** リクエストトークン、Twitter認証用、twitter4J */
-    private RequestToken requestToken;
     /** Twitterオブジェクト、twitter4J */
     private Twitter twitter;
     private GetRequestTokenAsyncTask getRequestTokenAsyncTask;
@@ -46,15 +44,11 @@ public class TwitterOAuthPreference extends Preference {
     /** 認証後のコールバックURL、アクセストークン取得場所 */
     public static final String CALLBACK_URL = "android-suke://twitter";
 
+    @SuppressWarnings("WeakerAccess")
     public static final String KEY_TOKEN = "token";
+    @SuppressWarnings("WeakerAccess")
     public static final String KEY_TOKEN_SECRET = "token_secret";
 
-    //認証ページ開けれない
-//    R.string.setting_from_twitter_oauth_fail
-
-    // 認証ページ後、アクセストークン取得できない
-//    R.string.setting_from_twitter_oauth_toast_oauthOk
-//    R.string.setting_from_twitter_oauth_toast_oauthNo
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
@@ -91,16 +85,15 @@ public class TwitterOAuthPreference extends Preference {
      * 非同期処理中に画面回転などが起こると途中で中断される
      */
     private static class GetRequestTokenAsyncTask extends  AsyncTask<Void, Void, RequestToken> {
-        private TwitterOAuthPreference twPreference;
+        private final TwitterOAuthPreference twPreference;
         private RequestToken requestToken;
 
         /************************************
          * コンストラクタ
          */
-        public GetRequestTokenAsyncTask(TwitterOAuthPreference twPreference, RequestToken requestToken) {
+        GetRequestTokenAsyncTask(TwitterOAuthPreference twPreference) {
             super();
             this.twPreference = twPreference;
-            this.requestToken = requestToken;
         }
 
         /************************************
@@ -111,10 +104,7 @@ public class TwitterOAuthPreference extends Preference {
         @Override
         protected RequestToken doInBackground(Void... params) {
             try {
-//Log.d("○△", "ブロックの前");
-                RequestToken requestToken = this.twPreference.twitter.getOAuthRequestToken(CALLBACK_URL);
-//Log.d("○△", requestToken.toString());
-                return requestToken;
+                return this.twPreference.twitter.getOAuthRequestToken(CALLBACK_URL);
             } catch (Exception e) {
                 e.printStackTrace();
                 Log.d("○○○",e.getMessage());
@@ -144,6 +134,10 @@ public class TwitterOAuthPreference extends Preference {
                 ).show();
             }
         }
+
+        public RequestToken getRequestToken() {
+            return this.requestToken;
+        }
     }
 
 
@@ -159,7 +153,6 @@ public class TwitterOAuthPreference extends Preference {
         // onCreateなどでTwitterオブジェクトを生成するのはNG（2回目以降アクセストークンの取得でエラーが出るため）
         // ----------------------------------
         this.twitter = new TwitterFactory().getInstance();
-        this.requestToken = new RequestToken("","");
 
         //// コンシューマーキー、コンシューマーシークレットのセット
         this.twitter.setOAuthConsumer(
@@ -168,15 +161,14 @@ public class TwitterOAuthPreference extends Preference {
         );
 
         //// 非同期でアクセストークン取得する
-//        new GetRequestTokenAsyncTask(this, this.requestToken).execute();
-        this.getRequestTokenAsyncTask = new GetRequestTokenAsyncTask(this, this.requestToken);
+        this.getRequestTokenAsyncTask = new GetRequestTokenAsyncTask(this);
         getRequestTokenAsyncTask.execute();
     }
 ///////////////////////////////////////////////
     private static class GetAccessTokenAsyncTask extends  AsyncTask<Void, Void, AccessToken> {
-        private TwitterOAuthPreference twPreference;
-        private RequestToken requestToken;
-        private String verifierStr;
+        private final TwitterOAuthPreference twPreference;
+        private final RequestToken requestToken;
+        private final String verifierStr;
 
         /************************************
          * コンストラクタ
@@ -263,7 +255,7 @@ Log.d("○"+getClass().getSimpleName(), "intentのURI: "+intent.getData().toStri
         // https://developer.yahoo.co.jp/other/oauth/flow.html
         new GetAccessTokenAsyncTask(
                 this,
-                this.getRequestTokenAsyncTask.requestToken,
+                this.getRequestTokenAsyncTask.getRequestToken(),
                 intent.getData().getQueryParameter("oauth_verifier")
         ).execute();
     }
