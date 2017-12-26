@@ -114,12 +114,6 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
                     RQ_CODE_ACTIVITY);
         }
     }
-    /************************************
-     * タイミングテスト用、この関数の実行が終わってから全画面のアクティビティが破棄される
-     */
-    protected void onResume() {
-        super.onResume();
-    }
 
     // --------------------------------------------------------------------
     // メソッド、Util

@@ -50,7 +50,8 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2"
      * perform fragment operations at that point will throw IllegalStateException
      * because the fragment manager thinks the state is still saved.
      *
-     * @param intent
+     * Twitterの認証ボタン押下後のコールバック用として作成した
+     * @param intent インテント
      */
     @Override
     protected void onNewIntent(Intent intent) {

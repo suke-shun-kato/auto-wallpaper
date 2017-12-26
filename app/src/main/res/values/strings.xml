@@ -1,7 +1,7 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!--設定文字列-->
-    <string name="twitter_consumer_key">i27LkK5rUNoXKxNXTjrvqhnbx</string>
-    <string name="twitter_consumer_secret">dCQFHUUD6jS8zt1xEF4DBdTKiTFgfRBdFUjCxUdq1jMTBJpi1p</string>
+    <string name="twitter_consumer_key" tools:ignore="MissingTranslation">i27LkK5rUNoXKxNXTjrvqhnbx</string>
+    <string name="twitter_consumer_secret" tools:ignore="MissingTranslation">dCQFHUUD6jS8zt1xEF4DBdTKiTFgfRBdFUjCxUdq1jMTBJpi1p</string>
     <!--通常の文字列-->
     <string name="app_name">AutoWallpaper</string>
     <string name="off_to_on">OFF→ON</string>
@@ -20,7 +20,7 @@
     <string name="setting_from_twitter_oauth_summary_done">done</string>
     <string name="setting_from_twitter_oauth_summary_notYet">not yet</string>
     <string name="setting_from_twitter_oauth_text_cantAccessAuthPage">can\'t access auth page</string>
-    <string name="setting_from_twitter_oauth_text_oauthSuccsess">Auth Success</string>
+    <string name="setting_from_twitter_oauth_text_oauthSuccess">Auth Success</string>
     <string name="setting_from_twitter_oauth_text_oauthFailed">Auth failed</string>
     <string name="setting_when">WHEN</string>
     <string name="setting_when_turnOn_summary">When screen turns on, wallpaper changes.</string>

@@ -16,7 +16,7 @@
     <string name="setting_from_twitter_oauth_summary_done">認証完了</string>
     <string name="setting_from_twitter_oauth_summary_notYet">未認証</string>
     <string name="setting_from_twitter_oauth_text_cantAccessAuthPage">認証ページにアクセスできません</string>
-    <string name="setting_from_twitter_oauth_text_oauthSuccsess">認証成功</string>
+    <string name="setting_from_twitter_oauth_text_oauthSuccess">認証成功</string>
     <string name="setting_from_twitter_oauth_text_oauthFailed">認証失敗</string>
     <string name="setting_when">変更のタイミング</string>
     <string name="setting_when_turnOn_title">画面ON時</string>

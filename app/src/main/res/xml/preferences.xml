@@ -23,7 +23,7 @@
             android:key="from_twitter_oauth"
             android:title="@string/setting_from_twitter_oauth"
             custom:textCantAccessAuthPage="@string/setting_from_twitter_oauth_text_cantAccessAuthPage"
-            custom:textOauthSuccess="@string/setting_from_twitter_oauth_text_oauthSuccsess"
+            custom:textOauthSuccess="@string/setting_from_twitter_oauth_text_oauthSuccess"
             custom:textOauthFailed="@string/setting_from_twitter_oauth_text_oauthFailed" />
     </PreferenceCategory>
     <PreferenceCategory
