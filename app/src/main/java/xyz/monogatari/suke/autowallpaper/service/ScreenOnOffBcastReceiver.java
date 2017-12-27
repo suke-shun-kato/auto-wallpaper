@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
+
 
 /**
  * 電源ON,OFFのときのブロードキャストレシーバー
@@ -46,7 +48,8 @@ Log.d("○" + this.getClass().getSimpleName(), "電源ONになった瞬間の壁
 Log.d("○" + this.getClass().getSimpleName(), "電源OFFになった瞬間の壁紙処理");
 
             ///////壁紙変更
-            ((MainService)context).getAndSetNewWallpaper();
+            new ImgGetPorcSet(context).getAndSetNewWallpaper();
+//            ((MainService)context).getAndSetNewWallpaper();
         }
     }
 }
