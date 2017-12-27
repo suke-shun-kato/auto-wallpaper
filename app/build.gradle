@@ -14,6 +14,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     // ビルドタイプの設定（リリース用のビルド、デバッグ用のなど別々に設定できる）
     buildTypes {
         debug { //デバッグ用のビルドタイプの設定
@@ -36,12 +37,19 @@ android {
 dependencies {
     //// 通常コードの依存関係の記述
     //// 2.0では「compile」で記述されていたもの
+
     // ディレクトリ階層のlibsフォルダの中の.jarファイルを読み込む
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+
     // com.android.support の appcompat-v7 の 26.1.0 のライブラリを読み込む
     // （リポジトリの設定はルートの方のbuild.gradleのallprojectsで設定されている）
     implementation 'com.android.support:appcompat-v7:26.1.0'
+
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    // OAuth1.0&2.0ライブラリ
+    // バージョン5.0.0はAPIレベル26（Android 8.0 Oreo）以上でしか対応していないので敢えて
+    implementation 'com.github.scribejava:scribejava-apis:4.2.0'
 
     //// テスト用のコード（JUnitなどのテスト）での依存関係の記述
     // junit の junit の 4.12 のライブラリを読み込む、JUnitは5が出ているがAndroidでは現在使えない

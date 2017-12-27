@@ -24,7 +24,7 @@ public class ScreenOnOffBcastReceiver extends BroadcastReceiver {
         // ----------------------------------
         // 例外処理
         // ----------------------------------
-        //// 電源ON時に壁紙入れ替えする設定がOFFのとき処理を行わないで切り上げ
+        //// 画面OFF時に壁紙入れ替えする設定がOFFのとき処理を行わないで切り上げ
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         if ( !sp.getBoolean("when_turnOn", false) ) {
             return;

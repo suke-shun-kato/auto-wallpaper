@@ -223,6 +223,8 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
         // ----------------------------------
         // 画像取得
         // ----------------------------------
+
+
         //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -233,14 +235,15 @@ Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権�
         ImgGetter imgGetter = new ImgGetterDir(this);
         Bitmap wallpaperBitmap = imgGetter.getImg();
 
+
+        // ----------------------------------
+        // 画像加工
+        // ----------------------------------
 Log.d("○" + this.getClass().getSimpleName(), "画像サイズ（加工前）: "
 + ", width:" + wallpaperBitmap.getWidth()
 + " height:" + wallpaperBitmap.getHeight());
         WallpaperManager wm = WallpaperManager.getInstance(this);
 
-        // ----------------------------------
-        // 画像加工
-        // ----------------------------------
         // スクリーン（画面）サイズ取得
         Point point = DisplaySizeCheck.getRealSize(this);
         // 画像加工
