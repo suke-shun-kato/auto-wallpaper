@@ -13,6 +13,7 @@ import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.TwitterOAuthPreference;
 
 /**
+ * API認証のためのトークンを取得するクラス
  * Created by k-shunsuke on 2017/12/27.
  */
 

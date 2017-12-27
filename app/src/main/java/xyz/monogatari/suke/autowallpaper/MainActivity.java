@@ -254,15 +254,16 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
             public void run() {
 
                 try {
+
                     /////////////
+//                    String apiUrl =  "https://api.twitter.com/1.1/account/verify_credentials.json";
+                    String apiUrl =  "https://api.twitter.com/1.1/favorites/list.json";
                     final OAuth10aService service
                             = new ServiceBuilder(Token.getTwitterConsumerKey(MainActivity.this))
                             .apiSecret(Token.getTwitterConsumerSecret(MainActivity.this))
                             .build(TwitterApi.instance());
-                    Log.d("○△", "Now we're going to access a protected resource...");
 
-                    final OAuthRequest request = new OAuthRequest(Verb.GET, "https://api.twitter.com/1.1/account/verify_credentials.json");
-                    Log.d("○△", "Now we're going to access a protected resource...2");
+                    final OAuthRequest request = new OAuthRequest(Verb.GET, apiUrl);
                     service.signRequest(
                             new OAuth1AccessToken(
                                     Token.getTwitterAccessToken(MainActivity.this),
@@ -270,11 +271,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
                             ),
                             request
                     );
-                    Log.d("○△", "Now we're going to access a protected resource...3");
                     final Response response = service.execute(request);
-                    Log.d("○△", "Now we're going to access a protected resource...4");
-
                     Log.d("○△", response.getBody());
+                    //////////////
 
                 } catch (IOException e) {
                     Log.d("○△",e.getMessage());

@@ -16,6 +16,8 @@ import android.util.Log;
 public class ScreenOnOffBcastReceiver extends BroadcastReceiver {
     /************************************
      * ブロードキャスト受信のタイミングで実行されるコールバック
+     * ※別スレッドでブロードキャストレシーバーを登録しても、
+     * プログラムが走るのはこのプログラムがある「「メインスレッド」」
      * @param context このレシーバーを登録した「アクティビティ」or「サービス」のコンテキスト
      * @param intent ブロードキャスト配信側から送られてきたインテント
      */

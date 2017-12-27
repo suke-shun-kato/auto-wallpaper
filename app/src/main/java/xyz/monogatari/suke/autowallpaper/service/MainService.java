@@ -234,6 +234,8 @@ Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権�
         //// メイン処理
         ImgGetter imgGetter = new ImgGetterDir(this);
         Bitmap wallpaperBitmap = imgGetter.getImg();
+////////////////////////////////////////////////////////////////////
+
 
 
         // ----------------------------------
