@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
+import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 import xyz.monogatari.suke.autowallpaper.util.Token;
 
 public class MainActivity extends AppCompatActivity {
@@ -236,6 +237,13 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
     public void toSetting_onClick(@SuppressWarnings("unused") View view) {
         Intent intent = new Intent(this, SettingsActivity.class);
         this.startActivity(intent);
+    }
+    /************************************
+     * 壁紙セット（変更）ボタンをクリックしたとき
+     * @param view 押されたボタンのビュー
+     */
+    public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
+        new ImgGetPorcSet(this).getAndSetNewWallpaper();
     }
 
     /************************************
