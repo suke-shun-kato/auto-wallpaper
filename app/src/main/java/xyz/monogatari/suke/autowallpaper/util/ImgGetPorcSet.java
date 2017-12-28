@@ -15,6 +15,7 @@ import java.io.IOException;
 
 import xyz.monogatari.suke.autowallpaper.service.ImgGetter;
 import xyz.monogatari.suke.autowallpaper.service.ImgGetterDir;
+import xyz.monogatari.suke.autowallpaper.service.ImgGetterTw;
 
 /**
  * Created by k-shunsuke on 2017/12/27.
@@ -32,7 +33,7 @@ public class ImgGetPorcSet {
         // 画像取得
         // ----------------------------------
 
-
+    if (true) {
         //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
         if (ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -42,7 +43,14 @@ public class ImgGetPorcSet {
         //// メイン処理
         ImgGetter imgGetter = new ImgGetterDir(this.context);
         Bitmap wallpaperBitmap = imgGetter.getImg();
+    }
 ////////////////////////////////////////////////////////////////////
+
+
+        //// メイン処理
+//        ImgGetter imgGetter = new ImgGetterTw(this.context);
+//        Bitmap wallpaperBitmap = imgGetter.getImg();
+
 
 
 

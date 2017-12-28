@@ -35,9 +35,13 @@ android {
 //// （注意）Android Plugin for Gradle 3.0.0（Gradle3.0ではない）の書き方は2.0から結構変更されているので注意
 //// 参考資料 https://developer.android.com/studio/build/gradle-plugin-3-0-0-migration.html
 dependencies {
-    //// 通常コードの依存関係の記述
-    //// 2.0では「compile」で記述されていたもの
-
+    // ---------------------------------------------------------------------------
+    // 通常コードの依存関係の記述
+    // 2.0では「compile」で記述されていたもの
+    // ---------------------------------------------------------------------------
+    // -------------------------------------
+    // デフォルトの設定
+    // -------------------------------------
     // ディレクトリ階層のlibsフォルダの中の.jarファイルを読み込む
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -47,18 +51,36 @@ dependencies {
 
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
+    // -------------------------------------
     // OAuth1.0&2.0ライブラリ
-    // バージョン5.0.0はAPIレベル26（Android 8.0 Oreo）以上でしか対応していないので敢えて
+    // -------------------------------------
+    // バージョン5.0.0はAPIレベル26（Android 8.0 Oreo）以上でしか対応していないので敢えて4.2.0使用
     implementation 'com.github.scribejava:scribejava-apis:4.2.0'
 
-    //// テスト用のコード（JUnitなどのテスト）での依存関係の記述
+    // -------------------------------------
+    // 非同期処理用のライブラリ
+    // -------------------------------------
+    implementation 'org.jdeferred:jdeferred-core:1.2.6'
+    // android用のjdeferred、aarの方をとりこむ
+    // https://developer.android.com/studio/projects/android-library.html?hl=ja
+    // implementation 'org.jdeferred:jdeferred-android:1.2.6'
+    implementation 'org.jdeferred:jdeferred-android-aar:1.2.6'
+
+    // 非同期処理のライブラリ、こっちの方が有名だけど学習コストが高いので未使用
+    // implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
+
+    // ---------------------------------------------------------------------------
+    // テスト用のコード（JUnitなどのテスト）での依存関係の記述
+    // ---------------------------------------------------------------------------
     // junit の junit の 4.12 のライブラリを読み込む、JUnitは5が出ているがAndroidでは現在使えない
     testImplementation 'junit:junit:4.12'
     // Androidのクラス（ライブラリ）をモックとして読み込めるように設定を記述
     testImplementation 'org.mockito:mockito-core:1.10.19'
 
-    //// AndroidTest用のコードでの依存関係の記述
+
+    // ---------------------------------------------------------------------------
+    // AndroidTest用のコードでの依存関係の記述
+    // ---------------------------------------------------------------------------
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-
 }
