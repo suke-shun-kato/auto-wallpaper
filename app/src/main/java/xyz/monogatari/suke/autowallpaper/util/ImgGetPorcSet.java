@@ -28,12 +28,30 @@ public class ImgGetPorcSet {
         this.context = context;
     }
 
-    public void getAndSetNewWallpaper() {
+    /************************************
+     * 別スレッドで動作する、壁紙取得→加工→セット
+     */
+    public void executeNewThread() {
+        Thread th = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                execute();
+            }
+        });
+        th.start();
+    }
+
+
+    /************************************
+     * 壁紙を取得→加工→セット する一連の流れを行う関数
+     * 処理の都合上、別スレッドで壁紙をセットしないといけいないので直接使用は不可
+     */
+    private void execute() {
         // ----------------------------------
         // 画像取得
         // ----------------------------------
 
-    if (true) {
+    if (false) {
         //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
         if (ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -41,6 +59,7 @@ public class ImgGetPorcSet {
             return;
         }
         //// メイン処理
+
         ImgGetter imgGetter = new ImgGetterDir(this.context);
         Bitmap wallpaperBitmap = imgGetter.getImg();
     }
@@ -48,10 +67,8 @@ public class ImgGetPorcSet {
 
 
         //// メイン処理
-//        ImgGetter imgGetter = new ImgGetterTw(this.context);
-//        Bitmap wallpaperBitmap = imgGetter.getImg();
-
-
+        ImgGetter imgGetter = new ImgGetterTw(this.context);
+        Bitmap wallpaperBitmap = imgGetter.getImg();
 
 
         // ----------------------------------

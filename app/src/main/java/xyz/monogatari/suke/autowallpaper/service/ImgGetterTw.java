@@ -1,9 +1,9 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
-import android.app.LoaderManager;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.os.Bundle;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import com.github.scribejava.apis.TwitterApi;
@@ -14,21 +14,18 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth10aService;
 
-import org.jdeferred.AlwaysCallback;
-import org.jdeferred.Deferred;
-import org.jdeferred.DoneCallback;
-import org.jdeferred.FailCallback;
-import org.jdeferred.ProgressCallback;
-import org.jdeferred.Promise;
-import org.jdeferred.android.AndroidDeferredManager;
-import org.jdeferred.impl.DeferredObject;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutionException;
 
-import javax.xml.transform.Result;
-
-import xyz.monogatari.suke.autowallpaper.MainActivity;
 import xyz.monogatari.suke.autowallpaper.util.Token;
 
 /**
@@ -39,49 +36,148 @@ public class ImgGetterTw implements ImgGetter {
     private Context context;
 
     public ImgGetterTw(Context context) {
-        this.context = context;
+        ImgGetterTw.this.context = context;
     }
 
-    public Bitmap getImg() {                              //引数
-        // p.then()                                        DoneFilter, DonePipe
-        // dm.when()                (p,p,p), Runnable,Callable,DeferredRunnable,DeferredCallable
-        //                           ,DeferredAsyncTask, DeferredFutureTask
-        //
-        // 一つのdeferredにつき一つのPromise??, whenとthenは同じ
-        // p.done() 成功     deferred.resolve(...)               DoneCallback
-        // p.fail() 失敗     deferred.reject(new Exception());   FailCallback
-        // p.progress() 進捗 deferred.notify(...)                ProgressCallback
-        // p.always()  全て                                      AlwaysCallback
-        //
-        // 通常はPromise(Deferred.promise())オブジェクト、
-        //                DeferredManager(new DefaultDeferredManager())オブジェクト
-        // Androidの場合はAndroidDeferredManager(new AndroidDeferredManager(ExecutorService))オブジェクト
+    /************************************
+     * APIでTwitterのお気に入りのJSONを取得
+     * @return 取得したリストのJSONArray
+     */
+    private JSONArray getFavList() {
+        try {
+            String apiUrl =  "https://api.twitter.com/1.1/favorites/list.json";
+            final OAuth10aService service
+                    = new ServiceBuilder(Token.getTwitterConsumerKey(this.context))
+                         .apiSecret(Token.getTwitterConsumerSecret(this.context))
+                         .build(TwitterApi.instance());
+
+            final OAuthRequest request = new OAuthRequest(Verb.GET, apiUrl);
+            service.signRequest(
+                    new OAuth1AccessToken(
+                            Token.getTwitterAccessToken(this.context),
+                            Token.getTwitterAccessTokenSecret(this.context)
+                    ),
+                    request
+            );
+            final Response response = service.execute(request);
+
+            return new JSONArray(response.getBody());
+
+        } catch (IOException e) {
+            Log.d("○△",e.getMessage());
+            e.printStackTrace();
+            return null;
+        } catch (InterruptedException e) {
+            Log.d("○△",e.getMessage());
+            e.printStackTrace();
+            return null;
+        } catch (ExecutionException e) {
+            Log.d("○△",e.getMessage());
+            e.printStackTrace();
+            return null;
+        } catch (JSONException e) {
+            Log.d("○△",e.getMessage());
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
-        Deferred deferred = new DeferredObject();
-        Promise promise = deferred.promise();
+    /************************************
+     * rootJsonAry[].keyName.media[] (JS表記) の部分のJSONを取得する
+     * @param rootJsonAry お気に入りリストJSONのルート、配列JSON
+     * @param keyName "entities" or "extended_entities"
+     * @return 取得したmediaの部分のJSON（複数）
+     */
+    private static List<JSONObject> getMediaJson(JSONArray rootJsonAry, String keyName) {
+        List<JSONObject> list = new ArrayList<>();
 
-        promise.done(new DoneCallback<String>() {
-            @Override
-            public void onDone(String result) {
-                Log.d("○△", "done(): result:" + result);
+        // ----------------------------------
+        // 例外処理
+        // ----------------------------------
+        if (rootJsonAry == null) {
+            return list;
+        }
+
+        // ----------------------------------
+        // メイン処理
+        // ----------------------------------
+        for (int i=0; i<rootJsonAry.length(); i++) {
+            JSONObject json2 = rootJsonAry.optJSONObject(i);
+            if ( json2 == null ) {
+                continue;
             }
-        }).fail(new FailCallback<Throwable>() {
-            @Override
-            public void onFail(Throwable rejection) {
-                Log.d("○△", "fail(): rejection:" + rejection);
+
+            JSONObject json3 = json2.optJSONObject(keyName);
+            if (json3 == null) {
+                continue;
             }
-        }).progress(new ProgressCallback<String>() {
-            @Override
-            public void onProgress(String progress) {
-                Log.d("○△", "progress()");
+
+            JSONArray json4 = json3.optJSONArray("media");
+            if (json4 == null) {
+                continue;
             }
-        }).always(new AlwaysCallback<String, Throwable>() {
-            @Override
-            public void onAlways(Promise.State state, String result, Throwable rejection) {
-                Log.d("○△", "always(): state:"+state+ " result:"+result + " rejection:"+rejection);
+
+            for (int j = 0; j < json4.length(); j++) {
+                JSONObject json5 = json4.optJSONObject(j);
+                if (json5 == null) {
+                    continue;
+                }
+                list.add(json5);
             }
-        });
-        deferred.resolve(100);
+        }
+        return list;
+    }
+
+    /************************************
+     * Twitterから取得したお気に入りのJSONを扱いやすいように加工する
+     * @param jsonAry Twitterから取得したお気に入りリスト
+     * @return 加工されたjsonのリスト、下記のjsonのリスト
+     * {
+     *     media_url_https: (画像のURL),
+     *     url: (画像が掲載されているWEBページ),
+     *     ....その他 entities 下にある要素 ....
+     * }
+     */
+    private static List<JSONObject> editJson(JSONArray jsonAry) {
+        List<JSONObject> jsonObj = new ArrayList<>();
+        jsonObj.addAll( getMediaJson(jsonAry, "entities") );  //1枚目のメディア画像
+        jsonObj.addAll( getMediaJson(jsonAry, "extended_entities") ); //2～4枚目のメディア画像
+
+        return jsonObj;
+    }
+    
+    /************************************
+     *
+     */
+    public Bitmap getImg() {
+        // ----------------------------------
+        // お気に入りから画像のURLを取得
+        // ----------------------------------
+        JSONArray favListJsonAry = ImgGetterTw.this.getFavList();
+
+        List<JSONObject> flattenJson = ImgGetterTw.editJson(favListJsonAry);
+
+        // ----------------------------------
+        // 抽選
+        // ----------------------------------
+        int drawnIndex = new Random().nextInt(flattenJson.size());
+        String imgUrl = flattenJson.get(drawnIndex).optString("media_url_https");
+
+        // ----------------------------------
+        // 画像を取得
+        // ----------------------------------
+        try {
+Log.d("○△△△△△△", imgUrl);
+            URL url = new URL(imgUrl);
+            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+            con.setRequestMethod("GET");
+            Bitmap wallpaperBmp = BitmapFactory.decodeStream(con.getInputStream());
+
+            return wallpaperBmp;
+        } catch (IOException e ){
+            e.printStackTrace();
+            return null;
+        }
     }
 }

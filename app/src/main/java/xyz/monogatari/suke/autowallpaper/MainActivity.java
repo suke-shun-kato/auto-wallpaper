@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -18,20 +17,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.github.scribejava.apis.TwitterApi;
-import com.github.scribejava.core.builder.ServiceBuilder;
-import com.github.scribejava.core.model.OAuth1AccessToken;
-import com.github.scribejava.core.model.OAuthRequest;
-import com.github.scribejava.core.model.Response;
-import com.github.scribejava.core.model.Verb;
-import com.github.scribejava.core.oauth.OAuth10aService;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
-
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
-import xyz.monogatari.suke.autowallpaper.util.Token;
 
 public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------------
@@ -243,7 +230,8 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      * @param view 押されたボタンのビュー
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
-        new ImgGetPorcSet(this).getAndSetNewWallpaper();
+//        new ImgGetPorcSet(this).execute();
+        new ImgGetPorcSet(this).executeNewThread();
     }
 
     /************************************
@@ -257,46 +245,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
         // ----------------------------------
         //
         // ----------------------------------
-        Thread th = new Thread(new Runnable() {
-            @Override
-            public void run() {
 
-                try {
-
-                    /////////////
-//                    String apiUrl =  "https://api.twitter.com/1.1/account/verify_credentials.json";
-                    String apiUrl =  "https://api.twitter.com/1.1/favorites/list.json";
-                    final OAuth10aService service
-                            = new ServiceBuilder(Token.getTwitterConsumerKey(MainActivity.this))
-                            .apiSecret(Token.getTwitterConsumerSecret(MainActivity.this))
-                            .build(TwitterApi.instance());
-
-                    final OAuthRequest request = new OAuthRequest(Verb.GET, apiUrl);
-                    service.signRequest(
-                            new OAuth1AccessToken(
-                                    Token.getTwitterAccessToken(MainActivity.this),
-                                    Token.getTwitterAccessTokenSecret(MainActivity.this)
-                            ),
-                            request
-                    );
-                    final Response response = service.execute(request);
-                    Log.d("○△", response.getBody());
-                    //////////////
-
-                } catch (IOException e) {
-                    Log.d("○△",e.getMessage());
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    Log.d("○△",e.getMessage());
-                    e.printStackTrace();
-                } catch (ExecutionException e) {
-                    Log.d("○△",e.getMessage());
-                    e.printStackTrace();
-                }
-
-            }
-        });
-        th.start();
 
     }
 

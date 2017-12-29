@@ -57,10 +57,11 @@ public class ImgGetterDir implements ImgGetter {
         // 抽選
         // ----------------------------------
         int drawnIndex = new Random().nextInt(imgPathList.size());
+        String fileName = imgPathList.get(drawnIndex);
 
         // ----------------------------------
         // Bitmap オブジェクトを返す
         // ----------------------------------
-        return BitmapFactory.decodeFile(imgPathList.get(drawnIndex));
+        return BitmapFactory.decodeFile(fileName);
     }
 }
