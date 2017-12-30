@@ -235,6 +235,26 @@ Log.d("○OnPreferenceChangeL", "onPreferenceChange() 呼ばれた: "+(boolean)n
                 }
             }
         });
+        // ----------
+        // Twitterのお気に入りからをクリックしたとき
+        // ----------
+        this.findPreference(KEY_FROM_TWITTER_FAV).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener(){
+            /************************************
+             * @param preference クリックされたPreference
+             * @param newValue Preferenceの新しい値
+             * @return true:値変更を反映、false:反映しない
+             */
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                if ( sp.getString(KEY_FROM_TWITTER_OAUTH, null) == null ) {
+                    // Twitterの認証が未だのとき
+                    Toast.makeText(getActivity(), R.string.setting_form_twitter_fav_error, Toast.LENGTH_SHORT).show();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        });
 
         // ----------
         // 「ディレクトリを設定」 のパーミッションダイアログ表示設定

@@ -68,7 +68,8 @@ public class ImgGetPorcSet {
                 == PackageManager.PERMISSION_GRANTED) {
             drawnList.add(SettingsFragment.KEY_FROM_DIR);
         }
-        if (sp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)) {
+        if (sp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
+                && sp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
             drawnList.add(SettingsFragment.KEY_FROM_TWITTER_FAV);
         }
 
