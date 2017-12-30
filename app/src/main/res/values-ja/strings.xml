@@ -22,6 +22,8 @@
     <string name="setting_when">変更のタイミング</string>
     <string name="setting_when_turnOn_title">画面ON時</string>
     <string name="setting_when_turnOn_summary">画面がONになるタイミングで壁紙が変更されます</string>
+    <string name="setting_when_timer_title">指定時間時</string>
+    <string name="setting_when_timer_summary">↓で設定した時間で壁紙がセットされます（ただし、スクリーンOFF時は1回限定）</string>
     <string name="setting_other">その他</string>
     <string name="setting_other_autoRotation_title">画像を自動で回転させる</string>
     <string name="select_dir_pref_dialog_title">ディレクトリを選択してください。</string>

@@ -113,6 +113,9 @@ Log.d("○"+this.getClass().getSimpleName(), "  flags: "+flags + ", startId: "+ 
         if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
             this.setScreenOnListener();
         }
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SET_TIME, false) ) {
+            this.setTimerListener();
+        }
 
         return START_STICKY;
     }
@@ -184,6 +187,11 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
         } else {
             this.unsetScreenOnListener();
         }
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+            this.setTimerListener();
+        } else {
+            this.unsetTimerListener();
+        }
     }
 
     // --------------------------------------------------------------------
@@ -203,6 +211,13 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
      */
     private void unsetScreenOnListener() {
         this.unregisterReceiver(this.onOffReceiver);
+    }
+
+    private void setTimerListener() {
+
+    }
+    private void unsetTimerListener() {
+
     }
 
     // --------------------------------------------------------------------
