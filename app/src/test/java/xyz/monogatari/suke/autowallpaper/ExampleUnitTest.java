@@ -1,14 +1,5 @@
 package xyz.monogatari.suke.autowallpaper;
 
-import android.util.Log;
-
-import org.jdeferred.AlwaysCallback;
-import org.jdeferred.Deferred;
-import org.jdeferred.DoneCallback;
-import org.jdeferred.FailCallback;
-import org.jdeferred.ProgressCallback;
-import org.jdeferred.Promise;
-import org.jdeferred.impl.DeferredObject;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

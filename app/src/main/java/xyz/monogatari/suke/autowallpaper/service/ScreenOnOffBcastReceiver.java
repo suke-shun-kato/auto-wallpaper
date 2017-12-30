@@ -49,8 +49,6 @@ Log.d("○" + this.getClass().getSimpleName(), "電源OFFになった瞬間の�
 
             ///////壁紙変更
             new ImgGetPorcSet(context).executeNewThread();
-//            new ImgGetPorcSet(context).execute();
-//            ((MainService)context).execute();
         }
     }
 }

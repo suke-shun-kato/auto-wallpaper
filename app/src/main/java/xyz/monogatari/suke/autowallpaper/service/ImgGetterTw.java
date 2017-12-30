@@ -1,6 +1,5 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
-import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,14 +28,15 @@ import java.util.concurrent.ExecutionException;
 import xyz.monogatari.suke.autowallpaper.util.Token;
 
 /**
+ * Twitterのお気に入りからランダムに画像を取得するクラス
  * Created by k-shunsuke on 2017/12/27.
  */
 
 public class ImgGetterTw implements ImgGetter {
-    private Context context;
+    private final Context context;
 
     public ImgGetterTw(Context context) {
-        ImgGetterTw.this.context = context;
+        this.context = context;
     }
 
     /************************************
@@ -45,7 +45,7 @@ public class ImgGetterTw implements ImgGetter {
      */
     private JSONArray getFavList() {
         try {
-            String apiUrl =  "https://api.twitter.com/1.1/favorites/list.json";
+            String apiUrl =  "https://api.twitter.com/1.1/favorites/list.json?count=200";
             final OAuth10aService service
                     = new ServiceBuilder(Token.getTwitterConsumerKey(this.context))
                          .apiSecret(Token.getTwitterConsumerSecret(this.context))
@@ -60,8 +60,9 @@ public class ImgGetterTw implements ImgGetter {
                     request
             );
             final Response response = service.execute(request);
-
-            return new JSONArray(response.getBody());
+            String responseStr = response.getBody();
+Log.d("○△", ""+responseStr.length());
+            return new JSONArray(responseStr);
 
         } catch (IOException e) {
             Log.d("○△",e.getMessage());
@@ -154,9 +155,9 @@ public class ImgGetterTw implements ImgGetter {
         // ----------------------------------
         // お気に入りから画像のURLを取得
         // ----------------------------------
-        JSONArray favListJsonAry = ImgGetterTw.this.getFavList();
+        JSONArray favListJsonAry = this.getFavList();
 
-        List<JSONObject> flattenJson = ImgGetterTw.editJson(favListJsonAry);
+        List<JSONObject> flattenJson = editJson(favListJsonAry);
 
         // ----------------------------------
         // 抽選
@@ -172,9 +173,8 @@ Log.d("○△△△△△△", imgUrl);
             URL url = new URL(imgUrl);
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
             con.setRequestMethod("GET");
-            Bitmap wallpaperBmp = BitmapFactory.decodeStream(con.getInputStream());
 
-            return wallpaperBmp;
+            return BitmapFactory.decodeStream(con.getInputStream());
         } catch (IOException e ){
             e.printStackTrace();
             return null;

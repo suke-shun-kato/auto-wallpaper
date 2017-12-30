@@ -55,19 +55,8 @@ dependencies {
     // OAuth1.0&2.0ライブラリ
     // -------------------------------------
     // バージョン5.0.0はAPIレベル26（Android 8.0 Oreo）以上でしか対応していないので敢えて4.2.0使用
+    //noinspection GradleDependency
     implementation 'com.github.scribejava:scribejava-apis:4.2.0'
-
-    // -------------------------------------
-    // 非同期処理用のライブラリ
-    // -------------------------------------
-    implementation 'org.jdeferred:jdeferred-core:1.2.6'
-    // android用のjdeferred、aarの方をとりこむ
-    // https://developer.android.com/studio/projects/android-library.html?hl=ja
-    // implementation 'org.jdeferred:jdeferred-android:1.2.6'
-    implementation 'org.jdeferred:jdeferred-android-aar:1.2.6'
-
-    // 非同期処理のライブラリ、こっちの方が有名だけど学習コストが高いので未使用
-    // implementation 'io.reactivex.rxjava2:rxjava:2.1.7'
 
     // ---------------------------------------------------------------------------
     // テスト用のコード（JUnitなどのテスト）での依存関係の記述

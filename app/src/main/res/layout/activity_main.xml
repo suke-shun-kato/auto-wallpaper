@@ -34,9 +34,4 @@
         android:layout_height="wrap_content"
         android:onClick="dellSp_onClick"
         android:text="@string/main_dell_sp" />
-    <TextView
-        android:id="@+id/testTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="ここにJSON表示される"/>
 </LinearLayout>

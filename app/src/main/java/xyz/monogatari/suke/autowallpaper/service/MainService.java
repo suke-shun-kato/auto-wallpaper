@@ -1,27 +1,16 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
-import android.Manifest;
 import android.app.Service;
-import android.app.WallpaperManager;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
-import java.io.IOException;
-
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
-import xyz.monogatari.suke.autowallpaper.util.BitmapProcessor;
-import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 
 /**
  * Created by k-shunsuke on 2017/12/12.

@@ -239,8 +239,8 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      * @param view 押されたボタンのビュー
      */
     public void toHistory_onClick(@SuppressWarnings("unused") View view) {
-//        Intent intent = new Intent(this, HistoryActivity.class);
-//        this.startActivity(intent);
+        Intent intent = new Intent(this, HistoryActivity.class);
+        this.startActivity(intent);
 
         // ----------------------------------
         //

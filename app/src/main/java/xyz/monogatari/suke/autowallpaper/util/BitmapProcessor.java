@@ -16,6 +16,7 @@ import static android.graphics.Bitmap.createBitmap;
  * Created by k-shunsuke on 2017/12/17.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class BitmapProcessor {
     // --------------------------------------------------------------------
     // 定数
