@@ -17,6 +17,7 @@ import java.lang.reflect.Method;
  * Created by k-shunsuke on 2017/12/17.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class DisplaySizeCheck {
 
     /**

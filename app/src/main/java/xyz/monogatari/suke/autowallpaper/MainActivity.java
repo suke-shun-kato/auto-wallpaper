@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -19,6 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
+import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 
 public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------------
@@ -225,17 +225,28 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
         Intent intent = new Intent(this, SettingsActivity.class);
         this.startActivity(intent);
     }
+    /************************************
+     * 壁紙セット（変更）ボタンをクリックしたとき
+     * @param view 押されたボタンのビュー
+     */
+    public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
+//        new ImgGetPorcSet(this).execute();
+        new ImgGetPorcSet(this).executeNewThread();
+    }
 
     /************************************
      * 履歴画面へのボタンをクリックしたとき
      * @param view 押されたボタンのビュー
      */
     public void toHistory_onClick(@SuppressWarnings("unused") View view) {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("android-suke://twitter"));
+        Intent intent = new Intent(this, HistoryActivity.class);
         this.startActivity(intent);
 
-//        Intent intent = new Intent(this, HistoryActivity.class);
-//        this.startActivity(intent);
+        // ----------------------------------
+        //
+        // ----------------------------------
+
+
     }
 
     /************************************

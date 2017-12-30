@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
+
 
 /**
  * 電源ON,OFFのときのブロードキャストレシーバー
@@ -16,6 +18,8 @@ import android.util.Log;
 public class ScreenOnOffBcastReceiver extends BroadcastReceiver {
     /************************************
      * ブロードキャスト受信のタイミングで実行されるコールバック
+     * ※別スレッドでブロードキャストレシーバーを登録しても、
+     * プログラムが走るのはこのプログラムがある「「メインスレッド」」
      * @param context このレシーバーを登録した「アクティビティ」or「サービス」のコンテキスト
      * @param intent ブロードキャスト配信側から送られてきたインテント
      */
@@ -24,7 +28,7 @@ public class ScreenOnOffBcastReceiver extends BroadcastReceiver {
         // ----------------------------------
         // 例外処理
         // ----------------------------------
-        //// 電源ON時に壁紙入れ替えする設定がOFFのとき処理を行わないで切り上げ
+        //// 画面OFF時に壁紙入れ替えする設定がOFFのとき処理を行わないで切り上げ
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
         if ( !sp.getBoolean("when_turnOn", false) ) {
             return;
@@ -44,7 +48,7 @@ Log.d("○" + this.getClass().getSimpleName(), "電源ONになった瞬間の壁
 Log.d("○" + this.getClass().getSimpleName(), "電源OFFになった瞬間の壁紙処理");
 
             ///////壁紙変更
-            ((MainService)context).getAndSetNewWallpaper();
+            new ImgGetPorcSet(context).executeNewThread();
         }
     }
 }

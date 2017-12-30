@@ -88,6 +88,7 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_FROM_TWITTER_OAUTH = "from_twitter_oauth";
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
+    public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
 
     private static final int RQ_CODE_FROM_DIR = 1;
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
