@@ -88,7 +88,10 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_FROM_TWITTER_OAUTH = "from_twitter_oauth";
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
-    public static final String KEY_WHEN_SET_TIME = "when_setTime";
+    public static final String KEY_WHEN_TIMER = "when_timer";
+    public static final String KEY_WHEN_TIMER_START_TIME = "when_timer_startTime";
+    public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";
+
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
 
     private static final int RQ_CODE_FROM_DIR = 1;
@@ -191,6 +194,12 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
         } else {
             twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
         }
+
+//        //// 開始タイミング
+//        this.findPreference(KEY_WHEN_TIMER_START_TIME).setSummary(sp.getString(KEY_WHEN_TIMER_START_TIME, ""));
+//
+//        //// 間隔
+//        this.findPreference(KEY_WHEN_TIMER_INTERVAL).setSummary(sp.getString(KEY_WHEN_TIMER_INTERVAL, ""));
 
         // ----------------------------------
         // <Preference>のイベントリスナの設定、主にパーミッションダイアログ表示用
@@ -399,6 +408,15 @@ Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): ke
             case KEY_FROM_TWITTER_OAUTH:    //Twitter認証完了後にサマリーが認証完了になるようにする
                 Preference fromTwitterOauthPreference = this.findPreference(key);
                 fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
+
+//            //// 開始タイミング
+//            case KEY_WHEN_TIMER_START_TIME:
+//                this.findPreference(key).setSummary(sp.getInt(key, 0));
+//                break;
+//            //// 間隔
+//            case KEY_WHEN_TIMER_INTERVAL:
+//                this.findPreference(key).setSummary(sp.getInt(key, 0));
+//                break;
         }
 
 

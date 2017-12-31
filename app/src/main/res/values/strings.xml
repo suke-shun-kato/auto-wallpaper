@@ -33,6 +33,7 @@
     <string-array name="setting_when_timer_startTime_entries">
         <item>Now</item>
     </string-array>
+    <!-- ↓はPreferenceで読み込んでいるのでinteger-arrayにはできない -->
     <string-array name="setting_when_timer_startTime_values">
         <item>0</item>
     </string-array>
@@ -48,6 +49,7 @@
         <item>12 hours</item>
         <item>1 day</item>
     </string-array>
+    <!-- ↓はPreferenceで読み込んでいるのでinteger-arrayにはできない -->
     <string-array name="setting_when_timer_interval_values">
         <item>30000</item>  <!-- 30*1000 -->
         <item>300000</item>  <!-- 5*60*1000 -->

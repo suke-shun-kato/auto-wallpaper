@@ -43,15 +43,17 @@
             android:key="when_timer_startTime"
             android:entries="@array/setting_when_timer_startTime_entries"
             android:entryValues="@array/setting_when_timer_startTime_values"
-            android:title="@string/setting_when_timer_startTime_title"
             android:defaultValue="@string/setting_when_timer_startTime_values_default"
+            android:title="@string/setting_when_timer_startTime_title"
+            android:summary="%s"
             />
         <ListPreference
             android:key="when_timer_interval"
             android:entries="@array/setting_when_timer_interval_entries"
             android:entryValues="@array/setting_when_timer_interval_values"
-            android:title="@string/setting_when_timer_interval_title"
             android:defaultValue="@string/setting_when_timer_interval_values_default"
+            android:title="@string/setting_when_timer_interval_title"
+            android:summary="%s"
             />
     </PreferenceCategory>
     <PreferenceCategory

@@ -13,6 +13,7 @@ import android.util.Log;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 
 /**
@@ -95,7 +96,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCod
         if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
             this.unsetScreenOnListener();
         }
-        if (this.sp.getBoolean(SettingsFragment.KEY_WHEN_SET_TIME, false)) {
+        if (this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false)) {
             this.unsetTimerListener();
         }
 
@@ -123,7 +124,7 @@ Log.d("○"+this.getClass().getSimpleName(), "  flags: "+flags + ", startId: "+ 
         if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
             this.setScreenOnListener();
         }
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SET_TIME, false) ) {
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
             this.setTimerListener();
         }
 
@@ -208,9 +209,9 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
                     this.unsetScreenOnListener();
                 }
                 break;
-            case SettingsFragment.KEY_WHEN_SET_TIME:
+            case SettingsFragment.KEY_WHEN_TIMER:
                 // 時間設定
-                if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SET_TIME, false) ) {
+                if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
                     this.setTimerListener();
                 } else {
                     this.unsetTimerListener();
@@ -260,9 +261,20 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
      * これはブロードキャストレシーバーから呼ばれているので敢えてpublicでsetTimerListener()の外に外している
      */
     public void setTimer() {
-        //////ここは今の時間を計算してタイマーをセットすること！！！
+        // ----------
+        // 変数準備
+        // ----------
+        int delayMsec = this.sp.getInt(
+                SettingsFragment.KEY_WHEN_TIMER_START_TIME, 0
+        );
+        int periodMsec = this.sp.getInt(
+                SettingsFragment.KEY_WHEN_TIMER_INTERVAL, 0
+        );
+Log.d("○△"+getClass().getSimpleName(), "setTimer(): delay:"+delayMsec+" period:"+periodMsec);
 
-
+        // ----------
+        // 本番
+        // ----------
         this.timer = new Timer();
         // schedule は実行が遅延したらその後も遅延する、
         // （例）1分間隔のタイマーが10秒遅れで実行されると次のタイマーは1分後に実行される
@@ -275,10 +287,11 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
                         Log.d("○△" + getClass().getSimpleName(), "TimerTask.run()");
                     }
                 },
-                2000,      //2病後
-                1000 //1秒間隔
+                delayMsec,
+                periodMsec
         );
     }
+
     private void unsetTimerListener() {
 Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()_____________________________");
         this.cancelTimer();
