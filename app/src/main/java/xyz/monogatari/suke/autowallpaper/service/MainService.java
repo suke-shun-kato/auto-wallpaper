@@ -1,13 +1,10 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
-import android.app.AlarmManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
-import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -31,11 +28,12 @@ public class MainService extends Service {
 
     /** ブロードキャストレシーバーのインスタンス */
     private final ScreenOnOffBcastReceiver onOffReceiver = new ScreenOnOffBcastReceiver();
+    private final TimerBcastReceiver timerReceiver = new TimerBcastReceiver();
 
     /** SharedPreference */
     private SharedPreferences sp;
 
-    /** 時間設定用のタイマー */
+    /** 時間設定用のタイマー、タイマーは一度cancel()したら再度schedule()できないのでここでnewしない */
     private Timer timer;
 
     // --------------------------------------------------------------------
@@ -186,24 +184,38 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
         // 全てOFFになったとき
 
 
-        // ----------------------------------
-        // from
-        // ----------------------------------
+        switch (key) {
+            // ----------------------------------
+            // from
+            // ----------------------------------
+            //todo
+            case SettingsFragment.KEY_FROM_DIR:
+                break;
+            case SettingsFragment.KEY_FROM_DIR_PATH:
+                break;
+            case SettingsFragment.KEY_FROM_TWITTER_FAV:
+                break;
 
-        // ----------------------------------
-        // When
-        // ----------------------------------
-        // 電源ON設定がONのとき設定
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
-            this.setScreenOnListener();
-        } else {
-            this.unsetScreenOnListener();
-        }
-        // 時間設定
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SET_TIME, false) ) {
-            this.setTimerListener();
-        } else {
-            this.unsetTimerListener();
+
+            // ----------------------------------
+            // When
+            // ----------------------------------
+            case SettingsFragment.KEY_WHEN_SCREEN_ON:
+                // 電源ON設定がONのとき設定
+                if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+                    this.setScreenOnListener();
+                } else {
+                    this.unsetScreenOnListener();
+                }
+                break;
+            case SettingsFragment.KEY_WHEN_SET_TIME:
+                // 時間設定
+                if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SET_TIME, false) ) {
+                    this.setTimerListener();
+                } else {
+                    this.unsetTimerListener();
+                }
+                break;
         }
     }
 
@@ -226,16 +238,37 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
         this.unregisterReceiver(this.onOffReceiver);
     }
 
+    // --------------------------------------------------------------------
+    // 自作リスナー登録
+    // --------------------------------------------------------------------
     private void setTimerListener() {
         // ----------------------------------
         // タイマーセット
         // ----------------------------------
-        timer = new Timer();
+        this.setTimer();
+
+        // ----------------------------------
+        // ブロードキャストレシーバーを設置
+        // ----------------------------------
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        this.registerReceiver(this.timerReceiver, intentFilter);
+
+    }
+    /************************************
+     * これはブロードキャストレシーバーから呼ばれているので敢えてpublicでsetTimerListener()の外に外している
+     */
+    public void setTimer() {
+        //////ここは今の時間を計算してタイマーをセットすること！！！
+
+
+        this.timer = new Timer();
         // schedule は実行が遅延したらその後も遅延する、
         // （例）1分間隔のタイマーが10秒遅れで実行されると次のタイマーは1分後に実行される
         // scheduleAtFixedRate は実行が遅延したら遅延を取り戻そうと実行する、
         // （例）1分間隔のタイマーが10秒遅れで実行されると次のタイマーは50秒後に実行される
-        timer.scheduleAtFixedRate(
+        this.timer.scheduleAtFixedRate(
                 new TimerTask() {
                     @Override
                     public void run() {
@@ -245,25 +278,18 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
                 2000,      //2病後
                 1000 //1秒間隔
         );
-
-        // ----------------------------------
-        // ブロードキャストレシーバーを設置
-        // ----------------------------------
-
-
-//        AlarmManager alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-//
-//        if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
-//            alarmManager.set(, , AlarmManager.RTC, );
-//        } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
-//            alarmManager.setExact();
-//        } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
-//            alarmManager.setExactAndAllowWhileIdle();
-//        }
     }
     private void unsetTimerListener() {
+Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()_____________________________");
+        this.cancelTimer();
+        this.unregisterReceiver(this.timerReceiver);
+    }
+    /************************************
+     * これはブロードキャストレシーバーからも呼ばれてるから敢えて外に外している
+     */
+    public void cancelTimer() {
+Log.d("○"+this.getClass().getSimpleName(), "cancelTimer()_____________________________");
         this.timer.cancel();
-
     }
 
     // --------------------------------------------------------------------
