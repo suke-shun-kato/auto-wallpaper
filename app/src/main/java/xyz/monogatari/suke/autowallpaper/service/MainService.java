@@ -1,14 +1,20 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
+import android.app.AlarmManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 
@@ -28,6 +34,9 @@ public class MainService extends Service {
 
     /** SharedPreference */
     private SharedPreferences sp;
+
+    /** 時間設定用のタイマー */
+    private Timer timer;
 
     // --------------------------------------------------------------------
     // フィールド（バインド用）
@@ -87,6 +96,9 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCod
         // ----------------------------------
         if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
             this.unsetScreenOnListener();
+        }
+        if (this.sp.getBoolean(SettingsFragment.KEY_WHEN_SET_TIME, false)) {
+            this.unsetTimerListener();
         }
 
         this.isStarted = false;
@@ -187,7 +199,8 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
         } else {
             this.unsetScreenOnListener();
         }
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+        // 時間設定
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SET_TIME, false) ) {
             this.setTimerListener();
         } else {
             this.unsetTimerListener();
@@ -214,9 +227,42 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
     }
 
     private void setTimerListener() {
+        // ----------------------------------
+        // タイマーセット
+        // ----------------------------------
+        timer = new Timer();
+        // schedule は実行が遅延したらその後も遅延する、
+        // （例）1分間隔のタイマーが10秒遅れで実行されると次のタイマーは1分後に実行される
+        // scheduleAtFixedRate は実行が遅延したら遅延を取り戻そうと実行する、
+        // （例）1分間隔のタイマーが10秒遅れで実行されると次のタイマーは50秒後に実行される
+        timer.scheduleAtFixedRate(
+                new TimerTask() {
+                    @Override
+                    public void run() {
+                        Log.d("○△" + getClass().getSimpleName(), "TimerTask.run()");
+                    }
+                },
+                2000,      //2病後
+                1000 //1秒間隔
+        );
 
+        // ----------------------------------
+        // ブロードキャストレシーバーを設置
+        // ----------------------------------
+
+
+//        AlarmManager alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+//
+//        if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
+//            alarmManager.set(, , AlarmManager.RTC, );
+//        } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
+//            alarmManager.setExact();
+//        } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
+//            alarmManager.setExactAndAllowWhileIdle();
+//        }
     }
     private void unsetTimerListener() {
+        this.timer.cancel();
 
     }
 
