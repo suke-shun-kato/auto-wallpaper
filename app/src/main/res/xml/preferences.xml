@@ -30,15 +30,29 @@
         android:key="when"
         android:title="@string/setting_when">
         <SwitchPreference
-            android:defaultValue="true"
             android:key="when_turnOn"
+            android:defaultValue="true"
             android:title="@string/setting_when_turnOn_title"
             android:summary="@string/setting_when_turnOn_summary" />
         <SwitchPreference
+            android:key="when_timer"
             android:defaultValue="false"
-            android:key="when_setTime"
             android:title="@string/setting_when_timer_title"
             android:summary="@string/setting_when_timer_summary" />
+        <ListPreference
+            android:key="when_timer_startTime"
+            android:entries="@array/setting_when_timer_startTime_entries"
+            android:entryValues="@array/setting_when_timer_startTime_values"
+            android:title="@string/setting_when_timer_startTime_title"
+            android:defaultValue="@string/setting_when_timer_startTime_values_default"
+            />
+        <ListPreference
+            android:key="when_timer_interval"
+            android:entries="@array/setting_when_timer_interval_entries"
+            android:entryValues="@array/setting_when_timer_interval_values"
+            android:title="@string/setting_when_timer_interval_title"
+            android:defaultValue="@string/setting_when_timer_interval_values_default"
+            />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="other"

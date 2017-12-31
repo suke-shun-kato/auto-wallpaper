@@ -29,6 +29,36 @@
     <string name="setting_when_turnOn_summary">When screen turns on, wallpaper changes.</string>
     <string name="setting_when_timer_title">set time</string>
     <string name="setting_when_timer_summary">will set at set time.</string>
+    <string name="setting_when_timer_startTime_title">start time</string>
+    <string-array name="setting_when_timer_startTime_entries">
+        <item>Now</item>
+    </string-array>
+    <string-array name="setting_when_timer_startTime_values">
+        <item>0</item>
+    </string-array>
+    <string name="setting_when_timer_startTime_values_default">0</string>
+    <string name="setting_when_timer_interval_title">Interval</string>
+    <string-array name="setting_when_timer_interval_entries">
+        <item>30 seconds</item>
+        <item>5 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>1 day</item>
+    </string-array>
+    <string-array name="setting_when_timer_interval_values">
+        <item>30000</item>  <!-- 30*1000 -->
+        <item>300000</item>  <!-- 5*60*1000 -->
+        <item>1800000</item> <!-- 30*60*1000 -->
+        <item>3600000</item> <!-- 1*60*60*1000 -->
+        <item>10800000</item><!-- 3*60*60*1000 -->
+        <item>21600000</item><!-- 6*60*60*1000 -->
+        <item>43200000</item><!-- 12*60*60*1000 -->
+        <item>86400000</item><!-- 1*24*60*60*1000 -->
+    </string-array>
+    <string name="setting_when_timer_interval_values_default">30000</string>
     <string name="setting_other">Other</string>
     <string name="setting_other_autoRotation_title">Auto Rotation ON/OFF</string>
     <string name="select_dir_pref_dialog_title">Select directory.</string>
