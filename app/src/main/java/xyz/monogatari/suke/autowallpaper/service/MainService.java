@@ -217,6 +217,11 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
                     this.unsetTimerListener();
                 }
                 break;
+            case SettingsFragment.KEY_WHEN_TIMER_START_TIME:
+            case SettingsFragment.KEY_WHEN_TIMER_INTERVAL:
+                this.unsetTimerListener();
+                this.setTimerListener();
+                break;
         }
     }
 
@@ -264,13 +269,14 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
         // ----------
         // 変数準備
         // ----------
-        int delayMsec = this.sp.getInt(
-                SettingsFragment.KEY_WHEN_TIMER_START_TIME, 0
-        );
-        int periodMsec = this.sp.getInt(
-                SettingsFragment.KEY_WHEN_TIMER_INTERVAL, 0
-        );
-Log.d("○△"+getClass().getSimpleName(), "setTimer(): delay:"+delayMsec+" period:"+periodMsec);
+        // getInt()だとエラーが出る
+        final int delayMsec = Integer.parseInt(this.sp.getString(
+                SettingsFragment.KEY_WHEN_TIMER_START_TIME, ""
+        ));
+        final int periodMsec = Integer.parseInt(this.sp.getString(
+                SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
+        ));
+Log.d("○△" + getClass().getSimpleName(), "TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
 
         // ----------
         // 本番
@@ -284,7 +290,7 @@ Log.d("○△"+getClass().getSimpleName(), "setTimer(): delay:"+delayMsec+" peri
                 new TimerTask() {
                     @Override
                     public void run() {
-                        Log.d("○△" + getClass().getSimpleName(), "TimerTask.run()");
+Log.d("○△" + getClass().getSimpleName(), "TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
                     }
                 },
                 delayMsec,

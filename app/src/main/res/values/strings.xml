@@ -32,14 +32,18 @@
     <string name="setting_when_timer_startTime_title">start time</string>
     <string-array name="setting_when_timer_startTime_entries">
         <item>Now</item>
+        <item>5 seconds</item>
     </string-array>
     <!-- ↓はPreferenceで読み込んでいるのでinteger-arrayにはできない -->
     <string-array name="setting_when_timer_startTime_values">
         <item>0</item>
+        <item>5000</item><!-- 5*1000 -->
     </string-array>
     <string name="setting_when_timer_startTime_values_default">0</string>
     <string name="setting_when_timer_interval_title">Interval</string>
     <string-array name="setting_when_timer_interval_entries">
+        <item>5 seconds</item>
+        <item>15 seconds</item>
         <item>30 seconds</item>
         <item>5 minutes</item>
         <item>30 minutes</item>
@@ -51,6 +55,8 @@
     </string-array>
     <!-- ↓はPreferenceで読み込んでいるのでinteger-arrayにはできない -->
     <string-array name="setting_when_timer_interval_values">
+        <item>5000</item>  <!-- 5*1000 -->
+        <item>15000</item>  <!-- 15*1000 -->
         <item>30000</item>  <!-- 30*1000 -->
         <item>300000</item>  <!-- 5*60*1000 -->
         <item>1800000</item> <!-- 30*60*1000 -->
