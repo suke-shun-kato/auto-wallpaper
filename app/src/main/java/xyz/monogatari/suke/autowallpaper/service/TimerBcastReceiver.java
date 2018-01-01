@@ -3,11 +3,7 @@ package xyz.monogatari.suke.autowallpaper.service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
-
-import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 
 
 /**
@@ -37,23 +33,17 @@ public class TimerBcastReceiver extends BroadcastReceiver {
         // メイン処理
         // ----------------------------------
         if ( inttActionStr.equals(Intent.ACTION_SCREEN_ON) ) {
-//        AlarmManager alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-//
-//        if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
-//            alarmManager.set(, , AlarmManager.RTC, );
-//        } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
-//            alarmManager.setExact();
-//        } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
-//            alarmManager.setExactAndAllowWhileIdle();
-//        }
+
 
 
 Log.d("○" + this.getClass().getSimpleName(), "電源ONになった瞬間のタイマー処理です");
             ((MainService)context).setTimer();
+            ((MainService)context).cancelAlarm();
 
         } else if ( inttActionStr.equals(Intent.ACTION_SCREEN_OFF) ) {
 Log.d("○" + this.getClass().getSimpleName(), "電源OFFになった瞬間のタイマー処理です");
             ((MainService)context).cancelTimer();
+            ((MainService)context).setAlarm();
         }
     }
 }

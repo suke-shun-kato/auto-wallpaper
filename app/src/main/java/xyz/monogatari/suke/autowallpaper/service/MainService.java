@@ -1,10 +1,14 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -15,6 +19,7 @@ import java.util.TimerTask;
 
 import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
+import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 
 /**
  * Created by k-shunsuke on 2017/12/12.
@@ -36,6 +41,8 @@ public class MainService extends Service {
 
     /** 時間設定用のタイマー、タイマーは一度cancel()したら再度schedule()できないのでここでnewしない */
     private Timer timer;
+    private AlarmManager alarmManager;
+    private PendingIntent pendingIntent;
 
     // --------------------------------------------------------------------
     // フィールド（バインド用）
@@ -121,11 +128,20 @@ Log.d("○"+this.getClass().getSimpleName(), "  flags: "+flags + ", startId: "+ 
         // ----------------------------------
         //
         // ----------------------------------
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
-            this.setScreenOnListener();
-        }
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-            this.setTimerListener();
+        //// 通常の場合
+        if ( startId == 1 ) {
+            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+                this.setScreenOnListener();
+            }
+            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+                this.setTimerListener();
+            }
+        //// アラームからスタートした場合
+        } else {
+            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
+                new ImgGetPorcSet(this).executeNewThread();
+            }
         }
 
         return START_STICKY;
@@ -182,21 +198,15 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
             //開始されたサービス（通常サービス）が起動中でないときは途中で切り上げ
             return;
         }
-        // 全てOFFになったとき
 
-
+        // ----------------------------------
+        // 通常処理
+        // ----------------------------------
         switch (key) {
             // ----------------------------------
             // from
             // ----------------------------------
-            //todo
-            case SettingsFragment.KEY_FROM_DIR:
-                break;
-            case SettingsFragment.KEY_FROM_DIR_PATH:
-                break;
-            case SettingsFragment.KEY_FROM_TWITTER_FAV:
-                break;
-
+            //// fromは壁紙セット時に判定するのでここの記述は不要
 
             // ----------------------------------
             // When
@@ -263,20 +273,21 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
 
     }
     /************************************
-     * これはブロードキャストレシーバーから呼ばれているので敢えてpublicでsetTimerListener()の外に外している
+     * これはブロードキャストレシーバーからも呼ばれているので敢えてpublicでsetTimerListener()の外に外している
      */
     public void setTimer() {
+Log.d("○△"+getClass().getSimpleName(), "setTimer()______________");
         // ----------
         // 変数準備
         // ----------
         // getInt()だとエラーが出る
-        final int delayMsec = Integer.parseInt(this.sp.getString(
+        final long delayMsec = Integer.parseInt(this.sp.getString(
                 SettingsFragment.KEY_WHEN_TIMER_START_TIME, ""
         ));
-        final int periodMsec = Integer.parseInt(this.sp.getString(
+        final long periodMsec = Integer.parseInt(this.sp.getString(
                 SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
         ));
-Log.d("○△" + getClass().getSimpleName(), "TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
+Log.d("○△" + getClass().getSimpleName(), "setTimer(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
 
         // ----------
         // 本番
@@ -290,12 +301,40 @@ Log.d("○△" + getClass().getSimpleName(), "TimerTask.run(): delay:"+delayMsec
                 new TimerTask() {
                     @Override
                     public void run() {
-Log.d("○△" + getClass().getSimpleName(), "TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
+Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
+                        new ImgGetPorcSet(MainService.this).executeNewThread();
                     }
                 },
                 delayMsec,
                 periodMsec
         );
+    }
+
+    public void setAlarm() {
+Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
+        this.alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
+
+        this.pendingIntent = PendingIntent.getService(
+                this,
+                //呼び出し元を識別するためのコード
+                this.getResources().getInteger(R.integer.request_code_main_service),
+                new Intent(this, MainService.class),
+                //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
+                PendingIntent.FLAG_ONE_SHOT
+        );
+        long delayMsec = 5000;
+
+        try {
+            if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
+                alarmManager.set(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+            } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
+                alarmManager.setExact(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+            } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
+                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     private void unsetTimerListener() {
@@ -309,6 +348,10 @@ Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()______________
     public void cancelTimer() {
 Log.d("○"+this.getClass().getSimpleName(), "cancelTimer()_____________________________");
         this.timer.cancel();
+    }
+    public void cancelAlarm() {
+Log.d("○△"+getClass().getSimpleName(), "cancelAlarm()______________");
+        this.alarmManager.cancel(this.pendingIntent);
     }
 
     // --------------------------------------------------------------------
