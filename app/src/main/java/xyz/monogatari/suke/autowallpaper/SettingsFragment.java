@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -129,7 +130,11 @@ Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先�
         super.onStart();
 
         Intent getIntent = this.getActivity().getIntent();
-
+//String a;
+//boolean s = (a == null);
+//String b = "aaaaa";
+//a = "cccc";
+//b = "fffff";
         // ----------------------------------
         // Twitter認証のコールバックのとき TwitterOAuthPreference にIntentでURLの情報を渡す
         // コールバックではonActivityCreated()は呼ばれないのでこの場所
@@ -169,6 +174,20 @@ Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
             this.isBound = false;
         }
     }
+
+    private void setStartTimePreference() {
+        ListPreference startTimeLP = (ListPreference)this.findPreference(KEY_WHEN_TIMER_START_TIME);
+        ListPreference intervalLP = (ListPreference)this.findPreference(KEY_WHEN_TIMER_INTERVAL);
+
+        startTimeLP.setEntryValues(new String[]{
+                this.getString(R.string.setting_when_timer_startTime_values_0),
+                intervalLP.getValue()
+        });
+        startTimeLP.setEntries(new String[]{
+                this.getString(R.string.setting_when_timer_startTime_entries_0),
+                (String)intervalLP.getEntry()
+        });
+    }
     /************************************
      * Preference.setOnPreferenceClickListener
      * フラグメントに関連づいたView層を生成する直前
@@ -195,11 +214,10 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
             twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
         }
 
-//        //// 開始タイミング
-//        this.findPreference(KEY_WHEN_TIMER_START_TIME).setSummary(sp.getString(KEY_WHEN_TIMER_START_TIME, ""));
-//
-//        //// 間隔
-//        this.findPreference(KEY_WHEN_TIMER_INTERVAL).setSummary(sp.getString(KEY_WHEN_TIMER_INTERVAL, ""));
+        // ----------------------------------
+        //
+        // ----------------------------------
+        this.setStartTimePreference();
 
         // ----------------------------------
         // <Preference>のイベントリスナの設定、主にパーミッションダイアログ表示用
@@ -408,15 +426,23 @@ Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): ke
             case KEY_FROM_TWITTER_OAUTH:    //Twitter認証完了後にサマリーが認証完了になるようにする
                 Preference fromTwitterOauthPreference = this.findPreference(key);
                 fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
+                break;
+        }
 
-//            //// 開始タイミング
-//            case KEY_WHEN_TIMER_START_TIME:
-//                this.findPreference(key).setSummary(sp.getInt(key, 0));
-//                break;
-//            //// 間隔
-//            case KEY_WHEN_TIMER_INTERVAL:
-//                this.findPreference(key).setSummary(sp.getInt(key, 0));
-//                break;
+        // ----------------------------------
+        // Listの値を変更
+        // ----------------------------------
+        //// 開始時間
+        if ( key.equals(KEY_WHEN_TIMER_INTERVAL) ) {
+            ListPreference startTimePreference = ((ListPreference)this.findPreference(KEY_WHEN_TIMER_START_TIME));
+            //index取得はsetStartTimePreferenceの前にすること
+            int index = startTimePreference.findIndexOfValue( startTimePreference.getValue() );
+
+            this.setStartTimePreference();
+
+            startTimePreference.setValueIndex(index);
+//            String sssss = this.sp.getString(KEY_WHEN_TIMER_START_TIME, "");
+//            String fff = "ss";
         }
 
 

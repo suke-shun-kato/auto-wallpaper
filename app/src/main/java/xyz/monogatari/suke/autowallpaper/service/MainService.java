@@ -42,6 +42,7 @@ public class MainService extends Service {
     /** 時間設定用のタイマー、タイマーは一度cancel()したら再度schedule()できないのでここでnewしない */
     private Timer timer;
     private AlarmManager alarmManager;
+
     private PendingIntent pendingIntent;
 
     // --------------------------------------------------------------------
@@ -239,7 +240,7 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
     // 自作リスナー登録
     // --------------------------------------------------------------------
     /************************************
-     * 画面ON時のイベントリスナーを登録
+     * 画面ON時壁紙変更のイベントリスナーを登録
      */
     private void setScreenOnListener() {
         IntentFilter intentFilter = new IntentFilter();
@@ -248,15 +249,15 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
         this.registerReceiver(this.onOffReceiver, intentFilter);
     }
     /************************************
-     * 画面ON時のイベントリスナーの登録を外す
+     * 画面ON時壁紙変更のイベントリスナー削除
      */
     private void unsetScreenOnListener() {
         this.unregisterReceiver(this.onOffReceiver);
     }
 
-    // --------------------------------------------------------------------
-    // 自作リスナー登録
-    // --------------------------------------------------------------------
+    /************************************
+     * 設定タイマー時壁紙変更のイベントリスナー登録
+     */
     private void setTimerListener() {
         // ----------------------------------
         // タイマーセット
@@ -273,6 +274,34 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
 
     }
     /************************************
+     * 設定タイマー時壁紙変更のイベントリスナー削除
+     */
+    private void unsetTimerListener() {
+Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()_____________________________");
+        this.cancelTimer();
+        this.unregisterReceiver(this.timerReceiver);
+    }
+
+    /************************************
+     * 次のタイマーが実行されるdelayのミリ秒を求める
+     * 未来の設定時刻でもOK
+     * @param startUnixTimeMsec 設定された開始時間、UNIXタイム形式
+     * @param periodMsec periodMsec間隔で壁紙交換が実行される
+     * @param nowUnixTimeMsec 現在のUNIXタイム形式
+     */
+    private static long calcDelayMsec(long startUnixTimeMsec, long periodMsec, long nowUnixTimeMsec) {
+        // ----------------------------------
+        // xxxは整数
+        // startUnixTimeMsec + (xxx-1) * periodMsec < nowUnixTimeMsec < startUnixTimeMsec + xxx * periodMsec
+        // (xxx-1) * periodMsec < nowUnixTimeMsec - startUnixTimeMsec < xxx * periodMsec
+        // xxx-1 < (nowUnixTimeMsec - startUnixTimeMsec)/periodMsec < xxx
+
+        long xxx = (long)Math.ceil( (double)(nowUnixTimeMsec - startUnixTimeMsec)/periodMsec );
+
+        return startUnixTimeMsec + xxx * periodMsec - nowUnixTimeMsec;
+    }
+    
+    /************************************
      * これはブロードキャストレシーバーからも呼ばれているので敢えてpublicでsetTimerListener()の外に外している
      */
     public void setTimer() {
@@ -280,13 +309,15 @@ Log.d("○△"+getClass().getSimpleName(), "setTimer()______________");
         // ----------
         // 変数準備
         // ----------
-        // getInt()だとエラーが出る
-        final long delayMsec = Integer.parseInt(this.sp.getString(
-                SettingsFragment.KEY_WHEN_TIMER_START_TIME, ""
-        ));
-        final long periodMsec = Integer.parseInt(this.sp.getString(
+        final long periodMsec = Long.parseLong(this.sp.getString(
                 SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
         ));
+        // getInt()だとエラーが出る
+        final long unixTime = Long.parseLong(this.sp.getString(
+                SettingsFragment.KEY_WHEN_TIMER_START_TIME, ""
+        ));
+        final long delayMsec = calcDelayMsec(unixTime, periodMsec, System.currentTimeMillis());
+
 Log.d("○△" + getClass().getSimpleName(), "setTimer(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
 
         // ----------
@@ -309,7 +340,10 @@ Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay
                 periodMsec
         );
     }
-
+    
+    /************************************
+     *
+     */
     public void setAlarm() {
 Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
         this.alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
@@ -322,7 +356,11 @@ Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
                 //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
                 PendingIntent.FLAG_ONE_SHOT
         );
-        long delayMsec = 5000;
+        long delayMsec = calcDelayMsec(
+                Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_START_TIME, "")),
+                Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "")),
+                System.currentTimeMillis()
+        );
 
         try {
             if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
@@ -337,11 +375,7 @@ Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
         }
     }
 
-    private void unsetTimerListener() {
-Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()_____________________________");
-        this.cancelTimer();
-        this.unregisterReceiver(this.timerReceiver);
-    }
+
     /************************************
      * これはブロードキャストレシーバーからも呼ばれてるから敢えて外に外している
      */
@@ -349,14 +383,14 @@ Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()______________
 Log.d("○"+this.getClass().getSimpleName(), "cancelTimer()_____________________________");
         this.timer.cancel();
     }
+    /************************************
+     *
+     */
     public void cancelAlarm() {
 Log.d("○△"+getClass().getSimpleName(), "cancelAlarm()______________");
         this.alarmManager.cancel(this.pendingIntent);
     }
-
-    // --------------------------------------------------------------------
-    //
-    // --------------------------------------------------------------------
+    
 
 
 }

@@ -39,11 +39,10 @@
             android:defaultValue="false"
             android:title="@string/setting_when_timer_title"
             android:summary="@string/setting_when_timer_summary" />
-        <ListPreference
+        <!-- ↓entries,entryValuesは動的に追加 -->
+        <xyz.monogatari.suke.autowallpaper.StartTimingPreference
             android:key="when_timer_startTime"
-            android:entries="@array/setting_when_timer_startTime_entries"
-            android:entryValues="@array/setting_when_timer_startTime_values"
-            android:defaultValue="@string/setting_when_timer_startTime_values_default"
+            android:defaultValue="@string/setting_when_timer_startTime_values_0"
             android:title="@string/setting_when_timer_startTime_title"
             android:summary="%s"
             />
