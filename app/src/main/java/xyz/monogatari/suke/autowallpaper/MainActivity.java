@@ -77,7 +77,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         }
 
         // ----------------------------------
-        // Preferenceのデフォルト値の設定
+        // 初回起動時のPreferenceのデフォルト値の適用
         // ----------------------------------
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
