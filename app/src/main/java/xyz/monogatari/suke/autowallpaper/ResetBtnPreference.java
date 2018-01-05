@@ -1,9 +1,12 @@
 package xyz.monogatari.suke.autowallpaper;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -91,6 +94,11 @@ Log.d("○"+this.getClass().getSimpleName(), "onDialogClosed(): positiveResult: 
             // SharedPreferenceにデフォルト値を設定（SharedPreferenceに値があるときは設定されない）
             PreferenceManager.setDefaultValues(this.getContext(), R.xml.preferences, true);
 
+            // 再描画
+            Activity a = ((Activity)this.getContext());
+            a.recreate();
+
+            // トースト表示
             Toast.makeText(this.getContext(), this.textResult, Toast.LENGTH_SHORT)
                     .show();
         }
