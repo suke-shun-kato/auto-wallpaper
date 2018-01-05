@@ -75,6 +75,15 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         } else {
             this.serviceOnOffButton.setText(R.string.off_to_on);
         }
+
+        // ----------------------------------
+        // Preferenceのデフォルト値の設定
+        // ----------------------------------
+        PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+        // ----------------------------------
+        //
+        // ----------------------------------
 java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
 java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
 
