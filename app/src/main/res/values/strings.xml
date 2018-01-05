@@ -78,7 +78,7 @@
 
     <string name="setting_other_resetBtn_title">Resets to default values.</string>
     <string name="setting_other_resetBtn_resultText">Resets to default values.</string>
-    <string name="setting_other_resetBtn_dialogTex">Are you sure that you want to reset setting values?</string>
+    <string name="setting_other_resetBtn_dialogText">Are you sure that you want to reset setting values?</string>
 
     <string name="select_dir_pref_dialog_title">Select directory.</string>
     <integer name="request_code_main_service">1</integer>

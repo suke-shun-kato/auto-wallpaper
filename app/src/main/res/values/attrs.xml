@@ -8,7 +8,8 @@
         <attr name="textOauthFailed" format="string" />
     </declare-styleable>
     <declare-styleable name="ResetBtnPreference">
-        <attr name="textDialog" format="string" />
+        <attr name="textDialogMsg" format="string" />
+        <attr name="textDialogTitle" format="string" />
         <attr name="textResult" format="string" />
     </declare-styleable>
 </resources>

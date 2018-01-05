@@ -6,6 +6,8 @@ import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 /**
@@ -18,7 +20,8 @@ public class ResetBtnPreference extends DialogPreference {
     // フィールド
     // --------------------------------------------------------------------
     /** カスタム属性からの文字列の設定 */
-    private String textDialog;
+    private String textDialogMsg;
+    private String textDialogTitle;
     private String textResult;
 
     // --------------------------------------------------------------------
@@ -43,14 +46,29 @@ public class ResetBtnPreference extends DialogPreference {
                 R.styleable.ResetBtnPreference,
                 0, 0);
         try {
-            this.textDialog
-                    = typedAry.getString(R.styleable.ResetBtnPreference_textDialog);
+            this.textDialogMsg
+                    = typedAry.getString(R.styleable.ResetBtnPreference_textDialogMsg);
+            this.textDialogTitle
+                    = typedAry.getString(R.styleable.ResetBtnPreference_textDialogTitle);
             this.textResult
                     = typedAry.getString(R.styleable.ResetBtnPreference_textResult);
         } finally {
             typedAry.recycle();
         }
     }
+    // --------------------------------------------------------------------
+    // メソッド、オーバーライド
+    // --------------------------------------------------------------------
+    /************************************
+     *
+     */
+    @Override
+    protected View onCreateView(ViewGroup parent) {
+        this.setDialogTitle(this.textDialogTitle);
+        this.setDialogMessage(this.textDialogMsg);
+        return super.onCreateView(parent);
+    }
+
 
     /************************************
      * ダイアログが閉じたとき
@@ -77,4 +95,5 @@ Log.d("○"+this.getClass().getSimpleName(), "onDialogClosed(): positiveResult: 
                     .show();
         }
     }
+
 }
