@@ -257,19 +257,4 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
 
 
     }
-
-    /************************************
-     * 設定を消去ボタンをクリックしたとき
-     * @param view 押されたボタンのビュー
-     */
-    public void dellSp_onClick(@SuppressWarnings("unused") View view) {
-        // SharedPreferenceを削除
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-        editor.clear().apply();
-
-        //
-        Toast.makeText(this, "設定を削除（初期化）しました", Toast.LENGTH_SHORT)
-                .show();
-
-    }
 }
