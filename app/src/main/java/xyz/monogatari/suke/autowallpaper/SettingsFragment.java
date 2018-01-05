@@ -122,6 +122,20 @@ Log.d("○"+this.getClass().getSimpleName(), "onActivityCreated():start");
         super.onActivityCreated(savedInstanceState);
     }
 
+    public void onNewIntent(Intent intent) {
+Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先頭）");
+        // ----------------------------------
+        // Twitter認証のコールバックのとき TwitterOAuthPreference にIntentでURLの情報を渡す
+        // コールバックではonActivityCreated()は呼ばれないのでこの場所
+        // ----------------------------------
+        // Twitter認証のコールバックのとき
+        if ( intent != null
+                && intent.getData() != null
+                && intent.getData().toString().startsWith(TwitterOAuthPreference.CALLBACK_URL)) {
+            ((TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH)).onNewIntent(intent);
+        }
+    }
+
     /************************************
      * フラグメントが表示される直前
      */
@@ -129,19 +143,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onActivityCreated():start");
     public void onStart() {
 Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先頭）");
         super.onStart();
-
-        Intent getIntent = this.getActivity().getIntent();
-        // ----------------------------------
-        // Twitter認証のコールバックのとき TwitterOAuthPreference にIntentでURLの情報を渡す
-        // コールバックではonActivityCreated()は呼ばれないのでこの場所
-        // ----------------------------------
-        // Twitter認証のコールバックのとき
-        if ( getIntent != null
-                && getIntent.getData() != null
-                && getIntent.getData().toString().startsWith(TwitterOAuthPreference.CALLBACK_URL)) {
-            ((TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH)).onNewIntent(getIntent);
-        }
-
         // ----------------------------------
         // サービスへバインドする
         // ↓公式でonStart()のタイミングでバインドしている（Activityだけど）のでこの場所
