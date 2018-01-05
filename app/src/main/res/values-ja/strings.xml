@@ -5,7 +5,6 @@
     <string name="main_to_setting">設定へ</string>
     <string name="main_to_history">履歴へ</string>
     <string name="main_set_wallpaper">壁紙をセットする</string>
-    <string name="main_dell_sp">Dell SharedePreference</string>
     <string name="permission_toast">壁紙のデータをファイルから取得するために許可が必要です</string>
     <string name="setting_from">取得元</string>
     <string name="setting_from_dir_onoff_title">ディレクトリから</string>
@@ -46,5 +45,8 @@
     </string-array>
     <string name="setting_other">その他</string>
     <string name="setting_other_autoRotation_title">画像を自動で回転させる</string>
+    <string name="setting_other_resetBtn_title">値を初期化する</string>
+    <string name="setting_other_resetBtn_resultText">初期化しました</string>
+    <string name="setting_other_resetBtn_dialogText">設定値を初期化しますか？</string>
     <string name="select_dir_pref_dialog_title">ディレクトリを選択してください。</string>
 </resources>

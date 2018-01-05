@@ -9,7 +9,6 @@
     <string name="main_to_setting">To Setting</string>
     <string name="main_to_history">To History</string>
     <string name="main_set_wallpaper">Sets wallpaper</string>
-    <string name="main_dell_sp">Dell Shared Preference</string>
     <string name="permission_toast">wants a storage permission to display a wall paper of file.</string>
     <string name="setting_from">FROM</string>
     <string name="setting_from_dir_onoff_title">From Directory</string>
@@ -75,6 +74,11 @@
     <string name="setting_when_timer_interval_values_default" tools:ignore="MissingTranslation">30000</string>
     <string name="setting_other">Other</string>
     <string name="setting_other_autoRotation_title">Auto Rotation ON/OFF</string>
+
+    <string name="setting_other_resetBtn_title">Resets to default values.</string>
+    <string name="setting_other_resetBtn_resultText">Resets to default values.</string>
+    <string name="setting_other_resetBtn_dialogText">Are you sure that you want to reset setting values?</string>
+
     <string name="select_dir_pref_dialog_title">Select directory.</string>
     <integer name="request_code_main_service">1</integer>
 </resources>
