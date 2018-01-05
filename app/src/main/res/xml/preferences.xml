@@ -72,5 +72,12 @@
             android:defaultValue="true"
             android:key="other_autoRotation"
             android:title="@string/setting_other_autoRotation_title" />
+        <xyz.monogatari.suke.autowallpaper.ResetBtnPreference
+            android:key="other_resetBtn"
+            android:title="@string/setting_other_resetBtn_title"
+            custom:textDialog="@string/setting_other_resetBtn_dialogTex"
+            custom:textResult="@string/setting_other_resetBtn_resultText"
+            />
     </PreferenceCategory>
+
 </PreferenceScreen>
