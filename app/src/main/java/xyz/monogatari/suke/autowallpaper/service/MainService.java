@@ -252,6 +252,7 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
      * 画面ON時壁紙変更のイベントリスナー削除
      */
     private void unsetScreenOnListener() {
+Log.d("○○○○○○○○", ""+this.onOffReceiver);
         this.unregisterReceiver(this.onOffReceiver);
     }
 
