@@ -228,8 +228,8 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
                     this.unsetTimerListener();
                 }
                 break;
-            case SettingsFragment.KEY_WHEN_TIMER_START_TIME:
             case SettingsFragment.KEY_WHEN_TIMER_INTERVAL:
+            case SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0:
                 this.unsetTimerListener();
                 this.setTimerListener();
                 break;
@@ -291,6 +291,14 @@ Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()______________
      */
     private static long calcDelayMsec(long startUnixTimeMsec, long periodMsec, long nowUnixTimeMsec) {
         // ----------------------------------
+        // 例外処理
+        // ----------------------------------
+        if (startUnixTimeMsec == -1L) {
+            return 0;
+        }
+        // ----------------------------------
+        // 通常処理
+        // ----------------------------------
         // xxxは整数
         // startUnixTimeMsec + (xxx-1) * periodMsec < nowUnixTimeMsec < startUnixTimeMsec + xxx * periodMsec
         // (xxx-1) * periodMsec < nowUnixTimeMsec - startUnixTimeMsec < xxx * periodMsec
@@ -312,10 +320,9 @@ Log.d("○△"+getClass().getSimpleName(), "setTimer()______________");
         final long periodMsec = Long.parseLong(this.sp.getString(
                 SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
         ));
-        // getInt()だとエラーが出る
-        final long unixTime = Long.parseLong(this.sp.getString(
-                SettingsFragment.KEY_WHEN_TIMER_START_TIME, ""
-        ));
+        final long unixTime = this.sp.getLong(
+                SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, -1
+        );
         final long delayMsec = calcDelayMsec(unixTime, periodMsec, System.currentTimeMillis());
 
 Log.d("○△" + getClass().getSimpleName(), "setTimer(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
@@ -357,7 +364,7 @@ Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
                 PendingIntent.FLAG_ONE_SHOT
         );
         long delayMsec = calcDelayMsec(
-                Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_START_TIME, "")),
+                this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, -1),
                 Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "")),
                 System.currentTimeMillis()
         );

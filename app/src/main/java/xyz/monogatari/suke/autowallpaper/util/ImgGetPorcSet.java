@@ -11,6 +11,7 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -105,6 +106,11 @@ public class ImgGetPorcSet {
 
         //// 壁紙を取得
         Bitmap wallpaperBitmap = imgGetter.getImg();
+        // todo ↓の取得できなかったときのエラーハンドリングをちゃんとする、ディレクトリにファイルゼロやTwitterのアクセス制限など
+        if (wallpaperBitmap == null) {
+            Toast.makeText(this.context, "画像取得エラー", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
 
         // ----------------------------------

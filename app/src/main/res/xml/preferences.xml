@@ -39,11 +39,21 @@
             android:defaultValue="false"
             android:title="@string/setting_when_timer_title"
             android:summary="@string/setting_when_timer_summary" />
-        <!-- ↓entries,entryValuesは動的に追加 -->
+        <!-- timing_1の変更を受けて、_0が動的に変わる -->
         <xyz.monogatari.suke.autowallpaper.StartTimingPreference
-            android:key="when_timer_startTime"
-            android:defaultValue="@string/setting_when_timer_startTime_values_0"
+            android:key="when_timer_startTiming_0"
             android:title="@string/setting_when_timer_startTime_title"
+            android:defaultValue="-1"
+            android:summary="%s"
+            android:enabled="false"
+            />
+        <!-- valueは0.0～1.0 倍率 -->
+        <ListPreference
+            android:key="when_timer_startTiming_1"
+            android:entries="@array/setting_when_timer_starTiming_1_entries"
+            android:entryValues="@array/setting_when_timer_starTiming_1_values"
+            android:defaultValue="0.0"
+            android:title="@string/setting_when_timer_starTiming_1_title"
             android:summary="%s"
             />
         <ListPreference

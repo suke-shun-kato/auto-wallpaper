@@ -8,9 +8,9 @@ import java.lang.reflect.Method;
 import static org.junit.Assert.assertEquals;
 
 /**
+ * MainService.calcDelayMsec()のテストコード
  * Created by k-shunsuke on 2018/01/02.
  */
-
 public class MainService_calcDelayMsec {
     private Method method;
 
@@ -55,7 +55,7 @@ public class MainService_calcDelayMsec {
 
     }
     @Test
-    public void mainus() throws Exception {
+    public void minus() throws Exception {
         assertEquals(
                 0L, //面積
                 this.method.invoke(null, 100, 5, 95)

@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
@@ -90,7 +89,9 @@ public class SettingsFragment extends PreferenceFragment
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
     public static final String KEY_WHEN_TIMER = "when_timer";
-    public static final String KEY_WHEN_TIMER_START_TIME = "when_timer_startTime";
+    public static final String KEY_WHEN_TIMER_START_TIMING_0 = "when_timer_startTiming_0";
+    @SuppressWarnings("WeakerAccess")
+    public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
     public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";
 
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
@@ -130,11 +131,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先�
         super.onStart();
 
         Intent getIntent = this.getActivity().getIntent();
-//String a;
-//boolean s = (a == null);
-//String b = "aaaaa";
-//a = "cccc";
-//b = "fffff";
         // ----------------------------------
         // Twitter認証のコールバックのとき TwitterOAuthPreference にIntentでURLの情報を渡す
         // コールバックではonActivityCreated()は呼ばれないのでこの場所
@@ -175,19 +171,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
         }
     }
 
-    private void setStartTimePreference() {
-        ListPreference startTimeLP = (ListPreference)this.findPreference(KEY_WHEN_TIMER_START_TIME);
-        ListPreference intervalLP = (ListPreference)this.findPreference(KEY_WHEN_TIMER_INTERVAL);
-
-        startTimeLP.setEntryValues(new String[]{
-                this.getString(R.string.setting_when_timer_startTime_values_0),
-                intervalLP.getValue()
-        });
-        startTimeLP.setEntries(new String[]{
-                this.getString(R.string.setting_when_timer_startTime_entries_0),
-                (String)intervalLP.getEntry()
-        });
-    }
     /************************************
      * Preference.setOnPreferenceClickListener
      * フラグメントに関連づいたView層を生成する直前
@@ -214,10 +197,10 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
             twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
         }
 
-        // ----------------------------------
-        //
-        // ----------------------------------
-        this.setStartTimePreference();
+        //// 開始タイミング_0（デバッグ用）
+        this.findPreference(KEY_WHEN_TIMER_START_TIMING_0).setSummary(
+                Long.toString( this.sp.getLong(KEY_WHEN_TIMER_START_TIMING_0, -1L) )
+        );
 
         // ----------------------------------
         // <Preference>のイベントリスナの設定、主にパーミッションダイアログ表示用
@@ -427,24 +410,29 @@ Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): ke
                 Preference fromTwitterOauthPreference = this.findPreference(key);
                 fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
                 break;
+
+            //// 開始タイミング_0（デバッグ用）
+            case KEY_WHEN_TIMER_START_TIMING_0:
+                this.findPreference(key).setSummary(
+                        Long.toString( sp.getLong(key, -1L) )
+                );
+                break;
         }
 
         // ----------------------------------
-        // Listの値を変更
+        // StartTimingPreference の値を動的に変更
         // ----------------------------------
-        //// 開始時間
-        if ( key.equals(KEY_WHEN_TIMER_INTERVAL) ) {
-            ListPreference startTimePreference = ((ListPreference)this.findPreference(KEY_WHEN_TIMER_START_TIME));
-            //index取得はsetStartTimePreferenceの前にすること
-            int index = startTimePreference.findIndexOfValue( startTimePreference.getValue() );
-
-            this.setStartTimePreference();
-
-            startTimePreference.setValueIndex(index);
-//            String sssss = this.sp.getString(KEY_WHEN_TIMER_START_TIME, "");
-//            String fff = "ss";
+        switch (key) {
+            case KEY_WHEN_TIMER_INTERVAL:
+            case KEY_WHEN_TIMER_START_TIMING_1:
+                StartTimingPreference startTimingPf = ((StartTimingPreference)this.findPreference(KEY_WHEN_TIMER_START_TIMING_0));
+                startTimingPf.setValue(
+                    Double.parseDouble(this.sp.getString(KEY_WHEN_TIMER_START_TIMING_1, "0.0")),
+                    Long.parseLong(this.sp.getString(KEY_WHEN_TIMER_INTERVAL, "0")),
+                    System.currentTimeMillis()
+                );
+                break;
         }
-
 
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える
