@@ -88,6 +88,12 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_FROM_TWITTER_OAUTH = "from_twitter_oauth";
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
+    public static final String KEY_WHEN_TIMER = "when_timer";
+    public static final String KEY_WHEN_TIMER_START_TIMING_0 = "when_timer_startTiming_0";
+    @SuppressWarnings("WeakerAccess")
+    public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
+    public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";
+
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
 
     private static final int RQ_CODE_FROM_DIR = 1;
@@ -125,7 +131,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先�
         super.onStart();
 
         Intent getIntent = this.getActivity().getIntent();
-
         // ----------------------------------
         // Twitter認証のコールバックのとき TwitterOAuthPreference にIntentでURLの情報を渡す
         // コールバックではonActivityCreated()は呼ばれないのでこの場所
@@ -165,6 +170,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
             this.isBound = false;
         }
     }
+
     /************************************
      * Preference.setOnPreferenceClickListener
      * フラグメントに関連づいたView層を生成する直前
@@ -190,6 +196,11 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
         } else {
             twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
         }
+
+        //// 開始タイミング_0（デバッグ用）
+        this.findPreference(KEY_WHEN_TIMER_START_TIMING_0).setSummary(
+                Long.toString( this.sp.getLong(KEY_WHEN_TIMER_START_TIMING_0, -1L) )
+        );
 
         // ----------------------------------
         // <Preference>のイベントリスナの設定、主にパーミッションダイアログ表示用
@@ -398,8 +409,30 @@ Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): ke
             case KEY_FROM_TWITTER_OAUTH:    //Twitter認証完了後にサマリーが認証完了になるようにする
                 Preference fromTwitterOauthPreference = this.findPreference(key);
                 fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
+                break;
+
+            //// 開始タイミング_0（デバッグ用）
+            case KEY_WHEN_TIMER_START_TIMING_0:
+                this.findPreference(key).setSummary(
+                        Long.toString( sp.getLong(key, -1L) )
+                );
+                break;
         }
 
+        // ----------------------------------
+        // StartTimingPreference の値を動的に変更
+        // ----------------------------------
+        switch (key) {
+            case KEY_WHEN_TIMER_INTERVAL:
+            case KEY_WHEN_TIMER_START_TIMING_1:
+                StartTimingPreference startTimingPf = ((StartTimingPreference)this.findPreference(KEY_WHEN_TIMER_START_TIMING_0));
+                startTimingPf.setValue(
+                    Double.parseDouble(this.sp.getString(KEY_WHEN_TIMER_START_TIMING_1, "0.0")),
+                    Long.parseLong(this.sp.getString(KEY_WHEN_TIMER_INTERVAL, "0")),
+                    System.currentTimeMillis()
+                );
+                break;
+        }
 
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える

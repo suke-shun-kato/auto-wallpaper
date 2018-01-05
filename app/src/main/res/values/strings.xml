@@ -25,9 +25,56 @@
     <string name="setting_from_twitter_oauth_text_oauthSuccess">Auth Success</string>
     <string name="setting_from_twitter_oauth_text_oauthFailed">Auth failed</string>
     <string name="setting_when">WHEN</string>
-    <string name="setting_when_turnOn_summary">When screen turns on, wallpaper changes.</string>
     <string name="setting_when_turnOn_title">screen turns on</string>
+    <string name="setting_when_turnOn_summary">When screen turns on, wallpaper changes.</string>
+    <string name="setting_when_timer_title">set time</string>
+    <string name="setting_when_timer_summary">will set at set time.</string>
+
+    <string name="setting_when_timer_startTime_title">start time</string>
+    <!--<string name="setting_when_timer_startTime_entries_0">Now</string>-->
+    <!--<string name="setting_when_timer_startTime_values_0">0</string>-->
+
+    <string name="setting_when_timer_starTiming_1_title">start timing</string>
+    <string-array name="setting_when_timer_starTiming_1_entries">
+        <item>soon</item>
+        <item>after set time</item>
+    </string-array>
+    <string-array name="setting_when_timer_starTiming_1_values" tools:ignore="MissingTranslation">
+        <item>0.0</item><!-- floatで設定する -->
+        <item>1.0</item>
+    </string-array>
+
+
+
+    <string name="setting_when_timer_interval_title">Interval</string>
+    <string-array name="setting_when_timer_interval_entries">
+        <item>5 seconds</item>
+        <item>15 seconds</item>
+        <item>30 seconds</item>
+        <item>5 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>12 hours</item>
+        <item>1 day</item>
+    </string-array>
+    <!-- ↓はPreferenceで読み込んでいるのでinteger-arrayにはできない -->
+    <string-array name="setting_when_timer_interval_values" tools:ignore="MissingTranslation">
+        <item>5000</item>  <!-- 5*1000 -->
+        <item>15000</item>  <!-- 15*1000 -->
+        <item>30000</item>  <!-- 30*1000 -->
+        <item>300000</item>  <!-- 5*60*1000 -->
+        <item>1800000</item> <!-- 30*60*1000 -->
+        <item>3600000</item> <!-- 1*60*60*1000 -->
+        <item>10800000</item><!-- 3*60*60*1000 -->
+        <item>21600000</item><!-- 6*60*60*1000 -->
+        <item>43200000</item><!-- 12*60*60*1000 -->
+        <item>86400000</item><!-- 1*24*60*60*1000 -->
+    </string-array>
+    <string name="setting_when_timer_interval_values_default" tools:ignore="MissingTranslation">30000</string>
     <string name="setting_other">Other</string>
     <string name="setting_other_autoRotation_title">Auto Rotation ON/OFF</string>
     <string name="select_dir_pref_dialog_title">Select directory.</string>
+    <integer name="request_code_main_service">1</integer>
 </resources>

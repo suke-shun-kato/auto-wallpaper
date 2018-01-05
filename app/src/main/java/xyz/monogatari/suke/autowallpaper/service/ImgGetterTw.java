@@ -141,6 +141,7 @@ Log.d("○△", ""+responseStr.length());
      * }
      */
     private static List<JSONObject> editJson(JSONArray jsonAry) {
+Log.d("○○○○", ""+jsonAry);
         List<JSONObject> jsonObj = new ArrayList<>();
         jsonObj.addAll( getMediaJson(jsonAry, "entities") );  //1枚目のメディア画像
         jsonObj.addAll( getMediaJson(jsonAry, "extended_entities") ); //2～4枚目のメディア画像
@@ -162,6 +163,9 @@ Log.d("○△", ""+responseStr.length());
         // ----------------------------------
         // 抽選
         // ----------------------------------
+        if ( flattenJson.size() == 0) {
+            return null;
+        }
         int drawnIndex = new Random().nextInt(flattenJson.size());
         String imgUrl = flattenJson.get(drawnIndex).optString("media_url_https");
 
