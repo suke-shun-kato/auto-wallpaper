@@ -46,6 +46,13 @@ public class MainService extends Service {
     private PendingIntent pendingIntent;
 
     // --------------------------------------------------------------------
+    // 定数
+    // --------------------------------------------------------------------
+    public static final String ACTION_NORMAL = "xyz.monogatari.suke.autowallpaper.NORMAL";
+    @SuppressWarnings("WeakerAccess")
+    public static final String ACTION_WALLPAPER_CHANGE = "xyz.monogatari.suke.autowallpaper.WALLPAPER_CHANGE";
+
+    // --------------------------------------------------------------------
     // フィールド（バインド用）
     // --------------------------------------------------------------------
     /**
@@ -115,33 +122,42 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCod
     // メソッド（開始されたサービス（通常サービス）のとき）
     // --------------------------------------------------------------------
     /************************************
-     * 通常のサービスを開始したとき
+     * 通常のサービスを開始したとき、現状では以下の場合が考えられる
+     * 「メインActivityで開始ボタンを押したとき」
+     * 「アクティビティを廃棄したときの再起動」
+     * 「アラームでセットした時間の壁紙変更」
      * @param intent startService() でサービスで送ったIntent
      * @param flags 追加データ、0 か START_FLAG_REDELIVERY か START_FLAG_RETRY
      * @param startId ユニークなID, startService()を重複して実行するたびに ++startId される
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-Log.d("○"+this.getClass().getSimpleName(), "onStartCommand()が呼ばれた hashCode: " + this.hashCode());
-Log.d("○"+this.getClass().getSimpleName(), "  flags: "+flags + ", startId: "+ startId);
+String action = null;
+if (intent != null) {
+    action = intent.getAction();
+}
+Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + this.hashCode() + ", intent: " + intent + ",action: " + action + ", flags: "+flags + ", startId: "+ startId);
+
+
         this.isStarted = true;
 
         // ----------------------------------
         //
         // ----------------------------------
+
+        //// アラームからスタートした場合
+        if (intent != null && intent.getAction() != null && intent.getAction().equals(ACTION_WALLPAPER_CHANGE)) {
+            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
+                new ImgGetPorcSet(this).executeNewThread();
+            }
+        } else {
         //// 通常の場合
-        if ( startId == 1 ) {
             if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
                 this.setScreenOnListener();
             }
             if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
                 this.setTimerListener();
-            }
-        //// アラームからスタートした場合
-        } else {
-            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
-                new ImgGetPorcSet(this).executeNewThread();
             }
         }
 
@@ -321,12 +337,12 @@ Log.d("○△"+getClass().getSimpleName(), "setTimer()______________");
         final long periodMsec = Long.parseLong(this.sp.getString(
                 SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
         ));
-        final long unixTime = this.sp.getLong(
+        final long startTimeUnixTime = this.sp.getLong(
                 SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, -1
         );
-        final long delayMsec = calcDelayMsec(unixTime, periodMsec, System.currentTimeMillis());
+        final long delayMsec = calcDelayMsec(startTimeUnixTime, periodMsec, System.currentTimeMillis());
 
-Log.d("○△" + getClass().getSimpleName(), "setTimer(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
+//Log.d("○△" + getClass().getSimpleName(), "setTimer(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
 
         // ----------
         // 本番
@@ -340,13 +356,19 @@ Log.d("○△" + getClass().getSimpleName(), "setTimer(): delay:"+delayMsec/1000
                 new TimerTask() {
                     @Override
                     public void run() {
-Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
+Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒, hash: " + this.hashCode());
                         new ImgGetPorcSet(MainService.this).executeNewThread();
                     }
                 },
                 delayMsec,
                 periodMsec
         );
+        // -1のままだと次にタイマーをセットするときやアラームをセットするとき即実行してしまうので、ここで補正
+        if (startTimeUnixTime == -1) {
+            this.sp.edit()
+                    .putLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis())
+                    .apply();
+        }
     }
     
     /************************************
@@ -360,7 +382,7 @@ Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
                 this,
                 //呼び出し元を識別するためのコード
                 this.getResources().getInteger(R.integer.request_code_main_service),
-                new Intent(this, MainService.class),
+                new Intent(ACTION_WALLPAPER_CHANGE, null, this, MainService.class),
                 //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
                 PendingIntent.FLAG_ONE_SHOT
         );
@@ -372,11 +394,11 @@ Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
 Log.d("○△"+getClass().getSimpleName(), "delay: " + delayMsec);
         try {
             if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
-                alarmManager.set(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+                this.alarmManager.set(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
             } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+                this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
             } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+                this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
