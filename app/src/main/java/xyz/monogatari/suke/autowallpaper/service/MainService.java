@@ -369,7 +369,7 @@ Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
                 Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "")),
                 System.currentTimeMillis()
         );
-
+Log.d("○△"+getClass().getSimpleName(), "delay: " + delayMsec);
         try {
             if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
                 alarmManager.set(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);

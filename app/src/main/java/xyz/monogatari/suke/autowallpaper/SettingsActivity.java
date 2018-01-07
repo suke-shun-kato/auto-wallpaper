@@ -15,6 +15,7 @@ public class SettingsActivity extends AppCompatActivity {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
+    private SettingsFragment settingFragment;
 
 
     // --------------------------------------------------------------------
@@ -30,12 +31,12 @@ public class SettingsActivity extends AppCompatActivity {
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: ");
         super.onCreate(savedInstanceState);
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2");
-        if ( savedInstanceState == null) {
-            this.getFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, new SettingsFragment())
-                    .commit();
-            Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super3");
-        }
+        this.settingFragment = new SettingsFragment();
+
+        this.getFragmentManager().beginTransaction()
+                .replace(android.R.id.content, this.settingFragment)
+                .commit();
+Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super3");
 
     }
 
@@ -55,11 +56,10 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2"
      */
     @Override
     protected void onNewIntent(Intent intent) {
+Log.d("○○○○○○○○○○" + this.getClass().getSimpleName(), "onNewIntent(): data: "+intent.getData());
         super.onNewIntent(intent);
 
-        // 新しいIntentが来た場合Fragmentで新しいIntentを取得するためにセットする
-        // ここはTwitter認証の為に更新している
-        this.setIntent(intent);
+        this.settingFragment.onNewIntent(intent);
     }
 
     /************************************
