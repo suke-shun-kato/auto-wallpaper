@@ -428,8 +428,13 @@ Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay
      * 電源OFF時のタイマーのアラーム起動
      */
     public void setAlarm() {
+        // ----------------------------------
+        // 準備
+        // ----------------------------------
+        //// alarmManager
         this.alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
 
+        //// pendingIntent
         this.pendingIntent = PendingIntent.getService(
                 this,
                 //呼び出し元を識別するためのコード
@@ -438,19 +443,29 @@ Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay
                 //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
                 PendingIntent.FLAG_ONE_SHOT
         );
+
+        //// wakeUpUnixTime アラームの起動時間
+        long nowUnixTimeMsec = System.currentTimeMillis();
         long delayMsec = calcDelayMsec(
                 this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()),
                 Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "5000")),
-                System.currentTimeMillis()
+                nowUnixTimeMsec
         );
-Log.d("○"+getClass().getSimpleName(), "setAlarm(): delayMsec: " + delayMsec + "ミリ秒");
+        long wakeUpUnixTime = delayMsec + nowUnixTimeMsec;
+
+Log.d("○"+getClass().getSimpleName(), "setAlarm(), delayMsec=" + delayMsec + "ミリ秒, nowUnixTimeMsec=" + nowUnixTimeMsec + "ミリ秒, wakeUpUnixTime=" + wakeUpUnixTime + "ミリ秒");
+
+        // ----------------------------------
+        // 本番
+        // ----------------------------------
         try {
             if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
-                this.alarmManager.set(AlarmManager.RTC_WAKEUP, delayMsec, this.pendingIntent);
+                this.alarmManager.set(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
             } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
-                this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, delayMsec, this.pendingIntent);
+                this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
             } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
-                this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, delayMsec, this.pendingIntent);
+Log.d("○","通ってますよa！！！！！！！！！！！！");
+                this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();

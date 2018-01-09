@@ -27,7 +27,7 @@ public class WallPaperChangerService extends IntentService {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         if ( sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
 Log.d("○"+getClass().getSimpleName(), "onHandleIntent(): Alarmより起動:");
-            // 別スレッドでサービス起動しているから、現在のスレッドで壁紙交換
+            // 別スレッドでサービス起動しているから、今のスレッドで壁紙交換
             new ImgGetPorcSet(this).execute();
         }
     }
