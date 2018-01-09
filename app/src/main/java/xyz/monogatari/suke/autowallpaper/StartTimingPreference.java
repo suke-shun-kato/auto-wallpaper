@@ -21,13 +21,9 @@ public class StartTimingPreference extends Preference {
     // 
     // --------------------------------------------------------------------
     /************************************
-     * _1用
+     *
      */
     public void setValue(double mag, long intervalMsec, long nowUnixTimeMsec) {
-        if (mag == 0.0) {
-            this.persistLong(-1L);
-        } else {
-            this.persistLong( Math.round( mag * intervalMsec + nowUnixTimeMsec ) );
-        }
+        this.persistLong( Math.round( mag * intervalMsec + nowUnixTimeMsec ) );
     }
 }
