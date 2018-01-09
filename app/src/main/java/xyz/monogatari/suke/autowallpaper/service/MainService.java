@@ -331,18 +331,17 @@ Log.d("○"+ getClass().getSimpleName(), "unsetScreenOnListener(): "+this.onOffR
      * 設定タイマー壁紙変更のイベントリスナー登録
      */
     private void setTimerListener() {
-Log.d("○"+getClass().getSimpleName(), "setTimerListener()_____________________________");
+Log.d("○"+getClass().getSimpleName(), "setTimerListener(), hashCode()="+this.timerReceiver.hashCode());
         // ----------------------------------
         // タイマーセット
         // ----------------------------------
         this.setTimer();
-Log.d("○"+getClass().getSimpleName(), "setTimerListener()_____________________________2");
 
         // ----------------------------------
         // ブロードキャストレシーバーを設置
         // ----------------------------------
         this.timerReceiver = new TimerBcastReceiver();
-Log.d("○○○"+getClass().getSimpleName(), "setTimerListener():timerReceiver.hashCode(): "+this.timerReceiver.hashCode());
+
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -353,8 +352,7 @@ Log.d("○○○"+getClass().getSimpleName(), "setTimerListener():timerReceiver.
      * 設定タイマー時壁紙変更のイベントリスナー削除
      */
     private void unsetTimerListener() {
-Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()_____________________________");
-Log.d("○○○"+getClass().getSimpleName(), ""+this.timerReceiver.hashCode());
+Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener(), hashCode()="+this.timerReceiver.hashCode());
         this.cancelTimer();
         this.unregisterReceiver(this.timerReceiver);
     }
