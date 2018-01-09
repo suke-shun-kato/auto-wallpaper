@@ -33,9 +33,6 @@ public class TimerBcastReceiver extends BroadcastReceiver {
         // メイン処理
         // ----------------------------------
         if ( inttActionStr.equals(Intent.ACTION_SCREEN_ON) ) {
-
-
-
 Log.d("○" + this.getClass().getSimpleName(), "電源ONになった瞬間のタイマー処理です");
             ((MainService)context).setTimer();
             ((MainService)context).cancelAlarm();

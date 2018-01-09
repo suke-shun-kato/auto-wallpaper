@@ -34,7 +34,7 @@ public class MainService extends Service {
 
     /** ブロードキャストレシーバーのインスタンス */
     private final ScreenOnOffBcastReceiver onOffReceiver = new ScreenOnOffBcastReceiver();
-    private final TimerBcastReceiver timerReceiver = new TimerBcastReceiver();
+    private TimerBcastReceiver timerReceiver;
 
     /** SharedPreference */
     private SharedPreferences sp;
@@ -115,35 +115,45 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCod
     // メソッド（開始されたサービス（通常サービス）のとき）
     // --------------------------------------------------------------------
     /************************************
-     * 通常のサービスを開始したとき
+     * 通常のサービスを開始したとき、現状では以下の場合が考えられる
+     * 「メインActivityで開始ボタンを押したとき」
+     * 「アクティビティを廃棄したときの再起動」
+     * 「アラームでセットした時間の壁紙変更」
      * @param intent startService() でサービスで送ったIntent
      * @param flags 追加データ、0 か START_FLAG_REDELIVERY か START_FLAG_RETRY
      * @param startId ユニークなID, startService()を重複して実行するたびに ++startId される
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-Log.d("○"+this.getClass().getSimpleName(), "onStartCommand()が呼ばれた hashCode: " + this.hashCode());
-Log.d("○"+this.getClass().getSimpleName(), "  flags: "+flags + ", startId: "+ startId);
+String action = null;
+if (intent != null) {
+    action = intent.getAction();
+}
+Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + this.hashCode() + ", intent: " + intent + ",action: " + action + ", flags: "+flags + ", startId: "+ startId);
+
+
         this.isStarted = true;
 
         // ----------------------------------
         //
         // ----------------------------------
+//
+//        //// アラームからスタートした場合
+//        if (intent != null && intent.getAction() != null && intent.getAction().equals(ACTION_WALLPAPER_CHANGE)) {
+//            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+//Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
+//                new ImgGetPorcSet(this).executeNewThread();
+//            }
+//        } else {
         //// 通常の場合
-        if ( startId == 1 ) {
             if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
                 this.setScreenOnListener();
             }
             if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+                this.persistStart0();
                 this.setTimerListener();
             }
-        //// アラームからスタートした場合
-        } else {
-            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
-                new ImgGetPorcSet(this).executeNewThread();
-            }
-        }
+//        }
 
         return START_STICKY;
     }
@@ -228,12 +238,73 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
                     this.unsetTimerListener();
                 }
                 break;
-            case SettingsFragment.KEY_WHEN_TIMER_INTERVAL:
             case SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0:
-                this.unsetTimerListener();
-                this.setTimerListener();
+                if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+Log.d("○"+getClass().getSimpleName(), "WHEN_TIMER_START_TIMING_0:" + this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, 0L)+", NOW:"+System.currentTimeMillis() );
+                    this.unsetTimerListener();
+                    this.setTimerListener();
+                }
+                break;
+            case SettingsFragment.KEY_WHEN_TIMER_INTERVAL:
+            case SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1:
+                if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+                    // ここで_0を変更するとまたonSPChanged()が叩かれる
+                    this.persistStart0();
+                }
                 break;
         }
+    }
+
+    /************************************
+     * START_TIMING_1 とINTERVALからSTART_TIMING_0 に値を永続化（保存）する
+     * ※注意、ここに値を保存すると、サービス開始していて設定画面表示中だと onSPChanged() が発火します
+     */
+    private void persistStart0() {
+        double mag = Double.parseDouble(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, "0.0"));
+        long intervalMsec = Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "5000"));
+        long nowUnixTimeMsec = System.currentTimeMillis();
+Log.d("○"+getClass().getSimpleName(), "persistStart0(): mag:"+mag+", intervalMsec:"+intervalMsec+", nowUnixTimeMsec:"+nowUnixTimeMsec);
+
+        this.sp.edit().putLong(
+                SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0,
+                Math.round( calcStartUnixTime(intervalMsec, mag, nowUnixTimeMsec ) )  //開始時間のUnixタイム[ms]
+        ).apply();
+    }
+
+    /************************************
+     * Timerの開始時刻のUnixTime[ms] を求める
+     * @param intervalMsec Timerの間隔
+     * @param mag a
+     * @param nowUnixTimeMsec 現在のUNIXタイム
+     * @return Timerの開始時刻のUnixTime[ms]
+     */
+    private static double calcStartUnixTime(long intervalMsec, double mag, long nowUnixTimeMsec) {
+        // 境界値辺りの値の修正はば[ms]
+        final double  COMPRESS_MSEC = 500.0;
+        
+        // タイマーをセットするときには少し秒数が経過しているので、500ms秒をここで追加
+        // ----------------------------------
+        // 例外処理
+        // ----------------------------------
+        if (intervalMsec < COMPRESS_MSEC * 2) {
+            throw new RuntimeException("intervalMsecが大きすぎます");
+        }
+        
+        // ----------------------------------
+        // 本番
+        // ----------------------------------
+        //// メイン処理
+        double xxxMSecondsAfter = mag * intervalMsec;
+
+        //// 境界値付近（0[ms]付近とintervalMsec[ms]付近）は実際にTimerセットするときずれるので内側に値を修正
+        if ( 0.0 <= xxxMSecondsAfter && xxxMSecondsAfter < COMPRESS_MSEC) {
+            xxxMSecondsAfter = COMPRESS_MSEC;
+        }
+        if ( intervalMsec - COMPRESS_MSEC < xxxMSecondsAfter && xxxMSecondsAfter <= intervalMsec ) {
+            xxxMSecondsAfter = intervalMsec - COMPRESS_MSEC;
+        }
+
+        return xxxMSecondsAfter + nowUnixTimeMsec;
     }
 
     // --------------------------------------------------------------------
@@ -252,22 +323,26 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
      * 画面ON時壁紙変更のイベントリスナー削除
      */
     private void unsetScreenOnListener() {
-Log.d("○○○○○○○○", ""+this.onOffReceiver);
+Log.d("○"+ getClass().getSimpleName(), "unsetScreenOnListener(): "+this.onOffReceiver);
         this.unregisterReceiver(this.onOffReceiver);
     }
 
     /************************************
-     * 設定タイマー時壁紙変更のイベントリスナー登録
+     * 設定タイマー壁紙変更のイベントリスナー登録
      */
     private void setTimerListener() {
+Log.d("○"+getClass().getSimpleName(), "setTimerListener()_____________________________");
         // ----------------------------------
         // タイマーセット
         // ----------------------------------
         this.setTimer();
+Log.d("○"+getClass().getSimpleName(), "setTimerListener()_____________________________2");
 
         // ----------------------------------
         // ブロードキャストレシーバーを設置
         // ----------------------------------
+        this.timerReceiver = new TimerBcastReceiver();
+Log.d("○○○"+getClass().getSimpleName(), "setTimerListener():timerReceiver.hashCode(): "+this.timerReceiver.hashCode());
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -279,6 +354,7 @@ Log.d("○○○○○○○○", ""+this.onOffReceiver);
      */
     private void unsetTimerListener() {
 Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()_____________________________");
+Log.d("○○○"+getClass().getSimpleName(), ""+this.timerReceiver.hashCode());
         this.cancelTimer();
         this.unregisterReceiver(this.timerReceiver);
     }
@@ -294,9 +370,9 @@ Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()______________
         // ----------------------------------
         // 例外処理
         // ----------------------------------
-        if (startUnixTimeMsec == -1L) {
-            return 0;
-        }
+//        if (startUnixTimeMsec == -1L) {
+//            return 0;
+//        }
         // ----------------------------------
         // 通常処理
         // ----------------------------------
@@ -314,19 +390,18 @@ Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener()______________
      * これはブロードキャストレシーバーからも呼ばれているので敢えてpublicでsetTimerListener()の外に外している
      */
     public void setTimer() {
-Log.d("○△"+getClass().getSimpleName(), "setTimer()______________");
+
         // ----------
         // 変数準備
         // ----------
-        final long periodMsec = Long.parseLong(this.sp.getString(
+        final long intervalMsec = Long.parseLong(this.sp.getString(
                 SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
         ));
-        final long unixTime = this.sp.getLong(
-                SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, -1
+        final long startTimeUnixTime = this.sp.getLong(
+                SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()
         );
-        final long delayMsec = calcDelayMsec(unixTime, periodMsec, System.currentTimeMillis());
-
-Log.d("○△" + getClass().getSimpleName(), "setTimer(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
+        final long delayMsec = calcDelayMsec(startTimeUnixTime, intervalMsec, System.currentTimeMillis());
+Log.d("○△"+getClass().getSimpleName(), "setTimer()______________: intervalMsec: "+intervalMsec + ", startTimeUnixTime: " + startTimeUnixTime + ", delayMsec: " + delayMsec);
 
         // ----------
         // 本番
@@ -340,43 +415,57 @@ Log.d("○△" + getClass().getSimpleName(), "setTimer(): delay:"+delayMsec/1000
                 new TimerTask() {
                     @Override
                     public void run() {
-Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+periodMsec/1000+"秒");
+Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+intervalMsec/1000+"秒, hash: " + this.hashCode());
                         new ImgGetPorcSet(MainService.this).executeNewThread();
                     }
                 },
                 delayMsec,
-                periodMsec
+                intervalMsec
         );
     }
     
     /************************************
-     *
+     * 電源OFF時のタイマーのアラーム起動
      */
     public void setAlarm() {
-Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
+        // ----------------------------------
+        // 準備
+        // ----------------------------------
+        //// alarmManager
         this.alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
 
+        //// pendingIntent
         this.pendingIntent = PendingIntent.getService(
                 this,
                 //呼び出し元を識別するためのコード
                 this.getResources().getInteger(R.integer.request_code_main_service),
-                new Intent(this, MainService.class),
+                new Intent(this, WallPaperChangerService.class),
                 //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
                 PendingIntent.FLAG_ONE_SHOT
         );
+
+        //// wakeUpUnixTime アラームの起動時間
+        long nowUnixTimeMsec = System.currentTimeMillis();
         long delayMsec = calcDelayMsec(
-                this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, -1),
-                Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "")),
-                System.currentTimeMillis()
+                this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()),
+                Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "5000")),
+                nowUnixTimeMsec
         );
-Log.d("○△"+getClass().getSimpleName(), "delay: " + delayMsec);
+        long wakeUpUnixTime = delayMsec + nowUnixTimeMsec;
+
+Log.d("○"+getClass().getSimpleName(), "setAlarm(), delayMsec=" + delayMsec + "ミリ秒, nowUnixTimeMsec=" + nowUnixTimeMsec + "ミリ秒, wakeUpUnixTime=" + wakeUpUnixTime + "ミリ秒");
+
+        // ----------------------------------
+        // 本番
+        // ----------------------------------
         try {
             if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
-                alarmManager.set(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+                this.alarmManager.set(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
             } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
-                alarmManager.setExact(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+                this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
             } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
-                alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+Log.d("○","通ってますよa！！！！！！！！！！！！");
+                this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();
@@ -388,14 +477,14 @@ Log.d("○△"+getClass().getSimpleName(), "delay: " + delayMsec);
      * これはブロードキャストレシーバーからも呼ばれてるから敢えて外に外している
      */
     public void cancelTimer() {
-Log.d("○"+this.getClass().getSimpleName(), "cancelTimer()_____________________________");
+Log.d("○"+this.getClass().getSimpleName(), "cancelTimer()_");
         this.timer.cancel();
     }
     /************************************
      *
      */
     public void cancelAlarm() {
-Log.d("○△"+getClass().getSimpleName(), "cancelAlarm()______________");
+Log.d("○△"+getClass().getSimpleName(), "cancelAlarm()_");
         this.alarmManager.cancel(this.pendingIntent);
     }
     

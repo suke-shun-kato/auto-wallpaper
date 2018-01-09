@@ -200,7 +200,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
 
         //// 開始タイミング_0（デバッグ用）
         this.findPreference(KEY_WHEN_TIMER_START_TIMING_0).setSummary(
-                Long.toString( this.sp.getLong(KEY_WHEN_TIMER_START_TIMING_0, -1L) )
+                Long.toString( this.sp.getLong(KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()) )
         );
 
         // ----------------------------------
@@ -416,21 +416,6 @@ Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): ke
             case KEY_WHEN_TIMER_START_TIMING_0:
                 this.findPreference(key).setSummary(
                         Long.toString( sp.getLong(key, -1L) )
-                );
-                break;
-        }
-
-        // ----------------------------------
-        // StartTimingPreference の値を動的に変更
-        // ----------------------------------
-        switch (key) {
-            case KEY_WHEN_TIMER_INTERVAL:
-            case KEY_WHEN_TIMER_START_TIMING_1:
-                StartTimingPreference startTimingPf = ((StartTimingPreference)this.findPreference(KEY_WHEN_TIMER_START_TIMING_0));
-                startTimingPf.setValue(
-                    Double.parseDouble(this.sp.getString(KEY_WHEN_TIMER_START_TIMING_1, "0.0")),
-                    Long.parseLong(this.sp.getString(KEY_WHEN_TIMER_INTERVAL, "0")),
-                    System.currentTimeMillis()
                 );
                 break;
         }
