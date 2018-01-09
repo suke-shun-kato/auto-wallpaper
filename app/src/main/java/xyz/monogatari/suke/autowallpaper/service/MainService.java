@@ -464,7 +464,7 @@ Log.d("○"+getClass().getSimpleName(), "setAlarm(), delayMsec=" + delayMsec + "
             } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
                 this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
             } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
-Log.d("○","通ってますよa！！！！！！！！！！！！");
+//Log.d("○","通ってますよa！！！！！！！！！！！！");
                 this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
             }
         } catch (NullPointerException e) {
