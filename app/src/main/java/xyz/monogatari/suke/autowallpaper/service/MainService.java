@@ -46,13 +46,6 @@ public class MainService extends Service {
     private PendingIntent pendingIntent;
 
     // --------------------------------------------------------------------
-    // 定数
-    // --------------------------------------------------------------------
-    public static final String ACTION_NORMAL = "xyz.monogatari.suke.autowallpaper.NORMAL";
-    @SuppressWarnings("WeakerAccess")
-    public static final String ACTION_WALLPAPER_CHANGE = "xyz.monogatari.suke.autowallpaper.WALLPAPER_CHANGE";
-
-    // --------------------------------------------------------------------
     // フィールド（バインド用）
     // --------------------------------------------------------------------
     /**
@@ -144,14 +137,14 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
         // ----------------------------------
         //
         // ----------------------------------
-
-        //// アラームからスタートした場合
-        if (intent != null && intent.getAction() != null && intent.getAction().equals(ACTION_WALLPAPER_CHANGE)) {
-            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
-                new ImgGetPorcSet(this).executeNewThread();
-            }
-        } else {
+//
+//        //// アラームからスタートした場合
+//        if (intent != null && intent.getAction() != null && intent.getAction().equals(ACTION_WALLPAPER_CHANGE)) {
+//            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+//Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
+//                new ImgGetPorcSet(this).executeNewThread();
+//            }
+//        } else {
         //// 通常の場合
             if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
                 this.setScreenOnListener();
@@ -160,7 +153,7 @@ Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
                 this.persistStart0();
                 this.setTimerListener();
             }
-        }
+//        }
 
         return START_STICKY;
     }
@@ -432,33 +425,32 @@ Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay
     }
     
     /************************************
-     *
+     * 電源OFF時のタイマーのアラーム起動
      */
     public void setAlarm() {
-Log.d("○△"+getClass().getSimpleName(), "setAlarm()______________");
         this.alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
 
         this.pendingIntent = PendingIntent.getService(
                 this,
                 //呼び出し元を識別するためのコード
                 this.getResources().getInteger(R.integer.request_code_main_service),
-                new Intent(ACTION_WALLPAPER_CHANGE, null, this, MainService.class),
+                new Intent(this, WallPaperChangerService.class),
                 //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
                 PendingIntent.FLAG_ONE_SHOT
         );
         long delayMsec = calcDelayMsec(
                 this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()),
-                Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "")),
+                Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "5000")),
                 System.currentTimeMillis()
         );
-Log.d("○△"+getClass().getSimpleName(), "delay: " + delayMsec);
+Log.d("○"+getClass().getSimpleName(), "setAlarm(): delayMsec: " + delayMsec + "ミリ秒");
         try {
             if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
-                this.alarmManager.set(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+                this.alarmManager.set(AlarmManager.RTC_WAKEUP, delayMsec, this.pendingIntent);
             } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
-                this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+                this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, delayMsec, this.pendingIntent);
             } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
-                this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, delayMsec, pendingIntent);
+                this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, delayMsec, this.pendingIntent);
             }
         } catch (NullPointerException e) {
             e.printStackTrace();

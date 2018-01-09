@@ -61,9 +61,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         this.sp = PreferenceManager.getDefaultSharedPreferences(this);
 
         // サービス開始用のインテントを作成
-        this.serviceIntent = new Intent(MainService.ACTION_NORMAL, null, this, MainService.class);
-//this.serviceIntent.putExtra("ServiceCode", 100);
-this.serviceIntent.putExtra("ServiceCode", "100");
+        this.serviceIntent = new Intent(this, MainService.class);
 
         //
         this.isServiceRunning = this.isServiceRunningSystem(MainService.class);
