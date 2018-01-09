@@ -39,11 +39,11 @@
             android:defaultValue="false"
             android:title="@string/setting_when_timer_title"
             android:summary="@string/setting_when_timer_summary" />
-        <!-- timing_1の変更を受けて、_0が動的に変わる -->
-        <xyz.monogatari.suke.autowallpaper.StartTimingPreference
+        <!-- long型の値が格納される, サービス開始された時に_1から計算されて書き込まれる（もしくは実行中に_1が変化したとき） -->
+        <Preference
             android:key="when_timer_startTiming_0"
             android:title="@string/setting_when_timer_startTime_title"
-            android:defaultValue="-1"
+            android:defaultValue="0"
             android:summary="%s"
             android:enabled="false"
             />

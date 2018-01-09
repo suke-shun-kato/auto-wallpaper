@@ -421,21 +421,6 @@ Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): ke
         }
 
         // ----------------------------------
-        // StartTimingPreference の値を動的に変更
-        // ----------------------------------
-//        switch (key) {
-//            case KEY_WHEN_TIMER_INTERVAL:
-//            case KEY_WHEN_TIMER_START_TIMING_1:
-//                StartTimingPreference startTimingPf = ((StartTimingPreference)this.findPreference(KEY_WHEN_TIMER_START_TIMING_0));
-//                startTimingPf.setValue(
-//                    Double.parseDouble(this.sp.getString(KEY_WHEN_TIMER_START_TIMING_1, "0.0")),
-//                    Long.parseLong(this.sp.getString(KEY_WHEN_TIMER_INTERVAL, "0")),
-//                    System.currentTimeMillis()
-//                );
-//                break;
-//        }
-
-        // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える
         // ----------------------------------
         this.mainService.onSPChanged(key);
