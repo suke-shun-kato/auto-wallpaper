@@ -72,12 +72,13 @@
         <item>86400000</item><!-- 1*24*60*60*1000 -->
     </string-array>
     <string name="setting_when_timer_interval_values_default" tools:ignore="MissingTranslation">30000</string>
-    <string name="setting_other">Other</string>
+    <string name="setting_other_title">Other</string>
     <string name="setting_other_autoRotation_title">Auto Rotation ON/OFF</string>
 
-    <string name="setting_other_resetBtn_title">Resets to default values.</string>
-    <string name="setting_other_resetBtn_resultText">Resets to default values.</string>
-    <string name="setting_other_resetBtn_dialogText">Are you sure that you want to reset setting values?</string>
+    <string name="setting_reset_title">Reset</string>
+    <string name="setting_reset_resetBtn_title">Resets to default values.</string>
+    <string name="setting_reset_resetBtn_resultText">Resets to default values.</string>
+    <string name="setting_reset_resetBtn_dialogText">Are you sure that you want to reset setting values?</string>
 
     <string name="select_dir_pref_dialog_title">Select directory.</string>
     <integer name="request_code_main_service">1</integer>
