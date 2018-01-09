@@ -19,7 +19,6 @@ import java.util.TimerTask;
 
 import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
-import xyz.monogatari.suke.autowallpaper.StartTimingPreference;
 import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 
 /**
@@ -158,7 +157,7 @@ Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
                 this.setScreenOnListener();
             }
             if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-                this.set_0();
+                this.persistStart0();
                 this.setTimerListener();
             }
         }
@@ -257,36 +256,62 @@ Log.d("○"+getClass().getSimpleName(), "WHEN_TIMER_START_TIMING_0:" + this.sp.g
             case SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1:
                 if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
                     // ここで_0を変更するとまたonSPChanged()が叩かれる
-                    this.set_0();
+                    this.persistStart0();
                 }
                 break;
         }
     }
 
-    private void set_0() {
+    /************************************
+     * START_TIMING_1 とINTERVALからSTART_TIMING_0 に値を永続化（保存）する
+     * ※注意、ここに値を保存すると、サービス開始していて設定画面表示中だと onSPChanged() が発火します
+     */
+    private void persistStart0() {
         double mag = Double.parseDouble(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, "0.0"));
         long intervalMsec = Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "5000"));
         long nowUnixTimeMsec = System.currentTimeMillis();
-Log.d("○"+getClass().getSimpleName(), "set_0(): mag:"+mag+", intervalMsec:"+intervalMsec+", nowUnixTimeMsec:"+nowUnixTimeMsec);
-
-        // 補正
-        // タイマーをセットするときには少し秒数が経過しているので、500ms秒をここで追加
-        double offffff = 500.0;
-        if (intervalMsec < offffff) {
-            throw new RuntimeException("intervalMsecが大きすぎます");
-        }
-        double aaaMsec = mag * intervalMsec;
-        if ( 0.0 <= aaaMsec && aaaMsec < offffff) {
-            aaaMsec = offffff;
-        }
-        if ( intervalMsec - offffff < aaaMsec && aaaMsec <= intervalMsec ) {
-            aaaMsec = intervalMsec - offffff;
-        }
+Log.d("○"+getClass().getSimpleName(), "persistStart0(): mag:"+mag+", intervalMsec:"+intervalMsec+", nowUnixTimeMsec:"+nowUnixTimeMsec);
 
         this.sp.edit().putLong(
                 SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0,
-                Math.round( aaaMsec + nowUnixTimeMsec )  //開始時間のUnixタイム[ms]
+                Math.round( calcStartUnixTime(intervalMsec, mag, nowUnixTimeMsec ) )  //開始時間のUnixタイム[ms]
         ).apply();
+    }
+
+    /************************************
+     * Timerの開始時刻のUnixTime[ms] を求める
+     * @param intervalMsec Timerの間隔
+     * @param mag a
+     * @param nowUnixTimeMsec 現在のUNIXタイム
+     * @return Timerの開始時刻のUnixTime[ms]
+     */
+    private static double calcStartUnixTime(long intervalMsec, double mag, long nowUnixTimeMsec) {
+        // 境界値辺りの値の修正はば[ms]
+        final double  COMPRESS_MSEC = 500.0;
+        
+        // タイマーをセットするときには少し秒数が経過しているので、500ms秒をここで追加
+        // ----------------------------------
+        // 例外処理
+        // ----------------------------------
+        if (intervalMsec < COMPRESS_MSEC * 2) {
+            throw new RuntimeException("intervalMsecが大きすぎます");
+        }
+        
+        // ----------------------------------
+        // 本番
+        // ----------------------------------
+        //// メイン処理
+        double xxxMSecondsAfter = mag * intervalMsec;
+
+        //// 境界値付近（0[ms]付近とintervalMsec[ms]付近）は実際にTimerセットするときずれるので内側に値を修正
+        if ( 0.0 <= xxxMSecondsAfter && xxxMSecondsAfter < COMPRESS_MSEC) {
+            xxxMSecondsAfter = COMPRESS_MSEC;
+        }
+        if ( intervalMsec - COMPRESS_MSEC < xxxMSecondsAfter && xxxMSecondsAfter <= intervalMsec ) {
+            xxxMSecondsAfter = intervalMsec - COMPRESS_MSEC;
+        }
+
+        return xxxMSecondsAfter + nowUnixTimeMsec;
     }
 
     // --------------------------------------------------------------------
