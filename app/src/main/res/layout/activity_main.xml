@@ -1,27 +1,32 @@
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="xyz.monogatari.suke.autowallpaper.MainActivity">
-    <Button
+
+    <ImageButton
         android:id="@+id/main_onOff_service"
-        android:layout_width="match_parent"
+        android:src="@drawable/ccc"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/circle_btn"
         android:onClick="onOffService_onClick" />
+
     <Button
         android:id="@+id/main_to_setting"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="toSetting_onClick"
         android:text="@string/main_to_setting" />
+
     <Button
         android:id="@+id/set_wallpaper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:onClick="setWallpaper_onClick"
         android:text="@string/main_set_wallpaper" />
+
     <Button
         android:id="@+id/main_to_history"
         android:layout_width="match_parent"

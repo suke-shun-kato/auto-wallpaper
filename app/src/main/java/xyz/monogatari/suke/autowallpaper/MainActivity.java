@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     /** サービスに渡すIntent、再利用 */
     private Intent serviceIntent;
     /** サービスON,OFFボタンのView、再利用 */
-    private Button serviceOnOffButton;
+    private ImageButton serviceOnOffButton;
     /** サービスが起動中か */
     private boolean isServiceRunning;
 
@@ -40,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     /** パーミッションリクエスト用のリクエストコード */
     private static final int RQ_CODE_SERVICE = 1;
     private static final int RQ_CODE_ACTIVITY = 2;
+
+    private static final int BTN_OFF = 0;
+    private static final int BTN_ON = 1;
 
     // --------------------------------------------------------------------
     // メソッド（ライフサイクル）
@@ -69,11 +73,12 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // ----------------------------------
         // 表示の切り替え
         // ----------------------------------
-        this.serviceOnOffButton = findViewById(R.id.main_onOff_service);
+        this.serviceOnOffButton = (ImageButton) findViewById(R.id.main_onOff_service);
         if (this.isServiceRunning) {
-            this.serviceOnOffButton.setText(R.string.on_to_off);
+Log.d("○○○○○○○○○○○○", "ONNNNNNNNNNNNNNNNNNNNNNNNN");
+            this.serviceOnOffButton.setImageLevel(BTN_ON);
         } else {
-            this.serviceOnOffButton.setText(R.string.off_to_on);
+            this.serviceOnOffButton.setImageLevel(BTN_OFF);
         }
 
         // ----------------------------------
@@ -161,7 +166,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         // -------------------------------------------------
         if ( this.isServiceRunning) {
             this.stopService(this.serviceIntent);
-            this.serviceOnOffButton.setText(R.string.off_to_on);
+            this.serviceOnOffButton.setImageLevel(BTN_OFF);
             this.isServiceRunning = false;
         // -------------------------------------------------
         // サービスが停止中のとき ONにする
@@ -195,7 +200,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
             // 通常処理
             // ----------------------------------
             this.startService(this.serviceIntent);
-            this.serviceOnOffButton.setText(R.string.on_to_off);
+            this.serviceOnOffButton.setImageLevel(BTN_ON);
             this.isServiceRunning = true;
         }
     }
