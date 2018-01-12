@@ -77,12 +77,13 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // ----------------------------------
         // 表示の切り替え
         // ----------------------------------
-        this.serviceOnOffButton = (ImageButton) findViewById(R.id.main_onOff_service);
+        this.serviceOnOffButton = findViewById(R.id.main_onOff_service);
         if (this.isServiceRunning) {
-Log.d("○○○○○○○○○○○○", "ONNNNNNNNNNNNNNNNNNNNNNNNN");
             this.serviceOnOffButton.setImageLevel(BTN_ON);
+            this.getWindow().setBackgroundDrawableResource(R.color.translucentLight);
         } else {
             this.serviceOnOffButton.setImageLevel(BTN_OFF);
+            this.getWindow().setBackgroundDrawableResource(R.color.translucentDark);
         }
 
         // ----------------------------------
@@ -180,6 +181,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         if ( this.isServiceRunning) {
             this.stopService(this.serviceIntent);
             this.serviceOnOffButton.setImageLevel(BTN_OFF);
+            this.getWindow().setBackgroundDrawableResource(R.color.translucentDark);
             this.isServiceRunning = false;
         // -------------------------------------------------
         // サービスが停止中のとき ONにする
@@ -214,6 +216,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
             // ----------------------------------
             this.startService(this.serviceIntent);
             this.serviceOnOffButton.setImageLevel(BTN_ON);
+            this.getWindow().setBackgroundDrawableResource(R.color.translucentLight);
             this.isServiceRunning = true;
         }
     }

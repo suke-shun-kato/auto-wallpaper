@@ -16,7 +16,7 @@
         <item name="colorAccent">@color/colorAccentTranslucent</item>
 
         <!--========== 背景の設定 ==========-->
-        <!-- windowの背景の設定、transparent:透明な -->
+        <!-- windowの背景の設定、プログラムで動的に設定しているが、ひとまずデフォルト値みたいな感じでここで設定しとく、transparent:透明な -->
         <item name="android:windowBackground">@color/translucentDark</item> <!--<item name="android:windowBackground">@color/translucentLight</item>-->
         <!--  caching rendered views が使われるときの背景色のヒント、背景色が透明のときはnullにしないといけない -->
         <item name="android:colorBackgroundCacheHint">@null</item>
