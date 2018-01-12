@@ -1,9 +1,12 @@
 package xyz.monogatari.suke.autowallpaper;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -14,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -87,8 +91,16 @@ Log.d("○○○○○○○○○○○○", "ONNNNNNNNNNNNNNNNNNNNNNNNN");
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
         // ----------------------------------
-        //
+        // 壁紙変更のブロードキャストレシーバーの装着
         // ----------------------------------
+//        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
+//        MainActivityBackgroundBcReceiver bcastRceiver = new MainActivityBackgroundBcReceiver();
+//        IntentFilter intentFilter = new IntentFilter();
+//        intentFilter.addAction(Intent.ACTION_WALLPAPER_CHANGED);
+//        this.registerReceiver(bcastRceiver, intentFilter);
+
+
+
 java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
 java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
 
@@ -101,6 +113,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
 
 
     }
+
     /************************************
      * アクティビティが描画される直前
      * ストレージのパーミッションのダイアログを表示する
