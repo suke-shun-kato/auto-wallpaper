@@ -15,12 +15,14 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
+
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;

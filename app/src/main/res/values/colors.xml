@@ -2,6 +2,7 @@
 <resources>
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
+    <!--<color name="colorPrimaryDark">#00FFFF</color>-->
     <color name="colorAccent">#FF4081</color>
 
     <color name="colorPrimaryTranslucent">#883F51B5</color>
@@ -9,6 +10,10 @@
     <color name="colorAccentTranslucent">#88FF4081</color>
 
     <color name="colorText">#FFFFFF</color>
+
+    <color name="r">#FF0000</color>
+    <color name="g">#00FF00</color>
+    <color name="b">#0000FF</color>
 
     <color name="translucentLight">#88FFFFFF</color>
     <color name="translucentDark">#88000000</color>
