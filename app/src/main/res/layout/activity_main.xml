@@ -18,7 +18,7 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
-
+        android:layout_marginTop="20dp"
         tools:context="xyz.monogatari.suke.autowallpaper.MainActivity">
         <!-- scaleType はsrcの画像も拡大する-->
         <ImageButton
@@ -39,6 +39,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal"
+        android:layout_marginBottom="40dp"
         >
         <Button
             style="?android:attr/buttonBarStyle"
