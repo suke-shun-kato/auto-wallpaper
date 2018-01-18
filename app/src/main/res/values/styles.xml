@@ -21,9 +21,10 @@
         <item name="android:colorBackgroundCacheHint">@null</item>
         <!-- windowに壁紙を表示させるか、壁紙はwindowの背景の後ろに表示される -->
         <item name="android:windowShowWallpaper">true</item>
+
         <!-- 上と下のバーを半透明にする、APIレベル19（Android4.4）以上で設定、translucent:半透明の  -->
         <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item><!--上-->
-        <!--<item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item>&lt;!&ndash;下&ndash;&gt;-->
+        <item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item><!--下-->
     </style>
     <!--アクションバーの設定-->
     <style name="MainActivityTheme.ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar">

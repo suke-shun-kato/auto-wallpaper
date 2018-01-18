@@ -5,4 +5,7 @@
         android:height="24dp"
         android:width="24dp"
         />
+    <solid
+        android:color="@android:color/transparent"
+        />
 </shape>
