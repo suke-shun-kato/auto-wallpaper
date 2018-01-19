@@ -6,6 +6,10 @@
         android:width="24dp"
         />
     <solid
-        android:color="@android:color/transparent"
+        android:color="@color/colorPrimaryTranslucent"
+        />
+    <stroke
+        android:width="4dp"
+        android:color="@color/colorPrimaryDarkTranslucent"
         />
 </shape>

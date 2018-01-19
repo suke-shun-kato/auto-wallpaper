@@ -28,10 +28,10 @@
             android:layout_height="@dimen/main_activity_power_btn_size"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:background="@drawable/btn_power"
+            android:background="@drawable/btnbk_power"
             android:onClick="onOffService_onClick"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_power_onoff_24dp" />
+            android:src="@drawable/btn_power_onoff_24dp" />
     </RelativeLayout>
     <LinearLayout
         style="?android:attr/buttonBarStyle"
@@ -51,7 +51,7 @@
             android:onClick="setWallpaper_onClick"
             android:text="@string/main_set_wallpaper"
             android:textColor="@color/colorText"
-            android:background="@drawable/btn_usual"
+            android:background="@drawable/btnbk_main"
             />
         <Button
             style="?android:attr/buttonBarStyle"
@@ -65,7 +65,7 @@
             android:onClick="toSetting_onClick"
             android:text="@string/main_to_setting"
             android:textColor="@color/colorText"
-            android:background="@drawable/btn_usual"
+            android:background="@drawable/btnbk_main"
                 />
 
 

@@ -11,10 +11,6 @@
 
     <color name="colorText">#FFFFFF</color>
 
-    <color name="r">#FF0000</color>
-    <color name="g">#00FF00</color>
-    <color name="b">#0000FF</color>
-
-    <color name="translucentLight">#88FFFFFF</color>
-    <color name="translucentDark">#88000000</color>
+    <color name="translucentLight">#66FFFFFF</color>
+    <color name="translucentDark">#CC000000</color>
 </resources>
