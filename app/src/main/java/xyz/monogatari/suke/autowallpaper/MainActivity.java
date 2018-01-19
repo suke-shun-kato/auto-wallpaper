@@ -87,17 +87,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // ----------------------------------
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
 
-        // ----------------------------------
-        // 壁紙変更のブロードキャストレシーバーの装着
-        // ----------------------------------
-//        this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER);
-//        MainActivityBackgroundBcReceiver bcastRceiver = new MainActivityBackgroundBcReceiver();
-//        IntentFilter intentFilter = new IntentFilter();
-//        intentFilter.addAction(Intent.ACTION_WALLPAPER_CHANGED);
-//        this.registerReceiver(bcastRceiver, intentFilter);
-
-
-
 java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
 java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
 

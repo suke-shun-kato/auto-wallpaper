@@ -7,4 +7,5 @@
     <dimen name="main_activity_btn_usual_margin">20dp</dimen>
 
     <dimen name="main_activity_power_btn_size">280dp</dimen>
+    <dimen name="main_activity_setWallpaper_btn_size">120dp</dimen>
 </resources>
