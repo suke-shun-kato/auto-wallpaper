@@ -20,10 +20,21 @@
         android:orientation="vertical"
         android:layout_marginTop="20dp"
         tools:context="xyz.monogatari.suke.autowallpaper.MainActivity">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/btn_main_onOff_service"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+
+            android:text="@string/main_power"
+            android:textColor="@color/colorText"
+            android:textSize="32sp" />
         <!-- scaleType はsrcの画像も拡大する-->
         <ImageButton
             android:contentDescription="@string/main_power"
-            android:id="@+id/main_onOff_service"
+            android:id="@+id/btn_main_onOff_service"
             android:layout_width="@dimen/main_activity_power_btn_size"
             android:layout_height="@dimen/main_activity_power_btn_size"
             android:layout_centerHorizontal="true"
@@ -32,6 +43,45 @@
             android:onClick="onOffService_onClick"
             android:scaleType="centerCrop"
             android:src="@drawable/btn_power_onoff_24dp" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_below="@id/btn_main_onOff_service"
+            android:layout_toRightOf="@id/btn_main_onOff_service"
+            android:layout_marginTop="-100dp"
+            android:layout_marginLeft="-100dp"
+            >
+            <!-- ここは敢えてlayout_alignEndはなし -->
+            <ImageButton
+                android:id="@+id/btn_main_change_wallpaper"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+
+                android:padding="16dp"
+
+                android:background="@drawable/btnbk_wallpaper_change"
+                android:contentDescription="@string/main_set_wallpaper"
+                android:onClick="setWallpaper_onClick"
+                android:scaleType="centerCrop"
+                android:src="@drawable/btn_wallpaper_change_24dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@id/btn_main_change_wallpaper"
+                android:layout_centerHorizontal="true"
+
+                android:layout_marginTop="4dp"
+                android:textColor="@color/colorText"
+                android:text="@string/main_set_wallpaper"
+                />
+
+        </RelativeLayout>
+
+
+
+
     </RelativeLayout>
     <LinearLayout
         style="?android:attr/buttonBarStyle"

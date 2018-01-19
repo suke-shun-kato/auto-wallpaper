@@ -2,7 +2,7 @@
     <string name="app_name">自動壁紙</string>
     <string name="off_to_on">OFF→ON</string>
     <string name="on_to_off">ON→OFF</string>
-    <string name="main_power">ON/OFFボタン</string>
+    <string name="main_power">ON/OFF</string>
     <string name="main_to_setting">設定へ</string>
     <string name="main_to_history">履歴へ</string>
     <string name="main_set_wallpaper">壁紙をセットする</string>

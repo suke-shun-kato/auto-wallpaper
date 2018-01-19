@@ -1,12 +1,9 @@
 package xyz.monogatari.suke.autowallpaper;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -15,11 +12,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -79,7 +73,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // ----------------------------------
         // 表示の切り替え
         // ----------------------------------
-        this.serviceOnOffButton = findViewById(R.id.main_onOff_service);
+        this.serviceOnOffButton = findViewById(R.id.btn_main_onOff_service);
         if (this.isServiceRunning) {
             this.serviceOnOffButton.setImageLevel(BTN_ON);
             this.getWindow().setBackgroundDrawableResource(R.color.translucentLight);
@@ -240,7 +234,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // ボタンを再度クリックする
                     this.onOffService_onClick(
-                            this.findViewById(R.id.main_onOff_service) );
+                            this.findViewById(R.id.btn_main_onOff_service) );
                 }
                 break;
             case RQ_CODE_ACTIVITY:
