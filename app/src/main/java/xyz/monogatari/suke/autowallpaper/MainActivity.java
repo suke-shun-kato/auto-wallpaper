@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
+import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -14,11 +16,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
+import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 
 public class MainActivity extends AppCompatActivity {
@@ -80,6 +84,18 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         } else {
             this.serviceOnOffButton.setImageLevel(BTN_OFF);
             this.getWindow().setBackgroundDrawableResource(R.color.translucentDark);
+        }
+
+        // ナビゲーションバーが半透明にできるとき（targetAPI 19以上のとき）
+        if (Build.VERSION.SDK_INT >= 19) {
+            Point p = DisplaySizeCheck.getDisplaySize(this);
+Log.d("○○○○○○○○", "x:" +p.x + ", y:" + p.y);
+            Point pr = DisplaySizeCheck.getRealSize(this);
+Log.d("○○○○○○○○", "x:" +pr.x + ", y:" + pr.y);
+
+            ViewGroup vg = this.findViewById(R.id.main_below_buttons);
+            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams)vg.getLayoutParams();
+            mlp.setMargins(0, 0,0, pr.y-p.y );
         }
 
         // ----------------------------------

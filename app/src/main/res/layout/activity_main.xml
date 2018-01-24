@@ -84,12 +84,13 @@
     </RelativeLayout>
     <LinearLayout
         style="?android:attr/buttonBarStyle"
+        android:id="@+id/main_below_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:orientation="horizontal"
-        android:layout_marginBottom="40dp"
         >
+        <!--android:layout_marginBottom="40dp"-->
         <Button
             style="?android:buttonBarButtonStyle"
             android:id="@+id/main_to_history"
