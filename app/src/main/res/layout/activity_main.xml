@@ -12,6 +12,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingEnd="@dimen/activity_horizontal_margin"
     android:orientation="vertical"
+    tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
     >
     <RelativeLayout
         android:layout_width="match_parent"
@@ -19,7 +20,7 @@
         android:layout_weight="1"
         android:orientation="vertical"
         android:layout_marginTop="20dp"
-        tools:context="xyz.monogatari.suke.autowallpaper.MainActivity">
+        >
 
         <TextView
             android:layout_width="wrap_content"

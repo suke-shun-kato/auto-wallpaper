@@ -15,6 +15,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -86,16 +87,39 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
             this.getWindow().setBackgroundDrawableResource(R.color.translucentDark);
         }
 
-        // ナビゲーションバーが半透明にできるとき（targetAPI 19以上のとき）
+        // ----------------------------------
+        // 下ボタンの下マージンをナビゲーションバーの高さだけ足す
+        // ----------------------------------
         if (Build.VERSION.SDK_INT >= 19) {
-            Point p = DisplaySizeCheck.getDisplaySize(this);
-Log.d("○○○○○○○○", "x:" +p.x + ", y:" + p.y);
-            Point pr = DisplaySizeCheck.getRealSize(this);
-Log.d("○○○○○○○○", "x:" +pr.x + ", y:" + pr.y);
+            // ナビゲーションバーを含まない画面サイズ
+            Point noNavBerPoint = DisplaySizeCheck.getDisplaySize(this);
+            // ナビゲーションバーも含んだ画面サイズ
+            Point realSizePoint = DisplaySizeCheck.getRealSize(this);
 
             ViewGroup vg = this.findViewById(R.id.main_below_buttons);
             ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams)vg.getLayoutParams();
-            mlp.setMargins(0, 0,0, pr.y-p.y );
+            mlp.setMargins(0, 0,0, realSizePoint.y - noNavBerPoint.y );
+        }
+
+        // ----------------------------------
+        // アクションバーの高さだけ上パディングを足す
+        // ----------------------------------
+        TypedValue typedValue = new TypedValue();
+        // this.getTheme() は Resources.Theme オブジェクト
+        if ( this.getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
+            //// アクションバーの高さを取得
+            int barHeight = TypedValue.complexToDimensionPixelSize(
+                    typedValue.data,getResources().getDisplayMetrics()
+            );
+
+            //// パディングにバーの高さを足す
+            View mainRootView = this.findViewById(R.id.main_root);
+            mainRootView.setPadding(
+                    mainRootView.getPaddingLeft(),
+                    mainRootView.getPaddingTop() + barHeight,
+                    mainRootView.getPaddingRight(),
+                    mainRootView.getPaddingBottom()
+            );
         }
 
         // ----------------------------------
