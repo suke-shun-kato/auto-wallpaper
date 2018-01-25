@@ -90,16 +90,16 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // ----------------------------------
         // 下ボタンの下マージンをナビゲーションバーの高さだけ足す
         // ----------------------------------
-        if (Build.VERSION.SDK_INT >= 19) {
-            // ナビゲーションバーを含まない画面サイズ
-            Point noNavBerPoint = DisplaySizeCheck.getDisplaySize(this);
-            // ナビゲーションバーも含んだ画面サイズ
-            Point realSizePoint = DisplaySizeCheck.getRealSize(this);
-
-            ViewGroup vg = this.findViewById(R.id.main_below_buttons);
-            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams)vg.getLayoutParams();
-            mlp.setMargins(0, 0,0, realSizePoint.y - noNavBerPoint.y );
-        }
+//        if (Build.VERSION.SDK_INT >= 19) {
+//            // ナビゲーションバーを含まない画面サイズ
+//            Point noNavBerPoint = DisplaySizeCheck.getDisplaySize(this);
+//            // ナビゲーションバーも含んだ画面サイズ
+//            Point realSizePoint = DisplaySizeCheck.getRealSize(this);
+//
+//            ViewGroup vg = this.findViewById(R.id.main_below_buttons);
+//            ViewGroup.MarginLayoutParams mlp = (ViewGroup.MarginLayoutParams)vg.getLayoutParams();
+//            mlp.setMargins(0, 0,0, realSizePoint.y - noNavBerPoint.y );
+//        }
 
         // ----------------------------------
         // アクションバーの高さだけ上パディングを足す

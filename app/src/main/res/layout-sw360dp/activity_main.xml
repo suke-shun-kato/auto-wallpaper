@@ -1,0 +1,122 @@
+<!-- 通常サイズ、横幅が400dp以上、縦横両方 -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingStart="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingEnd="@dimen/activity_horizontal_margin"
+    android:orientation="vertical"
+    tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
+    >
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginTop="20dp"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxWidth="@dimen/main_activity_power_btn_size"
+
+            android:layout_above="@+id/btn_main_onOff_service"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+
+            android:text="@string/main_power"
+            android:textColor="@color/colorText"
+            android:textSize="32sp" />
+        <!-- scaleType はsrcの画像も拡大する-->
+        <ImageButton
+            android:contentDescription="@string/main_power"
+            android:id="@+id/btn_main_onOff_service"
+            android:layout_width="@dimen/main_activity_power_btn_size"
+            android:layout_height="@dimen/main_activity_power_btn_size"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/btnbk_power"
+            android:onClick="onOffService_onClick"
+            android:scaleType="centerCrop"
+            android:src="@drawable/btn_power_onoff_24dp" />
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_below="@id/btn_main_onOff_service"
+            android:layout_toRightOf="@id/btn_main_onOff_service"
+            android:layout_marginTop="-100dp"
+            android:layout_marginLeft="-100dp"
+            tools:ignore="RtlHardcoded">
+            <!-- ここは敢えてlayout_alignEndはなし -->
+            <ImageButton
+                android:id="@+id/btn_main_change_wallpaper"
+                android:layout_width="@dimen/main_activity_setWallpaper_btn_size"
+                android:layout_height="@dimen/main_activity_setWallpaper_btn_size"
+
+                android:padding="16dp"
+
+                android:background="@drawable/btnbk_wallpaper_change"
+                android:contentDescription="@string/main_set_wallpaper"
+                android:onClick="setWallpaper_onClick"
+                android:scaleType="centerCrop"
+                android:src="@drawable/btn_wallpaper_change_24dp" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:maxWidth="@dimen/main_activity_setWallpaper_btn_size"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@id/btn_main_change_wallpaper"
+                android:layout_centerHorizontal="true"
+
+                android:layout_marginTop="4dp"
+                android:textColor="@color/colorText"
+                android:text="@string/main_set_wallpaper"
+                />
+        </RelativeLayout>
+
+    </RelativeLayout>
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:id="@+id/main_below_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        >
+        <!--android:layout_marginBottom="40dp"-->
+        <Button
+            style="?android:buttonBarButtonStyle"
+            android:id="@+id/main_to_history"
+            android:layout_width="@dimen/main_activity_btn_usual_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+
+            android:onClick="toHistory_onClick"
+            android:text="@string/main_to_history"
+            android:textColor="@color/colorText"
+            android:background="@drawable/btnbk_main"
+            />
+        <Button
+            style="?android:buttonBarButtonStyle"
+            android:id="@+id/main_to_setting"
+            android:layout_width="@dimen/main_activity_btn_usual_width"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="@dimen/main_activity_btn_usual_margin"
+            android:layout_marginStart="@dimen/main_activity_btn_usual_margin"
+
+            android:onClick="toSetting_onClick"
+            android:text="@string/main_to_setting"
+            android:textColor="@color/colorText"
+            android:background="@drawable/btnbk_main"
+                />
+    </LinearLayout>
+</LinearLayout>
