@@ -57,8 +57,8 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
 
                 android:layout_below="@id/btn_main_onOff_service"
                 android:layout_toRightOf="@id/btn_main_onOff_service"
-                android:layout_marginTop="-100dp"
-                android:layout_marginLeft="-100dp"
+                android:layout_marginTop="@dimen/main_activity_setWallpaper_margin_rightBottom"
+                android:layout_marginLeft="@dimen/main_activity_setWallpaper_margin_rightBottom"
                 tools:ignore="RtlHardcoded">
                 <!-- ここは敢えてlayout_alignEndはなし -->
                 <ImageButton
@@ -75,7 +75,6 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
                     android:src="@drawable/btn_wallpaper_change_24dp" />
                 <TextView
                     android:layout_width="wrap_content"
-                    android:maxWidth="@dimen/main_activity_setWallpaper_btn_size"
                     android:layout_height="wrap_content"
 
                     android:layout_below="@id/btn_main_change_wallpaper"

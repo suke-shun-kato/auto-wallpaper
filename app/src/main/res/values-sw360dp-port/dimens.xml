@@ -11,4 +11,5 @@
     <dimen name="main_activity_power_between_btn_text">8dp</dimen>
 
     <dimen name="main_activity_setWallpaper_btn_size">120dp</dimen>
+    <dimen name="main_activity_setWallpaper_margin_rightBottom">-100dp</dimen>
 </resources>
