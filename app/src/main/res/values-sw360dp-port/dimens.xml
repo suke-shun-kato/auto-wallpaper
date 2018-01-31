@@ -12,4 +12,8 @@
 
     <dimen name="main_activity_setWallpaper_btn_size">120dp</dimen>
     <dimen name="main_activity_setWallpaper_margin_rightBottom">-100dp</dimen>
+    <dimen name="main_activity_setWallpaper_padding">16dp</dimen>
+
+    <dimen name="main_activity_setWallpaper_btn_text">16sp</dimen>
+    <dimen name="main_activity_setWallpaper_between_bnt_text">4dp</dimen>
 </resources>
