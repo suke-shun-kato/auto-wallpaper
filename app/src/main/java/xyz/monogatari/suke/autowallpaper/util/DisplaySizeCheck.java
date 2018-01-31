@@ -1,11 +1,15 @@
 package xyz.monogatari.suke.autowallpaper.util;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Build;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 
 import java.lang.reflect.Method;
@@ -80,6 +84,25 @@ public class DisplaySizeCheck {
         point.set(View.getWidth(), View.getHeight());
 
         return point;
+    }
+
+
+    /**
+     * ステータスバーの高さ取得
+     * 参考 https://qiita.com/Rompei/items/4f83ab38f416b60897cb
+     * @param activity Activityオブジェクト
+     * @return int 高さ、dp
+     */
+    public static int getStatusBarHeight(Activity activity){
+        final Rect rect = new Rect();
+        Window window = activity.getWindow();
+
+        // Window.getDecorView() で ナビゲーションバーより下の部分のViewオブジェクトが返る
+        // View.getWindowVisibleDisplayFrame() で見えている部分のViewのサイズを取得
+        // overall 全部の、端から端まで
+        window.getDecorView().getWindowVisibleDisplayFrame(rect);
+
+        return rect.top;
     }
 
 }
