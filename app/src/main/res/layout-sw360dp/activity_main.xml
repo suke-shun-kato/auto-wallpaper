@@ -34,11 +34,11 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
 
                 android:layout_above="@+id/btn_main_onOff_service"
                 android:layout_centerHorizontal="true"
-                android:layout_marginBottom="8dp"
+                android:layout_marginBottom="@dimen/main_activity_power_between_btn_text"
 
                 android:text="@string/main_power"
                 android:textColor="@color/colorText"
-                android:textSize="32sp" />
+                android:textSize="@dimen/main_activity_power_btn_text" />
             <!-- scaleType はsrcの画像も拡大する-->
             <ImageButton
                 android:contentDescription="@string/main_power"

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="activity_horizontal_margin">8dp</dimen>
+    <dimen name="activity_vertical_margin">8dp</dimen>
 
     <dimen name="main_activity_btn_usual_width">152dp</dimen>
     <dimen name="main_activity_btn_usual_margin">20dp</dimen>
 
-    <dimen name="main_activity_power_btn_size">280dp</dimen>
-    <dimen name="main_activity_setWallpaper_btn_size">120dp</dimen>
+    <dimen name="main_activity_power_btn_size">160dp</dimen>
+    <dimen name="main_activity_power_btn_text">20sp</dimen>
+    <dimen name="main_activity_power_between_btn_text">4dp</dimen>
+
+    <dimen name="main_activity_setWallpaper_btn_size">60dp</dimen>
 </resources>
