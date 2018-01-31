@@ -90,8 +90,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // ----------------------------------
         // ナビゲーションバー（下ボタン）の高さだけ下パディングを足す
         // ----------------------------------
-
-
         if (Build.VERSION.SDK_INT >= 19 ){ // ナビゲーションバーを透明にできるとき
             // ナビゲーションバーを含まない画面サイズ
             Point noNavBerPoint = DisplaySizeCheck.getDisplaySize(this);
@@ -114,7 +112,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // ----------------------------------
         TypedValue typedValue = new TypedValue();
         // this.getTheme() は Resources.Theme オブジェクト
-        if ( this.getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
+        if (
+                Build.VERSION.SDK_INT >= 19
+                        && this.getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
             //// アクションバーの高さを取得
             int barHeight = TypedValue.complexToDimensionPixelSize(
                     typedValue.data,getResources().getDisplayMetrics()
@@ -146,6 +146,24 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
 
 
 
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        if ( Build.VERSION.SDK_INT >= 19 ) {
+            int statusBarHeight = DisplaySizeCheck.getStatusBarHeight(this);
+
+            //// パディングにバーの高さを足す
+            View mainRootView = this.findViewById(R.id.main_root);
+            mainRootView.setPadding(
+                    mainRootView.getPaddingLeft(),
+                    mainRootView.getPaddingTop() + statusBarHeight,
+                    mainRootView.getPaddingRight(),
+                    mainRootView.getPaddingBottom()
+            );
+        }
     }
 
     /************************************
