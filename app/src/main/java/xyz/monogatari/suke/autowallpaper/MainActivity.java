@@ -6,8 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Point;
-import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -15,15 +13,11 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-
 import xyz.monogatari.suke.autowallpaper.service.MainService;
-import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 
 public class MainActivity extends AppCompatActivity {
@@ -88,49 +82,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         }
 
         // ----------------------------------
-        // ナビゲーションバー（下ボタン）の高さだけ下パディングを足す
-        // ----------------------------------
-        if (Build.VERSION.SDK_INT >= 19 ){ // ナビゲーションバーを透明にできるとき
-            // ナビゲーションバーを含まない画面サイズ
-            Point noNavBerPoint = DisplaySizeCheck.getDisplaySize(this);
-
-            // ナビゲーションバーも含んだ画面サイズ
-            Point realSizePoint = DisplaySizeCheck.getRealSize(this);
-
-            //// パディングにバーの高さを足す
-            View mainRootView = this.findViewById(R.id.main_root);
-            mainRootView.setPadding(
-                    mainRootView.getPaddingLeft(),
-                    mainRootView.getPaddingTop(),
-                    mainRootView.getPaddingRight(),
-                    mainRootView.getPaddingBottom() + realSizePoint.y - noNavBerPoint.y
-            );
-        }
-
-        // ----------------------------------
-        // アクションバーの高さだけ上パディングを足す
-        // ----------------------------------
-        TypedValue typedValue = new TypedValue();
-        // this.getTheme() は Resources.Theme オブジェクト
-        if (
-                Build.VERSION.SDK_INT >= 19
-                        && this.getTheme().resolveAttribute(android.R.attr.actionBarSize, typedValue, true)) {
-            //// アクションバーの高さを取得
-            int barHeight = TypedValue.complexToDimensionPixelSize(
-                    typedValue.data,getResources().getDisplayMetrics()
-            );
-
-            //// パディングにバーの高さを足す
-            View mainRootView = this.findViewById(R.id.main_root);
-            mainRootView.setPadding(
-                    mainRootView.getPaddingLeft(),
-                    mainRootView.getPaddingTop() + barHeight,
-                    mainRootView.getPaddingRight(),
-                    mainRootView.getPaddingBottom()
-            );
-        }
-
-        // ----------------------------------
         // 初回起動時のPreferenceのデフォルト値の適用
         // ----------------------------------
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
@@ -143,27 +94,6 @@ System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug");
 System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "debug");
 System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "debug");
-
-
-
-    }
-
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-
-        if ( Build.VERSION.SDK_INT >= 19 ) {
-            int statusBarHeight = DisplaySizeCheck.getStatusBarHeight(this);
-
-            //// パディングにバーの高さを足す
-            View mainRootView = this.findViewById(R.id.main_root);
-            mainRootView.setPadding(
-                    mainRootView.getPaddingLeft(),
-                    mainRootView.getPaddingTop() + statusBarHeight,
-                    mainRootView.getPaddingRight(),
-                    mainRootView.getPaddingBottom()
-            );
-        }
     }
 
     /************************************

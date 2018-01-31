@@ -24,10 +24,10 @@
             android:layout_height="wrap_content"
             android:maxWidth="@dimen/main_activity_power_btn_size"
             android:gravity="center_horizontal"
-
             android:text="@string/main_power"
             android:textColor="@color/colorText"
-            android:textSize="32sp" />
+            android:textSize="32sp"
+            />
         <!-- scaleType はsrcの画像も拡大する-->
         <ImageButton
             android:contentDescription="@string/main_power"
@@ -63,7 +63,6 @@
             android:background="@drawable/btnbk_main"
             android:layout_marginTop="@dimen/main_activity_topBottom_margin"
             />
-            />
         <Button
             style="?android:buttonBarButtonStyle"
             android:id="@+id/main_to_setting"
@@ -76,6 +75,5 @@
             android:background="@drawable/btnbk_main"
             android:layout_marginTop="@dimen/main_activity_topBottom_margin"
             />
-                />
     </LinearLayout>
 </ScrollView>
