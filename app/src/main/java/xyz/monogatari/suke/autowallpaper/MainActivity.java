@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -15,11 +16,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
-import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
+import xyz.monogatari.suke.autowallpaper.util.ProgressBcastReceiver;
+import xyz.monogatari.suke.autowallpaper.util.WpManagerService;
 
 public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------------
@@ -86,6 +89,20 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // 初回起動時のPreferenceのデフォルト値の適用
         // ----------------------------------
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
+
+
+        // ----------------------------------
+        // ブロードキャストレシーバーの登録
+        // ----------------------------------
+        //todo ブロードキャストレシーバーの解除は？
+        ProgressBcastReceiver bcastReceiver = new ProgressBcastReceiver();
+        IntentFilter iFilter = new IntentFilter();
+        iFilter.addAction(WpManagerService.ACTION_NAME);
+        this.registerReceiver(bcastReceiver, iFilter);
+
+        // ----------------------------------
+        //
+        // ----------------------------------
 Log.d("○△", DisplaySizeCheck.getScreenWidthInDPs(this) + "");
 java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
 java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
@@ -243,7 +260,22 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
 //        new ImgGetPorcSet(this).execute();
-        new ImgGetPorcSet(this).executeNewThread();
+Log.d("○△△", "setWallpaper_onClick(), スレッド名:" + Thread.currentThread().getName());
+        Intent i = new Intent(this, WpManagerService.class);
+        startService(i);
+
+//        new ImgGetPorcSet(this).executeNewThread();
+    }
+
+
+    public void onProgressVisible() {
+        View v = this.findViewById(R.id.main_setWallpaper_progress);
+        v.setVisibility(ProgressBar.VISIBLE);
+    }
+
+    public void onProgressGone() {
+        View v = this.findViewById(R.id.main_setWallpaper_progress);
+        v.setVisibility(ProgressBar.GONE);
     }
 
     /************************************

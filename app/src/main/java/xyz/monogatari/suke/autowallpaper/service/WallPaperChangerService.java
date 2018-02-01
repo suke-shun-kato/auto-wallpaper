@@ -16,19 +16,30 @@ import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
  */
 
 public class WallPaperChangerService extends IntentService {
+    /************************************
+     * メインスレッドで実行
+     */
     public WallPaperChangerService(String name) {
         super(name);
     }
+    /************************************
+     * メインスレッドで実行
+     */
     public WallPaperChangerService() {
         super("WallPaperChangerService");
     }
+
+    /************************************
+     * ここだけ別スレッドで実行
+     */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
         if ( sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-Log.d("○"+getClass().getSimpleName(), "onHandleIntent(): Alarmより起動:");
+Log.d("○" + getClass().getSimpleName(), "onHandleIntent(): Alarmより起動:");
             // 別スレッドでサービス起動しているから、今のスレッドで壁紙交換
             new ImgGetPorcSet(this).execute();
         }
     }
+
 }
