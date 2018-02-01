@@ -18,6 +18,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
+import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 
 public class MainActivity extends AppCompatActivity {
@@ -85,7 +86,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // 初回起動時のPreferenceのデフォルト値の適用
         // ----------------------------------
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
+Log.d("○△", DisplaySizeCheck.getScreenWidthInDPs(this) + "");
 java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
 java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
 

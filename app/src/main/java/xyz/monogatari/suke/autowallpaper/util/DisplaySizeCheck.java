@@ -6,12 +6,15 @@ import android.content.Context;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Build;
+import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 
 import java.lang.reflect.Method;
+
+import static android.content.Context.WINDOW_SERVICE;
 
 /**
  * 画面のサイズを取得したりするクラス
@@ -31,7 +34,7 @@ public class DisplaySizeCheck {
     public static Point getDisplaySize(Context context){
         //noinspection ConstantConditions
         @SuppressWarnings("ConstantConditions") Display display = ((WindowManager)context
-                .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                .getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
         Point point = new Point();
         display.getSize(point);
         return point;
@@ -46,7 +49,7 @@ public class DisplaySizeCheck {
     public static Point getRealSize(Context context) {
 
         @SuppressWarnings("ConstantConditions") Display display = ((WindowManager)context
-                .getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+                .getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
 
         Point point = new Point(0, 0);
 
@@ -102,6 +105,60 @@ public class DisplaySizeCheck {
         window.getDecorView().getWindowVisibleDisplayFrame(rect);
 
         return rect.top;
+    }
+
+
+
+
+    // Custom method to get screen width in dp/dip using Context object
+    /************************************
+     * DPを取得する関数
+     */
+    @SuppressWarnings("ConstantConditions")
+    public static int getScreenWidthInDPs(Context context){
+        /*
+            DisplayMetrics
+                A structure describing general information about a display,
+                such as its size, density, and font scaling.
+        */
+        DisplayMetrics dm = new DisplayMetrics();
+
+        /*
+            WindowManager
+                The interface that apps use to talk to the window manager.
+                Use Context.getSystemService(Context.WINDOW_SERVICE) to get one of these.
+        */
+
+        /*
+            public abstract Object getSystemService (String name)
+                Return the handle to a system-level service by name. The class of the returned
+                object varies by the requested name. Currently available names are:
+
+                WINDOW_SERVICE ("window")
+                    The top-level window manager in which you can place custom windows.
+                    The returned object is a WindowManager.
+        */
+
+        /*
+            public abstract Display getDefaultDisplay ()
+
+                Returns the Display upon which this WindowManager instance will create new windows.
+
+                Returns
+                The display that this window manager is managing.
+        */
+
+        /*
+            public void getMetrics (DisplayMetrics outMetrics)
+                Gets display metrics that describe the size and density of this display.
+                The size is adjusted based on the current rotation of the display.
+
+                Parameters
+                outMetrics A DisplayMetrics object to receive the metrics.
+        */
+        WindowManager windowManager = (WindowManager) context.getSystemService(WINDOW_SERVICE);
+        windowManager.getDefaultDisplay().getMetrics(dm);
+        return Math.round(dm.widthPixels / dm.density);
     }
 
 }
