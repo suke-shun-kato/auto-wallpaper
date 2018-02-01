@@ -11,7 +11,7 @@ import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 
 /**
- * 壁紙を変更するだけのサービス、現在のところAlarmから呼び出されている
+ * 壁紙を変更するだけのサービス
  * Created by k-shunsuke on 2018/01/09.
  */
 
