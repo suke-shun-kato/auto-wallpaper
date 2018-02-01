@@ -161,5 +161,8 @@ Log.d("○" + this.getClass().getSimpleName(), "ディスプレイサイズ: "
         } catch (IOException e) {
 Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません");
         }
+
+
+
     }
 }

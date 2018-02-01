@@ -10,6 +10,7 @@
     <pattern value="xyz.monogatari.suke.autowallpaper.util.FileExtended" method="FileExtended" />
     <pattern value="xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck" method="getDisplaySize" />
     <pattern value="xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck" method="getViewSize" />
+    <pattern value="xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck" method="getStatusBarHeight" />
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />

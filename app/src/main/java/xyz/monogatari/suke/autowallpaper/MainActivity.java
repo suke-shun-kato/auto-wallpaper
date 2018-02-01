@@ -14,10 +14,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
+import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     /** サービスに渡すIntent、再利用 */
     private Intent serviceIntent;
     /** サービスON,OFFボタンのView、再利用 */
-    private Button serviceOnOffButton;
+    private ImageButton serviceOnOffButton;
     /** サービスが起動中か */
     private boolean isServiceRunning;
 
@@ -40,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     /** パーミッションリクエスト用のリクエストコード */
     private static final int RQ_CODE_SERVICE = 1;
     private static final int RQ_CODE_ACTIVITY = 2;
+
+    private static final int BTN_OFF = 0;
+    private static final int BTN_ON = 1;
 
     // --------------------------------------------------------------------
     // メソッド（ライフサイクル）
@@ -69,21 +73,20 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // ----------------------------------
         // 表示の切り替え
         // ----------------------------------
-        this.serviceOnOffButton = findViewById(R.id.main_onOff_service);
+        this.serviceOnOffButton = findViewById(R.id.btn_main_onOff_service);
         if (this.isServiceRunning) {
-            this.serviceOnOffButton.setText(R.string.on_to_off);
+            this.serviceOnOffButton.setImageLevel(BTN_ON);
+            this.getWindow().setBackgroundDrawableResource(R.color.translucentLight);
         } else {
-            this.serviceOnOffButton.setText(R.string.off_to_on);
+            this.serviceOnOffButton.setImageLevel(BTN_OFF);
+            this.getWindow().setBackgroundDrawableResource(R.color.translucentDark);
         }
 
         // ----------------------------------
         // 初回起動時のPreferenceのデフォルト値の適用
         // ----------------------------------
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-
-        // ----------------------------------
-        //
-        // ----------------------------------
+Log.d("○△", DisplaySizeCheck.getScreenWidthInDPs(this) + "");
 java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
 java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
 
@@ -92,10 +95,8 @@ System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
 System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug");
 System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "debug");
 System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "debug");
-
-
-
     }
+
     /************************************
      * アクティビティが描画される直前
      * ストレージのパーミッションのダイアログを表示する
@@ -161,7 +162,8 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         // -------------------------------------------------
         if ( this.isServiceRunning) {
             this.stopService(this.serviceIntent);
-            this.serviceOnOffButton.setText(R.string.off_to_on);
+            this.serviceOnOffButton.setImageLevel(BTN_OFF);
+            this.getWindow().setBackgroundDrawableResource(R.color.translucentDark);
             this.isServiceRunning = false;
         // -------------------------------------------------
         // サービスが停止中のとき ONにする
@@ -195,7 +197,8 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
             // 通常処理
             // ----------------------------------
             this.startService(this.serviceIntent);
-            this.serviceOnOffButton.setText(R.string.on_to_off);
+            this.serviceOnOffButton.setImageLevel(BTN_ON);
+            this.getWindow().setBackgroundDrawableResource(R.color.translucentLight);
             this.isServiceRunning = true;
         }
     }
@@ -217,7 +220,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // ボタンを再度クリックする
                     this.onOffService_onClick(
-                            this.findViewById(R.id.main_onOff_service) );
+                            this.findViewById(R.id.btn_main_onOff_service) );
                 }
                 break;
             case RQ_CODE_ACTIVITY:

@@ -1,0 +1,133 @@
+<!-- 通常サイズ、横幅が400dp以上、縦横両方 -->
+<!-- ここは敢えて2重に LinearLayout で囲っている、
+style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpaddingが無視されるから-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+    <LinearLayout
+        android:id="@+id/main_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="@dimen/main_activity_vertical_margin"
+        android:paddingBottom="@dimen/main_activity_vertical_margin"
+        android:paddingLeft="@dimen/main_activity_horizontal_margin"
+        android:paddingStart="@dimen/main_activity_horizontal_margin"
+        android:paddingRight="@dimen/main_activity_horizontal_margin"
+        android:paddingEnd="@dimen/main_activity_horizontal_margin"
+        android:orientation="vertical"
+        tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
+        tools:ignore="UselessParent"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="@dimen/main_activity_power_btn_size"
+
+                android:layout_above="@+id/btn_main_onOff_service"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="@dimen/main_activity_power_between_btn_text"
+
+                android:text="@string/main_power"
+                android:textColor="@color/colorText"
+                android:textSize="@dimen/main_activity_power_btn_text" />
+            <!-- scaleType はsrcの画像も拡大する-->
+            <ImageButton
+                android:contentDescription="@string/main_power"
+                android:id="@+id/btn_main_onOff_service"
+                android:layout_width="@dimen/main_activity_power_btn_size"
+                android:layout_height="@dimen/main_activity_power_btn_size"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:background="@drawable/btnbk_power"
+                android:onClick="onOffService_onClick"
+                android:scaleType="centerCrop"
+                android:src="@drawable/btn_power_onoff_24dp" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_below="@id/btn_main_onOff_service"
+                android:layout_toRightOf="@id/btn_main_onOff_service"
+                android:layout_marginTop="@dimen/main_activity_setWallpaper_margin_rightBottom"
+                android:layout_marginLeft="@dimen/main_activity_setWallpaper_margin_rightBottom"
+
+                android:orientation="vertical"
+                tools:ignore="RtlHardcoded">
+                <!-- ここは敢えてlayout_alignEndはなし -->
+                <ImageButton
+                    android:id="@+id/btn_main_change_wallpaper"
+                    android:layout_width="@dimen/main_activity_setWallpaper_btn_size"
+                    android:layout_height="@dimen/main_activity_setWallpaper_btn_size"
+
+                    android:padding="@dimen/main_activity_setWallpaper_btn_padding"
+
+                    android:background="@drawable/btnbk_wallpaper_change"
+                    android:contentDescription="@string/main_set_wallpaper"
+                    android:onClick="setWallpaper_onClick"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/btn_wallpaper_change_24dp"
+
+                    android:layout_gravity="center_horizontal"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+
+                    android:layout_marginTop="@dimen/main_activity_setWallpaper_between_bnt_text"
+                    android:textColor="@color/colorText"
+                    android:text="@string/main_set_wallpaper"
+                    android:textSize="@dimen/main_activity_setWallpaper_btn_text"
+
+                    android:layout_gravity="center_horizontal"
+                    />
+            </LinearLayout>
+
+        </RelativeLayout>
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:id="@+id/main_below_buttons"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            >
+            <!--android:layout_marginBottom="40dp"-->
+            <Button
+                style="?android:buttonBarButtonStyle"
+                android:id="@+id/main_to_history"
+                android:layout_width="@dimen/main_activity_usual_btn_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+
+                android:onClick="toHistory_onClick"
+                android:text="@string/main_to_history"
+                android:textColor="@color/colorText"
+                android:background="@drawable/btnbk_main"
+                />
+            <Button
+                style="?android:buttonBarButtonStyle"
+                android:id="@+id/main_to_setting"
+                android:layout_width="@dimen/main_activity_usual_btn_width"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="@dimen/main_activity_usual_btn_margin"
+                android:layout_marginStart="@dimen/main_activity_usual_btn_margin"
+
+                android:onClick="toSetting_onClick"
+                android:text="@string/main_to_setting"
+                android:textColor="@color/colorText"
+                android:background="@drawable/btnbk_main"
+                    />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

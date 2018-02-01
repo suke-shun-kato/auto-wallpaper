@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+
+    <color name="colorPrimaryTranslucent">#883F51B5</color>
+    <color name="colorPrimaryDarkTranslucent">#88303F9F</color>
+    <color name="colorAccentTranslucent" tools:keep="@color/colorAccentTranslucent">#88FF4081</color>
+
+    <color name="colorText">#FFFFFF</color>
+
+    <color name="translucentLight">#66FFFFFF</color>
+    <color name="translucentDark">#88000000</color>
 </resources>

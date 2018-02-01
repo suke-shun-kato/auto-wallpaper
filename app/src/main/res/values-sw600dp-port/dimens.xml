@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--mainActivityの全体のマージン-->
+    <dimen name="main_activity_horizontal_margin">16dp</dimen>
+    <dimen name="main_activity_vertical_margin">16dp</dimen>
+
+    <dimen name="main_activity_usual_btn_width">160dp</dimen>
+    <dimen name="main_activity_usual_btn_margin">20dp</dimen>
+
+    <dimen name="main_activity_power_btn_size">400dp</dimen>
+    <dimen name="main_activity_power_btn_text">40sp</dimen>
+    <dimen name="main_activity_power_between_btn_text">8dp</dimen>
+
+    <dimen name="main_activity_setWallpaper_btn_size">160dp</dimen>
+    <dimen name="main_activity_setWallpaper_btn_padding">20dp</dimen>
+    <dimen name="main_activity_setWallpaper_margin_rightBottom">-140dp</dimen>
+
+    <dimen name="main_activity_setWallpaper_btn_text">20sp</dimen>
+    <dimen name="main_activity_setWallpaper_between_bnt_text">4dp</dimen>
+</resources>

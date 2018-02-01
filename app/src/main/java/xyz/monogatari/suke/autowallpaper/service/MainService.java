@@ -331,11 +331,11 @@ Log.d("○"+ getClass().getSimpleName(), "unsetScreenOnListener(): "+this.onOffR
      * 設定タイマー壁紙変更のイベントリスナー登録
      */
     private void setTimerListener() {
-Log.d("○"+getClass().getSimpleName(), "setTimerListener(), hashCode()="+this.timerReceiver.hashCode());
         // ----------------------------------
         // タイマーセット
         // ----------------------------------
         this.setTimer();
+Log.d("○"+getClass().getSimpleName(), "setTimerListener()");
 
         // ----------------------------------
         // ブロードキャストレシーバーを設置
