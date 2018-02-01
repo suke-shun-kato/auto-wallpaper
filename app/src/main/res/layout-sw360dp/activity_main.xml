@@ -11,12 +11,12 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
         android:id="@+id/main_root"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:paddingBottom="@dimen/activity_vertical_margin"
-        android:paddingLeft="@dimen/activity_horizontal_margin"
-        android:paddingStart="@dimen/activity_horizontal_margin"
-        android:paddingRight="@dimen/activity_horizontal_margin"
-        android:paddingEnd="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/main_activity_vertical_margin"
+        android:paddingBottom="@dimen/main_activity_vertical_margin"
+        android:paddingLeft="@dimen/main_activity_horizontal_margin"
+        android:paddingStart="@dimen/main_activity_horizontal_margin"
+        android:paddingRight="@dimen/main_activity_horizontal_margin"
+        android:paddingEnd="@dimen/main_activity_horizontal_margin"
         android:orientation="vertical"
         tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
         tools:ignore="UselessParent"
@@ -68,7 +68,7 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
                     android:layout_width="@dimen/main_activity_setWallpaper_btn_size"
                     android:layout_height="@dimen/main_activity_setWallpaper_btn_size"
 
-                    android:padding="@dimen/main_activity_setWallpaper_padding"
+                    android:padding="@dimen/main_activity_setWallpaper_btn_padding"
 
                     android:background="@drawable/btnbk_wallpaper_change"
                     android:contentDescription="@string/main_set_wallpaper"
@@ -105,7 +105,7 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
             <Button
                 style="?android:buttonBarButtonStyle"
                 android:id="@+id/main_to_history"
-                android:layout_width="@dimen/main_activity_btn_usual_width"
+                android:layout_width="@dimen/main_activity_usual_btn_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
 
@@ -117,11 +117,11 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
             <Button
                 style="?android:buttonBarButtonStyle"
                 android:id="@+id/main_to_setting"
-                android:layout_width="@dimen/main_activity_btn_usual_width"
+                android:layout_width="@dimen/main_activity_usual_btn_width"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
-                android:layout_marginLeft="@dimen/main_activity_btn_usual_margin"
-                android:layout_marginStart="@dimen/main_activity_btn_usual_margin"
+                android:layout_marginLeft="@dimen/main_activity_usual_btn_margin"
+                android:layout_marginStart="@dimen/main_activity_usual_btn_margin"
 
                 android:onClick="toSetting_onClick"
                 android:text="@string/main_to_setting"
