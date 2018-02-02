@@ -20,6 +20,7 @@ import java.util.TimerTask;
 import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
+import xyz.monogatari.suke.autowallpaper.util.WpManagerService;
 
 /**
  * Created by k-shunsuke on 2017/12/12.
@@ -414,7 +415,10 @@ Log.d("○"+getClass().getSimpleName(), "setTimer()______________: intervalMsec:
                     @Override
                     public void run() {
 Log.d("○" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+intervalMsec/1000+"秒, hash: " + this.hashCode());
-                        new ImgGetPorcSet(MainService.this).executeNewThread();
+//                        new ImgGetPorcSet(MainService.this).executeNewThread();
+
+                        Intent i = new Intent(MainService.this, WpManagerService.class);
+                        startService(i);
                     }
                 },
                 delayMsec,
