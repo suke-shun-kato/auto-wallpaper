@@ -22,7 +22,7 @@ import android.widget.Toast;
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.ProgressBcastReceiver;
-import xyz.monogatari.suke.autowallpaper.util.WpManagerService;
+import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
 
 public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------------
@@ -266,12 +266,12 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      * @param view 押されたボタンのビュー
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
-//        new ImgGetPorcSet(this).execute();
+//        new WpManager(this).execute();
 Log.d("○△" + this.getClass().getSimpleName(), "setWallpaper_onClick(), スレッド名:" + Thread.currentThread().getName());
         Intent i = new Intent(this, WpManagerService.class);
         startService(i);
 
-//        new ImgGetPorcSet(this).executeNewThread();
+//        new WpManager(this).executeNewThread();
     }
 
 

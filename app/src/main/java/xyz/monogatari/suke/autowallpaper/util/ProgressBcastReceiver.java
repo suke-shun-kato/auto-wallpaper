@@ -7,6 +7,7 @@ import android.util.Log;
 
 
 import xyz.monogatari.suke.autowallpaper.MainActivity;
+import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
 
 /**
  *

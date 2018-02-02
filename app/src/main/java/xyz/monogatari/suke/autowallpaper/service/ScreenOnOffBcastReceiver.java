@@ -7,8 +7,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
-import xyz.monogatari.suke.autowallpaper.util.WpManagerService;
+import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
 
 
 /**
@@ -49,7 +48,7 @@ Log.d("○" + this.getClass().getSimpleName(), "電源ONになった瞬間の壁
 Log.d("○" + this.getClass().getSimpleName(), "電源OFFになった瞬間の壁紙処理");
 
             ///////壁紙変更
-//            new ImgGetPorcSet(context).executeNewThread();
+//            new WpManager(context).executeNewThread();
             Intent i = new Intent(context, WpManagerService.class);
             context.startService(i);
         }

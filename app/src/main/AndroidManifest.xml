@@ -43,7 +43,7 @@
         </activity>
         <activity android:name=".HistoryActivity" />
         <service android:name=".service.MainService" />
-        <service android:name=".util.WpManagerService" />
+        <service android:name=".wpchange.WpManagerService" />
     </application>
 
 </manifest>

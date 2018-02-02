@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.util;
+package xyz.monogatari.suke.autowallpaper.wpchange;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -64,7 +64,7 @@ Log.d("○△" + this.getClass().getSimpleName(), "onStartCommand(), スレッ�
     protected void onHandleIntent(@Nullable Intent intent) {
 Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent(), スレッド名:" + Thread.currentThread().getName());
         // 別スレッドで実行されているからそのまま壁紙変更
-        new ImgGetPorcSet(this).execute();
+        new WpManager(this).execute();
     }
 
 
