@@ -3,7 +3,6 @@ package xyz.monogatari.suke.autowallpaper.util;
 import android.Manifest;
 import android.app.WallpaperManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;

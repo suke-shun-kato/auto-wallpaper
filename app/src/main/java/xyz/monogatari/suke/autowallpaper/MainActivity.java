@@ -92,9 +92,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
 
 
         // ----------------------------------
-        // ブロードキャストレシーバーの登録
+        // 壁紙変更中のプログレスバー用のBcastレシーバーを登録
+        // これは必ずonCreateで行うこと、onStartで登録→onStopで解除などすると別画面でサービスOFFのブロードキャストが検知できなくなるため
         // ----------------------------------
-        //todo ブロードキャストレシーバーの解除は？
         ProgressBcastReceiver bcastReceiver = new ProgressBcastReceiver();
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(WpManagerService.ACTION_NAME);
@@ -103,7 +103,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // ----------------------------------
         //
         // ----------------------------------
-Log.d("○△", DisplaySizeCheck.getScreenWidthInDPs(this) + "");
+Log.d("○" + this.getClass().getSimpleName(), "ディスプレイの横幅: " + DisplaySizeCheck.getScreenWidthInDPs(this) + "dp");
 java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
 java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
 
@@ -120,7 +120,12 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
      */
     @Override
     protected void onStart() {
+Log.d("○△"+this.getClass().getSimpleName(), "onStart()");
         super.onStart();
+        
+        // ----------------------------------
+        // ユーザーのパーミッション関連の処理
+        // ----------------------------------
         if ( this.isServiceRunning //サービスが起動中
                 && this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -140,6 +145,8 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     RQ_CODE_ACTIVITY);
         }
+
+
     }
 
     // --------------------------------------------------------------------
@@ -260,7 +267,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
 //        new ImgGetPorcSet(this).execute();
-Log.d("○△△", "setWallpaper_onClick(), スレッド名:" + Thread.currentThread().getName());
+Log.d("○△" + this.getClass().getSimpleName(), "setWallpaper_onClick(), スレッド名:" + Thread.currentThread().getName());
         Intent i = new Intent(this, WpManagerService.class);
         startService(i);
 

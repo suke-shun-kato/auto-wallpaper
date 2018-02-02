@@ -61,7 +61,7 @@ public class ImgGetterTw implements ImgGetter {
             );
             final Response response = service.execute(request);
             String responseStr = response.getBody();
-Log.d("○△", ""+responseStr.length());
+
             return new JSONArray(responseStr);
 
         } catch (IOException e) {
@@ -173,7 +173,7 @@ Log.d("○", ""+jsonAry);
         // 画像を取得
         // ----------------------------------
         try {
-Log.d("○△△△△△△", imgUrl);
+Log.d("○"+this.getClass().getSimpleName(), "壁紙のURL:" + imgUrl);
             URL url = new URL(imgUrl);
             HttpURLConnection con = (HttpURLConnection)url.openConnection();
             con.setRequestMethod("GET");

@@ -399,7 +399,7 @@ Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener(), hashCode()="
                 SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()
         );
         final long delayMsec = calcDelayMsec(startTimeUnixTime, intervalMsec, System.currentTimeMillis());
-Log.d("○△"+getClass().getSimpleName(), "setTimer()______________: intervalMsec: "+intervalMsec + ", startTimeUnixTime: " + startTimeUnixTime + ", delayMsec: " + delayMsec);
+Log.d("○"+getClass().getSimpleName(), "setTimer()______________: intervalMsec: "+intervalMsec + ", startTimeUnixTime: " + startTimeUnixTime + ", delayMsec: " + delayMsec);
 
         // ----------
         // 本番
@@ -413,7 +413,7 @@ Log.d("○△"+getClass().getSimpleName(), "setTimer()______________: intervalMs
                 new TimerTask() {
                     @Override
                     public void run() {
-Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+intervalMsec/1000+"秒, hash: " + this.hashCode());
+Log.d("○" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+intervalMsec/1000+"秒, hash: " + this.hashCode());
                         new ImgGetPorcSet(MainService.this).executeNewThread();
                     }
                 },
