@@ -441,7 +441,8 @@ Log.d("○" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+
                 this,
                 //呼び出し元を識別するためのコード
                 this.getResources().getInteger(R.integer.request_code_main_service),
-                new Intent(this, WallPaperChangerService.class),
+//                new Intent(this, WallPaperChangerService.class),
+                new Intent(this, WpManagerService.class),
                 //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
                 PendingIntent.FLAG_ONE_SHOT
         );
