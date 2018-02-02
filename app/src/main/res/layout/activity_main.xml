@@ -1,87 +1,96 @@
 
-<!-- 小さいサイズ、横幅が400dp未満 -->
-<ScrollView
+<!-- 小さいサイズ、横幅が360dp未満 -->
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context=".MainActivity">
-    <LinearLayout
-        android:id="@+id/main_root"
+    >
+
+    <ScrollView
+        android:id="@+id/main_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/main_activity_vertical_margin"
-        android:paddingBottom="@dimen/main_activity_vertical_margin"
-        android:paddingLeft="@dimen/main_activity_horizontal_margin"
-        android:paddingStart="@dimen/main_activity_horizontal_margin"
-        android:paddingRight="@dimen/main_activity_horizontal_margin"
-        android:paddingEnd="@dimen/main_activity_horizontal_margin"
-        android:orientation="vertical"
-        tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
-        >
-        <ProgressBar
-            android:id="@+id/main_setWallpaper_progress"
+        android:layout_alignTop="@id/main_setWallpaper_progress"
+        tools:context=".MainActivity">
+        <LinearLayout
+            android:id="@+id/main_root"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/main_activity_vertical_margin"
+            android:paddingBottom="@dimen/main_activity_vertical_margin"
+            android:paddingLeft="@dimen/main_activity_horizontal_margin"
+            android:paddingStart="@dimen/main_activity_horizontal_margin"
+            android:paddingRight="@dimen/main_activity_horizontal_margin"
+            android:paddingEnd="@dimen/main_activity_horizontal_margin"
+            android:orientation="vertical"
+            tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxWidth="@dimen/main_activity_power_btn_size"
+                android:gravity="center_horizontal"
+                android:text="@string/main_power"
+                android:textColor="@color/colorText"
+                android:textSize="32sp"
+                />
+            <!-- scaleType はsrcの画像も拡大する-->
+            <ImageButton
+                android:contentDescription="@string/main_power"
+                android:id="@+id/btn_main_onOff_service"
+                android:layout_width="@dimen/main_activity_power_btn_size"
+                android:layout_height="@dimen/main_activity_power_btn_size"
+                android:background="@drawable/btnbk_power"
+                android:layout_gravity="center_horizontal"
+                android:onClick="onOffService_onClick"
+                android:scaleType="centerCrop"
+                android:src="@drawable/btn_power_onoff_24dp" />
+            <Button
+                style="?android:buttonBarButtonStyle"
+                android:id="@+id/btn_main_change_wallpaper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:onClick="setWallpaper_onClick"
+                android:text="@string/main_set_wallpaper"
+                android:textColor="@color/colorText"
+                android:background="@drawable/btnbk_main"
+                android:layout_marginTop="@dimen/main_activity_topBottom_margin2"
+                />
+            <Button
+                style="?android:buttonBarButtonStyle"
+                android:id="@+id/main_to_history"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:onClick="toHistory_onClick"
+                android:text="@string/main_to_history"
+                android:textColor="@color/colorText"
+                android:background="@drawable/btnbk_main"
+                android:layout_marginTop="@dimen/main_activity_topBottom_margin"
+                />
+            <Button
+                style="?android:buttonBarButtonStyle"
+                android:id="@+id/main_to_setting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:onClick="toSetting_onClick"
+                android:text="@string/main_to_setting"
+                android:textColor="@color/colorText"
+                android:background="@drawable/btnbk_main"
+                android:layout_marginTop="@dimen/main_activity_topBottom_margin"
+                />
+        </LinearLayout>
+    </ScrollView>
+    <ProgressBar
+        android:id="@+id/main_setWallpaper_progress"
 
-            style="?android:attr/progressBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            />
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxWidth="@dimen/main_activity_power_btn_size"
-            android:gravity="center_horizontal"
-            android:text="@string/main_power"
-            android:textColor="@color/colorText"
-            android:textSize="32sp"
-            />
-        <!-- scaleType はsrcの画像も拡大する-->
-        <ImageButton
-            android:contentDescription="@string/main_power"
-            android:id="@+id/btn_main_onOff_service"
-            android:layout_width="@dimen/main_activity_power_btn_size"
-            android:layout_height="@dimen/main_activity_power_btn_size"
-            android:background="@drawable/btnbk_power"
-            android:layout_gravity="center_horizontal"
-            android:onClick="onOffService_onClick"
-            android:scaleType="centerCrop"
-            android:src="@drawable/btn_power_onoff_24dp" />
-        <Button
-            style="?android:buttonBarButtonStyle"
-            android:id="@+id/btn_main_change_wallpaper"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:onClick="setWallpaper_onClick"
-            android:text="@string/main_set_wallpaper"
-            android:textColor="@color/colorText"
-            android:background="@drawable/btnbk_main"
-            android:layout_marginTop="@dimen/main_activity_topBottom_margin2"
-            />
-        <Button
-            style="?android:buttonBarButtonStyle"
-            android:id="@+id/main_to_history"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:onClick="toHistory_onClick"
-            android:text="@string/main_to_history"
-            android:textColor="@color/colorText"
-            android:background="@drawable/btnbk_main"
-            android:layout_marginTop="@dimen/main_activity_topBottom_margin"
-            />
-        <Button
-            style="?android:buttonBarButtonStyle"
-            android:id="@+id/main_to_setting"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:onClick="toSetting_onClick"
-            android:text="@string/main_to_setting"
-            android:textColor="@color/colorText"
-            android:background="@drawable/btnbk_main"
-            android:layout_marginTop="@dimen/main_activity_topBottom_margin"
-            />
-    </LinearLayout>
-</ScrollView>
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+
+        android:visibility="gone"
+        />
+</RelativeLayout>
