@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.util;
+package xyz.monogatari.suke.autowallpaper.wpchange;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;

@@ -1,0 +1,83 @@
+package xyz.monogatari.suke.autowallpaper.wpchange;
+
+import android.app.IntentService;
+import android.content.Intent;
+import android.support.annotation.Nullable;
+import android.util.Log;
+
+import java.util.Timer;
+import java.util.TimerTask;
+
+/**
+ * 壁紙を変更する用のサービス
+ * Created by k-shunsuke on 2018/02/01.
+ */
+public class WpManagerService extends IntentService {
+    // --------------------------------------------------------------------
+    // 
+    // --------------------------------------------------------------------
+    public static final String ACTION_NAME = "xyz.monogatari.suke.autowallpaper.WP_SERVICE_ACTION";
+    public static final String KEY_NAME = "state";
+    public static final int STATE_START = 1;
+    public static final int STATE_DESTROY = 2;
+
+    private Timer timer;
+
+    // --------------------------------------------------------------------
+    // 
+    // --------------------------------------------------------------------
+    public WpManagerService(String name) {
+        super(name);
+Log.d("○△"+ this.getClass().getSimpleName(), "WpManagerService(name), スレッド名:" + Thread.currentThread().getName());
+    }
+
+    public WpManagerService() {
+        super("WpManagerService");
+Log.d("○△" + this.getClass().getSimpleName(), "WpManagerService(), スレッド名:" + Thread.currentThread().getName());
+    }
+
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+    @Override
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
+Log.d("○△" + this.getClass().getSimpleName(), "onStartCommand(), スレッド名:" + Thread.currentThread().getName());
+
+        this.timer = new Timer();
+        this.timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                Intent i = new Intent(ACTION_NAME);
+                i.putExtra(KEY_NAME, STATE_START);
+                WpManagerService.this.sendBroadcast(i);
+            }
+        }, 0, 500); //0秒後、500ms秒間隔で実行
+
+
+        return super.onStartCommand(intent, flags, startId);
+    }
+
+    /************************************
+     * ここだけ別スレッドで実行される（他はメインスレッドで実行される）
+     */
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {
+Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent(), スレッド名:" + Thread.currentThread().getName());
+        // 別スレッドで実行されているからそのまま壁紙変更
+        new WpManager(this).execute();
+    }
+
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        this.timer.cancel();
+
+        Intent i = new Intent(ACTION_NAME);
+        i.putExtra(KEY_NAME, STATE_DESTROY);
+        this.sendBroadcast(i);
+Log.d("○△" + this.getClass().getSimpleName(), "onDestroy(), スレッド名:" + Thread.currentThread().getName());
+    }
+}

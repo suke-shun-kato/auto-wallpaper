@@ -1,12 +1,11 @@
 <!-- 通常サイズ、横幅が400dp以上、縦横両方 -->
 <!-- ここは敢えて2重に LinearLayout で囲っている、
 style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpaddingが無視されるから-->
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:layout_height="wrap_content">
     <LinearLayout
         android:id="@+id/main_root"
         android:layout_width="match_parent"
@@ -21,6 +20,7 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
         tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
         tools:ignore="UselessParent"
         >
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -130,4 +130,13 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
                     />
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+    <ProgressBar
+        android:id="@+id/main_setWallpaper_progress"
+
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/main_root"
+        android:visibility="gone"
+        />
+</RelativeLayout>

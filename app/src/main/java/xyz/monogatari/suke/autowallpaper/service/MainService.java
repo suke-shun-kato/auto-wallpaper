@@ -19,7 +19,7 @@ import java.util.TimerTask;
 
 import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
-import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
+import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
 
 /**
  * Created by k-shunsuke on 2017/12/12.
@@ -142,7 +142,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
 //        if (intent != null && intent.getAction() != null && intent.getAction().equals(ACTION_WALLPAPER_CHANGE)) {
 //            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
 //Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
-//                new ImgGetPorcSet(this).executeNewThread();
+//                new WpManager(this).executeNewThread();
 //            }
 //        } else {
         //// 通常の場合
@@ -399,7 +399,7 @@ Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener(), hashCode()="
                 SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()
         );
         final long delayMsec = calcDelayMsec(startTimeUnixTime, intervalMsec, System.currentTimeMillis());
-Log.d("○△"+getClass().getSimpleName(), "setTimer()______________: intervalMsec: "+intervalMsec + ", startTimeUnixTime: " + startTimeUnixTime + ", delayMsec: " + delayMsec);
+Log.d("○"+getClass().getSimpleName(), "setTimer()______________: intervalMsec: "+intervalMsec + ", startTimeUnixTime: " + startTimeUnixTime + ", delayMsec: " + delayMsec);
 
         // ----------
         // 本番
@@ -413,8 +413,11 @@ Log.d("○△"+getClass().getSimpleName(), "setTimer()______________: intervalMs
                 new TimerTask() {
                     @Override
                     public void run() {
-Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+intervalMsec/1000+"秒, hash: " + this.hashCode());
-                        new ImgGetPorcSet(MainService.this).executeNewThread();
+Log.d("○" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+intervalMsec/1000+"秒, hash: " + this.hashCode());
+//                        new WpManager(MainService.this).executeNewThread();
+
+                        Intent i = new Intent(MainService.this, WpManagerService.class);
+                        startService(i);
                     }
                 },
                 delayMsec,
@@ -437,7 +440,8 @@ Log.d("○△" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay
                 this,
                 //呼び出し元を識別するためのコード
                 this.getResources().getInteger(R.integer.request_code_main_service),
-                new Intent(this, WallPaperChangerService.class),
+//                new Intent(this, WallPaperChangerService.class),
+                new Intent(this, WpManagerService.class),
                 //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
                 PendingIntent.FLAG_ONE_SHOT
         );

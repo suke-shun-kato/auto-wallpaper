@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
@@ -15,11 +16,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
-import xyz.monogatari.suke.autowallpaper.util.ImgGetPorcSet;
+import xyz.monogatari.suke.autowallpaper.util.ProgressBcastReceiver;
+import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
 
 public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------------
@@ -86,7 +89,21 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // 初回起動時のPreferenceのデフォルト値の適用
         // ----------------------------------
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
-Log.d("○△", DisplaySizeCheck.getScreenWidthInDPs(this) + "");
+
+
+        // ----------------------------------
+        // 壁紙変更中のプログレスバー用のBcastレシーバーを登録
+        // これは必ずonCreateで行うこと、onStartで登録→onStopで解除などすると別画面でサービスOFFのブロードキャストが検知できなくなるため
+        // ----------------------------------
+        ProgressBcastReceiver bcastReceiver = new ProgressBcastReceiver();
+        IntentFilter iFilter = new IntentFilter();
+        iFilter.addAction(WpManagerService.ACTION_NAME);
+        this.registerReceiver(bcastReceiver, iFilter);
+
+        // ----------------------------------
+        //
+        // ----------------------------------
+Log.d("○" + this.getClass().getSimpleName(), "ディスプレイの横幅: " + DisplaySizeCheck.getScreenWidthInDPs(this) + "dp");
 java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
 java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
 
@@ -103,7 +120,12 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
      */
     @Override
     protected void onStart() {
+Log.d("○△"+this.getClass().getSimpleName(), "onStart()");
         super.onStart();
+        
+        // ----------------------------------
+        // ユーザーのパーミッション関連の処理
+        // ----------------------------------
         if ( this.isServiceRunning //サービスが起動中
                 && this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -123,6 +145,8 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     RQ_CODE_ACTIVITY);
         }
+
+
     }
 
     // --------------------------------------------------------------------
@@ -242,8 +266,23 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      * @param view 押されたボタンのビュー
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
-//        new ImgGetPorcSet(this).execute();
-        new ImgGetPorcSet(this).executeNewThread();
+//        new WpManager(this).execute();
+Log.d("○△" + this.getClass().getSimpleName(), "setWallpaper_onClick(), スレッド名:" + Thread.currentThread().getName());
+        Intent i = new Intent(this, WpManagerService.class);
+        startService(i);
+
+//        new WpManager(this).executeNewThread();
+    }
+
+
+    public void onProgressVisible() {
+        View v = this.findViewById(R.id.main_setWallpaper_progress);
+        v.setVisibility(ProgressBar.VISIBLE);
+    }
+
+    public void onProgressGone() {
+        View v = this.findViewById(R.id.main_setWallpaper_progress);
+        v.setVisibility(ProgressBar.GONE);
     }
 
     /************************************

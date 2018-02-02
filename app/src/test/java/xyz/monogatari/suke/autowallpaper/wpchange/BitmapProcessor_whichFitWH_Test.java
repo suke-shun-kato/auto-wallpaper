@@ -1,9 +1,11 @@
-package xyz.monogatari.suke.autowallpaper.util;
+package xyz.monogatari.suke.autowallpaper.wpchange;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
+
+import xyz.monogatari.suke.autowallpaper.wpchange.BitmapProcessor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;

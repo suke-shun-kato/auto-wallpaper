@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.util;
+package xyz.monogatari.suke.autowallpaper.wpchange;
 
 import android.Manifest;
 import android.app.WallpaperManager;
@@ -19,34 +19,20 @@ import java.util.List;
 import java.util.Random;
 
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
-import xyz.monogatari.suke.autowallpaper.service.ImgGetter;
-import xyz.monogatari.suke.autowallpaper.service.ImgGetterDir;
-import xyz.monogatari.suke.autowallpaper.service.ImgGetterTw;
+import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 
 /**
  * 壁紙を取得→加工→セットまでの一連の流れを行うクラス
  * Created by k-shunsuke on 2017/12/27.
  */
-public class ImgGetPorcSet {
+@SuppressWarnings("WeakerAccess")
+public class WpManager {
     private final Context context;
     private final SharedPreferences sp;
 
-    public ImgGetPorcSet(Context context) {
+    public WpManager(Context context) {
         this.context = context;
         this.sp = PreferenceManager.getDefaultSharedPreferences(context);
-    }
-
-    /************************************
-     * 別スレッドで動作する、壁紙取得→加工→セット
-     */
-    public void executeNewThread() {
-        Thread th = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                execute();
-            }
-        });
-        th.start();
     }
 
 
