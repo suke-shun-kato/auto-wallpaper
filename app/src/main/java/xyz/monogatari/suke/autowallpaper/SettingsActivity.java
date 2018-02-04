@@ -31,15 +31,26 @@ public class SettingsActivity extends AppCompatActivity {
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: ");
         super.onCreate(savedInstanceState);
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2");
-        this.settingFragment = new SettingsFragment();
-
-        this.getFragmentManager().beginTransaction()
-                .replace(android.R.id.content, this.settingFragment)
-                .commit();
+ 
+        // ----------------------------------
+        // フラグメントをアクティビティにセット
+        // 画面回転の場合（savedInstanceStateがnullでない場合）は自動的にセットされるのでここを通らないようにする
+        // ----------------------------------
+        if (savedInstanceState == null) {
+            this.settingFragment = new SettingsFragment();
+            this.getFragmentManager().beginTransaction()
+                    .replace(android.R.id.content, this.settingFragment)
+                    .commit();
+        }
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super3");
-
     }
 
+    @Override
+    protected void onStart() {
+Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onStart() 呼ばれた: top");
+        super.onStart();
+Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onStart() 呼ばれた: end");
+    }
 
     /**
      * Handle onNewIntent() to inform the fragment manager that the
