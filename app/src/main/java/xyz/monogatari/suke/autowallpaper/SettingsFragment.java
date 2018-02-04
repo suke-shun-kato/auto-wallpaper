@@ -118,8 +118,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた:end");
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-Log.d("○"+this.getClass().getSimpleName(), "onActivityCreated():start");
+Log.d("○○○○○"+this.getClass().getSimpleName(), "onActivityCreated():start");
         super.onActivityCreated(savedInstanceState);
+Log.d("○○○○○"+this.getClass().getSimpleName(), "onActivityCreated():end");
     }
 
     public void onNewIntent(Intent intent) {
