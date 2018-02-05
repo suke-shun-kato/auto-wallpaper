@@ -106,8 +106,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         //
         // ----------------------------------
 Log.d("○" + this.getClass().getSimpleName(), "ディスプレイの横幅: " + DisplaySizeCheck.getScreenWidthInDPs(this) + "dp");
-java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
-java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
+
+//java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
+//java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
 
 System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");

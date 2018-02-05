@@ -64,7 +64,7 @@ Log.d("○△" + this.getClass().getSimpleName(), "onStartCommand(), スレッ�
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
 Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent(), スレッド名:" + Thread.currentThread().getName());
-        // 別スレッドで実行されているからそのまま壁紙変更
+        // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
         WpManager wpManager = new WpManager(this);
         wpManager.execute();
         wpManager.insertHistory();

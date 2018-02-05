@@ -17,7 +17,9 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
@@ -33,8 +35,18 @@ public class WpManager {
     private final Context context;
     private final SharedPreferences sp;
     private ImgGetter imgGetter;
+    private Map<String, Integer> sourceKindMap = new HashMap<>();
 
     public WpManager(Context context) {
+        // ----------------------------------
+        // クラス名→DBのsource_kind変換用のハッシュマップの作成
+        // ----------------------------------
+        this.sourceKindMap.put("ImgGetterDir", 1);
+        this.sourceKindMap.put("ImgGetterTw", 2);
+
+        // ----------------------------------
+        // 
+        // ----------------------------------
         this.context = context;
         this.sp = PreferenceManager.getDefaultSharedPreferences(context);
     }
@@ -49,12 +61,14 @@ public class WpManager {
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
         //noinspection TryFinallyCanBeTryWithResources
         try {
+            // ↓のコードでInspectionエラーが出るがAndroidStudioのバグなので放置、3.1では直るらしい
             SQLiteStatement dbStt = db.compileStatement("" +
                     "INSERT INTO histories (" +
                         "source_kind, img_uri, intent_action_uri, created_at" +
                     ") VALUES ( ?, ?, ?, datetime('now') );");
-            //todo this.imgGetter のクラス名などで分岐させる
-            dbStt.bindLong(1, 1);
+
+Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は！:"+this.imgGetter.getClass().getSimpleName());
+            dbStt.bindLong(1, this.sourceKindMap.get(this.imgGetter.getClass().getSimpleName()) );
             dbStt.bindString(2, this.imgGetter.getImgUri());
             String uri = this.imgGetter.getActionUri();
             if (uri == null) {
