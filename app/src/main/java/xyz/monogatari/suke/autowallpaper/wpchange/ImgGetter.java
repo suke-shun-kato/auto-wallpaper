@@ -14,6 +14,7 @@ import java.net.URL;
  * 画像取得インターフェイス
  * Created by k-shunsuke on 2017/12/14.
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class ImgGetter {
     // --------------------------------------------------------------------
     // フィールド
@@ -25,6 +26,7 @@ public abstract class ImgGetter {
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
+    @SuppressWarnings("WeakerAccess")
     public ImgGetter(Context context) {
         this.context = context;
     }

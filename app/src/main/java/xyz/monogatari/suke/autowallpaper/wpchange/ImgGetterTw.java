@@ -1,8 +1,6 @@
 package xyz.monogatari.suke.autowallpaper.wpchange;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -19,8 +17,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -173,39 +169,38 @@ Log.d("○", ""+jsonAry);
     }
 
 ////////////////////////////////////////////////////////////
-    /************************************
-     *
-     */
-    public Bitmap getImg() {
-        // ----------------------------------
-        // お気に入りから画像のURLを取得
-        // ----------------------------------
-        JSONArray favListJsonAry = this.getFavList();
-
-        List<JSONObject> flattenJson = editJson(favListJsonAry);
-
-        // ----------------------------------
-        // 抽選
-        // ----------------------------------
-        if ( flattenJson.size() == 0) {
-            return null;
-        }
-        int drawnIndex = new Random().nextInt(flattenJson.size());
-        String imgUrl = flattenJson.get(drawnIndex).optString("media_url_https");
-
-        // ----------------------------------
-        // 画像を取得
-        // ----------------------------------
-        try {
-Log.d("○"+this.getClass().getSimpleName(), "壁紙のURL:" + imgUrl);
-            URL url = new URL(imgUrl);
-            HttpURLConnection con = (HttpURLConnection)url.openConnection();
-            con.setRequestMethod("GET");
-
-            return BitmapFactory.decodeStream(con.getInputStream());
-        } catch (IOException e ){
-            e.printStackTrace();
-            return null;
-        }
-    }
+//    /************************************
+//     *
+//     */
+//    public Bitmap getImg() {
+//        // ----------------------------------
+//        // お気に入りから画像のURLを取得
+//        // ----------------------------------
+//        JSONArray favListJsonAry = this.getFavList();
+//
+//        List<JSONObject> flattenJson = editJson(favListJsonAry);
+//
+//        // ----------------------------------
+//        // 抽選
+//        // ----------------------------------
+//        if ( flattenJson.size() == 0) {
+//            return null;
+//        }
+//        int drawnIndex = new Random().nextInt(flattenJson.size());
+//        String imgUrl = flattenJson.get(drawnIndex).optString("media_url_https");
+//
+//        // ----------------------------------
+//        // 画像を取得
+//        // ----------------------------------
+//        try {
+//            URL url = new URL(imgUrl);
+//            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+//            con.setRequestMethod("GET");
+//
+//            return BitmapFactory.decodeStream(con.getInputStream());
+//        } catch (IOException e ){
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 }

@@ -2,8 +2,6 @@ package xyz.monogatari.suke.autowallpaper.wpchange;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.preference.PreferenceManager;
 
 import java.util.List;
@@ -61,6 +59,7 @@ public class ImgGetterDir extends ImgGetter {
 
         int drawnIndex = new Random().nextInt(imgPathList.size());
         this.imgUri = "file://" + imgPathList.get(drawnIndex);
+//        this.actionUri = "file://" + imgPathList.get(drawnIndex);
         this.actionUri = null;
 
         return true;
@@ -69,32 +68,32 @@ public class ImgGetterDir extends ImgGetter {
 
 
 
-    /************************************
-     *
-     * @return 画像データ
-     */
-    public Bitmap getImg() {
-        // ----------------------------------
-        // 取得対象の画像のパスリストを取得
-        // ----------------------------------
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this.context);
-        FileExtended imgDirFileEx = new FileExtended(
-                sp.getString(
-                        SettingsFragment.KEY_FROM_DIR_PATH,
-                        SelectDirPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
-                )
-        );
-        List<String> imgPathList = imgDirFileEx.getAllFilePathList(EXTENSION_ARY);
-
-        // ----------------------------------
-        // 抽選
-        // ----------------------------------
-        int drawnIndex = new Random().nextInt(imgPathList.size());
-        String fileName = imgPathList.get(drawnIndex);
-
-        // ----------------------------------
-        // Bitmap オブジェクトを返す
-        // ----------------------------------
-        return BitmapFactory.decodeFile(fileName);
-    }
+//    /************************************
+//     *
+//     * @return 画像データ
+//     */
+//    public Bitmap getImg() {
+//        // ----------------------------------
+//        // 取得対象の画像のパスリストを取得
+//        // ----------------------------------
+//        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this.context);
+//        FileExtended imgDirFileEx = new FileExtended(
+//                sp.getString(
+//                        SettingsFragment.KEY_FROM_DIR_PATH,
+//                        SelectDirPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
+//                )
+//        );
+//        List<String> imgPathList = imgDirFileEx.getAllFilePathList(EXTENSION_ARY);
+//
+//        // ----------------------------------
+//        // 抽選
+//        // ----------------------------------
+//        int drawnIndex = new Random().nextInt(imgPathList.size());
+//        String fileName = imgPathList.get(drawnIndex);
+//
+//        // ----------------------------------
+//        // Bitmap オブジェクトを返す
+//        // ----------------------------------
+//        return BitmapFactory.decodeFile(fileName);
+//    }
 }

@@ -15,7 +15,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     // If you change the database schema, you must increment the database version.
     @SuppressWarnings("WeakerAccess")
-    public static final int DATABASE_VERSION = 4;
+    public static final int DATABASE_VERSION = 5;
     @SuppressWarnings("WeakerAccess")
     public static final String DATABASE_NAME = "master.sqlite3";
 

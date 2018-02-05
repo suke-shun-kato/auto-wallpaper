@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Build;
@@ -43,13 +44,26 @@ public class WpManager {
      */
     public void insertHistory() {
         FeedReaderDbHelper mDbHelper = new FeedReaderDbHelper(this.context);
-//this.imgGetter のクラス名
-//this.imgGetter.getActionUri()
-//this.imgGetter.getImgUri()
-        // Gets the data repository in write mode
+
+
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        //noinspection TryFinallyCanBeTryWithResources
         try {
-            db.execSQL("INSERT INTO histories (source_kind, intent_action_uri, img_uri, created_at) VALUES (1, 'https://pbs.twimg.com/media/DVOb69UVwAATora.jpg', 'https://twitter.com/YSD0118/status/960282606796525569', datetime('now'));");
+            SQLiteStatement dbStt = db.compileStatement("" +
+                    "INSERT INTO histories (" +
+                        "source_kind, img_uri, intent_action_uri, created_at" +
+                    ") VALUES ( ?, ?, ?, datetime('now') );");
+            //todo this.imgGetter のクラス名などで分岐させる
+            dbStt.bindLong(1, 1);
+            dbStt.bindString(2, this.imgGetter.getImgUri());
+            String uri = this.imgGetter.getActionUri();
+            if (uri == null) {
+                dbStt.bindNull(3);
+            } else {
+                dbStt.bindString(3, this.imgGetter.getActionUri());
+            }
+            dbStt.executeInsert();
+
         } finally {
             db.close();
         }
