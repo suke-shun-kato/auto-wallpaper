@@ -19,23 +19,56 @@ import xyz.monogatari.suke.autowallpaper.util.FileExtended;
  * Created by k-shunsuke on 2017/12/14.
  */
 
-public class ImgGetterDir implements ImgGetter {
+public class ImgGetterDir extends ImgGetter {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-    private final Context context;
     private static final String[] EXTENSION_ARY = {"jpg", "jpeg", "png"};
 
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
     public ImgGetterDir(Context context) {
-        this.context = context;
+        super(context);
     }
 
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
+    /************************************
+     * 画像一覧から画像のURIを抽選する
+     * @return boolean true:成功したとき、false:失敗したとき（ファイルが0のときなど）
+     */
+    public boolean drawImg() {
+        // ----------------------------------
+        // 取得対象の画像のパスリストを取得
+        // ----------------------------------
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this.context);
+        FileExtended imgDirFileEx = new FileExtended(
+                sp.getString(
+                        SettingsFragment.KEY_FROM_DIR_PATH,
+                        SelectDirPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
+                )
+        );
+        List<String> imgPathList = imgDirFileEx.getAllFilePathList(EXTENSION_ARY);
+
+        // ----------------------------------
+        // 抽選
+        // ----------------------------------
+        if (imgPathList.size() == 0) {
+            return false;
+        }
+
+        int drawnIndex = new Random().nextInt(imgPathList.size());
+        this.imgUri = "file://" + imgPathList.get(drawnIndex);
+        this.actionUri = null;
+
+        return true;
+    }
+
+
+
+
     /************************************
      *
      * @return 画像データ

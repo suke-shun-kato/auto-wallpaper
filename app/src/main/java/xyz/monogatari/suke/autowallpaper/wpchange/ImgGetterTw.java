@@ -3,6 +3,7 @@ package xyz.monogatari.suke.autowallpaper.wpchange;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.github.scribejava.apis.TwitterApi;
@@ -32,17 +33,16 @@ import xyz.monogatari.suke.autowallpaper.util.Token;
  * Created by k-shunsuke on 2017/12/27.
  */
 
-public class ImgGetterTw implements ImgGetter {
-    private final Context context;
-
+public class ImgGetterTw extends ImgGetter {
     public ImgGetterTw(Context context) {
-        this.context = context;
+        super(context);
     }
 
     /************************************
      * APIでTwitterのお気に入りのJSONを取得
      * @return 取得したリストのJSONArray
      */
+    @Nullable
     private JSONArray getFavList() {
         try {
             String apiUrl =  "https://api.twitter.com/1.1/favorites/list.json?count=200";
@@ -148,7 +148,31 @@ Log.d("○", ""+jsonAry);
 
         return jsonObj;
     }
-    
+////////////////////////////////////////////////////////////////
+
+    public boolean drawImg() {
+        // ----------------------------------
+        // お気に入りから画像のURLを取得
+        // ----------------------------------
+        JSONArray favListJsonAry = this.getFavList();
+
+        List<JSONObject> flattenJson = editJson(favListJsonAry);
+
+        // ----------------------------------
+        // 抽選
+        // ----------------------------------
+        if ( flattenJson.size() == 0) {
+            return false;
+        }
+
+        int drawnIndex = new Random().nextInt(flattenJson.size());
+        this.imgUri = flattenJson.get(drawnIndex).optString("media_url_https");
+        this.actionUri = flattenJson.get(drawnIndex).optString("url");
+
+        return true;
+    }
+
+////////////////////////////////////////////////////////////
     /************************************
      *
      */

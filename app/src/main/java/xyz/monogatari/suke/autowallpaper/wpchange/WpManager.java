@@ -5,6 +5,7 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Build;
@@ -20,6 +21,7 @@ import java.util.Random;
 
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
+import xyz.monogatari.suke.autowallpaper.util.FeedReaderDbHelper;
 
 /**
  * 壁紙を取得→加工→セットまでの一連の流れを行うクラス
@@ -29,12 +31,29 @@ import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 public class WpManager {
     private final Context context;
     private final SharedPreferences sp;
+    private ImgGetter imgGetter;
 
     public WpManager(Context context) {
         this.context = context;
         this.sp = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
+    /************************************
+     * データベースをに
+     */
+    public void insertHistory() {
+        FeedReaderDbHelper mDbHelper = new FeedReaderDbHelper(this.context);
+//this.imgGetter のクラス名
+//this.imgGetter.getActionUri()
+//this.imgGetter.getImgUri()
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        try {
+            db.execSQL("INSERT INTO histories (source_kind, intent_action_uri, img_uri, created_at) VALUES (1, 'https://pbs.twimg.com/media/DVOb69UVwAATora.jpg', 'https://twitter.com/YSD0118/status/960282606796525569', datetime('now'));");
+        } finally {
+            db.close();
+        }
+    }
 
     /************************************
      * 壁紙を取得→加工→セット する一連の流れを行う関数
@@ -71,7 +90,6 @@ public class WpManager {
         // 画像を取得
         // ----------
         //// imgGetterを取得
-        ImgGetter imgGetter;
         switch(selectedStr) {
             case SettingsFragment.KEY_FROM_DIR:
                 //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
@@ -80,10 +98,10 @@ public class WpManager {
                     Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権限がない！！！");
                     return;
                 }
-                imgGetter = new ImgGetterDir(this.context);
+                this.imgGetter = new ImgGetterDir(this.context);
                 break;
             case SettingsFragment.KEY_FROM_TWITTER_FAV:
-                imgGetter = new ImgGetterTw(this.context);
+                this.imgGetter = new ImgGetterTw(this.context);
                 break;
             default:
                 // 途中で切り上げ、何もしない
@@ -91,7 +109,14 @@ public class WpManager {
         }
 
         //// 壁紙を取得
-        Bitmap wallpaperBitmap = imgGetter.getImg();
+//        Bitmap wallpaperBitmap = this.imgGetter.getImg();
+
+        this.imgGetter.drawImg();////ここでURIなどを記録
+        String imgUri = this.imgGetter.getImgUri();
+        String actionUri = this.imgGetter.getActionUri();
+        Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap();
+Log.d("○○○○○○"+this.getClass().getSimpleName(), "imgUri:"+imgUri + ", actionUri:"+actionUri);
+
         // todo ↓の取得できなかったときのエラーハンドリングをちゃんとする、ディレクトリにファイルゼロやTwitterのアクセス制限など
         if (wallpaperBitmap == null) {
             Toast.makeText(this.context, "画像取得エラー", Toast.LENGTH_SHORT).show();
