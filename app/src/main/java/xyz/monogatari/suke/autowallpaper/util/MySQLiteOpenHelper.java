@@ -9,13 +9,13 @@ import android.database.sqlite.SQLiteOpenHelper;
  * データベースヘルパークラス
  */
 
-public class FeedReaderDbHelper extends SQLiteOpenHelper {
+public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
     // If you change the database schema, you must increment the database version.
     @SuppressWarnings("WeakerAccess")
-    public static final int DATABASE_VERSION = 6;
+    public static final int DATABASE_VERSION = 8;
     @SuppressWarnings("WeakerAccess")
     public static final String DATABASE_NAME = "master.sqlite3";
 
@@ -23,7 +23,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    public FeedReaderDbHelper(Context context) {
+    public MySQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

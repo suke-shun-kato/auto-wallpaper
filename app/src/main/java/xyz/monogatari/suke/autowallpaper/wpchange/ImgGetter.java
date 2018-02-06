@@ -1,6 +1,5 @@
 package xyz.monogatari.suke.autowallpaper.wpchange;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.Nullable;
@@ -19,21 +18,20 @@ public abstract class ImgGetter {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-    final Context context;
     String imgUri = null;
     String actionUri = null;
 
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
-    @SuppressWarnings("WeakerAccess")
-    public ImgGetter(Context context) {
-        this.context = context;
+    protected ImgGetter(String imgUri, String actionUri) {
+        this.imgUri = imgUri;
+        this.actionUri = actionUri;
     }
     // --------------------------------------------------------------------
     // 抽象メソッド
     // --------------------------------------------------------------------
-    public abstract boolean drawImg();
+//    public abstract List<ImgGetter> getImgGetterList();
 
     // --------------------------------------------------------------------
     // メソッド（アクセサ）

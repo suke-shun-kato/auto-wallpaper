@@ -8,8 +8,8 @@ import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import xyz.monogatari.suke.autowallpaper.SelectDirPreference;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
@@ -21,6 +21,7 @@ import xyz.monogatari.suke.autowallpaper.util.FileExtended;
  * Created by k-shunsuke on 2017/12/14.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class ImgGetterDir extends ImgGetter {
     // --------------------------------------------------------------------
     // フィールド
@@ -30,64 +31,30 @@ public class ImgGetterDir extends ImgGetter {
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
-    public ImgGetterDir(Context context) {
-        super(context);
+    @SuppressWarnings("WeakerAccess")
+    public ImgGetterDir(String imgUri, @SuppressWarnings("SameParameterValue") String actionUri) {
+        super(imgUri, actionUri);
     }
 
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
-    /************************************
-     * 画像一覧から画像のURIを抽選する
-     * @return boolean true:成功したとき、false:失敗したとき（ファイルが0のときなど）
-     */
-    public boolean drawImg() {
-        // ----------------------------------
-        // 取得対象の画像のパスリストを取得
-        // ----------------------------------
-        //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
-        if (ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権限がない！！！");
-            return false;
-        }
-
-        //// 通常処理
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this.context);
-        FileExtended imgDirFileEx = new FileExtended(
-                sp.getString(
-                        SettingsFragment.KEY_FROM_DIR_PATH,
-                        SelectDirPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
-                )
-        );
-        List<String> imgPathList = imgDirFileEx.getAllFilePathList(EXTENSION_ARY);
-
-        // ----------------------------------
-        // 抽選
-        // ----------------------------------
-        if (imgPathList.size() == 0) {
-            return false;
-        }
-
-        int drawnIndex = new Random().nextInt(imgPathList.size());
-        this.imgUri = "file://" + imgPathList.get(drawnIndex);
-//        this.actionUri = "file://" + imgPathList.get(drawnIndex);
-        this.actionUri = null;
-
-        return true;
-    }
-
-
-
-
 //    /************************************
-//     *
-//     * @return 画像データ
+//     * 画像一覧から画像のURIを抽選する
+//     * @return boolean true:成功したとき、false:失敗したとき（ファイルが0のときなど）
 //     */
-//    public Bitmap getImg() {
+//    public boolean drawImg() {
 //        // ----------------------------------
 //        // 取得対象の画像のパスリストを取得
 //        // ----------------------------------
+//        //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
+//        if (ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
+//                != PackageManager.PERMISSION_GRANTED) {
+//Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権限がない！！！");
+//            return false;
+//        }
+//
+//        //// 通常処理
 //        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this.context);
 //        FileExtended imgDirFileEx = new FileExtended(
 //                sp.getString(
@@ -100,12 +67,60 @@ Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権�
 //        // ----------------------------------
 //        // 抽選
 //        // ----------------------------------
-//        int drawnIndex = new Random().nextInt(imgPathList.size());
-//        String fileName = imgPathList.get(drawnIndex);
+//        if (imgPathList.size() == 0) {
+//            return false;
+//        }
 //
-//        // ----------------------------------
-//        // Bitmap オブジェクトを返す
-//        // ----------------------------------
-//        return BitmapFactory.decodeFile(fileName);
+//        int drawnIndex = new Random().nextInt(imgPathList.size());
+//        this.imgUri = "file://" + imgPathList.get(drawnIndex);
+//        this.actionUri = null;
+//
+//        return true;
 //    }
+    /************************************
+     * 画像一覧から画像のURIを抽選する
+     * @return boolean true:成功したとき、false:失敗したとき（ファイルが0のときなど）
+     */
+    public static List<ImgGetterDir> getImgGetterList(Context context) {
+        List<ImgGetterDir> getImgGetterList = new ArrayList<>();
+
+
+
+        // ----------------------------------
+        // 取得対象の画像のパスリストを取得
+        // ----------------------------------
+        //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+Log.d("○ImgGetterDir", "ストレージアクセス権限がない！！！");
+            return getImgGetterList;
+        }
+
+        //// 通常処理
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        FileExtended imgDirFileEx = new FileExtended(
+                sp.getString(
+                        SettingsFragment.KEY_FROM_DIR_PATH,
+                        SelectDirPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
+                )
+        );
+        List<String> imgPathList = imgDirFileEx.getAllFilePathList(EXTENSION_ARY);
+
+        // ----------------------------------
+        //
+        // ----------------------------------
+        for (String imgPath : imgPathList) {
+            getImgGetterList.add(
+                    new ImgGetterDir(
+                            "file://" + imgPath,
+                            null
+                    )
+            );
+        }
+
+        return getImgGetterList;
+    }
+
+
+
 }

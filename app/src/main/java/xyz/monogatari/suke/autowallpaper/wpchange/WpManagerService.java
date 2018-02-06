@@ -68,17 +68,12 @@ Log.d("○△" + this.getClass().getSimpleName(), "onStartCommand(), スレッ�
 Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent(), スレッド名:" + Thread.currentThread().getName());
         // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
         WpManager wpManager = new WpManager(this);
-        wpManager.execute();
-        if ( wpManager.canInsertHistory() ) {
-            wpManager.insertHistory();
-        } else {
-//Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent()2, スレッド名:" + Thread.currentThread().getName());
-//            Intent i = new Intent(ACTION_NAME);
-//            i.putExtra(KEY_NAME, STATE_ERROR);
-//            this.sendBroadcast(i);
-//Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent()3, スレッド名:" + Thread.currentThread().getName());
+        boolean canExe = wpManager.execute();
+        if ( !canExe ) {
+            Intent i = new Intent(ACTION_NAME);
+            i.putExtra(KEY_NAME, STATE_ERROR);
+            this.sendBroadcast(i);
         }
-//Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent()4, スレッド名:" + Thread.currentThread().getName());
     }
 
 

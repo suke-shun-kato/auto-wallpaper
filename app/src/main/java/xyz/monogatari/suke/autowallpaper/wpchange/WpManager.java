@@ -13,7 +13,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,7 +23,7 @@ import java.util.Random;
 
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
-import xyz.monogatari.suke.autowallpaper.util.FeedReaderDbHelper;
+import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 壁紙を取得→加工→セットまでの一連の流れを行うクラス
@@ -32,11 +31,18 @@ import xyz.monogatari.suke.autowallpaper.util.FeedReaderDbHelper;
  */
 @SuppressWarnings("WeakerAccess")
 public class WpManager {
+    // --------------------------------------------------------------------
+    // フィールド
+    // --------------------------------------------------------------------
     private final Context context;
     private final SharedPreferences sp;
     private ImgGetter imgGetter = null;
-    private Map<String, Integer> sourceKindMap = new HashMap<>();
+    private final Map<String, Integer> sourceKindMap = new HashMap<>();
+    private static final int MAX_DB_RECORD = 100;
 
+    // --------------------------------------------------------------------
+    // コンストラクタ
+    // --------------------------------------------------------------------
     public WpManager(Context context) {
         // ----------------------------------
         // クラス名→DBのsource_kind変換用のハッシュマップの作成
@@ -51,34 +57,29 @@ public class WpManager {
         this.sp = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
-    public boolean canInsertHistory() {
-        if (this.imgGetter == null ) {
-            return false;
-        }
-
-        if (this.imgGetter.getImgUri() == null) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
+    // --------------------------------------------------------------------
+    // メソッド
+    // --------------------------------------------------------------------
     /************************************
      * データベースを履歴を記録
      */
-    public void insertHistory() {
-        FeedReaderDbHelper mDbHelper = new FeedReaderDbHelper(this.context);
-
-
+    private void insertHistory() {
+        MySQLiteOpenHelper mDbHelper = new MySQLiteOpenHelper(this.context);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
         //noinspection TryFinallyCanBeTryWithResources
         try {
+            // ----------------------------------
+            // INSERT
+            // ----------------------------------
+            //// コード準備
             // ↓のコードでInspectionエラーが出るがAndroidStudioのバグなので放置、3.1では直るらしい
             SQLiteStatement dbStt = db.compileStatement("" +
                     "INSERT INTO histories (" +
                         "source_kind, img_uri, intent_action_uri, created_at" +
                     ") VALUES ( ?, ?, ?, datetime('now') );");
 
+            //// bind
 Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は！:"+this.imgGetter.getClass().getSimpleName());
             dbStt.bindLong(1, this.sourceKindMap.get(this.imgGetter.getClass().getSimpleName()) );
             dbStt.bindString(2, this.imgGetter.getImgUri());
@@ -88,7 +89,14 @@ Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は�
             } else {
                 dbStt.bindString(3, this.imgGetter.getActionUri());
             }
+
+            //// insert実行
             dbStt.executeInsert();
+
+            // ----------------------------------
+            // レコード数MAXのときの削除
+            // ----------------------------------
+            //todo レコード数MAXのとき削除するコードをここに書く
 
         } finally {
             db.close();
@@ -99,56 +107,38 @@ Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は�
      * 壁紙を取得→加工→セット する一連の流れを行う関数
      * 処理の都合上、別スレッドで壁紙をセットしないといけいないので直接使用は不可
      */
-    public void execute() {
+    public boolean execute() {
         // ----------------------------------
         // 画像取得
         // 取得元の選択が複数あるときは等確率で抽選を行う
         // ----------------------------------
         // ----------
-        // どこから画像を取得するか抽選
+        // 画像リストを取得
         // ----------
         //// 抽選先の取得リストをListに入れる
-        List<String> drawnList = new ArrayList<>();
+        List<ImgGetter> imgGetterList = new ArrayList<>();
         if (sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
                 && ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
-            drawnList.add(SettingsFragment.KEY_FROM_DIR);
+            imgGetterList.addAll( ImgGetterDir.getImgGetterList(this.context) );
         }
         if (sp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
                 && sp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
-            drawnList.add(SettingsFragment.KEY_FROM_TWITTER_FAV);
+            imgGetterList.addAll( ImgGetterTw.getImgGetterList(this.context) );
         }
-
-        //// 抽選
-        if (drawnList.size() == 0) {
-            return;
-        }
-        int drawnIndex = new Random().nextInt(drawnList.size());
-        String selectedStr = drawnList.get(drawnIndex);
 
         // ----------
-        // 画像を取得
+        // 抽選
         // ----------
-        //// imgGetterを取得
-        switch(selectedStr) {
-            case SettingsFragment.KEY_FROM_DIR:
-                this.imgGetter = new ImgGetterDir(this.context);
-                break;
-            case SettingsFragment.KEY_FROM_TWITTER_FAV:
-                this.imgGetter = new ImgGetterTw(this.context);
-                break;
-            default:
-                // 途中で切り上げ、何もしない
-                return;
+        if (imgGetterList.size() == 0) {
+            return false;
         }
+        int drawnIndex = new Random().nextInt(imgGetterList.size());
+        this.imgGetter = imgGetterList.get(drawnIndex);
 
-        //// 壁紙を取得
-        boolean couldDraw = this.imgGetter.drawImg();   //一覧取得→抽選
-        if (!couldDraw) {
-            Toast.makeText(this.context, "画像取得エラー", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+        // ----------
+        // 画像取得
+        // ----------
         Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap(); //データ本体取得
 
         // ----------------------------------
@@ -201,6 +191,14 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
         }
 
 
+        // ----------------------------------
+        // 履歴に書き込み
+        // ----------------------------------
+        this.insertHistory();
 
+        // ----------------------------------
+        //
+        // ----------------------------------
+        return true;
     }
 }
