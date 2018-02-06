@@ -20,6 +20,8 @@ public class WpManagerService extends IntentService {
     public static final String KEY_NAME = "state";
     public static final int STATE_START = 1;
     public static final int STATE_DESTROY = 2;
+    public static final int STATE_ERROR = 3;
+
 
     private Timer timer;
 
@@ -67,7 +69,16 @@ Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent(), スレッ�
         // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
         WpManager wpManager = new WpManager(this);
         wpManager.execute();
-        wpManager.insertHistory();
+        if ( wpManager.canInsertHistory() ) {
+            wpManager.insertHistory();
+        } else {
+//Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent()2, スレッド名:" + Thread.currentThread().getName());
+//            Intent i = new Intent(ACTION_NAME);
+//            i.putExtra(KEY_NAME, STATE_ERROR);
+//            this.sendBroadcast(i);
+//Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent()3, スレッド名:" + Thread.currentThread().getName());
+        }
+//Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent()4, スレッド名:" + Thread.currentThread().getName());
     }
 
 

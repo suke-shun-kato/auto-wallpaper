@@ -34,7 +34,7 @@ import xyz.monogatari.suke.autowallpaper.util.FeedReaderDbHelper;
 public class WpManager {
     private final Context context;
     private final SharedPreferences sp;
-    private ImgGetter imgGetter;
+    private ImgGetter imgGetter = null;
     private Map<String, Integer> sourceKindMap = new HashMap<>();
 
     public WpManager(Context context) {
@@ -45,14 +45,26 @@ public class WpManager {
         this.sourceKindMap.put("ImgGetterTw", 2);
 
         // ----------------------------------
-        // 
+        //
         // ----------------------------------
         this.context = context;
         this.sp = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
+    public boolean canInsertHistory() {
+        if (this.imgGetter == null ) {
+            return false;
+        }
+
+        if (this.imgGetter.getImgUri() == null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     /************************************
-     * データベースをに
+     * データベースを履歴を記録
      */
     public void insertHistory() {
         FeedReaderDbHelper mDbHelper = new FeedReaderDbHelper(this.context);
@@ -120,12 +132,6 @@ Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は�
         //// imgGetterを取得
         switch(selectedStr) {
             case SettingsFragment.KEY_FROM_DIR:
-                //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
-                if (ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権限がない！！！");
-                    return;
-                }
                 this.imgGetter = new ImgGetterDir(this.context);
                 break;
             case SettingsFragment.KEY_FROM_TWITTER_FAV:
@@ -137,20 +143,13 @@ Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は�
         }
 
         //// 壁紙を取得
-//        Bitmap wallpaperBitmap = this.imgGetter.getImg();
-
-        this.imgGetter.drawImg();////ここでURIなどを記録
-        String imgUri = this.imgGetter.getImgUri();
-        String actionUri = this.imgGetter.getActionUri();
-        Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap();
-Log.d("○○○○○○"+this.getClass().getSimpleName(), "imgUri:"+imgUri + ", actionUri:"+actionUri);
-
-        // todo ↓の取得できなかったときのエラーハンドリングをちゃんとする、ディレクトリにファイルゼロやTwitterのアクセス制限など
-        if (wallpaperBitmap == null) {
+        boolean couldDraw = this.imgGetter.drawImg();   //一覧取得→抽選
+        if (!couldDraw) {
             Toast.makeText(this.context, "画像取得エラー", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap(); //データ本体取得
 
         // ----------------------------------
         // 画像加工

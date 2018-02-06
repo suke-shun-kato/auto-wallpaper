@@ -1,8 +1,12 @@
 package xyz.monogatari.suke.autowallpaper.wpchange;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
 import java.util.List;
 import java.util.Random;
@@ -41,6 +45,14 @@ public class ImgGetterDir extends ImgGetter {
         // ----------------------------------
         // 取得対象の画像のパスリストを取得
         // ----------------------------------
+        //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
+        if (ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権限がない！！！");
+            return false;
+        }
+
+        //// 通常処理
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this.context);
         FileExtended imgDirFileEx = new FileExtended(
                 sp.getString(
