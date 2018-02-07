@@ -2,6 +2,7 @@ package xyz.monogatari.suke.autowallpaper;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v4.content.res.ResourcesCompat;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,7 +10,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 import java.util.List;
+
+import xyz.monogatari.suke.autowallpaper.wpchange.ImgGetter;
 
 /**
  * 履歴ページのListViewを作成するためのアダプター
@@ -85,16 +90,18 @@ public class HistoryListAdapter extends BaseAdapter {
         // ----------------------------------
         // convertItemViewの書くviewごとにレイアウトを作成
         // ----------------------------------
-        HistoryItemListDataStore item = (HistoryItemListDataStore) this.getItem(positionAtList);
+        HistoryItemListDataStore itemDataStore = (HistoryItemListDataStore) this.getItem(positionAtList);
 
         // ----------
         // 壁紙画像
         // ----------
-        ImageView iv1 = (ImageView)convertItemView.findViewById(R.id.history_item_image);
-        iv1.setImageDrawable(
-                 ResourcesCompat.getDrawable(this.context.getResources(), R.drawable.btn_power_off_24dp, null)
-        );
+        ImageView wpImageView = (ImageView)convertItemView.findViewById(R.id.history_item_image);
+        String imgUrl = itemDataStore.getImg_uri();
 
+        ImageLoader imgLoader = ImageLoader.getInstance();
+        imgLoader.displayImage(imgUrl, wpImageView);
+
+        // todo scrollViewの導入
         // todo 今仮画像入れてるだけ
         //// 画像取得
         //// クリック時に取得元に飛ぶように修正
@@ -104,14 +111,14 @@ public class HistoryListAdapter extends BaseAdapter {
         // ----------
         // todo アイコンにちゃんと修正する,ImageViewにする
         TextView iv2 = (TextView)convertItemView.findViewById(R.id.history_item_sourceKind);
-        iv2.setText( "" + item.getSource_kind() );
+        iv2.setText( "" + itemDataStore.getSource_kind() );
 
         // ----------
         // 更新時間
         // ----------
         // todo 時刻表示をその地域に合わせてちゃんとする
         TextView tv = (TextView)convertItemView.findViewById(R.id.history_item_createdAt);
-        tv.setText( item.getCreated_at_local() );
+        tv.setText( itemDataStore.getCreated_at_local() );
 
 
         return convertItemView;

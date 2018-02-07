@@ -8,6 +8,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
 
+import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,11 +38,31 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_history);
 
-        this.mDbHelper = new MySQLiteOpenHelper(this);
+        // ----------------------------------
+        //
+        // ----------------------------------
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+            // ダウンロード中の表示画像
+            .showImageOnLoading(R.drawable.ic_arrow_downward_black_24dp)
+            // URLが空だったときの表示画像
+            .showImageForEmptyUri(R.drawable.ic_do_not_disturb_black_24dp)
+            // ネット未接続やURLが間違っていて失敗したときの表示画像
+            .showImageOnFail(R.drawable.ic_do_not_disturb_black_24dp)
+            // メモリにキャッシュを有効
+            .cacheInMemory(true)
+//           .cacheOnDisk(true)
+            .build();
+
+
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
+            .defaultDisplayImageOptions(defaultOptions)
+            .build();
+        ImageLoader.getInstance().init(config);
 
         // ----------------------------------
         //
         // ----------------------------------
+        this.mDbHelper = new MySQLiteOpenHelper(this);
 Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()2");
         List<HistoryItemListDataStore> itemList = this.selectHistories();
 

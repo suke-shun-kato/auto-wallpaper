@@ -58,6 +58,11 @@ dependencies {
     //noinspection GradleDependency
     implementation 'com.github.scribejava:scribejava-apis:4.2.0'
 
+    // -------------------------------------
+    // 画像読み込みライブラリ
+    // -------------------------------------
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
+
     // ---------------------------------------------------------------------------
     // テスト用のコード（JUnitなどのテスト）での依存関係の記述
     // ---------------------------------------------------------------------------
