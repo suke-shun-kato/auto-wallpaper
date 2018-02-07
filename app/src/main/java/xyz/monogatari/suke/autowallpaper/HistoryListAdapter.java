@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.wpchange;
+package xyz.monogatari.suke.autowallpaper;
 
 import android.app.Activity;
 import android.content.Context;
@@ -11,25 +11,24 @@ import android.widget.TextView;
 
 import java.util.List;
 
-import xyz.monogatari.suke.autowallpaper.R;
-
 /**
  * 履歴ページのListViewを作成するためのアダプター
  * Created by k-shunsuke on 2018/02/07.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class HistoryListAdapter extends BaseAdapter {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
     private Context context = null;
-    private List<HistoryListItem> itemList = null;
+    private List<HistoryItemListDataStore> itemList = null;
     private int itemRLayout = 0;
 
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    public HistoryListAdapter(Context context, List<HistoryListItem> itemList, int itemRLayout) {
+    public HistoryListAdapter(Context context, List<HistoryItemListDataStore> itemList, int itemRLayout) {
         this.context = context;
         this.itemList = itemList;
         this.itemRLayout = itemRLayout;
@@ -86,7 +85,7 @@ public class HistoryListAdapter extends BaseAdapter {
         // ----------------------------------
         // convertItemViewの書くviewごとにレイアウトを作成
         // ----------------------------------
-        HistoryListItem item = (HistoryListItem) this.getItem(positionAtList);
+        HistoryItemListDataStore item = (HistoryItemListDataStore) this.getItem(positionAtList);
 
         // ----------
         // 壁紙画像

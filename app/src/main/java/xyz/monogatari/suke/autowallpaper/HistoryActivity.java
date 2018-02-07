@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
-import xyz.monogatari.suke.autowallpaper.wpchange.HistoryListAdapter;
-import xyz.monogatari.suke.autowallpaper.wpchange.HistoryListItem;
 
 /**
  * 履歴ページ、ひとまず作成
@@ -41,10 +39,10 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         //
         // ----------------------------------
 Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()2");
-        List<HistoryListItem> itemList = this.selectHistories();
+        List<HistoryItemListDataStore> itemList = this.selectHistories();
 
         ListView lv = (ListView) this.findViewById(R.id.history_list);
-        HistoryListAdapter adapter = new HistoryListAdapter(this, itemList, R.layout.history_list_item);
+        HistoryListAdapter adapter = new HistoryListAdapter(this, itemList, R.layout.item_list_history);
         lv.setAdapter(adapter);
 Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()のend");
 
@@ -53,7 +51,7 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
-    private List<HistoryListItem> selectHistories() {
+    private List<HistoryItemListDataStore> selectHistories() {
         SQLiteDatabase db = this.mDbHelper.getReadableDatabase();
         Cursor cursor = null;
 
@@ -61,10 +59,10 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         try {
             cursor = db.rawQuery("SELECT *, datetime(created_at, 'localtime') AS created_at_local  FROM histories ORDER BY created_at DESC", null);
 
-            List<HistoryListItem> itemList = new ArrayList<>();
+            List<HistoryItemListDataStore> itemList = new ArrayList<>();
             if (cursor != null) {
                 while (cursor.moveToNext()) {
-                    HistoryListItem item = new HistoryListItem(
+                    HistoryItemListDataStore item = new HistoryItemListDataStore(
                             cursor.getInt(cursor.getColumnIndexOrThrow("id")),
                             cursor.getInt(cursor.getColumnIndexOrThrow("source_kind")),
                             cursor.getString(cursor.getColumnIndexOrThrow("img_uri")),

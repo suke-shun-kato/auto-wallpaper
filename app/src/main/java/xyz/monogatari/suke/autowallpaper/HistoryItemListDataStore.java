@@ -1,25 +1,34 @@
-package xyz.monogatari.suke.autowallpaper.wpchange;
+package xyz.monogatari.suke.autowallpaper;
 
 /**
  * historiesテーブルを取得時に格納しておくデータオブジェクト、List作るよう
  * Created by k-shunsuke on 2018/02/07.
  */
 
-public class HistoryListItem {
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class HistoryItemListDataStore {
+    // --------------------------------------------------------------------
+    // 
+    // --------------------------------------------------------------------
     private long id = 0;
-    private long source_kind;
-    private String img_uri;
-    private String intent_action_uri;
-    private String created_at_local;
+    private long source_kind = 0;
+    private String img_uri = null;
+    private String intent_action_uri = null;
+    private String created_at_local = null;
 
-    public HistoryListItem(long id, long source_kind, String img_uri, String intent_action_uri, String created_at_local) {
+    // --------------------------------------------------------------------
+    // 
+    // --------------------------------------------------------------------
+    public HistoryItemListDataStore(long id, long source_kind, String img_uri, String intent_action_uri, String created_at_local) {
         this.id = id;
         this.source_kind = source_kind;
         this.img_uri = img_uri;
         this.intent_action_uri = intent_action_uri;
         this.created_at_local = created_at_local;
     }
-
+    // --------------------------------------------------------------------
+    // 
+    // --------------------------------------------------------------------
     public long getId() {
         return id;
     }
@@ -40,6 +49,9 @@ public class HistoryListItem {
         return created_at_local;
     }
 
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
     public void setId(long id) {
         this.id = id;
     }
