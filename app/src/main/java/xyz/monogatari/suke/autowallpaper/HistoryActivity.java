@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
 
-import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -39,15 +38,15 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         this.setContentView(R.layout.activity_history);
 
         // ----------------------------------
-        //
+        // 画像ローダーの初期設定
         // ----------------------------------
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
             // ダウンロード中の表示画像
-            .showImageOnLoading(R.drawable.ic_arrow_downward_black_24dp)
+            .showImageOnLoading(R.drawable.anim_refresh)
             // URLが空だったときの表示画像
-            .showImageForEmptyUri(R.drawable.ic_do_not_disturb_black_24dp)
+            .showImageForEmptyUri(R.drawable.ic_history_remove)
             // ネット未接続やURLが間違っていて失敗したときの表示画像
-            .showImageOnFail(R.drawable.ic_do_not_disturb_black_24dp)
+            .showImageOnFail(R.drawable.ic_history_error)
             // メモリにキャッシュを有効
             .cacheInMemory(true)
 //           .cacheOnDisk(true)
@@ -66,7 +65,7 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
 Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()2");
         List<HistoryItemListDataStore> itemList = this.selectHistories();
 
-        ListView lv = (ListView) this.findViewById(R.id.history_list);
+        ListView lv = this.findViewById(R.id.history_list);
         HistoryListAdapter adapter = new HistoryListAdapter(this, itemList, R.layout.item_list_history);
         lv.setAdapter(adapter);
 Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()のend");

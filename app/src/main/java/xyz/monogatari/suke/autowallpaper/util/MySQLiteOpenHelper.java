@@ -15,7 +15,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     // If you change the database schema, you must increment the database version.
     @SuppressWarnings("WeakerAccess")
-    public static final int DATABASE_VERSION = 10;
+    public static final int DATABASE_VERSION = 11;
     @SuppressWarnings("WeakerAccess")
     public static final String DATABASE_NAME = "master.sqlite3";
 
