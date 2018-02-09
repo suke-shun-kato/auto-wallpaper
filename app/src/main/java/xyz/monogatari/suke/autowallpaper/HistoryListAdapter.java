@@ -2,8 +2,11 @@ package xyz.monogatari.suke.autowallpaper;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.v4.content.res.ResourcesCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -90,21 +93,49 @@ public class HistoryListAdapter extends BaseAdapter {
         // ----------------------------------
         // convertItemViewの書くviewごとにレイアウトを作成
         // ----------------------------------
-        HistoryItemListDataStore itemDataStore = (HistoryItemListDataStore) this.getItem(positionAtList);
+        final HistoryItemListDataStore itemDataStore = (HistoryItemListDataStore) this.getItem(positionAtList);
 
         // ----------
         // 壁紙画像
         // ----------
+        //// 画像読み込み処理
         ImageView wpImageView = (ImageView)convertItemView.findViewById(R.id.history_item_image);
         String imgUrl = itemDataStore.getImg_uri();
 
         ImageLoader imgLoader = ImageLoader.getInstance();
         imgLoader.displayImage(imgUrl, wpImageView);
 
-        // todo scrollViewの導入
-        // todo 今仮画像入れてるだけ
-        //// 画像取得
-        //// クリック時に取得元に飛ぶように修正
+        //// クリックしたらソースに飛ぶように設定
+        wpImageView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+Log.d("○"+this.getClass().getSimpleName(), "imgUri: " + itemDataStore.getImg_uri());
+Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + itemDataStore.getIntent_action_uri());
+                //// intent先のURI
+                String intentUriStr = itemDataStore.getIntent_action_uri();
+                if (intentUriStr == null) {
+                    intentUriStr = itemDataStore.getImg_uri();
+                }
+Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + intentUriStr);
+
+                //// intentをセット
+                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
+                if (intentUriStr.startsWith("file://")) {
+                    sendIntent.setDataAndType(Uri.parse(intentUriStr), "image/*");
+                } else {
+                    sendIntent.setData(Uri.parse(intentUriStr));
+                }
+
+
+                if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
+Log.d("○"+this.getClass().getSimpleName(), sendIntent.resolveActivity(context.getPackageManager()).toString());
+                    context.startActivity(sendIntent);
+                } else {
+Log.d("○"+this.getClass().getSimpleName(), "インテントできません！！！！！");
+                }
+
+            }
+        });
 
         // ----------
         // 取得元のアイコン画像（Twitterやディレクトリなど）

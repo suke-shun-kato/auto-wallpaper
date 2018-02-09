@@ -177,7 +177,7 @@ Log.d("○", ""+jsonAry);
         // お気に入りから画像のURLを取得
         // ----------------------------------
         JSONArray favListJsonAry = getFavList(context);
-        List<JSONObject> flattenJsonList = editJson(favListJsonAry);
+        List<JSONObject> flattenJsonList = editJson(favListJsonAry);//「entities > media」「extended_entities > media」の部分
 
         // ----------------------------------
         // 抽選
@@ -186,7 +186,7 @@ Log.d("○", ""+jsonAry);
             imgGetterTwList.add(
                 new ImgGetterTw(
                         flattenJson.optString("media_url_https"),
-                        flattenJson.optString("url")
+                        flattenJson.optString("expanded_url")
                 )
             );
         }
