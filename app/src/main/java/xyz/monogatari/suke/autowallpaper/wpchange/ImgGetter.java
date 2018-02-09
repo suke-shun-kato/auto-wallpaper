@@ -1,11 +1,16 @@
 package xyz.monogatari.suke.autowallpaper.wpchange;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -45,15 +50,19 @@ public abstract class ImgGetter {
     // --------------------------------------------------------------------
     // メソッド（通常）
     // --------------------------------------------------------------------
-    public Bitmap getImgBitmap() {
-        return getImgBitmapStatic(this.imgUri);
+    public Bitmap getImgBitmap(Context context) {
+        return getImgBitmapStatic(this.imgUri, context);
     }
 
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
+    /************************************
+     * Bitmapオブジェクトを取得する
+     * サブクラスに実装しなかったのは別々のサブクラスでもUriのスキームが同じ場合があるから
+     */
     @Nullable
-    public static Bitmap getImgBitmapStatic(String imgUri) {
+    public static Bitmap getImgBitmapStatic(String imgUri, Context context) {
         // ----------
         // WEB上の画像のとき
         // ----------
@@ -74,8 +83,16 @@ public abstract class ImgGetter {
         // ----------
         //
         // ----------    
-        } else if(imgUri.startsWith("file:") ) {
+        } else if(imgUri.startsWith("file:") ) {    //file:スキームは実際には使われていない、現在はcontent:が使われている
             return BitmapFactory.decodeFile(imgUri.replace("file://", ""));
+        } else if(imgUri.startsWith("content:") ) {
+            try {
+                InputStream is = context.getContentResolver().openInputStream(Uri.parse(imgUri));
+                return BitmapFactory.decodeStream(new BufferedInputStream(is));
+            } catch (FileNotFoundException e){
+                e.printStackTrace();
+                return null;
+            }
         } else {
             return null;
         }

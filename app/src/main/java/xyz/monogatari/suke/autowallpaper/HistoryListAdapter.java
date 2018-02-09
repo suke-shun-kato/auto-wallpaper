@@ -3,9 +3,7 @@ package xyz.monogatari.suke.autowallpaper;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.net.Uri;
-import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +15,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
 
-import xyz.monogatari.suke.autowallpaper.wpchange.ImgGetter;
 
 /**
  * 履歴ページのListViewを作成するためのアダプター
@@ -91,7 +88,7 @@ public class HistoryListAdapter extends BaseAdapter {
         }
 
         // ----------------------------------
-        // convertItemViewの書くviewごとにレイアウトを作成
+        // convertItemViewの各viewごとにレイアウトを作成
         // ----------------------------------
         final HistoryItemListDataStore itemDataStore = (HistoryItemListDataStore) this.getItem(positionAtList);
 
@@ -99,11 +96,12 @@ public class HistoryListAdapter extends BaseAdapter {
         // 壁紙画像
         // ----------
         //// 画像読み込み処理
-        ImageView wpImageView = (ImageView)convertItemView.findViewById(R.id.history_item_image);
+        ImageView wpImageView = convertItemView.findViewById(R.id.history_item_image);
         String imgUrl = itemDataStore.getImg_uri();
 
         ImageLoader imgLoader = ImageLoader.getInstance();
         imgLoader.displayImage(imgUrl, wpImageView);
+
 
         //// クリックしたらソースに飛ぶように設定
         wpImageView.setOnClickListener(new View.OnClickListener(){
@@ -119,17 +117,21 @@ Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + itemDataStore.getIn
 Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + intentUriStr);
 
                 //// intentをセット
-                Intent sendIntent = new Intent(Intent.ACTION_VIEW);
-                if (intentUriStr.startsWith("file://")) {
-                    sendIntent.setDataAndType(Uri.parse(intentUriStr), "image/*");
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                if (intentUriStr.startsWith("content://")) {
+                    intent.setDataAndType(Uri.parse(intentUriStr),"image/*");
+                    intent.addFlags(
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    );
+
                 } else {
-                    sendIntent.setData(Uri.parse(intentUriStr));
+                    intent.setData(Uri.parse(intentUriStr));
                 }
 
-
-                if (sendIntent.resolveActivity(context.getPackageManager()) != null) {
-Log.d("○"+this.getClass().getSimpleName(), sendIntent.resolveActivity(context.getPackageManager()).toString());
-                    context.startActivity(sendIntent);
+                // resolveActivity() インテントで動作するアクティビティを決める、
+                // 戻り値はコンポーネント（アクティビティとかサービスとか）名オブジェクト
+                if (intent.resolveActivity(context.getPackageManager()) != null) {
+                    context.startActivity(intent);
                 } else {
 Log.d("○"+this.getClass().getSimpleName(), "インテントできません！！！！！");
                 }

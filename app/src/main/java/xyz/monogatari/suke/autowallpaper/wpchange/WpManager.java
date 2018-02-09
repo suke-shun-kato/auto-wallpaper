@@ -140,7 +140,7 @@ Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は�
         // ----------
         // 画像取得
         // ----------
-        Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap(); //データ本体取得
+        Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap(this.context); //データ本体取得
 
         // ----------------------------------
         // 画像加工

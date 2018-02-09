@@ -4,10 +4,13 @@ import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -110,9 +113,13 @@ Log.d("○ImgGetterDir", "ストレージアクセス権限がない！！！");
         //
         // ----------------------------------
         for (String imgPath : imgPathList) {
+            //// ここで「file://」→「content://」へ変換する
+            Uri contentUri = FileProvider.getUriForFile(context, "xyz.monogatari.suke.autowallpaper.fileprovider", new File(imgPath));
+
+            //// Listに追加
             getImgGetterList.add(
                     new ImgGetterDir(
-                            "file://" + imgPath,
+                            contentUri.toString(),
                             null
                     )
             );
