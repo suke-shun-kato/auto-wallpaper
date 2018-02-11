@@ -15,7 +15,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     // If you change the database schema, you must increment the database version.
     @SuppressWarnings("WeakerAccess")
-    public static final int DATABASE_VERSION = 13;
+    public static final int DATABASE_VERSION = 14;
     @SuppressWarnings("WeakerAccess")
     public static final String DATABASE_NAME = "master.sqlite3";
 
@@ -32,7 +32,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         // デーブル作成
         db.execSQL("CREATE TABLE histories ( " +
                 "`id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
-                "`source_kind` INTEGER NOT NULL, " +
+                "`source_kind` TEXT NOT NULL, " +
                 "`img_uri` TEXT NOT NULL, " +
                 "`intent_action_uri` TEXT, " +
                 "`created_at` TEXT NOT NULL )");

@@ -142,9 +142,12 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
         // ----------
         // 取得元のアイコン画像（Twitterやディレクトリなど）
         // ----------
+
         // todo アイコンにちゃんと修正する,ImageViewにする
-        TextView iv2 = (TextView)convertItemView.findViewById(R.id.history_item_sourceKind);
-        iv2.setText( "" + itemDataStore.getSource_kind() );
+        ImageView iv2 = (ImageView)convertItemView.findViewById(R.id.history_item_sourceKind);
+        int rId = (int)ImgSourceAsso.get(itemDataStore.getSource_kind()).get("icon");
+        iv2.setImageResource(rId);
+
 
         // ----------
         // 更新時間

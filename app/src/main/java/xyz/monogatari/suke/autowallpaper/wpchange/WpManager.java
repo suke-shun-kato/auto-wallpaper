@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
@@ -37,18 +38,19 @@ public class WpManager {
     private final Context context;
     private final SharedPreferences sp;
     private ImgGetter imgGetter = null;
-    private final Map<String, Integer> sourceKindMap = new HashMap<>();
+//    private final Map<String, Integer> sourceKindMap = new HashMap<>();
     private static final int MAX_DB_RECORD = 100;
 
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
     public WpManager(Context context) {
-        // ----------------------------------
-        // クラス名→DBのsource_kind変換用のハッシュマップの作成
-        // ----------------------------------
-        this.sourceKindMap.put("ImgGetterDir", 1);
-        this.sourceKindMap.put("ImgGetterTw", 2);
+//        // ----------------------------------
+//        // クラス名→DBのsource_kind変換用のハッシュマップの作成
+//        // ----------------------------------
+//        this.sourceKindMap.put("ImgGetterDir", 1);
+//        this.sourceKindMap.put("ImgGetterTw", 2);
+
 
         // ----------------------------------
         //
@@ -82,7 +84,7 @@ public class WpManager {
 
             //// bind
 Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は！:"+this.imgGetter.getClass().getSimpleName());
-            dbStt.bindLong(1, this.sourceKindMap.get(this.imgGetter.getClass().getSimpleName()) );
+            dbStt.bindString(1, this.imgGetter.getClass().getSimpleName() );
             dbStt.bindString(2, this.imgGetter.getImgUri());
             String uri = this.imgGetter.getActionUri();
             if (uri == null) {

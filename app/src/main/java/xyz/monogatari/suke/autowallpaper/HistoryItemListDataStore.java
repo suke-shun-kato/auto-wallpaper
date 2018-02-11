@@ -11,7 +11,7 @@ public class HistoryItemListDataStore {
     // 
     // --------------------------------------------------------------------
     private long id = 0;
-    private long source_kind = 0;
+    private String source_kind = null;
     private String img_uri = null;
     private String intent_action_uri = null;
     private String created_at_local = null;
@@ -19,7 +19,7 @@ public class HistoryItemListDataStore {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    public HistoryItemListDataStore(long id, long source_kind, String img_uri, String intent_action_uri, String created_at_local) {
+    public HistoryItemListDataStore(long id, String source_kind, String img_uri, String intent_action_uri, String created_at_local) {
         this.id = id;
         this.source_kind = source_kind;
         this.img_uri = img_uri;
@@ -33,7 +33,7 @@ public class HistoryItemListDataStore {
         return id;
     }
 
-    public long getSource_kind() {
+    public String getSource_kind() {
         return source_kind;
     }
 
@@ -56,7 +56,7 @@ public class HistoryItemListDataStore {
         this.id = id;
     }
 
-    public void setSource_kind(long source_kind) {
+    public void setSource_kind(String source_kind) {
         this.source_kind = source_kind;
     }
 

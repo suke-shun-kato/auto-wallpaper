@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SelectDirPreference;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.FileExtended;
@@ -30,6 +31,7 @@ public class ImgGetterDir extends ImgGetter {
     // フィールド
     // --------------------------------------------------------------------
     private static final String[] EXTENSION_ARY = {"jpg", "jpeg", "png"};
+    public static int rIcon = R.drawable.ic_dir;
 
     // --------------------------------------------------------------------
     // コンストラクタ

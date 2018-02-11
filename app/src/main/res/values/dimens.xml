@@ -7,4 +7,6 @@
     <dimen name="main_activity_topBottom_margin2">24dp</dimen>
 
     <dimen name="main_activity_power_btn_size">280dp</dimen>
+
+    <dimen name="history_activity_item_margin">8dp</dimen>
 </resources>

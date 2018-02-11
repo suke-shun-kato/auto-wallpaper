@@ -94,7 +94,7 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
                 while (cursor.moveToNext()) {
                     HistoryItemListDataStore item = new HistoryItemListDataStore(
                             cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                            cursor.getInt(cursor.getColumnIndexOrThrow("source_kind")),
+                            cursor.getString(cursor.getColumnIndexOrThrow("source_kind")),
                             cursor.getString(cursor.getColumnIndexOrThrow("img_uri")),
                             cursor.getString(cursor.getColumnIndexOrThrow("intent_action_uri")),
                             cursor.getString(cursor.getColumnIndexOrThrow("created_at_local"))

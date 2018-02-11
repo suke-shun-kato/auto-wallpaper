@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.util.Token;
 
 /**
@@ -30,6 +31,8 @@ import xyz.monogatari.suke.autowallpaper.util.Token;
 
 @SuppressWarnings("WeakerAccess")
 public class ImgGetterTw extends ImgGetter {
+    public static int rIcon = R.drawable.ic_twitter;
+
     @SuppressWarnings("WeakerAccess")
     public ImgGetterTw(String imgUri, String actionUri) {
         super(imgUri, actionUri);
