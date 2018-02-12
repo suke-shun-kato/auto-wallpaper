@@ -41,6 +41,7 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         // ----------------------------------
         // 画像ローダーの初期設定
         // ----------------------------------
+        //// displayImage() 関数の設定
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
             // ダウンロード中の表示画像
             .showImageOnLoading(R.drawable.anim_refresh)
@@ -53,9 +54,10 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
 //           .cacheOnDisk(true)
             .build();
 
-
+        //// imageLoader自体の設定
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
             .defaultDisplayImageOptions(defaultOptions)
+            .memoryCacheSizePercentage(25)
             .build();
         ImageLoader.getInstance().init(config);
 

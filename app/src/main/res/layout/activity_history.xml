@@ -5,18 +5,18 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="xyz.monogatari.suke.autowallpaper.HistoryActivity">
-
-    <ListView
-        android:id="@+id/history_list"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimaryDark"
-        />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="この上に一覧が表示されますよ、ここに広告表示させる予定"
+        android:text="ここに広告表示させる予定"
         />
+    <ListView
+        android:id="@+id/history_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark"
+        />
+
 </LinearLayout>
 
 

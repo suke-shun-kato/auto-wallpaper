@@ -146,9 +146,9 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
         // ----------
         // 取得元のアイコン画像（Twitterやディレクトリなど）
         // ----------
-        ImageView iv2 = (ImageView)convertItemView.findViewById(R.id.history_item_sourceKind);
+        ImageView iconImageView = (ImageView)convertItemView.findViewById(R.id.history_item_sourceKind);
         int rId = (int)ImgSourceAsso.get(itemDataStore.getSource_kind()).get("icon");
-        iv2.setImageResource(rId);
+        iconImageView.setImageResource(rId);
 
 
         // ----------
