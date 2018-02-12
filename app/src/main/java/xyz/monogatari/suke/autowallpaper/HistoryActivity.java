@@ -87,7 +87,8 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
 
         //noinspection TryFinallyCanBeTryWithResources
         try {
-            cursor = db.rawQuery("SELECT *, datetime(created_at, 'localtime') AS created_at_local  FROM histories ORDER BY created_at DESC", null);
+            // created_atの取得自体はUTCタイムでUNIXタイムスタンプのまま取得するので'utc'を追加
+            cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at, 'utc') AS created_at_unix FROM histories ORDER BY created_at DESC;", null);
 
             List<HistoryItemListDataStore> itemList = new ArrayList<>();
             if (cursor != null) {
@@ -97,7 +98,7 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
                             cursor.getString(cursor.getColumnIndexOrThrow("source_kind")),
                             cursor.getString(cursor.getColumnIndexOrThrow("img_uri")),
                             cursor.getString(cursor.getColumnIndexOrThrow("intent_action_uri")),
-                            cursor.getString(cursor.getColumnIndexOrThrow("created_at_local"))
+                            (long)cursor.getInt(cursor.getColumnIndexOrThrow("created_at_unix"))*1000
                     );
                     itemList.add(item);
                 }

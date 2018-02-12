@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
+import java.util.TimeZone;
 
 
 /**
@@ -102,8 +105,9 @@ public class HistoryListAdapter extends BaseAdapter {
         ImageLoader imgLoader = ImageLoader.getInstance();
         imgLoader.displayImage(imgUrl, wpImageView);
 
-
-        //// クリックしたらソースに飛ぶように設定
+        // ----------
+        // クリックしたらソースに飛ぶように設定
+        // ----------
         wpImageView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -150,11 +154,27 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
         // ----------
         // 更新時間
         // ----------
-        // todo 時刻表示をその地域に合わせてちゃんとする
-        TextView tv = (TextView)convertItemView.findViewById(R.id.history_item_createdAt);
-        tv.setText( itemDataStore.getCreated_at_local() );
+        long unixTimeMsec = itemDataStore.getCreated_at_unix(); //表示したい日時（UTC）
+        // getRawOffset(): 時差、getDSTSavings():サマータイムなどの追加時間
+        long timeOffsetMsec = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings(); //時差
 
+        String datetimeStr = DateUtils.formatDateTime(
+                this.context,
+                unixTimeMsec + timeOffsetMsec,
+                DateUtils.FORMAT_SHOW_YEAR
+                        | DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_SHOW_WEEKDAY
+                        | DateUtils.FORMAT_SHOW_TIME
+                        | DateUtils.FORMAT_ABBREV_ALL
+        );
+
+        TextView tv = (TextView)convertItemView.findViewById(R.id.history_item_createdAt);
+        tv.setText(datetimeStr);
 
         return convertItemView;
     }
 }
+
+
+
+

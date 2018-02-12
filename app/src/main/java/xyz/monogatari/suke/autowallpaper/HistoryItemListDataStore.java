@@ -14,17 +14,17 @@ public class HistoryItemListDataStore {
     private String source_kind = null;
     private String img_uri = null;
     private String intent_action_uri = null;
-    private String created_at_local = null;
+    private long created_at_unix = 0;
 
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    public HistoryItemListDataStore(long id, String source_kind, String img_uri, String intent_action_uri, String created_at_local) {
+    public HistoryItemListDataStore(long id, String source_kind, String img_uri, String intent_action_uri, long created_at_unix) {
         this.id = id;
         this.source_kind = source_kind;
         this.img_uri = img_uri;
         this.intent_action_uri = intent_action_uri;
-        this.created_at_local = created_at_local;
+        this.created_at_unix = created_at_unix;
     }
     // --------------------------------------------------------------------
     // 
@@ -45,8 +45,8 @@ public class HistoryItemListDataStore {
         return intent_action_uri;
     }
 
-    public String getCreated_at_local() {
-        return created_at_local;
+    public long getCreated_at_unix() {
+        return created_at_unix;
     }
 
     // --------------------------------------------------------------------
@@ -68,7 +68,7 @@ public class HistoryItemListDataStore {
         this.intent_action_uri = intent_action_uri;
     }
 
-    public void setCreated_at_local(String created_at_local) {
-        this.created_at_local = created_at_local;
+    public void setCreated_at_unix(long created_at_unix) {
+        this.created_at_unix = created_at_unix;
     }
 }
