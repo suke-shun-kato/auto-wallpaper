@@ -32,6 +32,12 @@
         android:layout_marginBottom="@dimen/history_activity_item_margin"
         android:layout_marginRight="@dimen/history_activity_item_margin"
         android:layout_marginEnd="@dimen/history_activity_item_margin"
+        android:background="#CCFFFFFF"
+
+        android:paddingTop="@dimen/history_activity_item_text_padding_v"
+        android:paddingBottom="@dimen/history_activity_item_text_padding_v"
+        android:paddingLeft="@dimen/history_activity_item_text_padding_h"
+        android:paddingRight="@dimen/history_activity_item_text_padding_h"
 
         android:layout_alignBottom="@id/history_item_image"
         android:layout_alignRight="@id/history_item_image"
