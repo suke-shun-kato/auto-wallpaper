@@ -4,8 +4,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -29,6 +31,17 @@ public class HistoryActivity extends AppCompatActivity {
     private MySQLiteOpenHelper mDbHelper;
 
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     // --------------------------------------------------------------------
     // メソッド（オーバーライド）
     // --------------------------------------------------------------------
@@ -37,6 +50,15 @@ public class HistoryActivity extends AppCompatActivity {
 Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()のstart");
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_history);
+
+        // ----------------------------------
+        // アクションバーの設定
+        // ----------------------------------
+        // ここのActionBar は android.support.v7.app.ActionBa の方のクラスになる
+        ActionBar actionBar = this.getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         // ----------------------------------
         // 画像ローダーの初期設定
@@ -62,22 +84,14 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         ImageLoader.getInstance().init(config);
 
         // ----------------------------------
-        //
+        // DBから取得したデータをアダプターにセットして表示を作成
         // ----------------------------------
         this.mDbHelper = new MySQLiteOpenHelper(this);
-Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()2");
         List<HistoryItemListDataStore> itemList = this.selectHistories();
 
         ListView lv = this.findViewById(R.id.history_list);
         HistoryListAdapter adapter = new HistoryListAdapter(this, itemList, R.layout.item_list_history);
         lv.setAdapter(adapter);
-Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()のend");
-
-
-        // ----------------------------------
-        //
-        // ----------------------------------
-//        Log.d("○○○",Environment.getExternalStorageDirectory().getAbsolutePath());
     }
 
     // --------------------------------------------------------------------
