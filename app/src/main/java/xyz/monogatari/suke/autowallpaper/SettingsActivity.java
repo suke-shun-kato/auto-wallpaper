@@ -3,8 +3,10 @@ package xyz.monogatari.suke.autowallpaper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.MenuItem;
 
 
 /**
@@ -28,10 +30,21 @@ public class SettingsActivity extends AppCompatActivity {
     @SuppressWarnings("JavaDoc")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
+        // ----------------------------------
+        // 
+        // ----------------------------------
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: ");
         super.onCreate(savedInstanceState);
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2");
  
+        // ----------------------------------
+        // アクションバーに戻るボタンを設置
+        // ----------------------------------
+        ActionBar actionBar = this.getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
         // ----------------------------------
         // フラグメントをアクティビティにセット
         // 画面回転の場合（savedInstanceStateがnullでない場合）は自動的にセットされるのでここを通らないようにする
@@ -80,5 +93,22 @@ Log.d("○○○○○○○○○○" + this.getClass().getSimpleName(), "onNew
     public void onSaveInstanceState(Bundle outState) {
 Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれた");
         super.onSaveInstanceState(outState);
+    }
+
+
+    /************************************
+     * オプションんのハンドラ
+     * 戻るボタンを押したときにアクティビティを終了する（ホームに戻る）ようにしている
+     * @param item 選択されたmenuアイテム
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }
