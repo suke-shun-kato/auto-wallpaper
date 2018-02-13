@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:adjustViewBounds="true"
-
+        android:contentDescription="@string/histories_image"
         />
     <ImageView
         android:id="@+id/history_item_sourceKind"
@@ -23,6 +23,8 @@
         android:layout_alignTop="@id/history_item_image"
         android:layout_alignLeft="@id/history_item_image"
         android:layout_alignStart="@id/history_item_image"
+
+        android:contentDescription="@string/histories_icon"
         />
     <TextView
         android:id="@+id/history_item_createdAt"

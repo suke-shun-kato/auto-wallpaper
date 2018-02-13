@@ -8,6 +8,7 @@ import java.util.Map;
  * Created by k-shunsuke on 2018/02/10.
  */
 
+@SuppressWarnings("WeakerAccess")
 public class ImgSourceAsso {
     static public Map get(String key) {
         Map<String, Map<String, Object>> topMap = new HashMap<>();

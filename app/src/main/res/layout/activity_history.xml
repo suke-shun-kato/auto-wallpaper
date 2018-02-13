@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="ここに広告表示させる予定"
-        />
+        tools:ignore="HardcodedText" />
     <ListView
         android:id="@+id/history_list"
         android:layout_width="match_parent"

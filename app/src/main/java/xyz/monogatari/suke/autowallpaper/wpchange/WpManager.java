@@ -16,12 +16,9 @@ import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
-import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
@@ -39,7 +36,6 @@ public class WpManager {
     private final SharedPreferences sp;
     private ImgGetter imgGetter = null;
 //    private final Map<String, Integer> sourceKindMap = new HashMap<>();
-    private static final int MAX_DB_RECORD = 100;
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -77,6 +73,7 @@ public class WpManager {
             // ----------------------------------
             //// コード準備
             // ↓のコードでInspectionエラーが出るがAndroidStudioのバグなので放置、3.1では直るらしい
+
             SQLiteStatement dbStt = db.compileStatement("" +
                     "INSERT INTO histories (" +
                         "source_kind, img_uri, intent_action_uri, created_at" +

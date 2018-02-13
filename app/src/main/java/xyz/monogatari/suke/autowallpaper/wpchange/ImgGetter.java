@@ -88,7 +88,11 @@ public abstract class ImgGetter {
         } else if(imgUri.startsWith("content:") ) {
             try {
                 InputStream is = context.getContentResolver().openInputStream(Uri.parse(imgUri));
-                return BitmapFactory.decodeStream(new BufferedInputStream(is));
+                if (is == null) {
+                    return null;
+                } else {
+                    return BitmapFactory.decodeStream(new BufferedInputStream(is));
+                }
             } catch (FileNotFoundException e){
                 e.printStackTrace();
                 return null;

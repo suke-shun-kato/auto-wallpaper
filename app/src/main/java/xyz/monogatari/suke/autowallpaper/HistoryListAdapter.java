@@ -36,7 +36,7 @@ public class HistoryListAdapter extends BaseAdapter {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    public HistoryListAdapter(Context context, List<HistoryItemListDataStore> itemList, int itemRLayout) {
+    public HistoryListAdapter(Context context, List<HistoryItemListDataStore> itemList, @SuppressWarnings("SameParameterValue") int itemRLayout) {
         this.context = context;
         this.itemList = itemList;
         this.itemRLayout = itemRLayout;
@@ -146,7 +146,7 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
         // ----------
         // 取得元のアイコン画像（Twitterやディレクトリなど）
         // ----------
-        ImageView iconImageView = (ImageView)convertItemView.findViewById(R.id.history_item_sourceKind);
+        ImageView iconImageView = convertItemView.findViewById(R.id.history_item_sourceKind);
         int rId = (int)ImgSourceAsso.get(itemDataStore.getSource_kind()).get("icon");
         iconImageView.setImageResource(rId);
 
@@ -168,7 +168,7 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
                         | DateUtils.FORMAT_ABBREV_ALL
         );
 
-        TextView tv = (TextView)convertItemView.findViewById(R.id.history_item_createdAt);
+        TextView tv = convertItemView.findViewById(R.id.history_item_createdAt);
         tv.setText(datetimeStr);
 
         return convertItemView;

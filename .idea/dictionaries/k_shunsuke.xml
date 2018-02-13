@@ -2,11 +2,13 @@
   <dictionary name="k-shunsuke">
     <words>
       <w>allprojects</w>
+      <w>asso</w>
       <w>autowallpaper</w>
       <w>bcast</w>
       <w>btnbk</w>
       <w>cqfhuud</w>
       <w>dcim</w>
+      <w>fileprovider</w>
       <w>kyoukaichi</w>
       <w>monogatari</w>
       <w>msec</w>
@@ -17,6 +19,7 @@
       <w>sqlite</w>
       <w>suke</w>
       <w>tjrvqhnbx</w>
+      <w>utc'</w>
       <w>wpchange</w>
     </words>
   </dictionary>

@@ -81,5 +81,7 @@
     <string name="setting_reset_resetBtn_dialogText">Are you sure that you want to reset setting values?</string>
 
     <string name="select_dir_pref_dialog_title">Select directory.</string>
+    <string name="histories_image">A wallpaper image</string>
+    <string name="histories_icon">icon</string>
     <integer name="request_code_main_service">1</integer>
 </resources>
