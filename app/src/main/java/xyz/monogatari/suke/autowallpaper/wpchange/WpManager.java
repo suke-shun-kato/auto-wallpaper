@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
@@ -246,7 +247,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
                 .setAutoCancel(true)    //タップすると通知が消える
                 .setContentTitle(this.context.getString(R.string.histories_notification_title))
                 .setContentText(this.context.getString(R.string.histories_notification_body))
-                .setSmallIcon(R.drawable.ic_notifications_active_black_24dp)//todo ちゃんとする
+                .setSmallIcon(R.drawable.ic_notification_wallpaper)
                 .setWhen(System.currentTimeMillis())
                 .setVibrate(new long[]{1000, 500})  //1秒後に0.5秒だけ振動
                 .setLights(Color.BLUE,2000,1000)    //2秒ON→1秒OFF→2秒ONを繰り返す
@@ -258,7 +259,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
                                 PendingIntent.FLAG_UPDATE_CURRENT   //PendingIntentオブジェクトが既にあったらそのまま、ただしextraの値は最新に更新される
                         )
                 )
-                .build();   //todo ビルダーの設定で良い設定がないか確認する
+                .build();
 
         NotificationManager nManager
                 = (NotificationManager) this.context.getSystemService(Context.NOTIFICATION_SERVICE);
