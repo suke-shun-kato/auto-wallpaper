@@ -109,7 +109,7 @@ public class TwitterOAuthPreference extends Preference {
                 e.printStackTrace();
                 Log.d("○○○",e.getMessage());
             }
-//Log.d("○△", "ブロックの後");
+//Log.d("○", "ブロックの後");
             return null;
         }
 

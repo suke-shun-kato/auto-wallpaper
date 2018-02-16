@@ -141,7 +141,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
 //        //// アラームからスタートした場合
 //        if (intent != null && intent.getAction() != null && intent.getAction().equals(ACTION_WALLPAPER_CHANGE)) {
 //            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-//Log.d("○△"+getClass().getSimpleName(), "onStartCommand(): Alarm");
+//Log.d("○"+getClass().getSimpleName(), "onStartCommand(): Alarm");
 //                new WpManager(this).executeNewThread();
 //            }
 //        } else {
@@ -486,7 +486,7 @@ Log.d("○"+this.getClass().getSimpleName(), "cancelTimer()_");
      *
      */
     public void cancelAlarm() {
-Log.d("○△"+getClass().getSimpleName(), "cancelAlarm()_");
+Log.d("○"+getClass().getSimpleName(), "cancelAlarm()_");
         this.alarmManager.cancel(this.pendingIntent);
     }
     

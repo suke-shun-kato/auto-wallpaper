@@ -397,7 +397,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
      * @param key 設定の値を取り出すためのkey, このkeyの設定が変更された
      */
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-Log.d("○△"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): key名:" + key);
+Log.d("○"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): key名:" + key);
         // ----------------------------------
         // 設定値をSummaryに反映
         // ----------------------------------

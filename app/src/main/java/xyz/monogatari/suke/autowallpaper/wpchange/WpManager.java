@@ -106,7 +106,7 @@ Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は�
 
             if (cursor != null && cursor.moveToFirst()) {
                 int recordCount = cursor.getInt(cursor.getColumnIndexOrThrow("count"));
-Log.d("△△△△△△△", "count: " + recordCount);
+Log.d("○"+this.getClass().getSimpleName(), "count: " + recordCount);
                 if (recordCount > maxNum) {
                     SQLiteStatement dbStt = db.compileStatement(
                             "DELETE FROM histories WHERE created_at IN (" +
