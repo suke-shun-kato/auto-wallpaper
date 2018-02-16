@@ -123,7 +123,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
      */
     @Override
     protected void onStart() {
-Log.d("○△"+this.getClass().getSimpleName(), "onStart()");
+Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         super.onStart();
         
         // ----------------------------------
@@ -276,7 +276,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
 //        new WpManager(this).execute();
-Log.d("○△" + this.getClass().getSimpleName(), "setWallpaper_onClick(), スレッド名:" + Thread.currentThread().getName());
+Log.d("○" + this.getClass().getSimpleName(), "setWallpaper_onClick(), スレッド名:" + Thread.currentThread().getName());
         Intent i = new Intent(this, WpManagerService.class);
         startService(i);
 

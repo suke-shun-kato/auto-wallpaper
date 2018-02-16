@@ -22,16 +22,16 @@ public class ProgressBcastReceiver extends BroadcastReceiver {
         int stateInt = intent.getIntExtra(WpManagerService.KEY_NAME, WpManagerService.STATE_DESTROY);
         switch (stateInt) {
             case WpManagerService.STATE_START:
-Log.d("○△" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶ:ON");
+Log.d("○" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶ:ON");
                 ((MainActivity)context).onProgressVisible();
                 break;
             case WpManagerService.STATE_DESTROY:
-Log.d("○△" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶ:OFF");
+Log.d("○" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶ:OFF");
                 ((MainActivity)context).onProgressGone();
-Log.d("○△" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶ:OFF2");
+Log.d("○" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶ:OFF2");
                 break;
             case WpManagerService.STATE_ERROR:
-Log.d("○△" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶERROR");
+Log.d("○" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶERROR");
 
                 Toast.makeText(context, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
                 break;

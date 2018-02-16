@@ -63,19 +63,19 @@ public class ImgGetterTw extends ImgGetter {
             return new JSONArray(responseStr);
 
         } catch (IOException e) {
-            Log.d("○△",e.getMessage());
+            Log.d("○",e.getMessage());
             e.printStackTrace();
             return null;
         } catch (InterruptedException e) {
-            Log.d("○△",e.getMessage());
+            Log.d("○",e.getMessage());
             e.printStackTrace();
             return null;
         } catch (ExecutionException e) {
-            Log.d("○△",e.getMessage());
+            Log.d("○",e.getMessage());
             e.printStackTrace();
             return null;
         } catch (JSONException e) {
-            Log.d("○△",e.getMessage());
+            Log.d("○",e.getMessage());
             e.printStackTrace();
             return null;
         }
