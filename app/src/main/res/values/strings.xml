@@ -83,5 +83,7 @@
     <string name="select_dir_pref_dialog_title">Select directory.</string>
     <string name="histories_image">A wallpaper image</string>
     <string name="histories_icon">icon</string>
+    <string name="histories_notification_title">The wallpaper has changed.</string>
+    <string name="histories_notification_body">After you tap it, you jump the histories page.</string>
     <integer name="request_code_main_service">1</integer>
 </resources>

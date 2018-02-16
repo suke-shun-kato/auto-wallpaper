@@ -1,14 +1,19 @@
 package xyz.monogatari.suke.autowallpaper.wpchange;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.WallpaperManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -21,6 +26,7 @@ import java.util.List;
 import java.util.Random;
 
 import xyz.monogatari.suke.autowallpaper.HistoryActivity;
+import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
@@ -38,6 +44,12 @@ public class WpManager {
     private final SharedPreferences sp;
     private ImgGetter imgGetter = null;
 //    private final Map<String, Integer> sourceKindMap = new HashMap<>();
+
+    // --------------------------------------------------------------------
+    // 定数
+    // --------------------------------------------------------------------
+    /** ひとまずnotification id を定義、これしかないので実質意味がないが・・・ */
+    public static final int NOTIFICATION_ID_NORMAL = 1;
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -225,6 +237,37 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
             this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
         } finally {
             db.close();
+        }
+
+        // ----------------------------------
+        // 通知を作成
+        // ----------------------------------
+        Notification notification = new Notification.Builder(this.context)
+                .setAutoCancel(true)    //タップすると通知が消える
+                .setContentTitle(this.context.getString(R.string.histories_notification_title))
+                .setContentText(this.context.getString(R.string.histories_notification_body))
+                .setSmallIcon(R.drawable.ic_notifications_active_black_24dp)//todo ちゃんとする
+                .setWhen(System.currentTimeMillis())
+                .setVibrate(new long[]{1000, 500})  //1秒後に0.5秒だけ振動
+                .setLights(Color.BLUE,2000,1000)    //2秒ON→1秒OFF→2秒ONを繰り返す
+                .setContentIntent(
+                        PendingIntent.getActivity(
+                                this.context,
+                                HistoryActivity.REQUEST_CODE_NORMAL,    // リクエストコード
+                                new Intent(this.context, HistoryActivity.class),
+                                PendingIntent.FLAG_UPDATE_CURRENT   //PendingIntentオブジェクトが既にあったらそのまま、ただしextraの値は最新に更新される
+                        )
+                )
+                .build();   //todo ビルダーの設定で良い設定がないか確認する
+
+        NotificationManager nManager
+                = (NotificationManager) this.context.getSystemService(Context.NOTIFICATION_SERVICE);
+        try {
+            if ( nManager != null ) {
+                nManager.notify(NOTIFICATION_ID_NORMAL, notification);
+            }
+        } catch(NullPointerException e) {
+            e.printStackTrace();
         }
 
         // ----------------------------------
