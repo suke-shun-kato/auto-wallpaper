@@ -5,6 +5,7 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import xyz.monogatari.suke.autowallpaper.HistoryActivity;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
@@ -61,13 +63,11 @@ public class WpManager {
     // --------------------------------------------------------------------
     /************************************
      * データベースを履歴を記録
+     * @param db 書き込み先のdbオブジェクト
      */
-    private void insertHistory() {
-        MySQLiteOpenHelper mDbHelper = new MySQLiteOpenHelper(this.context);
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
+    private void insertHistories(SQLiteDatabase db) {
         //noinspection TryFinallyCanBeTryWithResources
-        try {
+//        try {
             // ----------------------------------
             // INSERT
             // ----------------------------------
@@ -93,15 +93,36 @@ Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は�
             //// insert実行
             dbStt.executeInsert();
 
-            // ----------------------------------
-            // レコード数MAXのときの削除
-            // ----------------------------------
-            //todo レコード数MAXのとき削除するコードをここに書く
+//
+//        } finally {
+//            db.close();
+//        }
+    }
+    private void deleteHistoriesOverflowMax(SQLiteDatabase db, @SuppressWarnings("SameParameterValue") int maxNum) {
+        Cursor cursor = null;
 
+        try {
+            cursor = db.rawQuery("SELECT count(*) AS count FROM histories", null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int recordCount = cursor.getInt(cursor.getColumnIndexOrThrow("count"));
+Log.d("△△△△△△△", "count: " + recordCount);
+                if (recordCount > maxNum) {
+                    SQLiteStatement dbStt = db.compileStatement(
+                            "DELETE FROM histories WHERE created_at IN (" +
+                                    "SELECT created_at FROM histories ORDER BY created_at ASC LIMIT ?)"
+                    );
+                    dbStt.bindLong(1, recordCount - maxNum);
+                    dbStt.executeUpdateDelete();
+                }
+            }
         } finally {
-            db.close();
+            if (cursor != null) {
+                cursor.close();
+            }
         }
     }
+
 
     /************************************
      * 壁紙を取得→加工→セット する一連の流れを行う関数
@@ -194,7 +215,17 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
         // ----------------------------------
         // 履歴に書き込み
         // ----------------------------------
-        this.insertHistory();
+        MySQLiteOpenHelper mDbHelper = new MySQLiteOpenHelper(this.context);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        //noinspection TryFinallyCanBeTryWithResources
+        try {
+            this.insertHistories(db);
+            // 記憶件数溢れたものを削除
+            this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
+        } finally {
+            db.close();
+        }
 
         // ----------------------------------
         //

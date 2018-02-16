@@ -30,17 +30,13 @@ public class HistoryActivity extends AppCompatActivity {
     // --------------------------------------------------------------------
     private MySQLiteOpenHelper mDbHelper;
 
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+    // --------------------------------------------------------------------
+    // 定数
+    // --------------------------------------------------------------------
+//    /** 履歴ページに表示する件数 */
+//    public static int MAX_RECORD_DISPLAY = 100;   //DBに保存する履歴件数の方で調整できるので不要
+    /** DBに保存する履歴件数 */
+    public static final int MAX_RECORD_STORE = 100;
 
     // --------------------------------------------------------------------
     // メソッド（オーバーライド）
@@ -89,11 +85,25 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         this.mDbHelper = new MySQLiteOpenHelper(this);
         List<HistoryItemListDataStore> itemList = this.selectHistories();
 
+
         ListView lv = this.findViewById(R.id.history_list);
         HistoryListAdapter adapter = new HistoryListAdapter(this, itemList, R.layout.item_list_history);
         lv.setAdapter(adapter);
     }
 
+    /************************************
+     * 戻るボタンが押されたときの処理
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
@@ -104,7 +114,7 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         //noinspection TryFinallyCanBeTryWithResources
         try {
             // created_atの取得自体はUTCタイムでUNIXタイムスタンプのまま取得するので'utc'を追加
-            cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at, 'utc') AS created_at_unix FROM histories ORDER BY created_at DESC;", null);
+            cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at, 'utc') AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
 
             List<HistoryItemListDataStore> itemList = new ArrayList<>();
             if (cursor != null) {
