@@ -5,21 +5,25 @@ import android.app.WallpaperManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import xyz.monogatari.suke.autowallpaper.HistoryActivity;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
+import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 壁紙を取得→加工→セットまでの一連の流れを行うクラス
@@ -27,12 +31,96 @@ import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
  */
 @SuppressWarnings("WeakerAccess")
 public class WpManager {
+    // --------------------------------------------------------------------
+    // フィールド
+    // --------------------------------------------------------------------
     private final Context context;
     private final SharedPreferences sp;
+    private ImgGetter imgGetter = null;
+//    private final Map<String, Integer> sourceKindMap = new HashMap<>();
 
+    // --------------------------------------------------------------------
+    // コンストラクタ
+    // --------------------------------------------------------------------
     public WpManager(Context context) {
+//        // ----------------------------------
+//        // クラス名→DBのsource_kind変換用のハッシュマップの作成
+//        // ----------------------------------
+//        this.sourceKindMap.put("ImgGetterDir", 1);
+//        this.sourceKindMap.put("ImgGetterTw", 2);
+
+
+        // ----------------------------------
+        //
+        // ----------------------------------
         this.context = context;
         this.sp = PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    // --------------------------------------------------------------------
+    // メソッド
+    // CREATE INDEX created_at ON histories(created_at);
+    // --------------------------------------------------------------------
+    /************************************
+     * データベースを履歴を記録
+     * @param db 書き込み先のdbオブジェクト
+     */
+    private void insertHistories(SQLiteDatabase db) {
+        //noinspection TryFinallyCanBeTryWithResources
+//        try {
+            // ----------------------------------
+            // INSERT
+            // ----------------------------------
+            //// コード準備
+            // ↓のコードでInspectionエラーが出るがAndroidStudioのバグなので放置、3.1では直るらしい
+
+            SQLiteStatement dbStt = db.compileStatement("" +
+                    "INSERT INTO histories (" +
+                        "source_kind, img_uri, intent_action_uri, created_at" +
+                    ") VALUES ( ?, ?, ?, datetime('now') );");
+
+            //// bind
+Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は！:"+this.imgGetter.getClass().getSimpleName());
+            dbStt.bindString(1, this.imgGetter.getClass().getSimpleName() );
+            dbStt.bindString(2, this.imgGetter.getImgUri());
+            String uri = this.imgGetter.getActionUri();
+            if (uri == null) {
+                dbStt.bindNull(3);
+            } else {
+                dbStt.bindString(3, this.imgGetter.getActionUri());
+            }
+
+            //// insert実行
+            dbStt.executeInsert();
+
+//
+//        } finally {
+//            db.close();
+//        }
+    }
+    private void deleteHistoriesOverflowMax(SQLiteDatabase db, @SuppressWarnings("SameParameterValue") int maxNum) {
+        Cursor cursor = null;
+
+        try {
+            cursor = db.rawQuery("SELECT count(*) AS count FROM histories", null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                int recordCount = cursor.getInt(cursor.getColumnIndexOrThrow("count"));
+Log.d("△△△△△△△", "count: " + recordCount);
+                if (recordCount > maxNum) {
+                    SQLiteStatement dbStt = db.compileStatement(
+                            "DELETE FROM histories WHERE created_at IN (" +
+                                    "SELECT created_at FROM histories ORDER BY created_at ASC LIMIT ?)"
+                    );
+                    dbStt.bindLong(1, recordCount - maxNum);
+                    dbStt.executeUpdateDelete();
+                }
+            }
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
     }
 
 
@@ -40,64 +128,39 @@ public class WpManager {
      * 壁紙を取得→加工→セット する一連の流れを行う関数
      * 処理の都合上、別スレッドで壁紙をセットしないといけいないので直接使用は不可
      */
-    public void execute() {
+    public boolean execute() {
         // ----------------------------------
         // 画像取得
         // 取得元の選択が複数あるときは等確率で抽選を行う
         // ----------------------------------
         // ----------
-        // どこから画像を取得するか抽選
+        // 画像リストを取得
         // ----------
         //// 抽選先の取得リストをListに入れる
-        List<String> drawnList = new ArrayList<>();
+        List<ImgGetter> imgGetterList = new ArrayList<>();
         if (sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
                 && ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
-            drawnList.add(SettingsFragment.KEY_FROM_DIR);
+            imgGetterList.addAll( ImgGetterDir.getImgGetterList(this.context) );
         }
         if (sp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
                 && sp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
-            drawnList.add(SettingsFragment.KEY_FROM_TWITTER_FAV);
+            imgGetterList.addAll( ImgGetterTw.getImgGetterList(this.context) );
         }
-
-        //// 抽選
-        if (drawnList.size() == 0) {
-            return;
-        }
-        int drawnIndex = new Random().nextInt(drawnList.size());
-        String selectedStr = drawnList.get(drawnIndex);
 
         // ----------
-        // 画像を取得
+        // 抽選
         // ----------
-        //// imgGetterを取得
-        ImgGetter imgGetter;
-        switch(selectedStr) {
-            case SettingsFragment.KEY_FROM_DIR:
-                //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
-                if (ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED) {
-                    Log.d("○" + this.getClass().getSimpleName(), "ストレージアクセス権限がない！！！");
-                    return;
-                }
-                imgGetter = new ImgGetterDir(this.context);
-                break;
-            case SettingsFragment.KEY_FROM_TWITTER_FAV:
-                imgGetter = new ImgGetterTw(this.context);
-                break;
-            default:
-                // 途中で切り上げ、何もしない
-                return;
+        if (imgGetterList.size() == 0) {
+            return false;
         }
+        int drawnIndex = new Random().nextInt(imgGetterList.size());
+        this.imgGetter = imgGetterList.get(drawnIndex);
 
-        //// 壁紙を取得
-        Bitmap wallpaperBitmap = imgGetter.getImg();
-        // todo ↓の取得できなかったときのエラーハンドリングをちゃんとする、ディレクトリにファイルゼロやTwitterのアクセス制限など
-        if (wallpaperBitmap == null) {
-            Toast.makeText(this.context, "画像取得エラー", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
+        // ----------
+        // 画像取得
+        // ----------
+        Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap(this.context); //データ本体取得
 
         // ----------------------------------
         // 画像加工
@@ -149,6 +212,24 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
         }
 
 
+        // ----------------------------------
+        // 履歴に書き込み
+        // ----------------------------------
+        MySQLiteOpenHelper mDbHelper = new MySQLiteOpenHelper(this.context);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
+        //noinspection TryFinallyCanBeTryWithResources
+        try {
+            this.insertHistories(db);
+            // 記憶件数溢れたものを削除
+            this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
+        } finally {
+            db.close();
+        }
+
+        // ----------------------------------
+        //
+        // ----------------------------------
+        return true;
     }
 }

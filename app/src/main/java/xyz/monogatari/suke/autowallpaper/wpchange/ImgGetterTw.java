@@ -1,8 +1,7 @@
 package xyz.monogatari.suke.autowallpaper.wpchange;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.github.scribejava.apis.TwitterApi;
@@ -18,11 +17,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutionException;
 
 import xyz.monogatari.suke.autowallpaper.util.Token;
@@ -32,30 +28,32 @@ import xyz.monogatari.suke.autowallpaper.util.Token;
  * Created by k-shunsuke on 2017/12/27.
  */
 
-public class ImgGetterTw implements ImgGetter {
-    private final Context context;
-
-    public ImgGetterTw(Context context) {
-        this.context = context;
+@SuppressWarnings("WeakerAccess")
+public class ImgGetterTw extends ImgGetter {
+    @SuppressWarnings("WeakerAccess")
+    public ImgGetterTw(String imgUri, String actionUri) {
+        super(imgUri, actionUri);
     }
 
     /************************************
      * APIでTwitterのお気に入りのJSONを取得
+     * @param context sharedPreferenceからトークン取得時に必要なコンテキスト
      * @return 取得したリストのJSONArray
      */
-    private JSONArray getFavList() {
+    @Nullable
+    private static JSONArray getFavList(Context context) {
         try {
             String apiUrl =  "https://api.twitter.com/1.1/favorites/list.json?count=200";
             final OAuth10aService service
-                    = new ServiceBuilder(Token.getTwitterConsumerKey(this.context))
-                         .apiSecret(Token.getTwitterConsumerSecret(this.context))
+                    = new ServiceBuilder(Token.getTwitterConsumerKey(context))
+                         .apiSecret(Token.getTwitterConsumerSecret(context))
                          .build(TwitterApi.instance());
 
             final OAuthRequest request = new OAuthRequest(Verb.GET, apiUrl);
             service.signRequest(
                     new OAuth1AccessToken(
-                            Token.getTwitterAccessToken(this.context),
-                            Token.getTwitterAccessTokenSecret(this.context)
+                            Token.getTwitterAccessToken(context),
+                            Token.getTwitterAccessTokenSecret(context)
                     ),
                     request
             );
@@ -148,40 +146,52 @@ Log.d("○", ""+jsonAry);
 
         return jsonObj;
     }
-    
-    /************************************
-     *
-     */
-    public Bitmap getImg() {
+////////////////////////////////////////////////////////////////
+
+//    public boolean drawImg() {
+//        // ----------------------------------
+//        // お気に入りから画像のURLを取得
+//        // ----------------------------------
+//        JSONArray favListJsonAry = this.getFavList();
+//
+//        List<JSONObject> flattenJson = editJson(favListJsonAry);
+//
+//        // ----------------------------------
+//        // 抽選
+//        // ----------------------------------
+//        if ( flattenJson.size() == 0) {
+//            return false;
+//        }
+//
+//        int drawnIndex = new Random().nextInt(flattenJson.size());
+//        this.imgUri = flattenJson.get(drawnIndex).optString("media_url_https");
+//        this.actionUri = flattenJson.get(drawnIndex).optString("url");
+//
+//        return true;
+//    }
+
+    public static List<ImgGetterTw> getImgGetterList(Context context) {
+        List<ImgGetterTw> imgGetterTwList = new ArrayList<>();
+
         // ----------------------------------
         // お気に入りから画像のURLを取得
         // ----------------------------------
-        JSONArray favListJsonAry = this.getFavList();
-
-        List<JSONObject> flattenJson = editJson(favListJsonAry);
+        JSONArray favListJsonAry = getFavList(context);
+        List<JSONObject> flattenJsonList = editJson(favListJsonAry);//「entities > media」「extended_entities > media」の部分
 
         // ----------------------------------
         // 抽選
         // ----------------------------------
-        if ( flattenJson.size() == 0) {
-            return null;
+        for (JSONObject flattenJson : flattenJsonList) {
+            imgGetterTwList.add(
+                new ImgGetterTw(
+                        flattenJson.optString("media_url_https"),
+                        flattenJson.optString("expanded_url")
+                )
+            );
         }
-        int drawnIndex = new Random().nextInt(flattenJson.size());
-        String imgUrl = flattenJson.get(drawnIndex).optString("media_url_https");
 
-        // ----------------------------------
-        // 画像を取得
-        // ----------------------------------
-        try {
-Log.d("○"+this.getClass().getSimpleName(), "壁紙のURL:" + imgUrl);
-            URL url = new URL(imgUrl);
-            HttpURLConnection con = (HttpURLConnection)url.openConnection();
-            con.setRequestMethod("GET");
-
-            return BitmapFactory.decodeStream(con.getInputStream());
-        } catch (IOException e ){
-            e.printStackTrace();
-            return null;
-        }
+        return imgGetterTwList;
     }
+
 }

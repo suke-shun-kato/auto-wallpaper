@@ -20,6 +20,8 @@ public class WpManagerService extends IntentService {
     public static final String KEY_NAME = "state";
     public static final int STATE_START = 1;
     public static final int STATE_DESTROY = 2;
+    public static final int STATE_ERROR = 3;
+
 
     private Timer timer;
 
@@ -59,12 +61,19 @@ Log.d("○△" + this.getClass().getSimpleName(), "onStartCommand(), スレッ�
 
     /************************************
      * ここだけ別スレッドで実行される（他はメインスレッドで実行される）
+     * 壁紙変更動作を実行→履歴に書き込み
      */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
 Log.d("○△" + this.getClass().getSimpleName(), "onHandleIntent(), スレッド名:" + Thread.currentThread().getName());
-        // 別スレッドで実行されているからそのまま壁紙変更
-        new WpManager(this).execute();
+        // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
+        WpManager wpManager = new WpManager(this);
+        boolean canExe = wpManager.execute();
+        if ( !canExe ) {
+            Intent i = new Intent(ACTION_NAME);
+            i.putExtra(KEY_NAME, STATE_ERROR);
+            this.sendBroadcast(i);
+        }
     }
 
 

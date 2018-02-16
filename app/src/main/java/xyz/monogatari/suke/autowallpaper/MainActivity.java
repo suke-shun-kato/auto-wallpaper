@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     /** アクティビティ内で使いまわすSharedPreferences、ここでgetDefaultSharedPreferences()はダメ */
     private SharedPreferences sp;
 
+    private ProgressBcastReceiver progressBcastReceiver;
+
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
@@ -95,17 +97,18 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // 壁紙変更中のプログレスバー用のBcastレシーバーを登録
         // これは必ずonCreateで行うこと、onStartで登録→onStopで解除などすると別画面でサービスOFFのブロードキャストが検知できなくなるため
         // ----------------------------------
-        ProgressBcastReceiver bcastReceiver = new ProgressBcastReceiver();
+        this.progressBcastReceiver = new ProgressBcastReceiver();
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(WpManagerService.ACTION_NAME);
-        this.registerReceiver(bcastReceiver, iFilter);
+        this.registerReceiver(this.progressBcastReceiver, iFilter);
 
         // ----------------------------------
         //
         // ----------------------------------
 Log.d("○" + this.getClass().getSimpleName(), "ディスプレイの横幅: " + DisplaySizeCheck.getScreenWidthInDPs(this) + "dp");
-java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
-java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
+
+//java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
+//java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
 
 System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
 System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
@@ -147,6 +150,12 @@ Log.d("○△"+this.getClass().getSimpleName(), "onStart()");
         }
 
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        this.unregisterReceiver(this.progressBcastReceiver);
     }
 
     // --------------------------------------------------------------------

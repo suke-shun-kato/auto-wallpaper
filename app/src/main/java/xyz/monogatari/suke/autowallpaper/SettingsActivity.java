@@ -60,9 +60,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super3"
 
     @Override
     protected void onStart() {
-Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onStart() 呼ばれた: top");
+Log.d("○" + this.getClass().getSimpleName(), "onStart() 呼ばれた: top");
         super.onStart();
-Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onStart() 呼ばれた: end");
+Log.d("○" + this.getClass().getSimpleName(), "onStart() 呼ばれた: end");
     }
 
     /**
@@ -80,7 +80,7 @@ Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onStart() �
      */
     @Override
     protected void onNewIntent(Intent intent) {
-Log.d("○○○○○○○○○○" + this.getClass().getSimpleName(), "onNewIntent(): data: "+intent.getData());
+Log.d("○" + this.getClass().getSimpleName(), "onNewIntent(): data: "+intent.getData());
         super.onNewIntent(intent);
 
         this.settingFragment.onNewIntent(intent);

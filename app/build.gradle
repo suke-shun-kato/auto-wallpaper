@@ -48,6 +48,7 @@ dependencies {
     // com.android.support の appcompat-v7 の 26.1.0 のライブラリを読み込む
     // （リポジトリの設定はルートの方のbuild.gradleのallprojectsで設定されている）
     implementation 'com.android.support:appcompat-v7:26.1.0'
+//    implementation 'com.android.support:support-core-utils:26.0.0'
 
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
@@ -57,6 +58,11 @@ dependencies {
     // バージョン5.0.0はAPIレベル26（Android 8.0 Oreo）以上でしか対応していないので敢えて4.2.0使用
     //noinspection GradleDependency
     implementation 'com.github.scribejava:scribejava-apis:4.2.0'
+
+    // -------------------------------------
+    // 画像読み込みライブラリ
+    // -------------------------------------
+    implementation 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
 
     // ---------------------------------------------------------------------------
     // テスト用のコード（JUnitなどのテスト）での依存関係の記述
