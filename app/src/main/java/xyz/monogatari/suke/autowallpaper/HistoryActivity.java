@@ -1,5 +1,6 @@
 package xyz.monogatari.suke.autowallpaper;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -86,9 +87,17 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         // DBから取得したデータをアダプターにセットして表示を作成
         // ----------------------------------
         this.mDbHelper = new MySQLiteOpenHelper(this);
+        this.updateListView();
+    }
+
+    /************************************
+     * 履歴本体のListViewを更新する
+     */
+    private void updateListView() {
+        //// DBから情報を取得
         List<HistoryItemListDataStore> itemList = this.selectHistories();
 
-
+        //// listViewに情報をセットして表示
         ListView lv = this.findViewById(R.id.history_list);
         HistoryListAdapter adapter = new HistoryListAdapter(this, itemList, R.layout.item_list_history);
         lv.setAdapter(adapter);
@@ -107,6 +116,29 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
 
         return super.onOptionsItemSelected(item);
     }
+
+    /**
+     * Handle onNewIntent() to inform the fragment manager that the
+     * state is not saved.  If you are handling new intents and may be
+     * making changes to the fragment state, you want to be sure to call
+     * through to the super-class here first.  Otherwise, if your state
+     * is saved but the activity is not stopped, you could get an
+     * onNewIntent() call which happens before onResume() and trying to
+     * perform fragment operations at that point will throw IllegalStateException
+     * because the fragment manager thinks the state is still saved.
+     * 通知から起動したとき呼ばれる
+     *
+     * @param intent このアクティビティを起動したときに送ったインテント
+     */
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
+Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onNewIntent()");
+        this.updateListView();
+    }
+
+
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
