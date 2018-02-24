@@ -4,11 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.Toast;
 
 
 import xyz.monogatari.suke.autowallpaper.MainActivity;
-import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
 
 /**
@@ -21,19 +19,19 @@ public class ProgressBcastReceiver extends BroadcastReceiver {
 
         int stateInt = intent.getIntExtra(WpManagerService.KEY_NAME, WpManagerService.STATE_DESTROY);
         switch (stateInt) {
-            case WpManagerService.STATE_START:
+            case WpManagerService.STATE_ON:
 Log.d("○" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶ:ON");
-                ((MainActivity)context).onProgressVisible();
+                ((MainActivity)context).onWpChanging();
                 break;
+
             case WpManagerService.STATE_DESTROY:
 Log.d("○" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶ:OFF");
-                ((MainActivity)context).onProgressGone();
-Log.d("○" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶ:OFF2");
+                ((MainActivity)context).onWpChangeDone();
                 break;
+
             case WpManagerService.STATE_ERROR:
 Log.d("○" + this.getClass().getSimpleName(), "ブロードキャストれしーーーぶERROR");
-
-                Toast.makeText(context, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
+                ((MainActivity)context).onWpChangeError();
                 break;
         }
     }
