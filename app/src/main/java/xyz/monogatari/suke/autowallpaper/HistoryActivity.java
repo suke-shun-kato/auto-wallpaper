@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -25,11 +26,23 @@ import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
  * Created by k-shunsuke on 2017/12/20.
  */
 
-public class HistoryActivity extends AppCompatActivity {
+public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+    /**
+     * Called when a swipe gesture triggers a refresh.
+     */
+    @Override
+    public void onRefresh() {
+Log.d("○○○○"+this.getClass().getSimpleName(), "onRefresh()");
+        this.updateListView();
+
+        this.mSwipeRefreshLayout.setRefreshing(false);
+    }
+
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
     private MySQLiteOpenHelper mDbHelper;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     // --------------------------------------------------------------------
     // 定数
@@ -88,6 +101,13 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         // ----------------------------------
         this.mDbHelper = new MySQLiteOpenHelper(this);
         this.updateListView();
+
+        // ----------------------------------
+        // リフレッシュのグルグルの設定
+        // ----------------------------------
+        this.mSwipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
+        this.mSwipeRefreshLayout.setOnRefreshListener(this);
+        this.mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark);
     }
 
     /************************************
