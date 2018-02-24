@@ -271,28 +271,58 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
         this.startActivity(intent);
     }
     /************************************
-     * 壁紙セット（変更）ボタンをクリックしたとき
+     * 壁紙セット（変更）ボタンをクリックしたとき（初期設定、壁紙変更中はonProgressVisibleでリスナー解除される）
      * @param view 押されたボタンのビュー
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
-//        new WpManager(this).execute();
-Log.d("○" + this.getClass().getSimpleName(), "setWallpaper_onClick(), スレッド名:" + Thread.currentThread().getName());
-        Intent i = new Intent(this, WpManagerService.class);
+            this.setWallpaper(this);
+    }
+
+    /************************************
+     * 壁紙を変更するサービスを実行する、ボタンが押されたときにリスナー
+     */
+    private void setWallpaper(Context packageContext) {
+        Intent i = new Intent(packageContext, WpManagerService.class);
         startService(i);
+    }
 
-//        new WpManager(this).executeNewThread();
+    // --------------------------------------------------------------------
+    // ブロードキャストレシーバー受信時の挙動設定
+    // --------------------------------------------------------------------
+    public void onWpChanging() {
+        //// プログレスバー（グルグル）を表示する
+        View progressView = this.findViewById(R.id.main_setWallpaper_progress);
+        progressView.setVisibility(ProgressBar.VISIBLE);
+
+        //// 壁紙セットボタンを押せないようにする
+        View btnView = this.findViewById(R.id.btn_main_change_wallpaper);
+        btnView.setOnClickListener(null);
     }
 
 
-    public void onProgressVisible() {
-        View v = this.findViewById(R.id.main_setWallpaper_progress);
-        v.setVisibility(ProgressBar.VISIBLE);
-    }
-
-    public void onProgressGone() {
+    public void onWpChangeDone() {
+        //// プログレスバー（グルグル）を非表示にする
         View v = this.findViewById(R.id.main_setWallpaper_progress);
         v.setVisibility(ProgressBar.GONE);
+
+        //// 壁紙セットボタンを押せるようにする
+        View btnView = this.findViewById(R.id.btn_main_change_wallpaper);
+        btnView.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                setWallpaper(MainActivity.this);
+            }
+        });
+
     }
+
+    public void onWpChangeError () {
+Log.d("○" + this.getClass().getSimpleName(), "onWpChangeError()ですよ！！！");
+        Toast.makeText(this, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
+    }
+
+
+
 
     /************************************
      * 履歴画面へのボタンをクリックしたとき

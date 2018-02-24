@@ -18,7 +18,7 @@ public class WpManagerService extends IntentService {
     // --------------------------------------------------------------------
     public static final String ACTION_NAME = "xyz.monogatari.suke.autowallpaper.WP_SERVICE_ACTION";
     public static final String KEY_NAME = "state";
-    public static final int STATE_START = 1;
+    public static final int STATE_ON = 1;
     public static final int STATE_DESTROY = 2;
     public static final int STATE_ERROR = 3;
 
@@ -50,7 +50,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onStartCommand(), スレッド�
             @Override
             public void run() {
                 Intent i = new Intent(ACTION_NAME);
-                i.putExtra(KEY_NAME, STATE_START);
+                i.putExtra(KEY_NAME, STATE_ON);
                 WpManagerService.this.sendBroadcast(i);
             }
         }, 0, 500); //0秒後、500ms秒間隔で実行
