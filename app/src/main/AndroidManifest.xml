@@ -42,7 +42,10 @@
                     android:scheme="android-suke" />
             </intent-filter>
         </activity>
-        <activity android:name=".HistoryActivity" />
+        <activity
+            android:name=".HistoryActivity"
+            android:launchMode="singleTop"
+            />
         <service android:name=".service.MainService" />
         <service android:name=".wpchange.WpManagerService" />
         <provider

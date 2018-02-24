@@ -331,11 +331,5 @@ Log.d("○" + this.getClass().getSimpleName(), "onWpChangeError()ですよ！！
     public void toHistory_onClick(@SuppressWarnings("unused") View view) {
         Intent intent = new Intent(this, HistoryActivity.class);
         this.startActivity(intent);
-
-        // ----------------------------------
-        //
-        // ----------------------------------
-
-
     }
 }
