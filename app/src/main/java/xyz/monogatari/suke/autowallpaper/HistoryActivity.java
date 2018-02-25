@@ -24,39 +24,9 @@ import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
  */
 
 public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
-    private HistoryAsyncTask.Listener createListener() {
-        return new HistoryAsyncTask.Listener() {
-            @Override
-            public void onSuccess(List<HistoryItemListDataStore> itemList) {
-                //// 履歴を表示する
-                ListView lv = findViewById(R.id.history_list);
-                HistoryListAdapter adapter = new HistoryListAdapter(
-                        HistoryActivity.this, itemList, R.layout.item_list_history
-                );
-                lv.setAdapter(adapter);
-
-                //// グルグルあればを消す
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        };
-    }
 
 
-    // --------------------------------------------------------------------
-    //
-    // --------------------------------------------------------------------
-    /**
-     * Called when a swipe gesture triggers a refresh.
-     */
-    @Override
-    public void onRefresh() {
-Log.d("○○○○"+this.getClass().getSimpleName(), "onRefresh()");
-        // リストの更新
-        this.updateListView();
 
-        // グルグルを消す
-//        this.swipeRefreshLayout.setRefreshing(false);
-    }
 
     // --------------------------------------------------------------------
     // フィールド
@@ -116,7 +86,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
         ImageLoader.getInstance().init(config);
 
         // ----------------------------------
-        // DBから取得したデータをアダプターにセットして表示を作成
+        // DBから取得したデータを表示
         // ----------------------------------
         this.updateListView();
 
@@ -128,15 +98,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
         this.swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
     }
 
-    /************************************
-     * 履歴のListViewを更新する
-     */
-    private void updateListView() {
-        HistoryAsyncTask hat = new HistoryAsyncTask(
-                new MySQLiteOpenHelper(this), this.createListener()
-        );
-        hat.execute();
-    }
 
     /************************************
      * 戻るボタンが押されたときの処理
@@ -152,7 +113,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
         return super.onOptionsItemSelected(item);
     }
 
-    /**
+    /*************************************
      * Handle onNewIntent() to inform the fragment manager that the
      * state is not saved.  If you are handling new intents and may be
      * making changes to the fragment state, you want to be sure to call
@@ -172,4 +133,44 @@ Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onNewIntent
         this.updateListView();
     }
 
+    /*************************************
+     * Called when a swipe gesture triggers a refresh.
+     * 下スワイプしたときに呼ばれる
+     */
+    @Override
+    public void onRefresh() {
+Log.d("○○○○"+this.getClass().getSimpleName(), "onRefresh()");
+        // リストの更新
+        this.updateListView();
+    }
+
+    // --------------------------------------------------------------------
+    // メソッド、通常
+    // --------------------------------------------------------------------
+    /************************************
+     * 履歴のListViewを更新する
+     */
+    private void updateListView() {
+        HistoryAsyncTask hat = new HistoryAsyncTask(
+                new MySQLiteOpenHelper(this), this.createListener()
+        );
+        hat.execute();
+    }
+
+    private HistoryAsyncTask.Listener createListener() {
+        return new HistoryAsyncTask.Listener() {
+            @Override
+            public void onSuccess(List<HistoryItemListDataStore> itemList) {
+                //// 履歴を表示する
+                ListView lv = findViewById(R.id.history_list);
+                HistoryListAdapter adapter = new HistoryListAdapter(
+                        HistoryActivity.this, itemList, R.layout.item_list_history
+                );
+                lv.setAdapter(adapter);
+
+                //// グルグルあればを消す
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        };
+    }
 }
