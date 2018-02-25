@@ -1,8 +1,6 @@
 package xyz.monogatari.suke.autowallpaper;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,7 +14,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
@@ -27,22 +24,42 @@ import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
  */
 
 public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+    private HistoryAsyncTask.Listener createListener() {
+        return new HistoryAsyncTask.Listener() {
+            @Override
+            public void onSuccess(List<HistoryItemListDataStore> itemList) {
+                ListView lv = findViewById(R.id.history_list);
+                HistoryListAdapter adapter = new HistoryListAdapter(
+                        HistoryActivity.this, itemList, R.layout.item_list_history
+                );
+                lv.setAdapter(adapter);
+            }
+        };
+    }
+
+
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
     /**
      * Called when a swipe gesture triggers a refresh.
      */
     @Override
     public void onRefresh() {
 Log.d("○○○○"+this.getClass().getSimpleName(), "onRefresh()");
+        // リストの更新
         this.updateListView();
 
+        // グルグルを消す
         this.mSwipeRefreshLayout.setRefreshing(false);
     }
 
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
-    private MySQLiteOpenHelper mDbHelper;
+//    private MySQLiteOpenHelper mDbHelper;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+//    private HistoryAsyncTask historyAsyncTask;
 
     // --------------------------------------------------------------------
     // 定数
@@ -99,7 +116,6 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         // ----------------------------------
         // DBから取得したデータをアダプターにセットして表示を作成
         // ----------------------------------
-        this.mDbHelper = new MySQLiteOpenHelper(this);
         this.updateListView();
 
         // ----------------------------------
@@ -114,13 +130,10 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
      * 履歴本体のListViewを更新する
      */
     private void updateListView() {
-        //// DBから情報を取得
-        List<HistoryItemListDataStore> itemList = this.selectHistories();
-
-        //// listViewに情報をセットして表示
-        ListView lv = this.findViewById(R.id.history_list);
-        HistoryListAdapter adapter = new HistoryListAdapter(this, itemList, R.layout.item_list_history);
-        lv.setAdapter(adapter);
+        HistoryAsyncTask hat = new HistoryAsyncTask(
+                new MySQLiteOpenHelper(this), this.createListener()
+        );
+        hat.execute();
     }
 
     /************************************
@@ -152,9 +165,8 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
      */
     @Override
     protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
 Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onNewIntent()");
+        super.onNewIntent(intent);
         this.updateListView();
     }
 
@@ -162,35 +174,35 @@ Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onNewIntent
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
-    private List<HistoryItemListDataStore> selectHistories() {
-        SQLiteDatabase db = this.mDbHelper.getReadableDatabase();
-        Cursor cursor = null;
-
-        //noinspection TryFinallyCanBeTryWithResources
-        try {
-            // created_atの取得自体はUTCタイムでUNIXタイムスタンプのまま取得するので'utc'を追加
-            cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at, 'utc') AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
-
-            List<HistoryItemListDataStore> itemList = new ArrayList<>();
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    HistoryItemListDataStore item = new HistoryItemListDataStore(
-                            cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                            cursor.getString(cursor.getColumnIndexOrThrow("source_kind")),
-                            cursor.getString(cursor.getColumnIndexOrThrow("img_uri")),
-                            cursor.getString(cursor.getColumnIndexOrThrow("intent_action_uri")),
-                            (long)cursor.getInt(cursor.getColumnIndexOrThrow("created_at_unix"))*1000
-                    );
-                    itemList.add(item);
-                }
-            }
-            return itemList;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-
-    }
+//    private List<HistoryItemListDataStore> selectHistories() {
+//        SQLiteDatabase db = this.mDbHelper.getReadableDatabase();
+//        Cursor cursor = null;
+//
+//        //noinspection TryFinallyCanBeTryWithResources
+//        try {
+//            // created_atの取得自体はUTCタイムでUNIXタイムスタンプのまま取得するので'utc'を追加
+//            cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at, 'utc') AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
+//
+//            List<HistoryItemListDataStore> itemList = new ArrayList<>();
+//            if (cursor != null) {
+//                while (cursor.moveToNext()) {
+//                    HistoryItemListDataStore item = new HistoryItemListDataStore(
+//                            cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+//                            cursor.getString(cursor.getColumnIndexOrThrow("source_kind")),
+//                            cursor.getString(cursor.getColumnIndexOrThrow("img_uri")),
+//                            cursor.getString(cursor.getColumnIndexOrThrow("intent_action_uri")),
+//                            (long)cursor.getInt(cursor.getColumnIndexOrThrow("created_at_unix"))*1000
+//                    );
+//                    itemList.add(item);
+//                }
+//            }
+//            return itemList;
+//        } finally {
+//            if (cursor != null) {
+//                cursor.close();
+//            }
+//            db.close();
+//        }
+//
+//    }
 }
