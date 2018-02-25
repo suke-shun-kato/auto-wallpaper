@@ -1,8 +1,6 @@
 package xyz.monogatari.suke.autowallpaper;
 
 import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -16,7 +14,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
@@ -27,22 +24,44 @@ import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
  */
 
 public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+    private HistoryAsyncTask.Listener createListener() {
+        return new HistoryAsyncTask.Listener() {
+            @Override
+            public void onSuccess(List<HistoryItemListDataStore> itemList) {
+                //// 履歴を表示する
+                ListView lv = findViewById(R.id.history_list);
+                HistoryListAdapter adapter = new HistoryListAdapter(
+                        HistoryActivity.this, itemList, R.layout.item_list_history
+                );
+                lv.setAdapter(adapter);
+
+                //// グルグルあればを消す
+                swipeRefreshLayout.setRefreshing(false);
+            }
+        };
+    }
+
+
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
     /**
      * Called when a swipe gesture triggers a refresh.
      */
     @Override
     public void onRefresh() {
 Log.d("○○○○"+this.getClass().getSimpleName(), "onRefresh()");
+        // リストの更新
         this.updateListView();
 
-        this.mSwipeRefreshLayout.setRefreshing(false);
+        // グルグルを消す
+//        this.swipeRefreshLayout.setRefreshing(false);
     }
 
     // --------------------------------------------------------------------
-    //
+    // フィールド
     // --------------------------------------------------------------------
-    private MySQLiteOpenHelper mDbHelper;
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     // --------------------------------------------------------------------
     // 定数
@@ -60,7 +79,7 @@ Log.d("○○○○"+this.getClass().getSimpleName(), "onRefresh()");
     // --------------------------------------------------------------------
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()のstart");
+Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_history);
 
@@ -99,28 +118,24 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
         // ----------------------------------
         // DBから取得したデータをアダプターにセットして表示を作成
         // ----------------------------------
-        this.mDbHelper = new MySQLiteOpenHelper(this);
         this.updateListView();
 
         // ----------------------------------
         // リフレッシュのグルグルの設定
         // ----------------------------------
-        this.mSwipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
-        this.mSwipeRefreshLayout.setOnRefreshListener(this);
-        this.mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimaryDark);
+        this.swipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
+        this.swipeRefreshLayout.setOnRefreshListener(this);
+        this.swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
     }
 
     /************************************
-     * 履歴本体のListViewを更新する
+     * 履歴のListViewを更新する
      */
     private void updateListView() {
-        //// DBから情報を取得
-        List<HistoryItemListDataStore> itemList = this.selectHistories();
-
-        //// listViewに情報をセットして表示
-        ListView lv = this.findViewById(R.id.history_list);
-        HistoryListAdapter adapter = new HistoryListAdapter(this, itemList, R.layout.item_list_history);
-        lv.setAdapter(adapter);
+        HistoryAsyncTask hat = new HistoryAsyncTask(
+                new MySQLiteOpenHelper(this), this.createListener()
+        );
+        hat.execute();
     }
 
     /************************************
@@ -146,51 +161,15 @@ Log.d("○□□□□□□□"+this.getClass().getSimpleName(), "onCreate()の
      * onNewIntent() call which happens before onResume() and trying to
      * perform fragment operations at that point will throw IllegalStateException
      * because the fragment manager thinks the state is still saved.
-     * 通知から起動したとき呼ばれる
      *
+     * 通知から起動したとき呼ばれる
      * @param intent このアクティビティを起動したときに送ったインテント
      */
     @Override
     protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-
 Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onNewIntent()");
+        super.onNewIntent(intent);
         this.updateListView();
     }
 
-
-    // --------------------------------------------------------------------
-    // メソッド
-    // --------------------------------------------------------------------
-    private List<HistoryItemListDataStore> selectHistories() {
-        SQLiteDatabase db = this.mDbHelper.getReadableDatabase();
-        Cursor cursor = null;
-
-        //noinspection TryFinallyCanBeTryWithResources
-        try {
-            // created_atの取得自体はUTCタイムでUNIXタイムスタンプのまま取得するので'utc'を追加
-            cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at, 'utc') AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
-
-            List<HistoryItemListDataStore> itemList = new ArrayList<>();
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    HistoryItemListDataStore item = new HistoryItemListDataStore(
-                            cursor.getInt(cursor.getColumnIndexOrThrow("id")),
-                            cursor.getString(cursor.getColumnIndexOrThrow("source_kind")),
-                            cursor.getString(cursor.getColumnIndexOrThrow("img_uri")),
-                            cursor.getString(cursor.getColumnIndexOrThrow("intent_action_uri")),
-                            (long)cursor.getInt(cursor.getColumnIndexOrThrow("created_at_unix"))*1000
-                    );
-                    itemList.add(item);
-                }
-            }
-            return itemList;
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-            db.close();
-        }
-
-    }
 }
