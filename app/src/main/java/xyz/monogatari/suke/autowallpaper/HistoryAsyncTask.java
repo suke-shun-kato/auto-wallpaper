@@ -3,8 +3,6 @@ package xyz.monogatari.suke.autowallpaper;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.os.SystemClock;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,9 +11,9 @@ import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 履歴ページのDBからデータ読み込む用のクラス
+ * CursorLoader を使うと生SQL使えないしローダーの機能は今回は合わないと判断したためAsyncTaskでDB読み出しを実装した
  * Created by k-shunsuke on 2018/02/24.
  */
-
 @SuppressWarnings("WeakerAccess")
 public class HistoryAsyncTask extends AsyncTask<Void, Void, List<HistoryItemListDataStore>> {
     // --------------------------------------------------------------------
@@ -64,8 +62,6 @@ public class HistoryAsyncTask extends AsyncTask<Void, Void, List<HistoryItemList
                 }
             }
 
-            SystemClock.sleep(5000);
-
             return itemList;
         } finally {
             if (cursor != null) {
@@ -87,7 +83,6 @@ public class HistoryAsyncTask extends AsyncTask<Void, Void, List<HistoryItemList
 
             // execute() は new AsyncTask()したら一回しかできないので null 入れてlistenerをnullにする
             this.listener = null;
-Log.d("○"+this.getClass().getSimpleName(), "onPostExecute()___________________________");
         }
     }
 
