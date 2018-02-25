@@ -28,6 +28,7 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
             android:orientation="vertical"
             >
             <TextView
+                android:id="@+id/main_text_onOff"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxWidth="@dimen/main_activity_power_btn_size"

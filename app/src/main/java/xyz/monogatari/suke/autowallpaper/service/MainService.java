@@ -222,6 +222,8 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
             // ----------------------------------
             // When
             // ----------------------------------
+
+
             case SettingsFragment.KEY_WHEN_SCREEN_ON:
                 // 電源ON設定がONのとき設定
                 if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {

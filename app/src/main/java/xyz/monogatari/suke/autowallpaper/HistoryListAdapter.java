@@ -154,6 +154,7 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
         // ----------
         // 更新時間
         // ----------
+        // todo toDateTextFromUnixTime()を使う
         long unixTimeMsec = itemDataStore.getCreated_at_unix(); //表示したい日時（UTC）
         // getRawOffset(): 時差、getDSTSavings():サマータイムなどの追加時間
         long timeOffsetMsec = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings(); //時差
@@ -172,6 +173,21 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
         tv.setText(datetimeStr);
 
         return convertItemView;
+    }
+
+    static String toDateTextFromUnixTime(long unixTimeMsec, Context context) {
+        // getRawOffset(): 時差、getDSTSavings():サマータイムなどの追加時間
+        long timeOffsetMsec = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings(); //時差
+
+        return DateUtils.formatDateTime(
+                context,
+                unixTimeMsec + timeOffsetMsec,
+                DateUtils.FORMAT_SHOW_YEAR
+                        | DateUtils.FORMAT_SHOW_DATE
+                        | DateUtils.FORMAT_SHOW_WEEKDAY
+                        | DateUtils.FORMAT_SHOW_TIME
+                        | DateUtils.FORMAT_ABBREV_ALL
+        );
     }
 }
 

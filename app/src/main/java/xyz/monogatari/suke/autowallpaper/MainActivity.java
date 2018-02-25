@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
@@ -32,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     private Intent serviceIntent;
     /** サービスON,OFFボタンのView、再利用 */
     private ImageButton serviceOnOffButton;
+
+    private TextView onOffTextTv;
     /** サービスが起動中か */
     private boolean isServiceRunning;
 
@@ -59,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // ----------------------------------
+        //
+        // ----------------------------------
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.layout.activity_main);
@@ -76,8 +82,16 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         this.isServiceRunning = this.isServiceRunningSystem(MainService.class);
 
         // ----------------------------------
-        // 表示の切り替え
+        // Viewなどの表示の動的な設定
         // ----------------------------------
+        //// テキスト表示
+        this.onOffTextTv = this.findViewById(R.id.main_text_onOff);
+// 下記はonStart() に移動
+//        if (this.isServiceRunning) {
+//            this.onOffTextTv.setText(this.getTextRest());
+//        }
+
+        //// ボタン
         this.serviceOnOffButton = findViewById(R.id.btn_main_onOff_service);
         if (this.isServiceRunning) {
             this.serviceOnOffButton.setImageLevel(BTN_ON);
@@ -117,6 +131,28 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "
 System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "debug");
     }
 
+
+    /************************************
+     * 次の壁紙交代のタイミングのテキストを作成する関数
+     * @return 作成した文字列
+     */
+    private String getTextRest() {
+        String rtnStr = "";
+
+        //// 電源OFF時に変更
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+            rtnStr += "次の電源OFFのとき｜";  // todo <string>化する
+        }
+
+        //// 設定時間で変更
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+            long unixTimeMsec = this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis());
+            rtnStr += HistoryListAdapter.toDateTextFromUnixTime(unixTimeMsec, this);
+        }
+
+        return rtnStr.equals("") ? "なし" : rtnStr;   // todo <String>化する
+    }
+
     /************************************
      * アクティビティが描画される直前
      * ストレージのパーミッションのダイアログを表示する
@@ -149,6 +185,12 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
                     RQ_CODE_ACTIVITY);
         }
 
+        // ----------------------------------
+        // 表示関連の更新
+        // ----------------------------------
+        if (this.isServiceRunning) {
+            this.onOffTextTv.setText(this.getTextRest());
+        }
 
     }
 
@@ -195,8 +237,14 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         // -------------------------------------------------
         if ( this.isServiceRunning) {
             this.stopService(this.serviceIntent);
+
+            //// 文字列
+            this.onOffTextTv.setText(R.string.main_power);
+
+            //// ボタンと背景の設定
             this.serviceOnOffButton.setImageLevel(BTN_OFF);
             this.getWindow().setBackgroundDrawableResource(R.color.translucentDark);
+
             this.isServiceRunning = false;
         // -------------------------------------------------
         // サービスが停止中のとき ONにする
@@ -230,8 +278,14 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
             // 通常処理
             // ----------------------------------
             this.startService(this.serviceIntent);
+
+            //// 文字列
+            this.onOffTextTv.setText(this.getTextRest());
+
+            //// ボタンと背景
             this.serviceOnOffButton.setImageLevel(BTN_ON);
             this.getWindow().setBackgroundDrawableResource(R.color.translucentLight);
+
             this.isServiceRunning = true;
         }
     }

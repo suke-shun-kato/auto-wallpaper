@@ -27,6 +27,7 @@
             tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
             >
             <TextView
+                android:id="@+id/main_text_onOff"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxWidth="@dimen/main_activity_power_btn_size"
