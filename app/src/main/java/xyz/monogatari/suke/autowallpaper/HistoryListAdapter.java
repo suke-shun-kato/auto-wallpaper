@@ -16,7 +16,6 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.List;
-import java.util.TimeZone;
 
 
 /**
@@ -156,11 +155,11 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
         // ----------
         long unixTimeMsec = itemDataStore.getCreated_at_unix(); //表示したい日時（UTC）
         // getRawOffset(): 時差、getDSTSavings():サマータイムなどの追加時間
-        long timeOffsetMsec = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings(); //時差
+//        long timeOffsetMsec = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings(); //時差
 
         String datetimeStr = DateUtils.formatDateTime(
                 this.context,
-                unixTimeMsec + timeOffsetMsec,
+                unixTimeMsec,
                 DateUtils.FORMAT_SHOW_YEAR
                         | DateUtils.FORMAT_SHOW_DATE
                         | DateUtils.FORMAT_SHOW_WEEKDAY
