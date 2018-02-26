@@ -82,11 +82,11 @@ public class MainService extends Service {
         this.sp = PreferenceManager.getDefaultSharedPreferences(this);
 
         Notification notification = new Notification.Builder(this)
-                .setContentTitle("永続化")
-                .setContentText("起動してますか？")
+                .setContentTitle(this.getString(R.string.app_name))
+                .setContentText(this.getString(R.string.mainService_running))
                 .setSmallIcon(R.drawable.ic_notification_wallpaper)
                 .setWhen(System.currentTimeMillis())
-                .build();
+                .build();   // todo 通知をクリックしたらTOP画面が起動
         this.startForeground(1111, notification);
 
 Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode: " + this.hashCode());
