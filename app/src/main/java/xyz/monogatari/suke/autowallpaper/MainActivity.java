@@ -13,16 +13,13 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
@@ -149,50 +146,57 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         }
 
         //// 設定時間で変更
-
         if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-
+            //// 遅延時間を計算
             long intervalMsec = Long.parseLong(this.sp.getString(
                     SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
             ));
-            long unixTimeMsec = this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis());
+            long settingUnixTimeMsec = this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis());
+            long delayMsec = MainService.calcDelayMsec(settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
 
-            long delayMsec = MainService.calcDelayMsec(unixTimeMsec, intervalMsec, System.currentTimeMillis());
-            long unixTimeMsecReal = delayMsec + System.currentTimeMillis();
-loggggg(System.currentTimeMillis());
-loggggg(unixTimeMsecReal);
 
-            rtnStr += HistoryListAdapter.toDateTextFromUnixTime(unixTimeMsecReal, this);
+
+
+            //// 表示を取得
+            long nextUnixTimeMsec = delayMsec + System.currentTimeMillis();
+            rtnStr += DateUtils.formatDateTime(
+                    this,
+                    nextUnixTimeMsec,
+                    DateUtils.FORMAT_SHOW_DATE
+                            | DateUtils.FORMAT_SHOW_WEEKDAY
+                            | DateUtils.FORMAT_SHOW_TIME
+                            | DateUtils.FORMAT_NUMERIC_DATE   //曜日表示の省略
+                            | DateUtils.FORMAT_ABBREV_ALL   //曜日表示の省略
+            );
         }
 
         return rtnStr.equals("") ? "なし" : rtnStr;   // todo <String>化する
         // todo onoff＆時間の表示を元に戻す
     }
 
-
-    
-    static void loggggg(long unixTimeMsec) {
-        Date date = new Date(unixTimeMsec);
-        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings());
-//        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset());
-
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+9"));
-
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-        sdf2.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-
-        SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-        sdf3.setTimeZone(TimeZone.getTimeZone("GMT-8"));
-
-
-
-
-        Log.d("○MainActivity", "__"+sdf.format(date));
-        Log.d("○MainActivity", "________________________"+sdf2.format(date2));
-        Log.d("○MainActivity", "________________________"+sdf2.format(date));
-        Log.d("○MainActivity", "________________________"+sdf3.format(date));
-    }
+//
+//    static void loggggg(long unixTimeMsec) {
+//        Date date = new Date(unixTimeMsec);
+//        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings());
+////        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset());
+//
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+//        sdf.setTimeZone(TimeZone.getTimeZone("GMT+9"));
+//
+//        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+//        sdf2.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+//
+//        SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+//        sdf3.setTimeZone(TimeZone.getTimeZone("GMT-8"));
+//
+//
+//
+//
+//        Log.d("○MainActivity", "__"+sdf.format(date));
+//        Log.d("○MainActivity", "________________________"+sdf2.format(date2));
+//        Log.d("○MainActivity", "________________________"+sdf2.format(date));
+//        Log.d("○MainActivity", "________________________"+sdf3.format(date));
+//    }
 
     /************************************
      * アクティビティが描画される直前
@@ -409,6 +413,10 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
             }
         });
 
+        //// 次の時間表示を更新する
+        if (this.isServiceRunning) {
+            this.onOffTextTv.setText(this.getTextRest());
+        }
     }
 
     public void onWpChangeError () {
