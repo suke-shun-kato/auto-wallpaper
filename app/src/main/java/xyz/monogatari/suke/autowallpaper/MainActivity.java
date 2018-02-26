@@ -20,6 +20,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.ProgressBcastReceiver;
@@ -145,12 +149,49 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         }
 
         //// 設定時間で変更
+
         if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+
+            long intervalMsec = Long.parseLong(this.sp.getString(
+                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
+            ));
             long unixTimeMsec = this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis());
-            rtnStr += HistoryListAdapter.toDateTextFromUnixTime(unixTimeMsec, this);
+
+            long delayMsec = MainService.calcDelayMsec(unixTimeMsec, intervalMsec, System.currentTimeMillis());
+            long unixTimeMsecReal = delayMsec + System.currentTimeMillis();
+loggggg(System.currentTimeMillis());
+loggggg(unixTimeMsecReal);
+
+            rtnStr += HistoryListAdapter.toDateTextFromUnixTime(unixTimeMsecReal, this);
         }
 
         return rtnStr.equals("") ? "なし" : rtnStr;   // todo <String>化する
+        // todo onoff＆時間の表示を元に戻す
+    }
+
+
+    
+    static void loggggg(long unixTimeMsec) {
+        Date date = new Date(unixTimeMsec);
+        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings());
+//        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+9"));
+
+        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        sdf2.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+
+        SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        sdf3.setTimeZone(TimeZone.getTimeZone("GMT-8"));
+
+
+
+
+        Log.d("○MainActivity", "__"+sdf.format(date));
+        Log.d("○MainActivity", "________________________"+sdf2.format(date2));
+        Log.d("○MainActivity", "________________________"+sdf2.format(date));
+        Log.d("○MainActivity", "________________________"+sdf3.format(date));
     }
 
     /************************************

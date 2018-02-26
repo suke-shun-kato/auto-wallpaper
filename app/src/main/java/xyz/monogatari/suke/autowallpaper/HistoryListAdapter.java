@@ -177,16 +177,16 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
 
     static String toDateTextFromUnixTime(long unixTimeMsec, Context context) {
         // getRawOffset(): 時差、getDSTSavings():サマータイムなどの追加時間
-        long timeOffsetMsec = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings(); //時差
+        long unixTimeMsecOffset = unixTimeMsec + TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings(); //時差
 
         return DateUtils.formatDateTime(
                 context,
-                unixTimeMsec + timeOffsetMsec,
+                unixTimeMsec,
                 DateUtils.FORMAT_SHOW_YEAR
                         | DateUtils.FORMAT_SHOW_DATE
                         | DateUtils.FORMAT_SHOW_WEEKDAY
                         | DateUtils.FORMAT_SHOW_TIME
-                        | DateUtils.FORMAT_ABBREV_ALL
+                        | DateUtils.FORMAT_ABBREV_ALL   //曜日表示の省略
         );
     }
 }

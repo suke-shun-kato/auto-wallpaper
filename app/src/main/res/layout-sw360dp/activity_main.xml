@@ -38,8 +38,9 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
                 android:layout_marginBottom="@dimen/main_activity_power_between_btn_text"
 
                 android:text="@string/main_power"
-                android:textColor="@color/colorText"
+                android:textColor="#000000"
                 android:textSize="@dimen/main_activity_power_btn_text" />
+                <!--android:textColor="@color/colorText"-->
             <!-- scaleType はsrcの画像も拡大する-->
             <ImageButton
                 android:contentDescription="@string/main_power"
