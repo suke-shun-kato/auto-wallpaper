@@ -363,8 +363,9 @@ Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener(), hashCode()="
      * @param startUnixTimeMsec 設定された開始時間、UNIXタイム形式
      * @param periodMsec periodMsec間隔で壁紙交換が実行される
      * @param nowUnixTimeMsec 現在のUNIXタイム形式
+     * @return 計算後のUNIXタイム
      */
-    private static long calcDelayMsec(long startUnixTimeMsec, long periodMsec, long nowUnixTimeMsec) {
+    public static long calcDelayMsec(long startUnixTimeMsec, long periodMsec, long nowUnixTimeMsec) {
         // ----------------------------------
         // 例外処理
         // ----------------------------------

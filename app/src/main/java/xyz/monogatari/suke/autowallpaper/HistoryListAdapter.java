@@ -154,9 +154,8 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
         // 更新時間
         // ----------
         long unixTimeMsec = itemDataStore.getCreated_at_unix(); //表示したい日時（UTC）
-        // getRawOffset(): 時差、getDSTSavings():サマータイムなどの追加時間
-//        long timeOffsetMsec = TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings(); //時差
 
+        // UTCを入れると「時差」と「言語による表示形式」を考慮した文字列を返してくれる
         String datetimeStr = DateUtils.formatDateTime(
                 this.context,
                 unixTimeMsec,

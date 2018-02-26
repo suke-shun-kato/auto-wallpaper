@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">自動壁紙</string>
     <string name="main_power">ON/OFF</string>
+    <string name="main_next_wallpaper_set_screenOff">画面OFF時</string>
+    <string name="main_next_wallpaper_set_no">壁紙変更のタイミングがの設定されていません</string>
+    <string name="main_next_wallpaper_set_glue">｜</string>
     <string name="main_to_setting">設定へ</string>
     <string name="main_to_history">履歴へ</string>
     <string name="main_set_wallpaper">直ぐに壁紙変更</string>

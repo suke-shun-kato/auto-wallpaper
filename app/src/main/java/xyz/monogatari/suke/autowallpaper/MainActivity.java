@@ -13,11 +13,16 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
@@ -32,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private Intent serviceIntent;
     /** サービスON,OFFボタンのView、再利用 */
     private ImageButton serviceOnOffButton;
+
+    private TextView nextWpSetTextView;
     /** サービスが起動中か */
     private boolean isServiceRunning;
 
@@ -59,6 +66,9 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // ----------------------------------
+        //
+        // ----------------------------------
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.layout.activity_main);
@@ -76,8 +86,12 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         this.isServiceRunning = this.isServiceRunningSystem(MainService.class);
 
         // ----------------------------------
-        // 表示の切り替え
+        // Viewなどの表示の動的な設定
         // ----------------------------------
+        //// テキスト表示
+        this.nextWpSetTextView = this.findViewById(R.id.main_text_next_set);
+
+        //// ボタン
         this.serviceOnOffButton = findViewById(R.id.btn_main_onOff_service);
         if (this.isServiceRunning) {
             this.serviceOnOffButton.setImageLevel(BTN_ON);
@@ -117,6 +131,32 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "
 System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "debug");
     }
 
+
+
+//
+//    static void loggggg(long unixTimeMsec) {
+//        Date date = new Date(unixTimeMsec);
+//        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings());
+////        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset());
+//
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+//        sdf.setTimeZone(TimeZone.getTimeZone("GMT+9"));
+//
+//        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+//        sdf2.setTimeZone(TimeZone.getTimeZone("GMT+0"));
+//
+//        SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+//        sdf3.setTimeZone(TimeZone.getTimeZone("GMT-8"));
+//
+//
+//
+//
+//        Log.d("○MainActivity", "__"+sdf.format(date));
+//        Log.d("○MainActivity", "________________________"+sdf2.format(date2));
+//        Log.d("○MainActivity", "________________________"+sdf2.format(date));
+//        Log.d("○MainActivity", "________________________"+sdf3.format(date));
+//    }
+
     /************************************
      * アクティビティが描画される直前
      * ストレージのパーミッションのダイアログを表示する
@@ -149,6 +189,12 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
                     RQ_CODE_ACTIVITY);
         }
 
+        // ----------------------------------
+        // 表示関連の更新
+        // ----------------------------------
+        if (this.isServiceRunning) {
+            this.nextWpSetTextView.setText(this.getNextWpChangeText());
+        }
 
     }
 
@@ -195,8 +241,14 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         // -------------------------------------------------
         if ( this.isServiceRunning) {
             this.stopService(this.serviceIntent);
+
+            //// 文字列
+            this.nextWpSetTextView.setText("");
+
+            //// ボタンと背景の設定
             this.serviceOnOffButton.setImageLevel(BTN_OFF);
             this.getWindow().setBackgroundDrawableResource(R.color.translucentDark);
+
             this.isServiceRunning = false;
         // -------------------------------------------------
         // サービスが停止中のとき ONにする
@@ -230,8 +282,14 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
             // 通常処理
             // ----------------------------------
             this.startService(this.serviceIntent);
+
+            //// 文字列
+            this.nextWpSetTextView.setText(this.getNextWpChangeText());
+
+            //// ボタンと背景
             this.serviceOnOffButton.setImageLevel(BTN_ON);
             this.getWindow().setBackgroundDrawableResource(R.color.translucentLight);
+
             this.isServiceRunning = true;
         }
     }
@@ -287,6 +345,62 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
     }
 
     // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+    /************************************
+     * 次の壁紙交代のタイミングのテキストを作成する関数
+     * @return 作成した文字列
+     */
+    private String getNextWpChangeText() {
+        List<String> list = new ArrayList<>();
+
+        // ----------------------------------
+        // 電源OFF時に変更
+        // ----------------------------------
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+            list.add(this.getString(R.string.main_next_wallpaper_set_screenOff));
+        }
+
+        // ----------------------------------
+        // 設定時間で変更
+        // ----------------------------------
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+            //// 遅延時間を計算
+            long intervalMsec = Long.parseLong(this.sp.getString(
+                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
+            ));
+            long settingUnixTimeMsec = this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis());
+            long delayMsec = MainService.calcDelayMsec(settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
+
+            //// 表示を取得
+            long nextUnixTimeMsec = delayMsec + System.currentTimeMillis();
+            String nextDateText = DateUtils.formatDateTime(
+                    this,
+                    nextUnixTimeMsec,
+                    DateUtils.FORMAT_SHOW_DATE
+                            | DateUtils.FORMAT_SHOW_WEEKDAY
+                            | DateUtils.FORMAT_SHOW_TIME
+                            | DateUtils.FORMAT_NUMERIC_DATE   //曜日表示の省略
+                            | DateUtils.FORMAT_ABBREV_ALL   //曜日表示の省略
+            );
+            list.add(nextDateText);
+        }
+
+        // ----------------------------------
+        // 文字列結合してreturn
+        // ----------------------------------[
+        if (list.size() == 0) {
+            return this.getString(R.string.main_next_wallpaper_set_no);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            String glue = this.getString(R.string.main_next_wallpaper_set_glue);
+            for(String str : list) {
+                sb.append(glue).append(str);
+            }
+            return sb.substring(glue.length());
+        }
+    }
+    // --------------------------------------------------------------------
     // ブロードキャストレシーバー受信時の挙動設定
     // --------------------------------------------------------------------
     public void onWpChanging() {
@@ -314,13 +428,16 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
             }
         });
 
+        //// 次の時間表示を更新する
+        if (this.isServiceRunning) {
+            this.nextWpSetTextView.setText(this.getNextWpChangeText());
+        }
     }
 
     public void onWpChangeError () {
 Log.d("○" + this.getClass().getSimpleName(), "onWpChangeError()ですよ！！！");
         Toast.makeText(this, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
     }
-
 
 
 
