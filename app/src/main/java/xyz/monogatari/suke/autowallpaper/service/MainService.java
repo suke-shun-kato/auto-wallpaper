@@ -1,6 +1,7 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -79,6 +80,14 @@ public class MainService extends Service {
     public void onCreate() {
         super.onCreate();
         this.sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        Notification notification = new Notification.Builder(this)
+                .setContentTitle("永続化")
+                .setContentText("起動してますか？")
+                .setSmallIcon(R.drawable.ic_notification_wallpaper)
+                .setWhen(System.currentTimeMillis())
+                .build();
+        this.startForeground(1111, notification);
 
 Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode: " + this.hashCode());
     }
