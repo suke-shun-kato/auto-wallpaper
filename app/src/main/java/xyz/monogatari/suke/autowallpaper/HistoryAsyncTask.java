@@ -45,8 +45,7 @@ public class HistoryAsyncTask extends AsyncTask<Void, Void, List<HistoryItemList
 
         //noinspection TryFinallyCanBeTryWithResources
         try {
-            // created_atの取得自体はUTCタイムでUNIXタイムスタンプのまま取得するので'utc'を追加
-            cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at, 'utc') AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
+            cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at) AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
 
             List<HistoryItemListDataStore> itemList = new ArrayList<>();
             if (cursor != null) {
