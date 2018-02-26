@@ -153,7 +153,6 @@ Log.d("○"+this.getClass().getSimpleName(), "インテントできません！�
         // ----------
         // 更新時間
         // ----------
-        // todo toDateTextFromUnixTime()を使う
         long unixTimeMsec = itemDataStore.getCreated_at_unix(); //表示したい日時（UTC）
 
         // UTCを入れると「時差」と「言語による表示形式」を考慮した文字列を返してくれる

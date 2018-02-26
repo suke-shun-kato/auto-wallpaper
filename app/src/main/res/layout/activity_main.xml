@@ -27,11 +27,17 @@
             tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
             >
             <TextView
-                android:id="@+id/main_text_onOff"
-                android:layout_width="match_parent"
+                android:id="@+id/main_text_next_set"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxWidth="@dimen/main_activity_power_btn_size"
-                android:gravity="center_horizontal"
+
+                android:layout_gravity="center_horizontal"
+                />
+            <TextView
+                android:id="@+id/main_text_onOff"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
                 android:text="@string/main_power"
                 android:textColor="@color/colorText"
                 android:textSize="32sp"

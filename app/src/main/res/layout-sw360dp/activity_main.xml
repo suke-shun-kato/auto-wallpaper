@@ -28,6 +28,15 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
             android:orientation="vertical"
             >
             <TextView
+                android:id="@+id/main_text_next_set"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                />
+
+            <TextView
                 android:id="@+id/main_text_onOff"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -38,9 +47,8 @@ style.xmlでfitsSystemWindows="true"設定しているため、一番外側のpa
                 android:layout_marginBottom="@dimen/main_activity_power_between_btn_text"
 
                 android:text="@string/main_power"
-                android:textColor="#000000"
+                android:textColor="@color/colorText"
                 android:textSize="@dimen/main_activity_power_btn_text" />
-                <!--android:textColor="@color/colorText"-->
             <!-- scaleType はsrcの画像も拡大する-->
             <ImageButton
                 android:contentDescription="@string/main_power"

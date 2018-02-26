@@ -5,6 +5,9 @@
     <!--通常の文字列-->
     <string name="app_name">AutoWallpaper</string>
     <string name="main_power">ON/OFF</string>
+    <string name="main_next_wallpaper_set_screenOff">Next screen off</string>
+    <string name="main_next_wallpaper_set_no">No next wallpaper change</string>
+    <string name="main_next_wallpaper_set_glue">" | "</string><!-- ""で囲まないと前後の空白が無視される -->
     <string name="main_to_setting">To Setting</string>
     <string name="main_to_history">To History</string>
     <string name="main_set_wallpaper">Sets wallpaper now</string>

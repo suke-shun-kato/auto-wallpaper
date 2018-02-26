@@ -21,6 +21,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import xyz.monogatari.suke.autowallpaper.service.MainService;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.suke.autowallpaper.util.ProgressBcastReceiver;
@@ -35,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     /** サービスON,OFFボタンのView、再利用 */
     private ImageButton serviceOnOffButton;
 
-    private TextView onOffTextTv;
+    private TextView nextWpSetTextView;
     /** サービスが起動中か */
     private boolean isServiceRunning;
 
@@ -86,11 +89,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         // Viewなどの表示の動的な設定
         // ----------------------------------
         //// テキスト表示
-        this.onOffTextTv = this.findViewById(R.id.main_text_onOff);
-// 下記はonStart() に移動
-//        if (this.isServiceRunning) {
-//            this.onOffTextTv.setText(this.getTextRest());
-//        }
+        this.nextWpSetTextView = this.findViewById(R.id.main_text_next_set);
 
         //// ボタン
         this.serviceOnOffButton = findViewById(R.id.btn_main_onOff_service);
@@ -133,46 +132,6 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
     }
 
 
-    /************************************
-     * 次の壁紙交代のタイミングのテキストを作成する関数
-     * @return 作成した文字列
-     */
-    private String getTextRest() {
-        String rtnStr = "";
-
-        //// 電源OFF時に変更
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
-            rtnStr += "次の電源OFFのとき｜";  // todo <string>化する
-        }
-
-        //// 設定時間で変更
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-            //// 遅延時間を計算
-            long intervalMsec = Long.parseLong(this.sp.getString(
-                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
-            ));
-            long settingUnixTimeMsec = this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis());
-            long delayMsec = MainService.calcDelayMsec(settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
-
-
-
-
-            //// 表示を取得
-            long nextUnixTimeMsec = delayMsec + System.currentTimeMillis();
-            rtnStr += DateUtils.formatDateTime(
-                    this,
-                    nextUnixTimeMsec,
-                    DateUtils.FORMAT_SHOW_DATE
-                            | DateUtils.FORMAT_SHOW_WEEKDAY
-                            | DateUtils.FORMAT_SHOW_TIME
-                            | DateUtils.FORMAT_NUMERIC_DATE   //曜日表示の省略
-                            | DateUtils.FORMAT_ABBREV_ALL   //曜日表示の省略
-            );
-        }
-
-        return rtnStr.equals("") ? "なし" : rtnStr;   // todo <String>化する
-        // todo onoff＆時間の表示を元に戻す
-    }
 
 //
 //    static void loggggg(long unixTimeMsec) {
@@ -234,7 +193,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         // 表示関連の更新
         // ----------------------------------
         if (this.isServiceRunning) {
-            this.onOffTextTv.setText(this.getTextRest());
+            this.nextWpSetTextView.setText(this.getNextWpChangeText());
         }
 
     }
@@ -284,7 +243,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
             this.stopService(this.serviceIntent);
 
             //// 文字列
-            this.onOffTextTv.setText(R.string.main_power);
+            this.nextWpSetTextView.setText("");
 
             //// ボタンと背景の設定
             this.serviceOnOffButton.setImageLevel(BTN_OFF);
@@ -325,7 +284,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
             this.startService(this.serviceIntent);
 
             //// 文字列
-            this.onOffTextTv.setText(this.getTextRest());
+            this.nextWpSetTextView.setText(this.getNextWpChangeText());
 
             //// ボタンと背景
             this.serviceOnOffButton.setImageLevel(BTN_ON);
@@ -386,6 +345,62 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
     }
 
     // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+    /************************************
+     * 次の壁紙交代のタイミングのテキストを作成する関数
+     * @return 作成した文字列
+     */
+    private String getNextWpChangeText() {
+        List<String> list = new ArrayList<>();
+
+        // ----------------------------------
+        // 電源OFF時に変更
+        // ----------------------------------
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+            list.add(this.getString(R.string.main_next_wallpaper_set_screenOff));
+        }
+
+        // ----------------------------------
+        // 設定時間で変更
+        // ----------------------------------
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+            //// 遅延時間を計算
+            long intervalMsec = Long.parseLong(this.sp.getString(
+                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
+            ));
+            long settingUnixTimeMsec = this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis());
+            long delayMsec = MainService.calcDelayMsec(settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
+
+            //// 表示を取得
+            long nextUnixTimeMsec = delayMsec + System.currentTimeMillis();
+            String nextDateText = DateUtils.formatDateTime(
+                    this,
+                    nextUnixTimeMsec,
+                    DateUtils.FORMAT_SHOW_DATE
+                            | DateUtils.FORMAT_SHOW_WEEKDAY
+                            | DateUtils.FORMAT_SHOW_TIME
+                            | DateUtils.FORMAT_NUMERIC_DATE   //曜日表示の省略
+                            | DateUtils.FORMAT_ABBREV_ALL   //曜日表示の省略
+            );
+            list.add(nextDateText);
+        }
+
+        // ----------------------------------
+        // 文字列結合してreturn
+        // ----------------------------------[
+        if (list.size() == 0) {
+            return this.getString(R.string.main_next_wallpaper_set_no);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            String glue = this.getString(R.string.main_next_wallpaper_set_glue);
+            for(String str : list) {
+                sb.append(glue).append(str);
+            }
+            return sb.substring(glue.length());
+        }
+    }
+    // --------------------------------------------------------------------
     // ブロードキャストレシーバー受信時の挙動設定
     // --------------------------------------------------------------------
     public void onWpChanging() {
@@ -415,7 +430,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
 
         //// 次の時間表示を更新する
         if (this.isServiceRunning) {
-            this.onOffTextTv.setText(this.getTextRest());
+            this.nextWpSetTextView.setText(this.getNextWpChangeText());
         }
     }
 
@@ -423,7 +438,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
 Log.d("○" + this.getClass().getSimpleName(), "onWpChangeError()ですよ！！！");
         Toast.makeText(this, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
     }
-
 
 
 
