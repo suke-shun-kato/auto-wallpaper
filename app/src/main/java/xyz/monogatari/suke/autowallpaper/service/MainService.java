@@ -18,6 +18,9 @@ import android.util.Log;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import xyz.monogatari.suke.autowallpaper.MainActivity;
+import xyz.monogatari.suke.autowallpaper.NotifyId;
+import xyz.monogatari.suke.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
@@ -86,8 +89,17 @@ public class MainService extends Service {
                 .setContentText(this.getString(R.string.mainService_running))
                 .setSmallIcon(R.drawable.ic_notification_wallpaper)
                 .setWhen(System.currentTimeMillis())
-                .build();   // todo 通知をクリックしたらTOP画面が起動
-        this.startForeground(1111, notification);
+                .setContentIntent(
+                        PendingIntent.getActivity(
+                                this,
+                                PendingIntentRequestCode.RUNNING_SERVICE,
+                                new Intent(this, MainActivity.class),
+                                PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                ) //todo ロック画面の通知を消す
+                //todo 二重に通知を行う、アイコンも変更する
+                .build();
+        this.startForeground(NotifyId.RUNNING_SERVICE, notification);
 
 Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode: " + this.hashCode());
     }
@@ -449,8 +461,7 @@ Log.d("○" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+
         this.pendingIntent = PendingIntent.getService(
                 this,
                 //呼び出し元を識別するためのコード
-                this.getResources().getInteger(R.integer.request_code_main_service),
-//                new Intent(this, WallPaperChangerService.class),
+                PendingIntentRequestCode.TIMER_ALARM,
                 new Intent(this, WpManagerService.class),
                 //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
                 PendingIntent.FLAG_ONE_SHOT
@@ -473,11 +484,14 @@ Log.d("○"+getClass().getSimpleName(), "setAlarm(), delayMsec=" + delayMsec + "
         try {
             if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
                 this.alarmManager.set(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
+
             } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
                 this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
+
             } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
 //Log.d("○","通ってますよa！！！！！！！！！！！！");
                 this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
+
             }
         } catch (NullPointerException e) {
             e.printStackTrace();

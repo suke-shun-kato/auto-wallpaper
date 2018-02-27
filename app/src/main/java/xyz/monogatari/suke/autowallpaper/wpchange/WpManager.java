@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Random;
 
 import xyz.monogatari.suke.autowallpaper.HistoryActivity;
+import xyz.monogatari.suke.autowallpaper.NotifyId;
+import xyz.monogatari.suke.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
@@ -44,12 +46,6 @@ public class WpManager {
     private final SharedPreferences sp;
     private ImgGetter imgGetter = null;
 //    private final Map<String, Integer> sourceKindMap = new HashMap<>();
-
-    // --------------------------------------------------------------------
-    // 定数
-    // --------------------------------------------------------------------
-    /** ひとまずnotification id を定義、これしかないので実質意味がないが・・・ */
-    public static final int NOTIFICATION_ID_NORMAL = 1;
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -253,7 +249,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
                 .setContentIntent(
                         PendingIntent.getActivity(
                                 this.context,
-                                HistoryActivity.REQUEST_CODE_NORMAL,    // リクエストコード
+                                PendingIntentRequestCode.WALLPAPER_CHANGED,    // リクエストコード
                                 new Intent(this.context, HistoryActivity.class),
                                 PendingIntent.FLAG_UPDATE_CURRENT   //PendingIntentオブジェクトが既にあったらそのまま、ただしextraの値は最新に更新される
                         )
@@ -264,7 +260,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
                 = (NotificationManager) this.context.getSystemService(Context.NOTIFICATION_SERVICE);
         try {
             if ( nManager != null ) {
-                nManager.notify(NOTIFICATION_ID_NORMAL, notification);
+                nManager.notify(NotifyId.WALLPAPER_CHANGED, notification);
             }
         } catch(NullPointerException e) {
             e.printStackTrace();
