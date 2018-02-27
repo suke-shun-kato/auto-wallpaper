@@ -84,11 +84,13 @@ public class MainService extends Service {
         super.onCreate();
         this.sp = PreferenceManager.getDefaultSharedPreferences(this);
 
-        Notification notification = new Notification.Builder(this)
+
+        Notification.Builder builder = new Notification.Builder(this)
                 .setContentTitle(this.getString(R.string.app_name))
                 .setContentText(this.getString(R.string.mainService_running))
                 .setSmallIcon(R.drawable.ic_notification_wallpaper)
                 .setWhen(System.currentTimeMillis())
+
                 .setContentIntent(
                         PendingIntent.getActivity(
                                 this,
@@ -96,10 +98,15 @@ public class MainService extends Service {
                                 new Intent(this, MainActivity.class),
                                 PendingIntent.FLAG_CANCEL_CURRENT
                         )
-                ) //todo ロック画面の通知を消す
+                );
                 //todo 二重に通知を行う、アイコンも変更する
-                .build();
-        this.startForeground(NotifyId.RUNNING_SERVICE, notification);
+        if (Build.VERSION.SDK_INT >= 21) {
+            //APIレベル21以上の場合, Android5.0以上のとき
+            builder = builder.setVisibility(Notification.VISIBILITY_SECRET);    //ロック画面に通知表示しない
+        }
+
+
+        this.startForeground(NotifyId.RUNNING_SERVICE, builder.build());
 
 Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode: " + this.hashCode());
     }
