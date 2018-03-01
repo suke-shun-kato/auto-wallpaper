@@ -238,7 +238,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
         // ----------------------------------
         // 通知を作成
         // ----------------------------------
-        Notification notification = new Notification.Builder(this.context)
+        Notification.Builder builder = new Notification.Builder(this.context)
                 .setAutoCancel(true)    //タップすると通知が消える
                 .setContentTitle(this.context.getString(R.string.histories_notification_title))
                 .setContentText(this.context.getString(R.string.histories_notification_body))
@@ -254,14 +254,22 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
                                 new Intent(this.context, HistoryActivity.class),
                                 PendingIntent.FLAG_UPDATE_CURRENT   //PendingIntentオブジェクトが既にあったらそのまま、ただしextraの値は最新に更新される
                         )
-                )
-                .build();
+                );
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            //APIレベル21以上の場合, Android5.0以上のとき
+            //ロック画面に通知表示する
+            // （注意、ここの設定は端末の設定で上書きされる）
+            builder = builder.setVisibility(Notification.VISIBILITY_PUBLIC);
+        }
+
+
 
         NotificationManager nManager
                 = (NotificationManager) this.context.getSystemService(Context.NOTIFICATION_SERVICE);
         try {
             if ( nManager != null ) {
-                nManager.notify(NotifyId.WALLPAPER_CHANGED, notification);
+                nManager.notify(NotifyId.WALLPAPER_CHANGED, builder.build());
             }
         } catch(NullPointerException e) {
             e.printStackTrace();

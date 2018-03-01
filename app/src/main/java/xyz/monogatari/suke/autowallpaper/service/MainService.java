@@ -99,10 +99,11 @@ public class MainService extends Service {
                                 PendingIntent.FLAG_CANCEL_CURRENT
                         )
                 );
-        //todo 何故かZenPadのロック画面に表示される
+
         if (Build.VERSION.SDK_INT >= 21) {
             //APIレベル21以上の場合, Android5.0以上のとき
-            builder = builder.setVisibility(Notification.VISIBILITY_SECRET);    //ロック画面に通知表示しない
+            //ロック画面に通知表示しない（注意、ここの設定は端末の設定で上書きされる）
+            builder = builder.setVisibility(Notification.VISIBILITY_SECRET);
         }
 
 
