@@ -1,6 +1,7 @@
 package xyz.monogatari.suke.autowallpaper.service;
 
 import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -17,6 +18,9 @@ import android.util.Log;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import xyz.monogatari.suke.autowallpaper.MainActivity;
+import xyz.monogatari.suke.autowallpaper.NotifyId;
+import xyz.monogatari.suke.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.suke.autowallpaper.R;
 import xyz.monogatari.suke.autowallpaper.SettingsFragment;
 import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
@@ -79,6 +83,31 @@ public class MainService extends Service {
     public void onCreate() {
         super.onCreate();
         this.sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+
+        Notification.Builder builder = new Notification.Builder(this)
+                .setContentTitle(this.getString(R.string.mainService_notification_title))
+                .setContentText(this.getString(R.string.mainService_notification_text))
+                .setSmallIcon(R.drawable.ic_notification_running_service)
+                .setWhen(System.currentTimeMillis())
+
+                .setContentIntent(
+                        PendingIntent.getActivity(
+                                this,
+                                PendingIntentRequestCode.RUNNING_SERVICE,
+                                new Intent(this, MainActivity.class),
+                                PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                );
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            //APIレベル21以上の場合, Android5.0以上のとき
+            //ロック画面に通知表示しない（注意、ここの設定は端末の設定で上書きされる）
+            builder = builder.setVisibility(Notification.VISIBILITY_SECRET);
+        }
+
+
+        this.startForeground(NotifyId.RUNNING_SERVICE, builder.build());
 
 Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode: " + this.hashCode());
     }
@@ -440,8 +469,7 @@ Log.d("○" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+
         this.pendingIntent = PendingIntent.getService(
                 this,
                 //呼び出し元を識別するためのコード
-                this.getResources().getInteger(R.integer.request_code_main_service),
-//                new Intent(this, WallPaperChangerService.class),
+                PendingIntentRequestCode.TIMER_ALARM,
                 new Intent(this, WpManagerService.class),
                 //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
                 PendingIntent.FLAG_ONE_SHOT
@@ -464,11 +492,14 @@ Log.d("○"+getClass().getSimpleName(), "setAlarm(), delayMsec=" + delayMsec + "
         try {
             if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
                 this.alarmManager.set(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
+
             } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
                 this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
+
             } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
 //Log.d("○","通ってますよa！！！！！！！！！！！！");
                 this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
+
             }
         } catch (NullPointerException e) {
             e.printStackTrace();

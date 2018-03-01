@@ -41,9 +41,6 @@ public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLa
     /** DBに保存する履歴件数 */
     public static final int MAX_RECORD_STORE = 100;
 
-    /** リクエストコード、通知のときのPendingIntentで指定しているが、便宜上指定しているだけで意味はない */
-    public static final int REQUEST_CODE_NORMAL = 1;
-
     // --------------------------------------------------------------------
     // メソッド（オーバーライド）
     // --------------------------------------------------------------------
