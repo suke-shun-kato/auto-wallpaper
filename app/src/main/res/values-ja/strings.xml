@@ -8,7 +8,8 @@
     <string name="main_to_history">履歴へ</string>
     <string name="main_set_wallpaper">直ぐに壁紙変更</string>
     <string name="main_toast_no_image">取得可能な画像がありません</string>
-    <string name="mainService_running">壁紙が自動で変更されます</string>
+    <string name="mainService_notification_title">起動中</string>
+    <string name="mainService_notification_text">壁紙が自動で変更されます</string>
     <string name="permission_toast">壁紙のデータをファイルから取得するために許可が必要です</string>
     <string name="setting_from">取得元</string>
     <string name="setting_from_dir_onoff_title">ディレクトリから</string>

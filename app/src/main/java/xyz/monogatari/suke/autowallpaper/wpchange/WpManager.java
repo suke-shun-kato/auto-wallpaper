@@ -242,7 +242,8 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
                 .setAutoCancel(true)    //タップすると通知が消える
                 .setContentTitle(this.context.getString(R.string.histories_notification_title))
                 .setContentText(this.context.getString(R.string.histories_notification_body))
-                .setSmallIcon(R.drawable.ic_notification_wallpaper)
+//                .setSmallIcon(R.drawable.ic_notification_running_service)
+                .setSmallIcon(R.drawable.ic_notification_changed_wallpaper)
                 .setWhen(System.currentTimeMillis())
                 .setVibrate(new long[]{1000, 500})  //1秒後に0.5秒だけ振動
                 .setLights(Color.BLUE,2000,1000)    //2秒ON→1秒OFF→2秒ONを繰り返す

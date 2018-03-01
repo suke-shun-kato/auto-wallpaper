@@ -12,7 +12,8 @@
     <string name="main_to_history">To History</string>
     <string name="main_set_wallpaper">Sets wallpaper now</string>
     <string name="main_toast_no_image">No image</string>
-    <string name="mainService_running">Running</string>
+    <string name="mainService_notification_title">Running</string>
+    <string name="mainService_notification_text">Running</string>
     <string name="permission_toast">wants a storage permission to display a wall paper of file.</string>
     <string name="setting_from">FROM</string>
     <string name="setting_from_dir_onoff_title">From Directory</string>

@@ -86,9 +86,9 @@ public class MainService extends Service {
 
 
         Notification.Builder builder = new Notification.Builder(this)
-                .setContentTitle(this.getString(R.string.app_name))
-                .setContentText(this.getString(R.string.mainService_running))
-                .setSmallIcon(R.drawable.ic_notification_wallpaper)
+                .setContentTitle(this.getString(R.string.mainService_notification_title))
+                .setContentText(this.getString(R.string.mainService_notification_text))
+                .setSmallIcon(R.drawable.ic_notification_running_service)
                 .setWhen(System.currentTimeMillis())
 
                 .setContentIntent(
@@ -99,7 +99,7 @@ public class MainService extends Service {
                                 PendingIntent.FLAG_CANCEL_CURRENT
                         )
                 );
-                //todo 二重に通知を行う、アイコンも変更する
+        //todo 何故かZenPadのロック画面に表示される
         if (Build.VERSION.SDK_INT >= 21) {
             //APIレベル21以上の場合, Android5.0以上のとき
             builder = builder.setVisibility(Notification.VISIBILITY_SECRET);    //ロック画面に通知表示しない
