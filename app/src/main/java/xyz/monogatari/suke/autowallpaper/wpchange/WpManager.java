@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Random;
 
 import xyz.monogatari.suke.autowallpaper.HistoryActivity;
+import xyz.monogatari.suke.autowallpaper.MainActivity;
 import xyz.monogatari.suke.autowallpaper.NotifyId;
 import xyz.monogatari.suke.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.suke.autowallpaper.R;
@@ -238,6 +239,14 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
         // ----------------------------------
         // 通知を作成
         // ----------------------------------
+        Intent historyIntent = new Intent(this.context, HistoryActivity.class);
+        Intent mainIntent = new Intent(this.context, MainActivity.class)
+                // FLAG_ACTIVITY_NEW_TASK: スタックに残っていても、新しくタスクを起動させる
+                // FLAG_ACTIVITY_CLEAR_TOP：呼び出すActivity以外のActivityをクリアして起動させる
+                // 上記はセットで使うのが基本みたい
+                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent[] intents = {mainIntent, historyIntent};
+
         Notification.Builder builder = new Notification.Builder(this.context)
                 .setAutoCancel(true)    //タップすると通知が消える
                 .setContentTitle(this.context.getString(R.string.histories_notification_title))
@@ -248,10 +257,10 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
                 .setVibrate(new long[]{1000, 500})  //1秒後に0.5秒だけ振動
                 .setLights(Color.BLUE,2000,1000)    //2秒ON→1秒OFF→2秒ONを繰り返す
                 .setContentIntent(
-                        PendingIntent.getActivity(
+                        PendingIntent.getActivities(
                                 this.context,
                                 PendingIntentRequestCode.WALLPAPER_CHANGED,    // リクエストコード
-                                new Intent(this.context, HistoryActivity.class),
+                                intents,
                                 PendingIntent.FLAG_UPDATE_CURRENT   //PendingIntentオブジェクトが既にあったらそのまま、ただしextraの値は最新に更新される
                         )
                 );
