@@ -6,7 +6,7 @@ android {
     compileSdkVersion 26
     // 設定、ここの記述はマニュフェストに埋め込まれる
     defaultConfig {
-        applicationId "xyz.monogatari.suke.autowallpaper"
+        applicationId "xyz.monogatari.autowallpaper"
         minSdkVersion 16
         //noinspection OldTargetApi
         targetSdkVersion 26
