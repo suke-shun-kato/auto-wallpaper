@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.wpchange;
+package xyz.monogatari.autowallpaper.wpchange;
 
 import android.Manifest;
 import android.app.Notification;
@@ -25,14 +25,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import xyz.monogatari.suke.autowallpaper.HistoryActivity;
-import xyz.monogatari.suke.autowallpaper.MainActivity;
-import xyz.monogatari.suke.autowallpaper.NotifyId;
-import xyz.monogatari.suke.autowallpaper.PendingIntentRequestCode;
-import xyz.monogatari.suke.autowallpaper.R;
-import xyz.monogatari.suke.autowallpaper.SettingsFragment;
-import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
-import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
+import xyz.monogatari.autowallpaper.HistoryActivity;
+import xyz.monogatari.autowallpaper.MainActivity;
+import xyz.monogatari.autowallpaper.NotifyId;
+import xyz.monogatari.autowallpaper.PendingIntentRequestCode;
+import xyz.monogatari.autowallpaper.R;
+import xyz.monogatari.autowallpaper.SettingsFragment;
+import xyz.monogatari.autowallpaper.util.DisplaySizeCheck;
+import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 壁紙を取得→加工→セットまでの一連の流れを行うクラス

@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.util;
+package xyz.monogatari.autowallpaper.util;
 
 import android.content.Context;
 import android.preference.PreferenceManager;
@@ -8,9 +8,9 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import xyz.monogatari.suke.autowallpaper.R;
-import xyz.monogatari.suke.autowallpaper.SettingsFragment;
-import xyz.monogatari.suke.autowallpaper.TwitterOAuthPreference;
+import xyz.monogatari.autowallpaper.R;
+import xyz.monogatari.autowallpaper.SettingsFragment;
+import xyz.monogatari.autowallpaper.TwitterOAuthPreference;
 
 /**
  * API認証のためのトークンを取得するクラス

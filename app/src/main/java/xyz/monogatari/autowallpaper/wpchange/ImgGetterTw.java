@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.wpchange;
+package xyz.monogatari.autowallpaper.wpchange;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import xyz.monogatari.suke.autowallpaper.util.Token;
+import xyz.monogatari.autowallpaper.util.Token;
 
 /**
  * Twitterのお気に入りからランダムに画像を取得するクラス

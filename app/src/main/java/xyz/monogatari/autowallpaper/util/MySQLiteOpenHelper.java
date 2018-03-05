@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.util;
+package xyz.monogatari.autowallpaper.util;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

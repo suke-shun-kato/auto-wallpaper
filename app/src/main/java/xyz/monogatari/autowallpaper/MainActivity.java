@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.autowallpaper;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -24,10 +24,10 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.monogatari.suke.autowallpaper.service.MainService;
-import xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck;
-import xyz.monogatari.suke.autowallpaper.util.ProgressBcastReceiver;
-import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
+import xyz.monogatari.autowallpaper.service.MainService;
+import xyz.monogatari.autowallpaper.util.DisplaySizeCheck;
+import xyz.monogatari.autowallpaper.util.ProgressBcastReceiver;
+import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
 public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------------

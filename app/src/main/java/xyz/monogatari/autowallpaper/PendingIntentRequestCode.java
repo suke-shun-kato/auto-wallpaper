@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.autowallpaper;
 
 /**
  * PendingIntentのリクエストコードを管理するためのクラス

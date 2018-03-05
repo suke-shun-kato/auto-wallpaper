@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.autowallpaper;
 
 import android.content.Intent;
 import android.os.Bundle;

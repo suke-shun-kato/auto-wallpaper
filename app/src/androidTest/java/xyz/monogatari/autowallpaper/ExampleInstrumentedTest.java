@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.autowallpaper;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("xyz.monogatari.suke.autowallpaper", appContext.getPackageName());
+        assertEquals("xyz.monogatari.autowallpaper", appContext.getPackageName());
     }
 }

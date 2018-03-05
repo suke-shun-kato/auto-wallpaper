@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.wpchange;
+package xyz.monogatari.autowallpaper.wpchange;
 
 import android.app.IntentService;
 import android.content.Intent;
@@ -16,7 +16,7 @@ public class WpManagerService extends IntentService {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    public static final String ACTION_NAME = "xyz.monogatari.suke.autowallpaper.WP_SERVICE_ACTION";
+    public static final String ACTION_NAME = "xyz.monogatari.autowallpaper.WP_SERVICE_ACTION";
     public static final String KEY_NAME = "state";
     public static final int STATE_ON = 1;
     public static final int STATE_DESTROY = 2;

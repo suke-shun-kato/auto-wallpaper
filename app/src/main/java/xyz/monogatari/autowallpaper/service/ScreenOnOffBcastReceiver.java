@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.service;
+package xyz.monogatari.autowallpaper.service;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,7 +7,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
-import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
+import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
 
 /**

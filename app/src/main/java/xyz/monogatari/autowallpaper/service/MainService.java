@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.service;
+package xyz.monogatari.autowallpaper.service;
 
 import android.app.AlarmManager;
 import android.app.Notification;
@@ -18,12 +18,12 @@ import android.util.Log;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import xyz.monogatari.suke.autowallpaper.MainActivity;
-import xyz.monogatari.suke.autowallpaper.NotifyId;
-import xyz.monogatari.suke.autowallpaper.PendingIntentRequestCode;
-import xyz.monogatari.suke.autowallpaper.R;
-import xyz.monogatari.suke.autowallpaper.SettingsFragment;
-import xyz.monogatari.suke.autowallpaper.wpchange.WpManagerService;
+import xyz.monogatari.autowallpaper.MainActivity;
+import xyz.monogatari.autowallpaper.NotifyId;
+import xyz.monogatari.autowallpaper.PendingIntentRequestCode;
+import xyz.monogatari.autowallpaper.R;
+import xyz.monogatari.autowallpaper.SettingsFragment;
+import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
 /**
  * Created by k-shunsuke on 2017/12/12.

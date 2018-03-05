@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.autowallpaper;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,7 +16,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import java.util.List;
 
-import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
+import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 履歴ページ、ひとまず作成

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:custom="http://schemas.android.com/apk/res/xyz.monogatari.suke.autowallpaper">
+    xmlns:custom="http://schemas.android.com/apk/res/xyz.monogatari.autowallpaper">
     <PreferenceCategory
         android:key="from"
         android:title="@string/setting_from">
@@ -10,7 +10,7 @@
             android:key="from_dir"
             android:summary="@string/setting_form_dir_onoff_summary"
             android:title="@string/setting_from_dir_onoff_title" />
-        <xyz.monogatari.suke.autowallpaper.SelectDirPreference
+        <xyz.monogatari.autowallpaper.SelectDirPreference
             android:defaultValue="PICTURES"
             android:key="from_dir_path"
             android:title="@string/setting_form_dir_which_title"
@@ -19,7 +19,7 @@
             android:defaultValue="false"
             android:key="from_twitter_fav"
             android:title="@string/setting_form_twitter_fav_title" />
-        <xyz.monogatari.suke.autowallpaper.TwitterOAuthPreference
+        <xyz.monogatari.autowallpaper.TwitterOAuthPreference
             android:key="from_twitter_oauth"
             android:title="@string/setting_from_twitter_oauth"
             custom:textCantAccessAuthPage="@string/setting_from_twitter_oauth_text_cantAccessAuthPage"
@@ -76,7 +76,7 @@
     <PreferenceCategory
         android:key="reset"
         android:title="@string/setting_reset_title">
-        <xyz.monogatari.suke.autowallpaper.ResetBtnPreference
+        <xyz.monogatari.autowallpaper.ResetBtnPreference
             android:key="other_resetBtn"
             android:title="@string/setting_reset_resetBtn_title"
             custom:textDialogMsg="@string/setting_reset_resetBtn_dialogText"

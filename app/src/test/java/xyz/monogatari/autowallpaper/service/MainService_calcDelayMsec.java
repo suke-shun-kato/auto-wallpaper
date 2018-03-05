@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.service;
+package xyz.monogatari.autowallpaper.service;
 
 import org.junit.Before;
 import org.junit.Test;

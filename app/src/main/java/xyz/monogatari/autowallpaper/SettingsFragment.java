@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.autowallpaper;
 
 import android.Manifest;
 import android.app.Activity;
@@ -25,7 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import xyz.monogatari.suke.autowallpaper.service.MainService;
+import xyz.monogatari.autowallpaper.service.MainService;
 
 /**
  * 設定画面のフラグメント、

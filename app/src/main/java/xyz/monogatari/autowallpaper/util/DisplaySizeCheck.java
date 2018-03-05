@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.util;
+package xyz.monogatari.autowallpaper.util;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;

@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.wpchange;
+package xyz.monogatari.autowallpaper.wpchange;
 
 import android.Manifest;
 import android.content.Context;
@@ -14,9 +14,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.monogatari.suke.autowallpaper.SelectDirPreference;
-import xyz.monogatari.suke.autowallpaper.SettingsFragment;
-import xyz.monogatari.suke.autowallpaper.util.FileExtended;
+import xyz.monogatari.autowallpaper.SelectDirPreference;
+import xyz.monogatari.autowallpaper.SettingsFragment;
+import xyz.monogatari.autowallpaper.util.FileExtended;
 
 
 /**
@@ -114,7 +114,7 @@ Log.d("○ImgGetterDir", "ストレージアクセス権限がない！！！");
         // ----------------------------------
         for (String imgPath : imgPathList) {
             //// ここで「file://」→「content://」へ変換する
-            Uri contentUri = FileProvider.getUriForFile(context, "xyz.monogatari.suke.autowallpaper.fileprovider", new File(imgPath));
+            Uri contentUri = FileProvider.getUriForFile(context, "xyz.monogatari.autowallpaper.fileprovider", new File(imgPath));
 
             //// Listに追加
             getImgGetterList.add(

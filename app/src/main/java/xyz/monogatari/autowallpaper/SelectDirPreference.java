@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.autowallpaper;
 
 import android.Manifest;
 import android.content.Context;
@@ -22,7 +22,7 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 
-import xyz.monogatari.suke.autowallpaper.util.FileExtended;
+import xyz.monogatari.autowallpaper.util.FileExtended;
 
 /**
  * ディレクトリを選択するPreference

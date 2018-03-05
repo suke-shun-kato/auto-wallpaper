@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper.util;
+package xyz.monogatari.autowallpaper.util;
 
 import org.junit.After;
 import org.junit.Rule;

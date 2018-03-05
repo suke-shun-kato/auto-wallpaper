@@ -1,4 +1,4 @@
-package xyz.monogatari.suke.autowallpaper;
+package xyz.monogatari.autowallpaper;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -7,7 +7,7 @@ import android.os.AsyncTask;
 import java.util.ArrayList;
 import java.util.List;
 
-import xyz.monogatari.suke.autowallpaper.util.MySQLiteOpenHelper;
+import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 履歴ページのDBからデータ読み込む用のクラス

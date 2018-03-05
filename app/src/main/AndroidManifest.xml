@@ -52,7 +52,7 @@
         <service android:name=".wpchange.WpManagerService" />
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="xyz.monogatari.suke.autowallpaper.fileprovider"
+            android:authorities="xyz.monogatari.autowallpaper.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false"
             >
