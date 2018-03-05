@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="xyz.monogatari.suke.autowallpaper.HistoryActivity">
+    tools:context="xyz.monogatari.autowallpaper.HistoryActivity">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

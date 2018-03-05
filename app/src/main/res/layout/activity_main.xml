@@ -24,7 +24,7 @@
             android:paddingRight="@dimen/main_activity_horizontal_margin"
             android:paddingEnd="@dimen/main_activity_horizontal_margin"
             android:orientation="vertical"
-            tools:context="xyz.monogatari.suke.autowallpaper.MainActivity"
+            tools:context="xyz.monogatari.autowallpaper.MainActivity"
             >
             <TextView
                 android:id="@+id/main_text_next_set"

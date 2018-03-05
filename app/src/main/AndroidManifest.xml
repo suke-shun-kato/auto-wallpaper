@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="xyz.monogatari.suke.autowallpaper">
+    package="xyz.monogatari.autowallpaper">
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>-->
@@ -52,7 +52,7 @@
         <service android:name=".wpchange.WpManagerService" />
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="xyz.monogatari.suke.autowallpaper.fileprovider"
+            android:authorities="xyz.monogatari.autowallpaper.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false"
             >
