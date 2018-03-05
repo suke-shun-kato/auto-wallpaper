@@ -29,6 +29,7 @@ import xyz.monogatari.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.autowallpaper.util.ProgressBcastReceiver;
 import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
+
 public class MainActivity extends AppCompatActivity {
     // --------------------------------------------------------------------
     // フィールド

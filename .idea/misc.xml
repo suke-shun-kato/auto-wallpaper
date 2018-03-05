@@ -5,12 +5,18 @@
       <entry_point TYPE="field" FQNAME="xyz.monogatari.suke.autowallpaper.SelectDirPreference.SavedState CREATOR" />
       <entry_point TYPE="field" FQNAME="xyz.monogatari.suke.autowallpaper.SelectDirPreference.MySavedState CREATOR" />
       <entry_point TYPE="field" FQNAME="xyz.monogatari.suke.autowallpaper.SelectDirPreference R_DIALOG_TITLE" />
+      <entry_point TYPE="field" FQNAME="xyz.monogatari.autowallpaper.SelectDirPreference R_DIALOG_TITLE" />
+      <entry_point TYPE="field" FQNAME="xyz.monogatari.autowallpaper.SelectDirPreference.MySavedState CREATOR" />
     </entry_points>
     <pattern value="xyz.monogatari.suke.autowallpaper.FileExtended" method="FileExtended" />
     <pattern value="xyz.monogatari.suke.autowallpaper.util.FileExtended" method="FileExtended" />
     <pattern value="xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck" method="getDisplaySize" />
     <pattern value="xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck" method="getViewSize" />
     <pattern value="xyz.monogatari.suke.autowallpaper.util.DisplaySizeCheck" method="getStatusBarHeight" />
+    <pattern value="xyz.monogatari.autowallpaper.util.DisplaySizeCheck" method="getDisplaySize" />
+    <pattern value="xyz.monogatari.autowallpaper.util.DisplaySizeCheck" method="getViewSize" />
+    <pattern value="xyz.monogatari.autowallpaper.util.DisplaySizeCheck" method="getStatusBarHeight" />
+    <pattern value="xyz.monogatari.autowallpaper.util.FileExtended" method="FileExtended" />
   </component>
   <component name="NullableNotNullManager">
     <option name="myDefaultNullable" value="android.support.annotation.Nullable" />
