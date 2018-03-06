@@ -2,11 +2,14 @@ package xyz.monogatari.autowallpaper;
 
 import android.Manifest;
 import android.app.ActivityManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -47,6 +50,41 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences sp;
 
     private ProgressBcastReceiver progressBcastReceiver;
+
+
+
+    private MainService mainService;
+    private boolean isBound = false;
+
+    /** ServiceConnectionを継承したクラスのインスタンス */
+    private final ServiceConnection myConnection = new ServiceConnection() {
+
+        /**
+         * サービスへバインドされたときのコールバック
+         * サービス側から実行されるコールバック
+         * @param serviceClassName サービスのクラス名
+         * @param service サービスから送られてくるバインダー
+         */
+        @Override
+        public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
+            Log.d("○________________" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
+
+            MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
+            MainActivity.this.mainService = serviceBinder.getService();
+            MainActivity.this.isBound = true;
+        }
+
+        /**
+         * サービスのプロセスがクラッシュしたりKILLされたりしたときに呼ばれるコールバック
+         * ※通常にアンバインドされたときは呼ばれない
+         * @param serviceClassName サービスのクラス名
+         */
+        @Override
+        public void onServiceDisconnected(ComponentName serviceClassName) {
+            Log.d("○________________" + this.getClass().getSimpleName(), "onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
+            MainActivity.this.isBound = false;
+        }
+    };
 
     // --------------------------------------------------------------------
     // 定数
@@ -166,7 +204,13 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
     protected void onStart() {
 Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         super.onStart();
-        
+        // ----------------------------------
+        //
+        // ----------------------------------
+        Intent intent = new Intent(this, MainService.class);
+        this.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
+
+
         // ----------------------------------
         // ユーザーのパーミッション関連の処理
         // ----------------------------------
@@ -197,6 +241,16 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
             this.nextWpSetTextView.setText(this.getNextWpChangeText());
         }
 
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (this.isBound) {
+            this.unbindService(this.myConnection);
+            this.isBound = false;
+        }
     }
 
     @Override

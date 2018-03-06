@@ -35,6 +35,10 @@ public class MainService extends Service {
     // --------------------------------------------------------------------
     /** 通常の開始されたサービスが実行中か？ */
     private boolean isStarted = false;
+    public boolean isStarted() {
+        return this.isStarted;
+    }
+
 
     /** ブロードキャストレシーバーのインスタンス */
     private final ScreenOnOffBcastReceiver onOffReceiver = new ScreenOnOffBcastReceiver();
