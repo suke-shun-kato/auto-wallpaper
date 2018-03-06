@@ -220,6 +220,9 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
             return false;
         }
 
+//for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE) ) {
+//    Log.d("○□□", serviceInfo.service.getClassName());
+//}
         for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE) ) {
             if (serviceClass.getName().equals(serviceInfo.service.getClassName())) {
                 return true;

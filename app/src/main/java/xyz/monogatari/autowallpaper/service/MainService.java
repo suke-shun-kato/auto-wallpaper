@@ -85,29 +85,7 @@ public class MainService extends Service {
         this.sp = PreferenceManager.getDefaultSharedPreferences(this);
 
 
-        Notification.Builder builder = new Notification.Builder(this)
-                .setContentTitle(this.getString(R.string.mainService_notification_title))
-                .setContentText(this.getString(R.string.mainService_notification_text))
-                .setSmallIcon(R.drawable.ic_notification_running_service)
-                .setWhen(System.currentTimeMillis())
 
-                .setContentIntent(
-                        PendingIntent.getActivity(
-                                this,
-                                PendingIntentRequestCode.RUNNING_SERVICE,
-                                new Intent(this, MainActivity.class),
-                                PendingIntent.FLAG_CANCEL_CURRENT
-                        )
-                );
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            //APIレベル21以上の場合, Android5.0以上のとき
-            //ロック画面に通知表示しない（注意、ここの設定は端末の設定で上書きされる）
-            builder = builder.setVisibility(Notification.VISIBILITY_SECRET);
-        }
-
-
-        this.startForeground(NotifyId.RUNNING_SERVICE, builder.build());
 
 Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode: " + this.hashCode());
     }
@@ -162,6 +140,32 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
 
 
         this.isStarted = true;
+
+        // ----------------------------------
+        // 通知に表示
+        // ----------------------------------
+        Notification.Builder builder = new Notification.Builder(this)
+                .setContentTitle(this.getString(R.string.mainService_notification_title))
+                .setContentText(this.getString(R.string.mainService_notification_text))
+                .setSmallIcon(R.drawable.ic_notification_running_service)
+                .setWhen(System.currentTimeMillis())
+
+                .setContentIntent(
+                        PendingIntent.getActivity(
+                                this,
+                                PendingIntentRequestCode.RUNNING_SERVICE,
+                                new Intent(this, MainActivity.class),
+                                PendingIntent.FLAG_CANCEL_CURRENT
+                        )
+                );
+
+        if (Build.VERSION.SDK_INT >= 21) {
+            //APIレベル21以上の場合, Android5.0以上のとき
+            //ロック画面に通知表示しない（注意、ここの設定は端末の設定で上書きされる）
+            builder = builder.setVisibility(Notification.VISIBILITY_SECRET);
+        }
+
+        this.startForeground(NotifyId.RUNNING_SERVICE, builder.build());
 
         // ----------------------------------
         //
