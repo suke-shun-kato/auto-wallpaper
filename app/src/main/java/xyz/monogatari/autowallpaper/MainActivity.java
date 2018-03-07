@@ -257,7 +257,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
     @Override
     protected void onStop() {
         super.onStop();
-
+Log.d("○"+this.getClass().getSimpleName(), "onStop()");
         if (this.isBound) {
             this.unbindService(this.myConnection);
             this.isBound = false;
@@ -267,6 +267,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
     @Override
     protected void onDestroy() {
         super.onDestroy();
+Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
         this.unregisterReceiver(this.progressBcastReceiver);
     }
 

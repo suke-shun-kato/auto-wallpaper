@@ -56,7 +56,7 @@ public class SettingsFragment extends PreferenceFragment
          */
         @Override
         public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
-            Log.d("○" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
+            Log.d("○SettingsFragment" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
 
             MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
             mainService = serviceBinder.getService();
@@ -224,7 +224,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
              */
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-Log.d("○OnPreferenceChangeL", "onPreferenceChange() 呼ばれた: "+(boolean)newValue);
+Log.d("○SettingsFragment", "onPreferenceChange() 呼ばれた: "+(boolean)newValue);
                 // ----------
                 // パーミッション許可ダイアログを出るようにしている
                 // ----------
