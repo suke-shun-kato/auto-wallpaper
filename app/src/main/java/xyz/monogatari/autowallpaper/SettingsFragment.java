@@ -3,7 +3,6 @@ package xyz.monogatari.autowallpaper;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -98,6 +97,9 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";
 
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
+
+    @SuppressWarnings("WeakerAccess")
+    public static final String KEY_LICENSE = "license";
 
     private static final int RQ_CODE_FROM_DIR = 1;
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
@@ -305,6 +307,23 @@ Log.d("○" + this.getClass().getSimpleName(), "onPreferenceClick() 呼ばれた
                 }
             }
         });
+
+        // ----------
+        //
+        // ----------
+        this.findPreference(KEY_LICENSE).setOnPreferenceClickListener(
+                new Preference.OnPreferenceClickListener(){
+                    @Override
+                    public boolean onPreferenceClick(Preference preference) {
+Log.d("○SettingFragment", "クリックされた！！！");
+                        Intent i = new Intent(getActivity(), LicenseActivity.class);
+                        startActivity(i);
+                        return true;
+                    }
+                }
+        );
+
+
 
         // ----------------------------------
         //

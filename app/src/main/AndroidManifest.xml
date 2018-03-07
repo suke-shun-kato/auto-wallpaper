@@ -44,6 +44,9 @@
         </activity>
         <activity
             android:name=".HistoryActivity"
+            />
+        <activity
+            android:name=".LicenseActivity"
             android:launchMode="singleTop"
             />
         <service
