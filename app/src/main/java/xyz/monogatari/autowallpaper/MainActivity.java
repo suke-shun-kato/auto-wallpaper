@@ -88,6 +88,27 @@ public class MainActivity extends AppCompatActivity {
 //                serviceOnOffButton.setImageLevel(BTN_OFF);
 //                getWindow().setBackgroundDrawableResource(R.color.translucentDark);
 //            }
+
+            //// パーミッション許可ダイアログを表示
+            if ( isServiceRunning //サービスが起動中
+                    && sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
+                    && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                    != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
+                    ) {
+
+                //shouldのとき
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        MainActivity.this,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    Toast.makeText(MainActivity.this, getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
+                }
+
+                // パーミッション許可ダイアログを表示
+                ActivityCompat.requestPermissions(
+                        MainActivity.this,
+                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                        RQ_CODE_ACTIVITY);
+            }
         }
 
         /**
@@ -229,25 +250,7 @@ Log.d("○"+this.getClass().getSimpleName(), "______________" + rtnBool);
         // ユーザーのパーミッション関連の処理
         // ----------------------------------
         // todo ここもonServiceConnected()に移動する
-//        if ( this.isServiceRunning //サービスが起動中
-//                && this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
-//                && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-//                != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
-//                ) {
-//
-//            //shouldのとき
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(
-//                    this,
-//                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-//                Toast.makeText(this, this.getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
-//            }
-//
-//            // パーミッション許可ダイアログを表示
-//            ActivityCompat.requestPermissions(
-//                    this,
-//                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-//                    RQ_CODE_ACTIVITY);
-//        }
+
 
         // ----------------------------------
         // 表示関連の更新
