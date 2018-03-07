@@ -36,6 +36,7 @@ public class MainService extends Service {
     /** 通常の開始されたサービスが実行中か？ */
     private boolean isStarted = false;
 
+
     /** ブロードキャストレシーバーのインスタンス */
     private final ScreenOnOffBcastReceiver onOffReceiver = new ScreenOnOffBcastReceiver();
     private TimerBcastReceiver timerReceiver;
@@ -76,6 +77,12 @@ public class MainService extends Service {
     // --------------------------------------------------------------------
     // メソッド（通常、バインド両方）
     // --------------------------------------------------------------------
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+        super.onTaskRemoved(rootIntent);
+Log.d("○"+this.getClass().getSimpleName(), "onTaskRemoved()____________");
+    }
+
     /************************************
      * サービス開始時、たった1回だけ実行されるメソッド
      */

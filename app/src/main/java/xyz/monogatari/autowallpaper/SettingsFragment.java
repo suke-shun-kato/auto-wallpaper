@@ -41,6 +41,7 @@ public class SettingsFragment extends PreferenceFragment
     private MainService mainService;
     /** バインドされた状態か */
     private boolean isBound = false;
+    private boolean isServiceRunning = false;
 
     private SharedPreferences sp;
 
@@ -55,11 +56,12 @@ public class SettingsFragment extends PreferenceFragment
          */
         @Override
         public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
-            Log.d("○" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
+            Log.d("○SettingsFragment" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
 
             MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
-            SettingsFragment.this.mainService = serviceBinder.getService();
-            SettingsFragment.this.isBound = true;
+            mainService = serviceBinder.getService();
+            isServiceRunning = true;
+
         }
 
         /**
@@ -70,7 +72,8 @@ public class SettingsFragment extends PreferenceFragment
         @Override
         public void onServiceDisconnected(ComponentName serviceClassName) {
             Log.d("○" + this.getClass().getSimpleName(), "onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
-            SettingsFragment.this.isBound = false;
+            isBound = false;
+            isServiceRunning = false;
         }
     };
     
@@ -151,7 +154,9 @@ Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先�
         // ----------------------------------
         Activity attachedActivity = this.getActivity();
         Intent intent = new Intent(attachedActivity, MainService.class);
-        attachedActivity.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
+
+//        attachedActivity.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
+        this.isBound  = attachedActivity.bindService(intent, this.myConnection, 0);
     }
 
 
@@ -219,7 +224,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
              */
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-Log.d("○OnPreferenceChangeL", "onPreferenceChange() 呼ばれた: "+(boolean)newValue);
+Log.d("○SettingsFragment", "onPreferenceChange() 呼ばれた: "+(boolean)newValue);
                 // ----------
                 // パーミッション許可ダイアログを出るようにしている
                 // ----------
@@ -424,8 +429,10 @@ Log.d("○"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): key�
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える
         // ----------------------------------
-        this.mainService.onSPChanged(key);
-        
+        if (this.isServiceRunning) {
+            this.mainService.onSPChanged(key);
+        }
+
     }
 
 }
