@@ -1,7 +1,6 @@
 package xyz.monogatari.autowallpaper;
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -43,18 +42,19 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton serviceOnOffButton;
 
     private TextView nextWpSetTextView;
-    /** サービスが起動中か */
-    private boolean isServiceRunning;
+    /** サービスが起動中か, null代入必須、コンパイルエラーが出る */
+    private boolean isServiceRunning = false;
 
     /** アクティビティ内で使いまわすSharedPreferences、ここでgetDefaultSharedPreferences()はダメ */
     private SharedPreferences sp;
 
     private ProgressBcastReceiver progressBcastReceiver;
 
-
-
+    /** メインサービスのオブジェクト */
+    @SuppressWarnings("FieldCanBeLocal")
     private MainService mainService;
-    private boolean isBound = false;
+    /** メインサービスがこのアクティビティにバインドされているか */
+    private boolean isBound;
 
     /** ServiceConnectionを継承したクラスのインスタンス */
     private final ServiceConnection myConnection = new ServiceConnection() {
@@ -67,11 +67,27 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
-            Log.d("○________________" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
+            Log.d("○" + MainActivity.this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
 
+            //// フィールドをセット
             MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
-            MainActivity.this.mainService = serviceBinder.getService();
-            MainActivity.this.isBound = true;
+            mainService = serviceBinder.getService();
+//            isBound = true;
+//            isServiceRunning = mainService.isStarted();
+            isServiceRunning = true;
+
+            //// メインサービスONのときの表示の設定など
+//            if ( isServiceRunning ) {
+                //// ボタン＆背景
+                serviceOnOffButton.setImageLevel(BTN_ON);
+                getWindow().setBackgroundDrawableResource(R.color.translucentLight);
+
+                //// 次の壁紙変更時間
+                nextWpSetTextView.setText(getNextWpChangeText());
+//            } else {
+//                serviceOnOffButton.setImageLevel(BTN_OFF);
+//                getWindow().setBackgroundDrawableResource(R.color.translucentDark);
+//            }
         }
 
         /**
@@ -82,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onServiceDisconnected(ComponentName serviceClassName) {
             Log.d("○________________" + this.getClass().getSimpleName(), "onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
-            MainActivity.this.isBound = false;
+            isBound = false;
         }
     };
 
@@ -122,7 +138,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         this.serviceIntent = new Intent(this, MainService.class);
 
         //
-        this.isServiceRunning = this.isServiceRunningSystem(MainService.class);
+//        this.isServiceRunning = this.isServiceRunningSystem(MainService.class);
 
         // ----------------------------------
         // Viewなどの表示の動的な設定
@@ -130,15 +146,8 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.l
         //// テキスト表示
         this.nextWpSetTextView = this.findViewById(R.id.main_text_next_set);
 
-        //// ボタン
-        this.serviceOnOffButton = findViewById(R.id.btn_main_onOff_service);
-        if (this.isServiceRunning) {
-            this.serviceOnOffButton.setImageLevel(BTN_ON);
-            this.getWindow().setBackgroundDrawableResource(R.color.translucentLight);
-        } else {
-            this.serviceOnOffButton.setImageLevel(BTN_OFF);
-            this.getWindow().setBackgroundDrawableResource(R.color.translucentDark);
-        }
+        //// ON/OFFボタン
+        this.serviceOnOffButton = this.findViewById(R.id.btn_main_onOff_service);
 
         // ----------------------------------
         // 初回起動時のPreferenceのデフォルト値の適用
@@ -208,38 +217,44 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         //
         // ----------------------------------
         Intent intent = new Intent(this, MainService.class);
-        this.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
 
+//        boolean rtnBool = this.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
+
+        boolean rtnBool = this.bindService(intent, this.myConnection, 0);
+        this.isBound = true;
+//        this.startService(intent);
+Log.d("○"+this.getClass().getSimpleName(), "______________" + rtnBool);
 
         // ----------------------------------
         // ユーザーのパーミッション関連の処理
         // ----------------------------------
-        if ( this.isServiceRunning //サービスが起動中
-                && this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
-                && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
-                ) {
-
-            //shouldのとき
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
-                    this,
-                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                Toast.makeText(this, this.getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
-            }
-
-            // パーミッション許可ダイアログを表示
-            ActivityCompat.requestPermissions(
-                    this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    RQ_CODE_ACTIVITY);
-        }
+        // todo ここもonServiceConnected()に移動する
+//        if ( this.isServiceRunning //サービスが起動中
+//                && this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
+//                && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//                != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
+//                ) {
+//
+//            //shouldのとき
+//            if (ActivityCompat.shouldShowRequestPermissionRationale(
+//                    this,
+//                    Manifest.permission.READ_EXTERNAL_STORAGE)) {
+//                Toast.makeText(this, this.getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
+//            }
+//
+//            // パーミッション許可ダイアログを表示
+//            ActivityCompat.requestPermissions(
+//                    this,
+//                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+//                    RQ_CODE_ACTIVITY);
+//        }
 
         // ----------------------------------
         // 表示関連の更新
         // ----------------------------------
-        if (this.isServiceRunning) {
-            this.nextWpSetTextView.setText(this.getNextWpChangeText());
-        }
+//        if (this.isServiceRunning) {
+//            this.nextWpSetTextView.setText(this.getNextWpChangeText());
+//        }
 
     }
 
@@ -262,28 +277,28 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
     // --------------------------------------------------------------------
     // メソッド、Util
     // --------------------------------------------------------------------
-    /************************************
-     * とあるサービスが実行中か確認するメソッド
-     * （注意）この関数は下記の理由で極力使わないでください、this.isServiceRunning でサービス実行中か確認してください
-     * ※バインドされた画面（設定画面）から戻ってきた時にonStart(),onResume()で実行したときは常にtrueになるので注意
-     * @param serviceClass 確認したサービスのClassオブジェクト
-     */
-    private boolean isServiceRunningSystem(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-        if (manager == null ){
-            return false;
-        }
-
-//for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE) ) {
-//    Log.d("○□□", serviceInfo.service.getClassName());
-//}
-        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE) ) {
-            if (serviceClass.getName().equals(serviceInfo.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    /************************************
+//     * とあるサービスが実行中か確認するメソッド
+//     * （注意）この関数は下記の理由で極力使わないでください、this.isServiceRunning でサービス実行中か確認してください
+//     * ※バインドされた画面（設定画面）から戻ってきた時にonStart(),onResume()で実行したときは常にtrueになるので注意
+//     * @param serviceClass 確認したサービスのClassオブジェクト
+//     */
+//    private boolean isServiceRunningSystem(Class<?> serviceClass) {
+//        ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
+//        if (manager == null ){
+//            return false;
+//        }
+//
+////for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE) ) {
+////    Log.d("○□□", serviceInfo.service.getClassName());
+////}
+//        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE) ) {
+//            if (serviceClass.getName().equals(serviceInfo.service.getClassName())) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     // --------------------------------------------------------------------
     // メソッド、ボタン押したときのイベントハンドラ
@@ -293,9 +308,8 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
      */
     @SuppressWarnings("WeakerAccess")
     public void onOffService_onClick(@SuppressWarnings("unused") View view) {
-
         // -------------------------------------------------
-        // サービスが停止中のとき OFFにする
+        // サービスが実行中のとき OFFにする
         // -------------------------------------------------
         if ( this.isServiceRunning) {
             this.stopService(this.serviceIntent);
