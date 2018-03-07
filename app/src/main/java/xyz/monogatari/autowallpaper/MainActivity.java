@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName serviceClassName) {
             Log.d("○________________" + this.getClass().getSimpleName(), "onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
             isBound = false;
+            isServiceRunning = false;
         }
     };
 
@@ -239,12 +240,10 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         // ----------------------------------
         Intent intent = new Intent(this, MainService.class);
 
-        // flags:0 だと自動でstartService()が開始されない、Context.BIND_AUTO_CREATEだと自動開始される
-        boolean rtnBool = this.bindService(intent, this.myConnection, 0);
+        // flags:0 だと自動でstartService()が開始されない（戻り値はサービス開始されていなくてもバインド成功したらtrueが返る）
+        // Context.BIND_AUTO_CREATEだと自動開始される
+        this.isBound = this.bindService(intent, this.myConnection, 0);
 //        boolean rtnBool = this.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
-        this.isBound = true;
-
-Log.d("○"+this.getClass().getSimpleName(), "______________" + rtnBool);
 
         // ----------------------------------
         // 表示関連の更新
