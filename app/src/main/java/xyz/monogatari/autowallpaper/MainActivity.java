@@ -239,18 +239,12 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         // ----------------------------------
         Intent intent = new Intent(this, MainService.class);
 
-//        boolean rtnBool = this.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
-
+        // flags:0 だと自動でstartService()が開始されない、Context.BIND_AUTO_CREATEだと自動開始される
         boolean rtnBool = this.bindService(intent, this.myConnection, 0);
+//        boolean rtnBool = this.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
         this.isBound = true;
-//        this.startService(intent);
+
 Log.d("○"+this.getClass().getSimpleName(), "______________" + rtnBool);
-
-        // ----------------------------------
-        // ユーザーのパーミッション関連の処理
-        // ----------------------------------
-        // todo ここもonServiceConnected()に移動する
-
 
         // ----------------------------------
         // 表示関連の更新
