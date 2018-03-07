@@ -10,9 +10,8 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
+@SuppressWarnings("ConstantConditions")
 public class ExampleUnitTest {
-
-
 
     @Test
     public void addition_isCorrect() throws Exception {
@@ -27,7 +26,7 @@ public class ExampleUnitTest {
 
         boolObj = true;
         if ( Boolean.TRUE.equals(boolObj) ) {
-            System.out.println("trueeeeee");
+            System.out.println("true");
         } else {
             System.out.println("false & null");
         }
@@ -36,7 +35,7 @@ public class ExampleUnitTest {
 
         boolObj = false;
         if ( Boolean.TRUE.equals(boolObj) ) {
-            System.out.println("trueeeeee");
+            System.out.println("true");
         } else {
             System.out.println("false & null");
         }
@@ -45,14 +44,14 @@ public class ExampleUnitTest {
 
         boolObj = null;
         if ( Boolean.TRUE.equals(boolObj) ) {
-            System.out.println("trueeeeee");
+            System.out.println("true");
         } else {
             System.out.println("false & null");
         }
         System.out.println("");
 
         if ( boolObj ) {
-            System.out.println("trueeeeee");
+            System.out.println("true");
         } else {
             System.out.println("false & null");
         }
