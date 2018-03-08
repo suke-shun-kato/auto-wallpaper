@@ -1,27 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/about_scroll"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    >
+<!--<ScrollView-->
+    <!--xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--xmlns:tools="http://schemas.android.com/tools"-->
+    <!--android:id="@+id/about_scroll"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--&gt;-->
     <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context="xyz.monogatari.autowallpaper.AboutActivity">
+        android:padding="@dimen/about_activity_padding"
+        tools:context="xyz.monogatari.autowallpaper.AboutActivity"
+        style="@style/AppTheme"
+        >
         <!-- ↓テキストは動的に@string/about_versionから生成 -->
         <TextView
             android:id="@+id/about_version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            style="@style/AppTheme"
             />
         <TextView
-            android:id="@+id/about_license"
+            android:id="@+id/about_license_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/about_license"
+            android:text="@string/about_license_title"
+            style="@style/AppTheme"
             />
+        <ListView
+            android:id="@+id/about_license_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
-</ScrollView>
+<!--</ScrollView>-->

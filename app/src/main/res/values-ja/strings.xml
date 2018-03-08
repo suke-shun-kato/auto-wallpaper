@@ -65,4 +65,5 @@
     <string name="histories_notification_body">タップすると履歴ページにとびます</string>
 
     <string name="about_version">バージョン %s</string>
+    <string name="about_license_title">オープンソースライセンス</string>
 </resources>

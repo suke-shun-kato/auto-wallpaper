@@ -93,7 +93,9 @@
     <string name="histories_notification_title">The wallpaper has changed.</string>
     <string name="histories_notification_body">After you tap it, you jump the histories page.</string>
     <string name="about_version">Version %s</string>
-    <string name="about_license">
+    <string name="about_license_title">Open source license</string>
+    <string-array name="about_license_bodies">
+        <item>
 Universal Image Loader\n
 \n
 Copyright 2011-2015 Sergey Tarasevich\n
@@ -108,9 +110,9 @@ Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.\n
-\n
-////////////////////\n
+limitations under the License.
+        </item>
+        <item>
 ScribeJava\n
 \n
 The MIT License\n
@@ -134,10 +136,9 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-THE SOFTWARE.\n
-\n
-////////////////////\n
-\n
+THE SOFTWARE.
+        </item>
+        <item>
 Twitter4J\n
 \n
 Copyright 2007 Yusuke Yamamoto\n
@@ -152,7 +153,7 @@ Unless required by applicable law or agreed to in writing, software
 Distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
-limitations under the License.\n
-\n
-    </string>
+limitations under the License.
+        </item>
+    </string-array>
 </resources>

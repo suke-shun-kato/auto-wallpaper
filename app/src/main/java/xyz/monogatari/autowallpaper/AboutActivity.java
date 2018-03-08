@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 /**
@@ -35,6 +38,17 @@ public class AboutActivity extends AppCompatActivity {
         tx.setText(
                 String.format(getString(R.string.about_version), this.getVersionName())
         );
+
+        // ----------------------------------
+        // ライセンス部分のListView
+        // ----------------------------------
+        ListView lv = findViewById(R.id.about_license_list);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                this,
+                R.layout.item_list_about_license,
+                this.getResources().getStringArray(R.array.about_license_bodies)
+        );
+        lv.setAdapter(adapter);
 
     }
 
