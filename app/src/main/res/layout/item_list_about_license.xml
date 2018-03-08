@@ -11,6 +11,3 @@
     android:paddingStart="@dimen/about_activity_license_list_padding"
     android:paddingTop="@dimen/about_activity_license_list_padding"
     />
-    <!--android:textAppearance="?android:attr/textAppearanceListItemSmall"-->
-    <!--android:gravity="center_vertical"-->
-    <!--android:minHeight="?android:attr/listPreferredItemHeightSmall"-->

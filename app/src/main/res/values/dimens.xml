@@ -13,5 +13,7 @@
     <dimen name="history_activity_item_text_padding_v">0dp</dimen>
 
     <dimen name="about_activity_padding">8dp</dimen>
+    <dimen name="about_activity_textSize">20sp</dimen>
+    <dimen name="about_activity_paddingTop">16dp</dimen>
     <dimen name="about_activity_license_list_padding">8dp</dimen>
 </resources>

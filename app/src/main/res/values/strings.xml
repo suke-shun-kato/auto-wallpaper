@@ -94,7 +94,7 @@
     <string name="histories_notification_body">After you tap it, you jump the histories page.</string>
     <string name="about_version">Version %s</string>
     <string name="about_license_title">Open source license</string>
-    <string-array name="about_license_bodies">
+    <string-array name="about_license_bodies" tools:ignore="MissingTranslation">
         <item>
 Universal Image Loader\n
 \n
