@@ -2,7 +2,7 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/license_scroll"
+    android:id="@+id/about_scroll"
     android:layout_height="wrap_content"
     android:layout_width="wrap_content"
     >
@@ -11,10 +11,17 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         tools:context="xyz.monogatari.autowallpaper.AboutActivity">
+        <!-- ↓テキストは動的に@string/about_versionから生成 -->
         <TextView
+            android:id="@+id/about_version"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/license_body"
+            />
+        <TextView
+            android:id="@+id/about_license"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/about_license"
             />
     </LinearLayout>
 </ScrollView>

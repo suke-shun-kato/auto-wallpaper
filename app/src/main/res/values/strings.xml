@@ -92,8 +92,8 @@
     <string name="histories_icon">icon</string>
     <string name="histories_notification_title">The wallpaper has changed.</string>
     <string name="histories_notification_body">After you tap it, you jump the histories page.</string>
-
-    <string name="license_body">
+    <string name="about_version">Version %s</string>
+    <string name="about_license">
 Universal Image Loader\n
 \n
 Copyright 2011-2015 Sergey Tarasevich\n

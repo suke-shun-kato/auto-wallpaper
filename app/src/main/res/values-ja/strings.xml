@@ -63,4 +63,6 @@
     <string name="histories_icon">アイコン</string>
     <string name="histories_notification_title">壁紙が変更されました</string>
     <string name="histories_notification_body">タップすると履歴ページにとびます</string>
+
+    <string name="about_version">バージョン %s</string>
 </resources>
