@@ -97,9 +97,8 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";
 
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
-
     @SuppressWarnings("WeakerAccess")
-    public static final String KEY_LICENSE = "license";
+    public static final String KEY_OTHER_ABOUT = "other_about";
 
     private static final int RQ_CODE_FROM_DIR = 1;
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
@@ -187,6 +186,16 @@ Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先頭）");
+
+        // ----------------------------------
+        // タイトル表示の設定
+        // ----------------------------------
+        //// About
+        this.findPreference(KEY_OTHER_ABOUT).setTitle(
+                String.format( getString(R.string.setting_other_about_title), getString(R.string.app_name) )
+        );
+
+
         // ----------------------------------
         // サマリーの表示の設定
         // ----------------------------------
@@ -311,12 +320,12 @@ Log.d("○" + this.getClass().getSimpleName(), "onPreferenceClick() 呼ばれた
         // ----------
         //
         // ----------
-        this.findPreference(KEY_LICENSE).setOnPreferenceClickListener(
+        this.findPreference(KEY_OTHER_ABOUT).setOnPreferenceClickListener(
                 new Preference.OnPreferenceClickListener(){
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
 Log.d("○SettingFragment", "クリックされた！！！");
-                        Intent i = new Intent(getActivity(), LicenseActivity.class);
+                        Intent i = new Intent(getActivity(), AboutActivity.class);
                         startActivity(i);
                         return true;
                     }
