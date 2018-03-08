@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/about_license_item"
+    style="@style/AppTheme"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/about_activity_license_list_padding"
+    android:paddingEnd="@dimen/about_activity_license_list_padding"
+    android:paddingLeft="@dimen/about_activity_license_list_padding"
+    android:paddingRight="@dimen/about_activity_license_list_padding"
+    android:paddingStart="@dimen/about_activity_license_list_padding"
+    android:paddingTop="@dimen/about_activity_license_list_padding"
+    />

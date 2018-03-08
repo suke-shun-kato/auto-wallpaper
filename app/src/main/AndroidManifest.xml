@@ -46,6 +46,9 @@
             android:name=".HistoryActivity"
             android:launchMode="singleTop"
             />
+        <activity
+            android:name=".AboutActivity"
+            />
         <service
             android:name=".service.MainService"
             />
