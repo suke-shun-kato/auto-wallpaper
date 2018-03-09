@@ -28,6 +28,6 @@ public class PermissionDialogFragment extends DialogFragment {
         ActivityCompat.requestPermissions(
                 this.getActivity(),
                 new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                22222); //todo リクエストコードちゃんとする
+                MainActivity.RQ_CODE_SERVICE); //todo リクエストコードちゃんとする
     }
 }

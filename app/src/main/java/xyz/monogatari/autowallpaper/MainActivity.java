@@ -129,8 +129,8 @@ public class MainActivity extends AppCompatActivity {
     // 定数
     // --------------------------------------------------------------------
     /** パーミッションリクエスト用のリクエストコード */
-    private static final int RQ_CODE_SERVICE = 1;
-    private static final int RQ_CODE_ACTIVITY = 2;
+    public static final int RQ_CODE_SERVICE = 1;
+    public static final int RQ_CODE_ACTIVITY = 2;
 
     private static final int BTN_OFF = 0;
     private static final int BTN_ON = 1;
@@ -378,7 +378,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
         switch (requestCode) {
-            case RQ_CODE_SERVICE:
+            case RQ_CODE_SERVICE:   //サービスのON/OFFボタンを押してパーミッション許可したとき
                 // パーミッションを許可したとき
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
