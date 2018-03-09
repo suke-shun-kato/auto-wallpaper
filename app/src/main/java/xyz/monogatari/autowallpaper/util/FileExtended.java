@@ -96,13 +96,15 @@ public class FileExtended extends File {
                 new MyFileFilter(filterExtensionAry, true)
         );
 
-        for(File childFile: childrenFiles) {
-            if ( childFile.isDirectory() ) {
-                fileList.addAll(
-                        new FileExtended(childFile.getPath()).getAllFileList(filterExtensionAry)
-                );
-            } else {
-                fileList.add(childFile);
+        if (childrenFiles != null) {
+            for (File childFile : childrenFiles) {
+                if (childFile.isDirectory()) {
+                    fileList.addAll(
+                            new FileExtended(childFile.getPath()).getAllFileList(filterExtensionAry)
+                    );
+                } else {
+                    fileList.add(childFile);
+                }
             }
         }
 
@@ -131,6 +133,10 @@ public class FileExtended extends File {
         private final String[] extensionAry;
         private final boolean dirOk;
 
+        /************************************
+         * @param extensionAry 絞り込み用の拡張子の文字列の配列
+         * @param dirOk trueだとディレクトリも含める、falseだと含めない
+         */
         public MyFileFilter(String[] extensionAry, @SuppressWarnings("SameParameterValue") boolean dirOk) {
             if (extensionAry == null) {
                 this.extensionAry = null;
