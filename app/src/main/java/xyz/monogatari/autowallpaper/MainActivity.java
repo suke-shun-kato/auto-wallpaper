@@ -1,6 +1,7 @@
 package xyz.monogatari.autowallpaper;
 
 import android.Manifest;
+import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -336,15 +337,18 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
                 if (ActivityCompat.shouldShowRequestPermissionRationale(
                         this,
                         Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    Toast.makeText(this, this.getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
+                    DialogFragment dialog = new PermissionDialogFragment();
+                    dialog.show(this.getFragmentManager(), "aaaaaaa");//todo tagをちゃんとする
+//                    Toast.makeText(this, this.getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
+                } else {
+                    // パーミッション許可ダイアログを表示
+                    ActivityCompat.requestPermissions(
+                            this,
+                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                            RQ_CODE_SERVICE);
                 }
-
-                // パーミッション許可ダイアログを表示
-                ActivityCompat.requestPermissions(
-                        this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        RQ_CODE_SERVICE);
                 return;
+
             }
 
             // ----------------------------------
