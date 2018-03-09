@@ -10,6 +10,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -27,6 +28,26 @@ public class FileExtended_getAllFilePathList_Test {
         tf.delete();
     }
 
+    /************************************
+     * 何もファイルがないときのテスト
+     */
+    @Test
+    public void nofile() throws Exception {
+        FileExtended testFileEx = new FileExtended(tf.getRoot().getPath());
+
+        String[] testExtensions = {"java", "php", "js", "sql"};
+        List<String> allFilesPathList = testFileEx.getAllFilePathList(testExtensions);
+
+        assertEquals(
+                0,  //期待する値
+                allFilesPathList.size() //実際の値
+        );
+
+    }
+
+    /************************************
+     * 通常のテスト
+     */
     @Test
     public void flat() throws Exception {
         // ----------------------------------
