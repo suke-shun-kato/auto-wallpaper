@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.Preference;
@@ -16,7 +15,6 @@ import android.preference.PreferenceManager;
 import android.preference.SwitchPreference;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -241,21 +239,21 @@ Log.d("○SettingsFragment", "onPreferenceChange() 呼ばれた: "+(boolean)newV
                 // ----------
                 //// 設定がONになるとき、かつAndroid6.0のとき、かつストレージアクセスの許可を得ていないとき、
                 if ( (boolean)newValue  //設定がOFF→ONになるとき
-                  &&  Build.VERSION.SDK_INT >= 23 //Android 6.0以上のとき
                   &&  ContextCompat.checkSelfPermission(
                                 SettingsFragment.this.getActivity(),
                                 Manifest.permission.READ_EXTERNAL_STORAGE
                        )
                         != PackageManager.PERMISSION_GRANTED
                 ) {
-                    // パーミッション必要な理由を表示
-                    toastIfShould(SettingsFragment.this);
-
-                    // アクセス許可を要求（ダイアログを表示）
-                    SettingsFragment.this.requestPermissions(
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            RQ_CODE_FROM_DIR
-                    );
+                    PermissionManager.showRequestDialog(getActivity(), RQ_CODE_FROM_DIR);
+//                    // パーミッション必要な理由を表示
+//                    toastIfShould(SettingsFragment.this);
+//
+//                    // アクセス許可を要求（ダイアログを表示）
+//                    SettingsFragment.this.requestPermissions(
+//                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+//                            RQ_CODE_FROM_DIR
+//                    );
                     return false;
 
                 } else {
@@ -296,20 +294,21 @@ Log.d("○SettingsFragment", "onPreferenceChange() 呼ばれた: "+(boolean)newV
             @Override
             public boolean onPreferenceClick(Preference preference) {
 Log.d("○" + this.getClass().getSimpleName(), "onPreferenceClick() 呼ばれたdirPath");
-                if ( Build.VERSION.SDK_INT >= 23
-                  && ContextCompat.checkSelfPermission(
+                if ( ContextCompat.checkSelfPermission(
                         SettingsFragment.this.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE
                      )
                        != PackageManager.PERMISSION_GRANTED
                 ) {
-                    // パーミッション必要な理由を表示するトーストが必要なときトーストを表示する
-                    toastIfShould(SettingsFragment.this);
+//                    // パーミッション必要な理由を表示するトーストが必要なときトーストを表示する
+//                    toastIfShould(SettingsFragment.this);
+//
+//                    // アクセス許可を要求（ダイアログを表示）
+//                    SettingsFragment.this.requestPermissions(
+//                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+//                            RQ_CODE_FROM_DIR_PATH
+//                    );
+                    PermissionManager.showRequestDialog(getActivity(), RQ_CODE_FROM_DIR_PATH);
 
-                    // アクセス許可を要求（ダイアログを表示）
-                    SettingsFragment.this.requestPermissions(
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            RQ_CODE_FROM_DIR_PATH
-                    );
                     return false;
                 } else {
                     return true;
@@ -339,19 +338,19 @@ Log.d("○SettingFragment", "クリックされた！！！");
         // ----------------------------------
         return super.onCreateView(inflater, container, savedInstanceState);
     }
-    /************************************
-     * パーミッションがいる説明をトーストで表示する（表示しないといけない場合）
-     */
-    private void toastIfShould(SettingsFragment myThis) {
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                myThis.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                ){
-            Toast.makeText(myThis.getActivity(),
-                    myThis.getString(R.string.permission_toast),
-                    Toast.LENGTH_LONG)
-                    .show();
-        }
-    }
+//    /************************************
+//     * パーミッションがいる説明をトーストで表示する（表示しないといけない場合）
+//     */
+//    private void toastIfShould(SettingsFragment myThis) {
+//        if (ActivityCompat.shouldShowRequestPermissionRationale(
+//                myThis.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
+//                ){
+//            Toast.makeText(myThis.getActivity(),
+//                    myThis.getString(R.string.permission_toast),
+//                    Toast.LENGTH_LONG)
+//                    .show();
+//        }
+//    }
 
     /************************************
      * インスタンス消失前のデータを保存するタイミング（画面回転直前）
@@ -399,11 +398,10 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
      * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
      * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
      */
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults
+    public void onRequestPermissionsResultFragment(
+            int requestCode, @SuppressWarnings("unused") @NonNull String[] permissions, @NonNull int[] grantResults
     ) {
-Log.d("○"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
+Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
         switch (requestCode) {
             case RQ_CODE_FROM_DIR:
                 // 許可をクリックしたとき

@@ -2,6 +2,7 @@ package xyz.monogatari.autowallpaper;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,23 @@ public class SettingsActivity extends AppCompatActivity {
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
+    /************************************
+     * パーミッション許可のダイアログが終わった瞬間（OKもNGもある）
+     * @param requestCode パーミッション許可リクエスト時に送ったリクエストコード
+     * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
+     * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
+     */
+    @Override
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults
+    ) {
+Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
+        this.settingFragment.onRequestPermissionsResultFragment(requestCode, permissions, grantResults);
+
+    }
+
+
+
     /************************************
      * アクティビティが作成されたとき
      * @param savedInstanceState
