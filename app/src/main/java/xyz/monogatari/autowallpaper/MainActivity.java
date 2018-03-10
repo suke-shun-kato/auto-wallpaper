@@ -1,7 +1,6 @@
 package xyz.monogatari.autowallpaper;
 
 import android.Manifest;
-import android.app.DialogFragment;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -12,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -70,46 +68,45 @@ public class MainActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
             Log.d("○" + MainActivity.this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
 
-            //// フィールドをセット
+            // ----------
+            // フィールドをセット
+            // ----------
             MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
             mainService = serviceBinder.getService();
-//            isBound = true;
-//            isServiceRunning = mainService.isStarted();
             isServiceRunning = true;
 
-            //// メインサービスONのときの表示の設定など
-//            if ( isServiceRunning ) {
-                //// ボタン＆背景
-                serviceOnOffButton.setImageLevel(BTN_ON);
-                getWindow().setBackgroundDrawableResource(R.color.translucentLight);
+            // ----------
+            // メインサービスONのときの表示の設定など
+            // ----------
+            // ボタン
+            serviceOnOffButton.setImageLevel(BTN_ON);
+            // 背景
+            getWindow().setBackgroundDrawableResource(R.color.translucentLight);
+            // 次の壁紙変更時間
+            nextWpSetTextView.setText(getNextWpChangeText());
 
-                //// 次の壁紙変更時間
-                nextWpSetTextView.setText(getNextWpChangeText());
-//            } else {
-//                serviceOnOffButton.setImageLevel(BTN_OFF);
-//                getWindow().setBackgroundDrawableResource(R.color.translucentDark);
+            // ----------
+            // パーミッション許可ダイアログを表示
+            // ----------
+//            if ( isServiceRunning //サービスが起動中
+//                    && sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
+//                    && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+//                    != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
+//                    ) {
+//
+//                //shouldのとき
+//                if (ActivityCompat.shouldShowRequestPermissionRationale(
+//                        MainActivity.this,
+//                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+//                    Toast.makeText(MainActivity.this, getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
+//                }
+//
+//                // パーミッション許可ダイアログを表示
+//                ActivityCompat.requestPermissions(
+//                        MainActivity.this,
+//                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+//                        RQ_CODE22_ACTIVITY);
 //            }
-
-            //// パーミッション許可ダイアログを表示
-            if ( isServiceRunning //サービスが起動中
-                    && sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
-                    && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
-                    != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
-                    ) {
-
-                //shouldのとき
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        MainActivity.this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    Toast.makeText(MainActivity.this, getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
-                }
-
-                // パーミッション許可ダイアログを表示
-                ActivityCompat.requestPermissions(
-                        MainActivity.this,
-                        new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                        RQ_CODE_ACTIVITY);
-            }
         }
 
         /**
@@ -129,8 +126,8 @@ public class MainActivity extends AppCompatActivity {
     // 定数
     // --------------------------------------------------------------------
     /** パーミッションリクエスト用のリクエストコード */
-    public static final int RQ_CODE_SERVICE = 1;
-    public static final int RQ_CODE_ACTIVITY = 2;
+    private static final int REQUEST_PERMISSION_ONOFF_SERVICE = 1;
+    private static final int REQUEST_PERMISSION_SET_WALLPAPER = 2;
 
     private static final int BTN_OFF = 0;
     private static final int BTN_ON = 1;
@@ -201,7 +198,6 @@ System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "
 System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "debug");
 System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "debug");
     }
-
 
 
 //
@@ -333,20 +329,9 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
                     && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED
                             ) {
-                /////shouldのとき
-                if (ActivityCompat.shouldShowRequestPermissionRationale(
-                        this,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                    DialogFragment dialog = new PermissionDialogFragment();
-                    dialog.show(this.getFragmentManager(), "aaaaaaa");//todo tagをちゃんとする
-//                    Toast.makeText(this, this.getString(R.string.permission_toast), Toast.LENGTH_LONG).show();
-                } else {
-                    // パーミッション許可ダイアログを表示
-                    ActivityCompat.requestPermissions(
-                            this,
-                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                            RQ_CODE_SERVICE);
-                }
+
+                PermissionManager.showRequestDialog(this, REQUEST_PERMISSION_ONOFF_SERVICE);
+
                 return;
 
             }
@@ -378,7 +363,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
         switch (requestCode) {
-            case RQ_CODE_SERVICE:   //サービスのON/OFFボタンを押してパーミッション許可したとき
+            case REQUEST_PERMISSION_ONOFF_SERVICE:   //サービスのON/OFFボタンを押してパーミッション許可したとき
                 // パーミッションを許可したとき
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -387,8 +372,14 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
                             this.findViewById(R.id.btn_main_onOff_service) );
                 }
                 break;
-            case RQ_CODE_ACTIVITY:
-                // 許可しようがしまいが特になにもしない
+
+            case REQUEST_PERMISSION_SET_WALLPAPER:
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // ボタンを再度クリックする
+                    this.setWallpaper(this);
+                }
+
                 break;
         }
     }
@@ -406,7 +397,17 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
      * @param view 押されたボタンのビュー
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
-            this.setWallpaper(this);
+        if ( this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+                && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                ) {
+
+            PermissionManager.showRequestDialog(this, REQUEST_PERMISSION_SET_WALLPAPER);
+
+            return;
+        }
+
+        this.setWallpaper(this);
     }
 
     /************************************

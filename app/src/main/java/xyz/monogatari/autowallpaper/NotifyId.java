@@ -6,6 +6,6 @@ package xyz.monogatari.autowallpaper;
  */
 
 public class NotifyId {
-    public static final int  WALLPAPER_CHANGED = 1;
+    public static final int WALLPAPER_CHANGED = 1;
     public static final int RUNNING_SERVICE = 2;
 }
