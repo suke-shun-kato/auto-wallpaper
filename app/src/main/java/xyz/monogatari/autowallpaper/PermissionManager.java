@@ -1,12 +1,12 @@
 package xyz.monogatari.autowallpaper;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 
 /**
  * パーミッション許可ダイアログ
@@ -48,7 +48,7 @@ public class PermissionManager {
      * @param activity ダイアログを表示するアクティビティ
      * @param requestCode ダイアログ閉じたあとの動作を制御するための値、コールバック制御用
      */
-    public static void showRequestDialog(AppCompatActivity activity, @SuppressWarnings("SameParameterValue") int requestCode) {
+    public static void showRequestDialog(Activity activity, int requestCode) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(
                 activity,
                 Manifest.permission.READ_EXTERNAL_STORAGE)) {
