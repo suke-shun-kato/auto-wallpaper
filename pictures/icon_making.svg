@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <clipPath id="clip1">
+      <path d="M 0 0 L 256 0 L 256 512 L 0 512 Z M 22 464 L 234 464 L 234 52 L 22 52 Z"/>
+    </clipPath>
+    <clipPath id="path-1">
+      <path d="M 0 0 L 256 0 L 256 512 L 0 512 Z M 22 464 L 234 464 L 234 52 L 22 52 Z"/>
+    </clipPath>
+  </defs>
+  <g>
+    <title>left</title>
+    <ellipse transform="matrix(-0.707107, 0.707107, -0.707107, -0.707107, 831.891246, -183.674486)" cx="707.64" cy="225.805" rx="34.522" ry="34.522" style="fill: rgb(216, 216, 216);"/>
+    <polygon points="9.493 345.2 82.983 265.191 152.917 358.831 196.181 316.16 244.78 370.092 240.631 485.068 20.161 488.624" style="fill: rgb(216, 216, 216);"/>
+    <g>
+      <title>body</title>
+      <rect width="256" style="fill: rgb(63, 81, 181);" height="512" rx="24" ry="24" clip-path="url(#clip1)">
+        <title>body</title>
+      </rect>
+      <rect x="88" y="22" width="80" height="8" rx="4" ry="4" style="fill: rgb(216, 216, 216);">
+        <title>earSpeaker</title>
+      </rect>
+    </g>
+  </g>
+  <g transform="matrix(1, 0, 0, 1, 256, 0)">
+    <title>right</title>
+    <ellipse cx="76" cy="132" rx="36" ry="36" style="fill: rgb(216, 216, 216);"/>
+    <path d="M 20.921 209.74 C 20.921 209.74 22.976 169.12 79.29 175.56 C 132.586 181.655 124.077 209.018 124.204 269.529 C 124.331 330.04 118.321 488.998 118.331 488.975 L 20.3 480.063 L 20.921 209.74 Z" style="fill: rgb(216, 216, 216);"/>
+    <ellipse cx="176" cy="192" rx="36" ry="36" style="fill: rgb(216, 216, 216);"/>
+    <path style="fill: rgb(216, 216, 216);" d="M 228.567 232.72 C 228.567 232.72 241.337 241.193 243.636 261.592 C 245.935 281.991 245.935 484.283 245.935 484.283 L 111.418 480.883 C 111.418 480.883 92.952 323.62 98.815 296.421 C 104.68 269.222 91.674 248.019 228.567 232.72 Z"/>
+    <g>
+      <title>body</title>
+      <rect width="256" style="fill: rgb(63, 81, 181);" height="512" rx="24" ry="24" clip-path="url(#path-1)">
+        <title>body</title>
+      </rect>
+      <rect x="88" y="22" width="80" height="8" style="fill: rgb(216, 216, 216);" rx="4" ry="4">
+        <title>earSpeaker</title>
+      </rect>
+    </g>
+  </g>
+  <g transform="matrix(1, 0, 0, 1, 168, 260)" style="pointer-events: none; visibility: hidden;">
+    <title>arrow</title>
+    <ellipse rx="16" ry="16" style="fill: rgb(255, 64, 129);"/>
+    <ellipse cx="48" rx="16" ry="16" style="fill: rgb(255, 64, 129);"/>
+    <ellipse cx="96" rx="16" ry="16" style="fill: rgb(255, 64, 129);"/>
+    <polyline style="fill: none; stroke: rgb(255, 64, 129); stroke-linecap: round; stroke-width: 24; stroke-linejoin: round;" points="116 -52 168 0 116 52"/>
+  </g>
+</svg>
