@@ -2,43 +2,48 @@
 <svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <clipPath id="clip1">
-      <path d="M 0 0 L 256 0 L 256 512 L 0 512 Z M 22 464 L 234 464 L 234 52 L 22 52 Z"/>
-    </clipPath>
-    <clipPath id="path-1">
-      <path d="M 0 0 L 256 0 L 256 512 L 0 512 Z M 22 464 L 234 464 L 234 52 L 22 52 Z"/>
+      <path d="M 22 464 L 234 464 L 234 52 L 22 52 Z"/>
     </clipPath>
   </defs>
   <g>
     <title>left</title>
-    <ellipse transform="matrix(-0.707107, 0.707107, -0.707107, -0.707107, 831.891246, -183.674486)" cx="707.64" cy="225.805" rx="34.522" ry="34.522" style="fill: rgb(216, 216, 216);"/>
-    <polygon points="9.493 345.2 82.983 265.191 152.917 358.831 196.181 316.16 244.78 370.092 240.631 485.068 20.161 488.624" style="fill: rgb(216, 216, 216);"/>
     <g>
       <title>body</title>
-      <rect width="256" style="fill: rgb(63, 81, 181);" height="512" rx="24" ry="24" clip-path="url(#clip1)">
+      <rect width="256" style="fill: rgb(63, 81, 181);" height="512" rx="24" ry="24">
         <title>body</title>
       </rect>
       <rect x="88" y="22" width="80" height="8" rx="4" ry="4" style="fill: rgb(216, 216, 216);">
         <title>earSpeaker</title>
       </rect>
     </g>
+    <g clip-path="url(#clip1)">
+      <title>scene</title>
+      <rect x="3.036" y="0.298" width="251.338" height="511.293" style="fill: rgb(255, 255, 255);"/>
+      <ellipse transform="matrix(-0.707107, 0.707107, -0.707107, -0.707107, 831.891552, -183.674501)" cx="707.64" cy="225.805" rx="34.522" ry="34.522" style="fill: rgb(216, 216, 216);"/>
+      <polygon points="13.323 302.114 80.111 233.594 145.736 353.086 199.053 307.543 244.78 370.092 240.631 485.068 12.501 483.837" style="fill: rgb(216, 216, 216);"/>
+    </g>
   </g>
   <g transform="matrix(1, 0, 0, 1, 256, 0)">
     <title>right</title>
-    <ellipse cx="76" cy="132" rx="36" ry="36" style="fill: rgb(216, 216, 216);"/>
-    <path style="fill: rgb(216, 216, 216);" d="M 155.879 466.589 C 155.879 466.589 135.772 343.075 153.007 274.136 C 170.242 205.197 178.859 218.124 223.381 212.379 C 267.903 206.634 283.702 255.466 282.266 298.552 C 280.83 341.638 288.011 460.845 288.011 460.845 L 155.879 466.589 Z"/>
-    <ellipse cx="176" cy="192" rx="36" ry="36" style="fill: rgb(216, 216, 216);"/>
-    <path style="fill: rgb(216, 216, 216);" d="M -1.009 475.199 C -1.009 475.199 -21.116 351.685 -3.881 282.746 C 13.354 213.807 21.971 226.734 66.493 220.989 C 111.015 215.244 126.814 264.076 125.378 307.162 C 123.942 350.248 131.123 469.455 131.123 469.455 L -1.009 475.199 Z"/>
     <g>
       <title>body</title>
-      <rect width="256" style="fill: rgb(63, 81, 181);" height="512" rx="24" ry="24" clip-path="url(#path-1)">
+      <rect width="256" style="fill: rgb(63, 81, 181);" height="512" rx="24" ry="24">
         <title>body</title>
       </rect>
       <rect x="88" y="22" width="80" height="8" style="fill: rgb(216, 216, 216);" rx="4" ry="4">
         <title>earSpeaker</title>
       </rect>
     </g>
+    <g clip-path="url(#clip1)">
+      <title>scene</title>
+      <rect x="-0.19" y="6.522" width="284.371" height="529.964" style="fill: rgb(255, 255, 255);"/>
+      <ellipse cx="76" cy="132" rx="36" ry="36" style="fill: rgb(216, 216, 216);"/>
+      <path style="fill: rgb(216, 216, 216);" d="M 16.226 488.604 C 16.226 488.604 6.651 355.515 15.269 282.746 C 23.887 209.977 43.037 175.509 78.941 179.817 C 114.845 184.125 137.346 251.15 135.91 294.236 C 134.474 337.322 134.953 488.605 134.953 488.605 L 16.226 488.604 Z"/>
+      <ellipse cx="176" cy="192" rx="36" ry="36" style="fill: rgb(216, 216, 216);"/>
+      <path style="fill: rgb(216, 216, 216);" d="M 125.24 478.079 C 125.24 478.079 121.133 322.459 119.974 345.947 C 118.815 369.435 135.773 248.763 180.295 243.018 C 224.817 237.273 242.531 310.042 242.052 346.426 C 241.573 382.81 239.18 480.952 239.18 480.952 L 125.24 478.079 Z"/>
+    </g>
   </g>
-  <g transform="matrix(1, 0, 0, 1, 168, 260)" style="pointer-events: none; visibility: hidden;">
+  <g transform="matrix(1, 0, 0, 1, 168, 260)" style="pointer-events: none;">
     <title>arrow</title>
     <ellipse rx="16" ry="16" style="fill: rgb(255, 64, 129);"/>
     <ellipse cx="48" rx="16" ry="16" style="fill: rgb(255, 64, 129);"/>
