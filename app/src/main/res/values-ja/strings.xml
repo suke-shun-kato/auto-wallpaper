@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">自動壁紙</string>
+    <string name="app_name">自動壁紙チェンジャー</string>
     <string name="util_ok">はい</string>
     <string name="main_power">ON/OFF</string>
     <string name="main_next_wallpaper_set_screenOff">画面OFF時</string>

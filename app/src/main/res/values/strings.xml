@@ -3,7 +3,7 @@
     <string name="twitter_consumer_key" tools:ignore="MissingTranslation">i27LkK5rUNoXKxNXTjrvqhnbx</string>
     <string name="twitter_consumer_secret" tools:ignore="MissingTranslation">dCQFHUUD6jS8zt1xEF4DBdTKiTFgfRBdFUjCxUdq1jMTBJpi1p</string>
     <!--通常の文字列-->
-    <string name="app_name">AutoWallpaper</string>
+    <string name="app_name">AutoWallpaperChanger</string>
     <string name="util_ok">OK</string>
     <string name="main_power">ON/OFF</string>
     <string name="main_next_wallpaper_set_screenOff">Next screen off</string>

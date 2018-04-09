@@ -7,7 +7,7 @@ android {
     // 設定、ここの記述はマニュフェストに埋め込まれる
     defaultConfig {
         applicationId "xyz.monogatari.autowallpaper"
-        minSdkVersion 16
+        minSdkVersion 16    //Android 4.1
         //noinspection OldTargetApi
         targetSdkVersion 26
         versionCode 3
