@@ -39,12 +39,16 @@ public class PermissionManager {
 
             ActivityCompat.requestPermissions(
                     this.getActivity(),
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },
                     this.getArguments().getInt(PermissionManager.ARG_KEY));
         }
     }
 
     /************************************
+     * 本体、とりあえずストレージの読み書きを両方許可リクエストを送る
      * @param activity ダイアログを表示するアクティビティ
      * @param requestCode ダイアログ閉じたあとの動作を制御するための値、コールバック制御用
      */
@@ -69,7 +73,10 @@ public class PermissionManager {
             // パーミッション許可ダイアログを表示
             ActivityCompat.requestPermissions(
                     activity,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                    new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    },
                     requestCode
             );
         }

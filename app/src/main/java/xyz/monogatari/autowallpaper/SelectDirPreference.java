@@ -189,12 +189,17 @@ Log.d("○"+this.getClass().getSimpleName(), "i: "+ i + " l:" + l);
      * @param context このオブジェクトを更新する
      */
     private void updateDialogDisplay(String dirPath, SelectDirPreference context) {
-
         File newDirFile = new File(dirPath);
 
         // ----------------------------------
         // 例外処理
         // ----------------------------------
+        if ( !newDirFile.exists() ) {   //ディレクトリがないとき作成する
+            boolean canMakeDir = newDirFile.mkdirs();
+            if ( !canMakeDir ) {
+                throw new IllegalStateException ("dirPathでディレクトリが作成できませんでした");
+            }
+        }
         if ( !newDirFile.isDirectory()
                 || newDirFile.list() == null
                 ) {
