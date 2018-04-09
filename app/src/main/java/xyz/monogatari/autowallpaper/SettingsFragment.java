@@ -294,19 +294,13 @@ Log.d("○SettingsFragment", "onPreferenceChange() 呼ばれた: "+(boolean)newV
             @Override
             public boolean onPreferenceClick(Preference preference) {
 Log.d("○" + this.getClass().getSimpleName(), "onPreferenceClick() 呼ばれたdirPath");
-                if ( ContextCompat.checkSelfPermission(
-                        SettingsFragment.this.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE
-                     )
+                if ( ContextCompat.checkSelfPermission(SettingsFragment.this.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                        != PackageManager.PERMISSION_GRANTED
+                  ||
+                     ContextCompat.checkSelfPermission(SettingsFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED
+
                 ) {
-//                    // パーミッション必要な理由を表示するトーストが必要なときトーストを表示する
-//                    toastIfShould(SettingsFragment.this);
-//
-//                    // アクセス許可を要求（ダイアログを表示）
-//                    SettingsFragment.this.requestPermissions(
-//                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-//                            RQ_CODE_FROM_DIR_PATH
-//                    );
                     PermissionManager.showRequestDialog(getActivity(), RQ_CODE_FROM_DIR_PATH);
 
                     return false;
@@ -402,10 +396,12 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
             int requestCode, @SuppressWarnings("unused") @NonNull String[] permissions, @NonNull int[] grantResults
     ) {
 Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
+//Log.d("○_"+this.getClass().getSimpleName(), grantResults[0]+"");
+//Log.d("○_"+this.getClass().getSimpleName(), grantResults[1]+"");
         switch (requestCode) {
             case RQ_CODE_FROM_DIR:
                 // 許可をクリックしたとき
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     // ディレクトリから の設定をONにする
                     ((SwitchPreference)this.findPreference(KEY_FROM_DIR)).setChecked(true);
                     // SharedPreferenceが変更したときのイベントを発火
@@ -414,7 +410,7 @@ Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
                 break;
             case RQ_CODE_FROM_DIR_PATH:
                 // 許可をクリックしたとき
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
                     // もう一度Preferenceをクリックする
                     ((SelectDirPreference)this.findPreference(KEY_FROM_DIR_PATH)).click();
                 }
