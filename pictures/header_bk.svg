@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 1024 500" xmlns="http://www.w3.org/2000/svg" xmlns:bx="https://boxy-svg.com">
+  <rect x="0" y="0" width="1024" height="500" style="fill: rgb(63, 81, 181);"/>
+  <rect y="40" width="200.072" height="420" x="40" style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12;"/>
+  <rect width="420" height="420" style="fill: rgb(216, 216, 216);" x="564" y="40"/>
+  <rect y="43.228" width="191.531" height="420" x="763.7" style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12;"/>
+  <line style="stroke-width: 12px; fill: rgb(255, 255, 255);" x1="418.382" y1="-188.967" x2="845.69" y2="-188.967"/>
+  <rect x="72.148" y="117.114" width="145.196" height="292.526" style="stroke-width: 12px; fill: rgb(255, 255, 255);"/>
+  <rect x="784.152" y="106.424" width="145.196" height="292.526" style="stroke-width: 12px; fill: rgb(255, 255, 255);"/>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12px;" x1="294.36602783203125" y1="243.79083251953125" x2="705.718017578125" y2="246.9795684814453"/>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12px;" x1="83.90684509277344" y1="87.54082489013672" x2="197.1083984375" y2="87.54082489013672"/>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12px;" x1="798.1925659179688" y1="73.19133758544922" x2="890.6671142578125" y2="77.97450256347656"/>
+  <line style="fill: none; stroke-width: 12px; stroke: rgb(63, 81, 181);" x1="55.20786666870117" y1="262.9234924316406" x2="224.2130126953125" y2="203.9311065673828"/>
+  <ellipse transform="matrix(NaN, NaN, NaN, NaN, NaN, NaN)" style="fill: rgb(63, 81, 181);"/>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12px;" x1="83.90684509277344" y1="844.8749389648438" x2="586.1389770507812" y2="830.5254516601562"/>
+  <path style="fill: none; stroke: rgb(63, 81, 181); stroke-width: 9;" d="M 772.683 234.225 C 772.683 234.225 798.193 176.827 846.024 178.421 C 893.855 180.015 932.121 202.337 949.659 226.253 C 967.197 250.169 967.198 248.574 964.009 246.98 C 960.82 245.386 936.904 262.923 932.121 264.518"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 1089.965 305.972 C 1089.965 305.972 1222.3 211.903 1228.677 231.036"/>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 1209.545 401.635"/>
+  <ellipse transform="matrix(-0.524101, 0.851659, -0.851655, -0.5241, 2224.593028, -877.026036)" cx="1591.195" cy="660.079" rx="24.337" ry="24.337" style="fill: none; stroke-width: 6; stroke: rgb(63, 81, 181);"/>
+  <ellipse style="fill: rgb(216, 216, 216);" transform="matrix(NaN, NaN, NaN, NaN, NaN, NaN)"/>
+  <ellipse style="fill: rgb(216, 216, 216); stroke-width: 14; stroke: rgb(63, 81, 181);" transform="matrix(NaN, NaN, NaN, NaN, NaN, NaN)"/>
+  <ellipse style="fill: rgb(216, 216, 216); stroke: rgb(63, 81, 181);" transform="matrix(0.707095, 0.707102, -0.707108, 0.707108, 278.488873, -1204.794582)" cx="1337.691" cy="918.367" rx="4.51" ry="4.51"/>
+  <ellipse style="stroke: rgb(63, 81, 181); stroke-width: 9.00001; fill: none;" transform="matrix(-0.672673, 0.739939, -0.739939, -0.672673, 1232.251836, -35.734544)" cx="881.695" cy="672.831" rx="47.405" ry="47.405"/>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12px;" x1="265.6670227050781" y1="883.1402587890625" x2="264.0726623535156" y2="825.7423095703125"/>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12px;" x1="287.9884948730469" y1="800.232177734375" x2="289.5828552246094" y2="795.4490356445312"/>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12px;" x1="319.8762512207031" y1="771.533203125" x2="331.0369567871094" y2="763.5611572265625"/>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12px;" x1="415.5395202636719" y1="720.5126953125" x2="426.7002258300781" y2="714.13525390625"/>
+  <path d="M 1417.412 679.929 L 1454.718 743.718 L 1380.105 743.718 L 1417.412 679.929 Z" transform="matrix(0.883939, -0.467605, 0.467603, 0.883938, -918.748166, 267.486094)" style="fill: rgb(255, 250, 250);" bx:shape="triangle 1380.105 679.929 74.613 63.789 0.5 0 1@9291c5eb"/>
+</svg>

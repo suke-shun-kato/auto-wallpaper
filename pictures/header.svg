@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 1024 500" xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" width="1024" height="500" style="stroke-width: 12px; fill: rgb(63, 81, 181); pointer-events: none;">
+    <title>background</title>
+  </rect>
+  <polygon style="fill: rgb(255, 255, 255); stroke-linejoin: round; stroke-linecap: round; stroke-width: 16; stroke: rgb(255, 255, 255); visibility: hidden;" points="575 210 575 290 635 250"/>
+  <g transform="matrix(1, 0, 0, 1, 78, -1.350786)" style="pointer-events: none;">
+    <title>left_phone</title>
+    <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 8; stroke-linecap: round;" x1="125.575" y1="86" x2="197.363" y2="86"/>
+    <rect x="77.469" y="107.644" width="168" height="302.638" style="fill: rgb(255, 255, 255); stroke-linejoin: round; stroke-width: 0;"/>
+    <polyline style="stroke: rgb(63, 81, 181); fill: none; stroke-width: 11; stroke-linejoin: round;" points="73.12 304.385 199.182 202.507 256.229 289.372" transform=""/>
+    <rect x="59.469" y="60" width="204" height="380" style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12; stroke-linejoin: round;"/>
+  </g>
+  <g transform="matrix(1, 0, 0, 1, 620.145508, -1.350794)" style="pointer-events: none;">
+    <title>right_phone</title>
+    <line style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 8; stroke-linecap: round;" x1="125.575" y1="86" x2="197.363" y2="86"/>
+    <rect x="77.469" y="107.644" width="168" height="302.638" style="fill: rgb(255, 255, 255); stroke-linejoin: round; stroke-width: 0;"/>
+    <path style="fill: none; stroke: rgb(63, 81, 181); stroke-linejoin: round; stroke-width: 11;" d="M 61.013 317.069 C 121.572 284.188 196.406 283.253 256.858 330.513"/>
+    <ellipse transform="matrix(-0.832051, 0.554701, -0.554699, -0.832051, 853.323012, 3.306106)" cx="662.922" cy="214.396" rx="40" ry="40" style="fill: none; stroke: rgb(63, 81, 181); stroke-width: 9.99999;"/>
+    <rect x="59.469" y="60" width="204" height="380" style="fill: none; stroke: rgb(255, 255, 255); stroke-width: 12; stroke-linejoin: round;"/>
+  </g>
+  <line style="fill: none; stroke: rgb(255, 255, 255); stroke-linejoin: round; stroke-linecap: round; stroke-width: 12;" x1="383.494" y1="248.577" x2="636.639" y2="248.577"/>
+</svg>
