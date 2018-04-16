@@ -419,10 +419,12 @@ Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
     }
 
     /**
-     * 設定変更したときのイベントハンドラ
+     *
+     * 設定変更したときのイベントハンドラ、OnSharedPreferenceChangeListenerのメソッド
      * @param sp SharedPreferences、保存された設定のオブジェクト
      * @param key 設定の値を取り出すためのkey, このkeyの設定が変更された
      */
+    @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
 Log.d("○"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): key名:" + key);
         // ----------------------------------

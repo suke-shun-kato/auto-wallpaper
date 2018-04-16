@@ -2,6 +2,7 @@ package xyz.monogatari.autowallpaper;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
 import android.preference.PreferenceManager;
@@ -23,6 +24,7 @@ public class ResetBtnPreference extends DialogPreference {
     /** カスタム属性からの文字列の設定 */
     private String textDialogMsg;
     private String textDialogTitle;
+    /** 初期化した後に表示されるトーストの文字 */
     private String textResult;
 
     // --------------------------------------------------------------------
@@ -80,18 +82,30 @@ public class ResetBtnPreference extends DialogPreference {
     @Override
     protected void onDialogClosed(boolean positiveResult) {
 Log.d("○"+this.getClass().getSimpleName(), "onDialogClosed(): positiveResult: " + positiveResult);
+
+
         // OKボタンを押してダイアログを閉じたとき
         if (positiveResult) {
-            // SharedPreferenceの値を削除（空になる）
-            PreferenceManager
-                    .getDefaultSharedPreferences(this.getContext())
-                    .edit()
-                    .clear()
-                    .apply();
 
-            // SharedPreferenceにデフォルト値を設定（SharedPreferenceに値があるときは設定されない）
+            // ----------------------------------
+            // spの値をリセット
+            // ----------------------------------
+            // SharedPreferenceの値を削除（実際にSharedPreferenceに値を適用するのはまだ）
+            SharedPreferences.Editor editor= PreferenceManager
+                    .getDefaultSharedPreferences(this.getContext())
+                    .edit();
+            // ここでspを空にする、デフォルト値はセットされないので注意、
+            // ちなみにここでは OnSharedPreferenceChangeListener.onSharedPreferenceChanged は発火する
+            // あと、クリアしないで直接デフォルト値を設定してapply()する方法を探したができなかった'18/4/6
+            editor.clear().apply();
+
+            // preferences.xmlから、SharedPreferenceにデフォルト値を設定
+            // （SharedPreferenceに値があるときは設定されない）
             PreferenceManager.setDefaultValues(this.getContext(), R.xml.preferences, true);
 
+            // ----------------------------------
+            // 描画
+            // ----------------------------------
             // 再描画
             Activity a = ((Activity)this.getContext());
             a.recreate();
