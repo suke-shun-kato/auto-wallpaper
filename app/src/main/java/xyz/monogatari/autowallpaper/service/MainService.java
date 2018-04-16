@@ -381,7 +381,7 @@ Log.d("○"+getClass().getSimpleName(), "setTimerListener()");
         // ブロードキャストレシーバーを設置
         // ----------------------------------
         this.timerReceiver = new TimerBcastReceiver();
-
+Log.d("○"+this.getClass().getSimpleName(), "setTimerListener(), hashCode()="+this.timerReceiver.hashCode());
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -406,7 +406,9 @@ Log.d("○"+getClass().getSimpleName(), "setTimerListener()");
         if (this.timerReceiver == null) {
             canCancelReceiver = false;
         } else {
+Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener(), hashCode()="+this.timerReceiver.hashCode());
             this.unregisterReceiver(this.timerReceiver);
+            this.timerReceiver = null;
             canCancelReceiver = true;
         }
 
