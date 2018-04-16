@@ -29,6 +29,7 @@ import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
  * Created by k-shunsuke on 2017/12/12.
  * 裏で壁紙を変更するサービス
  */
+@SuppressWarnings("ALL")
 public class MainService extends Service {
     // --------------------------------------------------------------------
     // フィールド、Util
@@ -393,6 +394,7 @@ Log.d("○"+this.getClass().getSimpleName(), "setTimerListener(), hashCode()="+t
      *
      * @return unsetできたらtrue、元々 unset状態でunsetする必要なかったらfalse
      */
+    @SuppressWarnings("UnusedReturnValue")
     private boolean unsetTimerListener() {
         // ----------
         // 時間で壁紙セットするタイマー

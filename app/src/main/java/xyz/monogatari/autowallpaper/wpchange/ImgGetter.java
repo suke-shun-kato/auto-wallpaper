@@ -24,9 +24,11 @@ public abstract class ImgGetter {
     // フィールド
     // --------------------------------------------------------------------
     /** 画像の自体のURI、Twitterだと「https://.....png」、ディレクトリだと「content://.....」 */
-    String imgUri = null;
+    @SuppressWarnings("CanBeFinal")
+    String imgUri;
     /** 画像が掲載されているページのURL、履歴の画像をクリックしたら飛ぶ場所、ディレクトリは「null」 */
-    String actionUri = null;
+    @SuppressWarnings("CanBeFinal")
+    String actionUri;
 
     // --------------------------------------------------------------------
     // コンストラクタ

@@ -129,6 +129,7 @@ public class FileExtended extends File {
     /************************************
      * File.listFiles() 用のクラス、絞込み用
      */
+    @SuppressWarnings("WeakerAccess")
     public static class MyFileFilter implements FileFilter {
         private final String[] extensionAry;
         private final boolean dirOk;

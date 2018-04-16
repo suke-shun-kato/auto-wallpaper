@@ -10,11 +10,11 @@ public class HistoryItemListDataStore {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    private long id = 0;
-    private String source_kind = null;
-    private String img_uri = null;
-    private String intent_action_uri = null;
-    private long created_at_unix = 0;
+    private long id;
+    private String source_kind;
+    private String img_uri;
+    private String intent_action_uri;
+    private long created_at_unix;
 
     // --------------------------------------------------------------------
     // 

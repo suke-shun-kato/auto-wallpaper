@@ -105,6 +105,7 @@ Log.d("○"+this.getClass().getSimpleName(), "コンストラクタ呼ばれた"
     // --------------------------------------------------------------------
     // メソッド、ダイアログ関係
     // --------------------------------------------------------------------
+    @SuppressWarnings("WeakerAccess")
     @Override
     protected void onClick() {
 Log.d("○"+this.getClass().getSimpleName(), "onClick(): super前");
@@ -402,6 +403,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onRestoreInstanceState() が呼ば
      *
      * https://developer.android.com/guide/topics/ui/settings.html?hl=ja
      */
+    @SuppressWarnings("WeakerAccess")
     private static class MySavedState extends Preference.BaseSavedState {
         // --------------------------------------------------------------------
         // フィールド
@@ -439,6 +441,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onRestoreInstanceState() が呼ば
          * コンストラクタ, スーパークラスの引数のとき
          * @param superState ラップするParcelable
          */
+        @SuppressWarnings("WeakerAccess")
         public MySavedState(Parcelable superState) {
             super(superState);
         }
