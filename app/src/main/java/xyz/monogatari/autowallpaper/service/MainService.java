@@ -38,8 +38,9 @@ public class MainService extends Service {
     private boolean isStarted = false;
 
 
-    /** ブロードキャストレシーバーのインスタンス */
-    private final ScreenOnOffBcastReceiver onOffReceiver = new ScreenOnOffBcastReceiver();
+    /** 画面がOFFになったときブロードキャストを受信して壁紙を変更するブロードキャストレシーバー */
+    private final ScreenOnOffWPChangeBcastReceiver onOffWPChangeReceiver = new ScreenOnOffWPChangeBcastReceiver();
+    /** 画面がON/OFFでTimerとAlarmを切り替えるブロードキャストレシーバー */
     private TimerBcastReceiver timerReceiver;
 
     /** SharedPreference */
@@ -358,14 +359,14 @@ Log.d("○"+getClass().getSimpleName(), "persistStart0(): mag:"+mag+", intervalM
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        this.registerReceiver(this.onOffReceiver, intentFilter);
+        this.registerReceiver(this.onOffWPChangeReceiver, intentFilter);
     }
     /************************************
      * 画面ON時壁紙変更のイベントリスナー削除
      */
     private void unsetScreenOnListener() {
-Log.d("○"+ getClass().getSimpleName(), "unsetScreenOnListener(): "+this.onOffReceiver);
-        this.unregisterReceiver(this.onOffReceiver);
+Log.d("○"+ getClass().getSimpleName(), "unsetScreenOnListener(): "+this.onOffWPChangeReceiver);
+        this.unregisterReceiver(this.onOffWPChangeReceiver);
     }
 
     /************************************
