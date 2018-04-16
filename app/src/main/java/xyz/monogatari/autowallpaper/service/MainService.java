@@ -390,11 +390,27 @@ Log.d("○"+getClass().getSimpleName(), "setTimerListener()");
     }
     /************************************
      * 設定タイマー時壁紙変更のイベントリスナー削除
+     *
+     * @return unsetできたらtrue、元々 unset状態でunsetする必要なかったらfalse
      */
-    private void unsetTimerListener() {
-Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener(), hashCode()="+this.timerReceiver.hashCode());
-        this.cancelTimer();
-        this.unregisterReceiver(this.timerReceiver);
+    private boolean unsetTimerListener() {
+        // ----------
+        // 時間で壁紙セットするタイマー
+        // ----------
+        boolean canCancelTimer = this.cancelTimer();
+
+        // ----------
+        // 画面OFF or ONになったとき Timer→Alarm or Alarm→Timer にするブロードキャストレシーバーの処理
+        // ----------
+        boolean canCancelReceiver;  //return用
+        if (this.timerReceiver == null) {
+            canCancelReceiver = false;
+        } else {
+            this.unregisterReceiver(this.timerReceiver);
+            canCancelReceiver = true;
+        }
+
+        return canCancelTimer && canCancelReceiver;
     }
 
     /************************************
@@ -521,9 +537,16 @@ Log.d("○"+getClass().getSimpleName(), "setAlarm(), delayMsec=" + delayMsec + "
     /************************************
      * これはブロードキャストレシーバーからも呼ばれてるから敢えて外に外している
      */
-    public void cancelTimer() {
+    public boolean cancelTimer() {
 Log.d("○"+this.getClass().getSimpleName(), "cancelTimer()_");
-        this.timer.cancel();
+        if (this.timer == null) {   // 元々タイマーがセットされていないときは何もしない
+Log.d("○"+this.getClass().getSimpleName(), "元々Timerがセットされていません");
+            return false;
+        } else {
+            this.timer.cancel();
+Log.d("○"+this.getClass().getSimpleName(), "Timerをcancel(unset)しました");
+            return true;
+        }
     }
     /************************************
      *
