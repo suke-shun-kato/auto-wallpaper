@@ -10,8 +10,8 @@ android {
         minSdkVersion 16    //Android 4.1
         //noinspection OldTargetApi
         targetSdkVersion 26
-        versionCode 7
-        versionName "0.1.6" //ここはversionCodeとは1ずれる
+        versionCode 8
+        versionName "0.1.7" //ここはversionCodeとは1ずれる
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
