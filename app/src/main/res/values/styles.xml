@@ -1,7 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!--============================ ベースのテーマ ============================-->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- 基本色の設定 -->
         <item name="colorPrimary">@color/colorPrimary</item><!--アクションバーの色になる-->
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item><!--通知バーの色になる-->
@@ -10,7 +10,7 @@
 
 
     <!--======= メインアクティビティのテーマ、ベーステーマの色が半透明になっている ==============-->
-    <style name="MainActivityTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="MainActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--========== アクションバーの設定 ==========-->
         <item name="actionBarStyle">@style/MainActivityTheme.ActionBarStyle</item>
 
