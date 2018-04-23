@@ -23,10 +23,11 @@
         <item name="android:windowShowWallpaper">true</item>
 
         <!-- 上と下のバーを半透明にする、APIレベル19（Android4.4）以上で設定、translucent:半透明の  -->
-        <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item><!--上-->
-        <item name="android:fitsSystemWindows" tools:targetApi="19">true</item>
+        <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item><!--上、ステータスバー-->
+        <item name="android:fitsSystemWindows" tools:targetApi="19">true</item><!-- ここをtrueにするとステータスバーの分の高さはレイアウトに入らないようになる -->
         <item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item><!--下-->
     </style>
+
     <!--アクションバーの設定-->
     <style name="MainActivityTheme.ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar">
         <item name="background">@color/colorPrimaryTranslucent</item>
