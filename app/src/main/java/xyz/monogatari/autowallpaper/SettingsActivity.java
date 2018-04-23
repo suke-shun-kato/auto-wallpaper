@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
@@ -53,26 +54,29 @@ Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
         // ----------------------------------
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: ");
         super.onCreate(savedInstanceState);
+        this.setContentView(R.layout.activity_settings);
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2");
- 
+
+
         // ----------------------------------
-        // アクションバーに戻るボタンを設置
+        // アクションバーの設定
         // ----------------------------------
+        ////　ツールバーをアクションバーとして表示
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        this.setSupportActionBar(myToolbar);
+
+        //// アクションバーに「←」ボタンを表示
+        // 詳しくはHistoryActivity.javaを参照
         ActionBar actionBar = this.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
         // ----------------------------------
-        // フラグメントをアクティビティにセット
-        // 画面回転の場合（savedInstanceStateがnullでない場合）は自動的にセットされるのでここを通らないようにする
+        //
         // ----------------------------------
-        if (savedInstanceState == null) {
-            this.settingFragment = new SettingsFragment();
-            this.getFragmentManager().beginTransaction()
-                    .replace(android.R.id.content, this.settingFragment)
-                    .commit();
-        }
+        this.settingFragment = (SettingsFragment)this.getFragmentManager().findFragmentById(R.id.setting_fragment);
+
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super3");
     }
 
@@ -113,20 +117,20 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
         super.onSaveInstanceState(outState);
     }
 
-
-    /************************************
-     * オプションんのハンドラ
-     * 戻るボタンを押したときにアクティビティを終了する（ホームに戻る）ようにしている
-     * @param item 選択されたmenuアイテム
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//
+//    /************************************
+//     * オプションんのハンドラ
+//     * 戻るボタンを押したときにアクティビティを終了する（ホームに戻る）ようにしている
+//     * @param item 選択されたmenuアイテム
+//     */
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                this.finish();
+//                return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 }

@@ -7,7 +7,11 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item><!--通知バーの色になる-->
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
+    <!-- アクションバーの設定 -->
+    <style name="ActionBarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/colorText</item>
+        <item name="android:textColorSecondary">@color/colorText</item>
+    </style>
 
     <!--======= メインアクティビティのテーマ、ベーステーマの色が半透明になっている ==============-->
     <style name="MainActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
