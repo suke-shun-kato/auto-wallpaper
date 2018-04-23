@@ -10,8 +10,8 @@ android {
         minSdkVersion 16    //Android 4.1
         //noinspection OldTargetApi
         targetSdkVersion 26
-        versionCode 8
-        versionName "0.1.7" //ここはversionCodeとは1ずれる
+        versionCode 9
+        versionName "0.1.8" //ここはversionCodeとは1ずれる
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -50,7 +50,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
 //    implementation 'com.android.support:support-core-utils:26.0.0'
 
-    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
 
     // -------------------------------------
     // OAuth1.0&2.0ライブラリ

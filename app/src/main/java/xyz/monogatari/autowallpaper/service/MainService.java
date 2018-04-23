@@ -29,6 +29,7 @@ import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
  * Created by k-shunsuke on 2017/12/12.
  * 裏で壁紙を変更するサービス
  */
+@SuppressWarnings("ALL")
 public class MainService extends Service {
     // --------------------------------------------------------------------
     // フィールド、Util
@@ -37,8 +38,9 @@ public class MainService extends Service {
     private boolean isStarted = false;
 
 
-    /** ブロードキャストレシーバーのインスタンス */
-    private final ScreenOnOffBcastReceiver onOffReceiver = new ScreenOnOffBcastReceiver();
+    /** 画面がOFFになったときブロードキャストを受信して壁紙を変更するブロードキャストレシーバー */
+    private final ScreenOnOffWPChangeBcastReceiver onOffWPChangeReceiver = new ScreenOnOffWPChangeBcastReceiver();
+    /** 画面がON/OFFでTimerとAlarmを切り替えるブロードキャストレシーバー */
     private TimerBcastReceiver timerReceiver;
 
     /** SharedPreference */
@@ -357,14 +359,14 @@ Log.d("○"+getClass().getSimpleName(), "persistStart0(): mag:"+mag+", intervalM
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        this.registerReceiver(this.onOffReceiver, intentFilter);
+        this.registerReceiver(this.onOffWPChangeReceiver, intentFilter);
     }
     /************************************
      * 画面ON時壁紙変更のイベントリスナー削除
      */
     private void unsetScreenOnListener() {
-Log.d("○"+ getClass().getSimpleName(), "unsetScreenOnListener(): "+this.onOffReceiver);
-        this.unregisterReceiver(this.onOffReceiver);
+Log.d("○"+ getClass().getSimpleName(), "unsetScreenOnListener(): "+this.onOffWPChangeReceiver);
+        this.unregisterReceiver(this.onOffWPChangeReceiver);
     }
 
     /************************************
@@ -381,7 +383,7 @@ Log.d("○"+getClass().getSimpleName(), "setTimerListener()");
         // ブロードキャストレシーバーを設置
         // ----------------------------------
         this.timerReceiver = new TimerBcastReceiver();
-
+Log.d("○"+this.getClass().getSimpleName(), "setTimerListener(), hashCode()="+this.timerReceiver.hashCode());
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -393,6 +395,7 @@ Log.d("○"+getClass().getSimpleName(), "setTimerListener()");
      *
      * @return unsetできたらtrue、元々 unset状態でunsetする必要なかったらfalse
      */
+    @SuppressWarnings("UnusedReturnValue")
     private boolean unsetTimerListener() {
         // ----------
         // 時間で壁紙セットするタイマー
@@ -406,7 +409,9 @@ Log.d("○"+getClass().getSimpleName(), "setTimerListener()");
         if (this.timerReceiver == null) {
             canCancelReceiver = false;
         } else {
+Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener(), hashCode()="+this.timerReceiver.hashCode());
             this.unregisterReceiver(this.timerReceiver);
+            this.timerReceiver = null;
             canCancelReceiver = true;
         }
 

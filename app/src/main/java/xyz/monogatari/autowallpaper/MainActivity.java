@@ -358,6 +358,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
      * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
      * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
      */
+    @SuppressWarnings("unused")
     @Override
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

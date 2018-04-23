@@ -25,6 +25,7 @@ import twitter4j.auth.RequestToken;
  * Created by k-shunsuke on 2017/12/23.
  */
 
+@SuppressWarnings("ALL")
 public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     // フィールド

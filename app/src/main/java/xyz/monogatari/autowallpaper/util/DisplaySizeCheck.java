@@ -45,6 +45,7 @@ public class DisplaySizeCheck {
      * @param context 現在のコンテキスト
      * @return Pointオブジェクト
      */
+    @SuppressWarnings("JavaReflectionMemberAccess")
     @SuppressLint("NewApi")
     public static Point getRealSize(Context context) {
 

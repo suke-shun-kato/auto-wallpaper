@@ -28,9 +28,10 @@ public class HistoryListAdapter extends BaseAdapter {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    private Context context = null;
-    private List<HistoryItemListDataStore> itemList = null;
-    private int itemRLayout = 0;
+    private final Context context;
+    @SuppressWarnings("CanBeFinal")
+    private List<HistoryItemListDataStore> itemList;
+    private final int itemRLayout;
 
     // --------------------------------------------------------------------
     // 
