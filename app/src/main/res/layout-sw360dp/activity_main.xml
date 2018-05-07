@@ -16,7 +16,7 @@
         android:theme="@style/ActionBarTheme"
         app:title="@string/app_name"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-    />
+        tools:targetApi="lollipop" />
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">

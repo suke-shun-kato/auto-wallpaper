@@ -25,7 +25,7 @@
         android:theme="@style/ActionBarTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/about_toolbar"
-        />
+        tools:targetApi="lollipop" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

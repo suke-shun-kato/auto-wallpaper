@@ -14,7 +14,8 @@
         android:elevation="@dimen/actionbar_elevation"
         android:theme="@style/ActionBarTheme"
         app:title="@string/histories_toolbar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        tools:targetApi="lollipop" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

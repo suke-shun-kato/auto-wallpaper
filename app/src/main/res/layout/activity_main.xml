@@ -16,7 +16,7 @@
         android:elevation="@dimen/actionbar_elevation"
         android:theme="@style/ActionBarTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        />
+        tools:targetApi="lollipop" />
 
 
     <RelativeLayout

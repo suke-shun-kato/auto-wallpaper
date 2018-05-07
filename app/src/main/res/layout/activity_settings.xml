@@ -17,15 +17,11 @@
         android:theme="@style/ActionBarTheme"
         app:title="@string/setting_toolbar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-        />
+        tools:targetApi="lollipop" />
     <fragment
         android:name="xyz.monogatari.autowallpaper.SettingsFragment"
         android:id="@+id/setting_fragment"
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp" />
-    <!--<TextView-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="aaaaaaaaaaaaaaa"/>-->
 </LinearLayout>
