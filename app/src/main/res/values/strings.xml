@@ -16,6 +16,8 @@
     <string name="mainService_notification_title">Running</string>
     <string name="mainService_notification_text">Running</string>
     <string name="permission_toast">wants a storage permission to display a wall paper of file.</string>
+
+    <string name="setting_toolbar">Setting</string>
     <string name="setting_from">FROM</string>
     <string name="setting_from_dir_onoff_title">From Directory</string>
     <string name="setting_form_dir_onoff_summary">App gets wallpaper from the directory.</string>
@@ -89,10 +91,15 @@
     <string name="setting_other_about_title">About %s</string>
 
     <string name="select_dir_pref_dialog_title">Select directory.</string>
+
+
+    <string name="histories_toolbar">History</string>
     <string name="histories_image">A wallpaper image</string>
     <string name="histories_icon">icon</string>
     <string name="histories_notification_title">The wallpaper has changed.</string>
     <string name="histories_notification_body">After you tap it, you jump the histories page.</string>
+
+    <string name="about_toolbar">About %s</string>
     <string name="about_version">Version %s</string>
     <string name="about_license_title">Open source license</string>
     <string-array name="about_license_bodies" tools:ignore="MissingTranslation">

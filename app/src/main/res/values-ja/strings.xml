@@ -12,6 +12,9 @@
     <string name="mainService_notification_title">起動中</string>
     <string name="mainService_notification_text">壁紙が自動で変更されます</string>
     <string name="permission_toast">壁紙のデータをファイルから取得するために許可が必要です</string>
+
+
+    <string name="setting_toolbar">設定</string>
     <string name="setting_from">取得元</string>
     <string name="setting_from_dir_onoff_title">ディレクトリから</string>
     <string name="setting_form_dir_onoff_summary">指定ディレクトリから壁紙を取得します</string>
@@ -60,11 +63,14 @@
     <string name="setting_other_about_title">%sについて</string>
 
     <string name="select_dir_pref_dialog_title">ディレクトリを選択してください。</string>
+
+    <string name="histories_toolbar">履歴</string>
     <string name="histories_image">壁紙画像</string>
     <string name="histories_icon">アイコン</string>
     <string name="histories_notification_title">壁紙が変更されました</string>
     <string name="histories_notification_body">タップすると履歴ページにとびます</string>
 
+    <string name="about_toolbar">%sについて</string>
     <string name="about_version">バージョン %s</string>
     <string name="about_license_title">オープンソースライセンス</string>
 </resources>

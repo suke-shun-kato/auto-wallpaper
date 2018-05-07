@@ -15,6 +15,7 @@
         android:background="?attr/colorPrimary"
         android:elevation="@dimen/actionbar_elevation"
         android:theme="@style/ActionBarTheme"
+        app:title="@string/setting_toolbar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         />
     <fragment

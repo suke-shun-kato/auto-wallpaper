@@ -61,7 +61,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
         //// アクションバーに「←」ボタンを表示、
         // onOptionsItemSelected(){} でボタンを押したときのリスナを設定する必要はない
         // （XMLで親アクティビティを設定しているので）
-        // ここのActionBar は android.support.v7.app.ActionBa の方のクラスになる
+        // ここのActionBar は android.support.v7.app.ActionBar の方のクラスになる
         ActionBar actionBar = this.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);

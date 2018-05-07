@@ -27,9 +27,19 @@ public class AboutActivity extends AppCompatActivity {
         // ----------------------------------
         // アクションバーの設定
         // ----------------------------------
-        ////　ツールバーをアクションバーとして表示
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
+
+
+        ////　ツールバーをアクションバーとして表示
         this.setSupportActionBar(myToolbar);
+
+
+        //// タイトルを動的に編集
+        CharSequence title = myToolbar.getTitle();
+        myToolbar.setTitle(
+            String.format(title.toString(), this.getString(R.string.app_name))
+        );
+
 
         //// アクションバーに「←」ボタンを表示、
         // 詳しくはHistoryActivityの同じ部分を参照

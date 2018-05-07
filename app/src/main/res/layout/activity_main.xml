@@ -12,8 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="4dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        android:elevation="@dimen/actionbar_elevation"
+        android:theme="@style/ActionBarTheme"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
     <ScrollView
         android:id="@+id/main_scroll"

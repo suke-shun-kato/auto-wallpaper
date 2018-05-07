@@ -13,6 +13,7 @@
         android:background="?attr/colorPrimary"
         android:elevation="@dimen/actionbar_elevation"
         android:theme="@style/ActionBarTheme"
+        app:title="@string/histories_toolbar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
     <TextView
         android:layout_width="match_parent"
