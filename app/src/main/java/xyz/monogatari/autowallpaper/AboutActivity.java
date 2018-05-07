@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
+import android.support.v7.widget.Toolbar;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -17,7 +17,6 @@ import android.widget.TextView;
  */
 public class AboutActivity extends AppCompatActivity {
 
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,7 +25,22 @@ public class AboutActivity extends AppCompatActivity {
         // ----------------------------------
         // アクションバーの設定
         // ----------------------------------
-        // ここのActionBar は android.support.v7.app.ActionBa の方のクラスになる
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+
+
+        ////　ツールバーをアクションバーとして表示
+        this.setSupportActionBar(myToolbar);
+
+
+        //// タイトルを動的に編集
+        CharSequence title = myToolbar.getTitle();
+        myToolbar.setTitle(
+            String.format(title.toString(), this.getString(R.string.app_name))
+        );
+
+
+        //// アクションバーに「←」ボタンを表示、
+        // 詳しくはHistoryActivityの同じ部分を参照
         ActionBar actionBar = this.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -53,18 +67,18 @@ public class AboutActivity extends AppCompatActivity {
 
     }
 
-    /************************************
-     * ボタンを押したときの制御
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case android.R.id.home: //押したボタンがアクションバーの←ボタンだとすると
-                finish();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    /************************************
+//     * ボタンを押したときの制御
+//     */
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch(item.getItemId()) {
+//            case android.R.id.home: //押したボタンがアクションバーの←ボタンだとすると
+//                finish();
+//                return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     /**
      * バージョン名を取得する

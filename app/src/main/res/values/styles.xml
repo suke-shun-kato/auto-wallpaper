@@ -1,19 +1,20 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <!--============================ ベースのテーマ ============================-->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- 基本色の設定 -->
         <item name="colorPrimary">@color/colorPrimary</item><!--アクションバーの色になる-->
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item><!--通知バーの色になる-->
         <item name="colorAccent">@color/colorAccent</item>
     </style>
-
+    <!-- アクションバーの設定 -->
+    <style name="ActionBarTheme" parent="ThemeOverlay.AppCompat.ActionBar">
+        <item name="android:textColorPrimary">@color/colorText</item>
+        <item name="android:textColorSecondary">@color/colorText</item>
+    </style>
 
     <!--======= メインアクティビティのテーマ、ベーステーマの色が半透明になっている ==============-->
-    <style name="MainActivityTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!--========== アクションバーの設定 ==========-->
-        <item name="actionBarStyle">@style/MainActivityTheme.ActionBarStyle</item>
-
+    <style name="MainActivityTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!--========== 背景の設定 ==========-->
         <!-- windowの背景の設定、プログラムで動的に設定しているが、ひとまずデフォルト値みたいな感じでここで設定しとく、transparent:透明な -->
         <item name="android:windowBackground">@color/translucentDark</item> <!--<item name="android:windowBackground">@color/translucentLight</item>-->
@@ -23,16 +24,10 @@
         <item name="android:windowShowWallpaper">true</item>
 
         <!-- 上と下のバーを半透明にする、APIレベル19（Android4.4）以上で設定、translucent:半透明の  -->
-        <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item><!--上-->
-        <item name="android:fitsSystemWindows" tools:targetApi="19">true</item>
+        <item name="android:windowTranslucentStatus" tools:targetApi="19">true</item><!--上、ステータスバー-->
+        <item name="android:fitsSystemWindows" tools:targetApi="19">true</item><!-- ここをtrueにするとステータスバーの分の高さはレイアウトに入らないようになる -->
         <item name="android:windowTranslucentNavigation" tools:targetApi="19">true</item><!--下-->
     </style>
-    <!--アクションバーの設定-->
-    <style name="MainActivityTheme.ActionBarStyle" parent="Widget.AppCompat.Light.ActionBar">
-        <item name="background">@color/colorPrimaryTranslucent</item>
-        <item name="titleTextStyle">@style/MainActivityTheme.ActionBar.TitleTextStyle</item>
-    </style>
-    <style name="MainActivityTheme.ActionBar.TitleTextStyle" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textColor">@color/colorText</item>
-    </style>
+
+
 </resources>

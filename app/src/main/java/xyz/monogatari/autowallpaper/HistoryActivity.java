@@ -6,8 +6,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.widget.ListView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -53,7 +53,14 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
         // ----------------------------------
         // アクションバーの設定
         // ----------------------------------
-        // ここのActionBar は android.support.v7.app.ActionBa の方のクラスになる
+        ////　ツールバーをアクションバーとして表示
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        this.setSupportActionBar(myToolbar);
+
+        //// アクションバーに「←」ボタンを表示、
+        // onOptionsItemSelected(){} でボタンを押したときのリスナを設定する必要はない
+        // （XMLで親アクティビティを設定しているので）
+        // ここのActionBar は android.support.v7.app.ActionBar の方のクラスになる
         ActionBar actionBar = this.getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -96,19 +103,19 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
     }
 
 
-    /************************************
-     * 戻るボタンが押されたときの処理
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
+//    /************************************
+//     * 戻るボタンが押されたときの処理
+//     */
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch(item.getItemId()) {
+//            case android.R.id.home:
+//                finish();
+//                return true;
+//        }
+//
+//        return super.onOptionsItemSelected(item);
+//    }
 
     /*************************************
      * Handle onNewIntent() to inform the fragment manager that the

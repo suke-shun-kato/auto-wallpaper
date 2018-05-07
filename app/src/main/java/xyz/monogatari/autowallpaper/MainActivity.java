@@ -14,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
@@ -147,6 +148,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
 Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.layout.activity_main);
+
+        // ----------------------------------
+        // アクションバーの設定
+        // ----------------------------------
+        ////　ツールバーをアクションバーとして表示
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        this.setSupportActionBar(myToolbar);
 
         // ----------------------------------
         // 変数の初期化

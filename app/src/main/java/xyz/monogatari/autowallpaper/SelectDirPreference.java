@@ -45,8 +45,6 @@ public class SelectDirPreference extends DialogPreference {
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
-    /** ダイアログのタイトルのリソースID */
-    private static final int R_DIALOG_TITLE = R.string.select_dir_pref_dialog_title;
     /** ダイアログのレイアウトファイルのID */
     private static final int R_LAYOUT_DIR_PREF = R.layout.dialog_select_dir_pref;
 
