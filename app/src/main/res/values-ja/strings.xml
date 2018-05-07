@@ -34,11 +34,11 @@
     <string name="setting_when_timer_title">指定時間時</string>
     <string name="setting_when_timer_summary">↓で設定した時間で壁紙がセットされます（ただし、スクリーンOFF時は1回限定）</string>
     <string name="setting_when_timer_startTime_title">開始タイミング</string>
-    <string name="setting_when_timer_starTiming_1_title">開始タイミング</string>
-    <string-array name="setting_when_timer_starTiming_1_entries">
-        <item>すぐに</item>
-        <item>設定時間後</item>
-    </string-array>
+    <!--<string name="setting_when_timer_starTiming_1_title">開始タイミング</string>-->
+    <!--<string-array name="setting_when_timer_starTiming_1_entries">-->
+        <!--<item>すぐに</item>-->
+        <!--<item>設定時間後</item>-->
+    <!--</string-array>-->
     <string name="setting_when_timer_interval_title">間隔</string>
     <string-array name="setting_when_timer_interval_entries">
         <item>5秒</item>

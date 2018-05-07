@@ -192,7 +192,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
                 this.setScreenOnListener();
             }
             if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-                this.persistStart0();
+//                this.persistStart0();
                 this.setTimerListener();
             }
 //        }
@@ -288,10 +288,11 @@ Log.d("○"+getClass().getSimpleName(), "WHEN_TIMER_START_TIMING_0:" + this.sp.g
                 }
                 break;
             case SettingsFragment.KEY_WHEN_TIMER_INTERVAL:
-            case SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1:
+                // TODO ちゃんとする
+//            case SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1:
                 if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
                     // ここで_0を変更するとまたonSPChanged()が叩かれる
-                    this.persistStart0();
+//                    this.persistStart0();
                 }
                 break;
         }
@@ -301,17 +302,17 @@ Log.d("○"+getClass().getSimpleName(), "WHEN_TIMER_START_TIMING_0:" + this.sp.g
      * START_TIMING_1 とINTERVALからSTART_TIMING_0 に値を永続化（保存）する
      * ※注意、ここに値を保存すると、サービス開始していて設定画面表示中だと onSPChanged() が発火します
      */
-    private void persistStart0() {
-        double mag = Double.parseDouble(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, "0.0"));
-        long intervalMsec = Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "5000"));
-        long nowUnixTimeMsec = System.currentTimeMillis();
-Log.d("○"+getClass().getSimpleName(), "persistStart0(): mag:"+mag+", intervalMsec:"+intervalMsec+", nowUnixTimeMsec:"+nowUnixTimeMsec);
-
-        this.sp.edit().putLong(
-                SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0,
-                Math.round( calcStartUnixTime(intervalMsec, mag, nowUnixTimeMsec ) )  //開始時間のUnixタイム[ms]
-        ).apply();
-    }
+//    private void persistStart0() {
+//        double mag = Double.parseDouble(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, "0.0"));
+//        long intervalMsec = Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "5000"));
+//        long nowUnixTimeMsec = System.currentTimeMillis();
+//Log.d("○"+getClass().getSimpleName(), "persistStart0(): mag:"+mag+", intervalMsec:"+intervalMsec+", nowUnixTimeMsec:"+nowUnixTimeMsec);
+//
+//        this.sp.edit().putLong(
+//                SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0,
+//                Math.round( calcStartUnixTime(intervalMsec, mag, nowUnixTimeMsec ) )  //開始時間のUnixタイム[ms]
+//        ).apply();
+//    }
 
     /************************************
      * Timerの開始時刻のUnixTime[ms] を求める
@@ -365,7 +366,6 @@ Log.d("○"+getClass().getSimpleName(), "persistStart0(): mag:"+mag+", intervalM
      * 画面ON時壁紙変更のイベントリスナー削除
      */
     private void unsetScreenOnListener() {
-Log.d("○"+ getClass().getSimpleName(), "unsetScreenOnListener(): "+this.onOffWPChangeReceiver);
         this.unregisterReceiver(this.onOffWPChangeReceiver);
     }
 
@@ -377,13 +377,11 @@ Log.d("○"+ getClass().getSimpleName(), "unsetScreenOnListener(): "+this.onOffW
         // タイマーセット
         // ----------------------------------
         this.setTimer();
-Log.d("○"+getClass().getSimpleName(), "setTimerListener()");
 
         // ----------------------------------
         // ブロードキャストレシーバーを設置
         // ----------------------------------
         this.timerReceiver = new TimerBcastReceiver();
-Log.d("○"+this.getClass().getSimpleName(), "setTimerListener(), hashCode()="+this.timerReceiver.hashCode());
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
@@ -461,7 +459,6 @@ Log.d("○"+this.getClass().getSimpleName(), "unsetTimerListener(), hashCode()="
                 SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()
         );
         final long delayMsec = calcDelayMsec(startTimeUnixTime, intervalMsec, System.currentTimeMillis());
-Log.d("○"+getClass().getSimpleName(), "setTimer()______________: intervalMsec: "+intervalMsec + ", startTimeUnixTime: " + startTimeUnixTime + ", delayMsec: " + delayMsec);
 
         // ----------
         // 本番
@@ -475,8 +472,6 @@ Log.d("○"+getClass().getSimpleName(), "setTimer()______________: intervalMsec:
                 new TimerTask() {
                     @Override
                     public void run() {
-Log.d("○" + getClass().getSimpleName(), "setTimer(): TimerTask.run(): delay:"+delayMsec/1000+"秒 period:"+intervalMsec/1000+"秒, hash: " + this.hashCode());
-//                        new WpManager(MainService.this).executeNewThread();
 
                         Intent i = new Intent(MainService.this, WpManagerService.class);
                         startService(i);
@@ -529,7 +524,6 @@ Log.d("○"+getClass().getSimpleName(), "setAlarm(), delayMsec=" + delayMsec + "
                 this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
 
             } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
-//Log.d("○","通ってますよa！！！！！！！！！！！！");
                 this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
 
             }

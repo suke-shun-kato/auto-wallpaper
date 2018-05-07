@@ -32,13 +32,11 @@ public class TimerBcastReceiver extends BroadcastReceiver {
         // ----------------------------------
         // メイン処理
         // ----------------------------------
-        if ( inttActionStr.equals(Intent.ACTION_SCREEN_ON) ) {
-Log.d("○" + this.getClass().getSimpleName(), "電源ONになった瞬間のタイマー処理です");
+        if ( inttActionStr.equals(Intent.ACTION_SCREEN_ON) ) {  // 電源ONになった瞬間のタイマー処理
             ((MainService)context).setTimer();
             ((MainService)context).cancelAlarm();
 
-        } else if ( inttActionStr.equals(Intent.ACTION_SCREEN_OFF) ) {
-Log.d("○" + this.getClass().getSimpleName(), "電源OFFになった瞬間のタイマー処理です");
+        } else if ( inttActionStr.equals(Intent.ACTION_SCREEN_OFF) ) {  // 電源OFFになった瞬間のタイマー処理
             ((MainService)context).cancelTimer();
             ((MainService)context).setAlarm();
         }

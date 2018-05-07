@@ -46,17 +46,16 @@
             android:title="@string/setting_when_timer_startTime_title"
             android:defaultValue="0"
             android:summary="%s"
-            android:enabled="false"
             />
         <!-- valueは0.0～1.0 倍率 -->
-        <ListPreference
-            android:key="when_timer_startTiming_1"
-            android:entries="@array/setting_when_timer_starTiming_1_entries"
-            android:entryValues="@array/setting_when_timer_starTiming_1_values"
-            android:defaultValue="0.0"
-            android:title="@string/setting_when_timer_starTiming_1_title"
-            android:summary="%s"
-            />
+        <!--<ListPreference-->
+            <!--android:key="when_timer_startTiming_1"-->
+            <!--android:entries="@array/setting_when_timer_starTiming_1_entries"-->
+            <!--android:entryValues="@array/setting_when_timer_starTiming_1_values"-->
+            <!--android:defaultValue="0.0"-->
+            <!--android:title="@string/setting_when_timer_starTiming_1_title"-->
+            <!--android:summary="%s"-->
+            <!--/>-->
         <ListPreference
             android:key="when_timer_interval"
             android:entries="@array/setting_when_timer_interval_entries"

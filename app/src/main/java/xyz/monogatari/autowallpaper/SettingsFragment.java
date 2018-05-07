@@ -90,8 +90,8 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
     public static final String KEY_WHEN_TIMER = "when_timer";
     public static final String KEY_WHEN_TIMER_START_TIMING_0 = "when_timer_startTiming_0";
-    @SuppressWarnings("WeakerAccess")
-    public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
+//    @SuppressWarnings("WeakerAccess")
+//    public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
     public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";
 
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";

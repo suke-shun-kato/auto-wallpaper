@@ -41,15 +41,15 @@
     <!--<string name="setting_when_timer_startTime_entries_0">Now</string>-->
     <!--<string name="setting_when_timer_startTime_values_0">0</string>-->
 
-    <string name="setting_when_timer_starTiming_1_title">start timing</string>
-    <string-array name="setting_when_timer_starTiming_1_entries">
-        <item>soon</item>
-        <item>after set time</item>
-    </string-array>
-    <string-array name="setting_when_timer_starTiming_1_values" tools:ignore="MissingTranslation">
-        <item>0.0</item><!-- floatで設定する -->
-        <item>1.0</item>
-    </string-array>
+    <!--<string name="setting_when_timer_starTiming_1_title">start timing</string>-->
+    <!--<string-array name="setting_when_timer_starTiming_1_entries">-->
+        <!--<item>soon</item>-->
+        <!--<item>after set time</item>-->
+    <!--</string-array>-->
+    <!--<string-array name="setting_when_timer_starTiming_1_values" tools:ignore="MissingTranslation">-->
+        <!--<item>0.0</item>&lt;!&ndash; floatで設定する &ndash;&gt;-->
+        <!--<item>1.0</item>-->
+    <!--</string-array>-->
 
 
 
