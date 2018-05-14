@@ -1,8 +1,25 @@
+/*
+■XMLの設定の仕方
+<xyz.monogatari.autowallpaper.TimePreference
+    android:key="aaaaaaaaaa"           // key名
+    android:title="タイトルですよ"     // タイトルの文字列
+    android:defaultValue="11:11:11"    // デフォルト値
+    />
+android:summary は設定しない。設定された値が表示されるので
+
+■SPに保存される値
+ 元期からの UTC（協定世界時、世界標準時間）をミリ秒値で表される時間 long型
+
+■SPに値が保存されていないときは↓の関数を呼ぶ
+ TimePreference.getDefaultSpValue()
+*/
+
 package xyz.monogatari.autowallpaper;
 
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.preference.DialogPreference;
+import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -12,7 +29,6 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-
 
 /************************************
  * (参考URL)↓
@@ -26,6 +42,7 @@ public class TimePreference extends DialogPreference {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
+    // 内部的な設定の値、SPから読み込んだ値
     private Calendar calendar;
     // ビュー
     private TimePicker picker = null;
@@ -94,23 +111,28 @@ Log.d("○○"+getClass().getSimpleName(), "onBindDialogView()");
         super.onDialogClosed(positiveResult);
 
         if (positiveResult) {
-            //// ダイアログの値をcalendarクラスに入れる
-            calendar.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
-            calendar.set(Calendar.MINUTE, picker.getCurrentMinute());
+            //// ダイアログの値をcalendarフィールドにセット
+            this.calendar.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
+            this.calendar.set(Calendar.MINUTE, picker.getCurrentMinute());
 
+            //// サマリーをセット
+            this.setSummary(this.getSummaryStr());
 
-            this.setSummary(this.getSummary());
-            if (callChangeListener(calendar.getTimeInMillis())) {
+            //// 値をSPに保存
+            // 値を変更したというリスナーを叩いて、保存すべきというときだけ保存する
+            if ( this.callChangeListener(calendar.getTimeInMillis()) ) {
                 this.persistLong(
-                        calendar.getTimeInMillis()  //元期からの UTC ミリ秒値で表される現在の時間。
+                        this.calendar.getTimeInMillis()  //元期からの UTC ミリ秒値で表される現在の時間。
                 );
-                notifyChanged();
+
+                // SPに値を保存したらコレを呼ばないとダメ
+                this.notifyChanged();
             }
         }
     }
 
     /**********************************
-     * onSetInitialValue()にデフォルト値を提供する, コンストラクタでsuper() したときに呼ばれる
+     * onSetInitialValue()にXMLからデフォルト値を提供する, コンストラクタでsuper() したときに呼ばれる
      * カスタム属性を使用する場合はここで値を渡すのがよい
      * ※XMLにデフォルト値が設定されていないときは呼ばれない
      * @param tArray <Preference>の属性の全ての配列
@@ -119,51 +141,58 @@ Log.d("○○"+getClass().getSimpleName(), "onBindDialogView()");
      */
     @Override
     protected Object onGetDefaultValue(TypedArray tArray, int index) {
+Log.d("○○"+this.getClass().getSimpleName(), "onGetDefaultValue(): " + tArray.getString(index));
+
+        // TODO ここでDefalutValueを加工する
         return tArray.getString(index);
     }
 
 
+    // TODO XMLのDefaultValueを取得できるようにする
+    public static long getDefaultSpValue(){
+        return System.currentTimeMillis();
+    }
+
     /************************************
-     * 現在の値を初期化する、コンストラクタの処理終了の後に呼ばれる
-     * ※このクラスのデフォルト値が設定されていない場合は呼ばれない
-     * （onGetDefaultValue() で値がreturnされないとき、setDefaultValue() でデフォルト値が設定されていないとき
+     * 現在の値を初期化する、コンストラクタの処理終了の後に呼ばれる、設定画面が表示された瞬間に呼ばれる
      * @param restorePersistedValue true: 保存された設定値があるとき、false: ないとき
      * @param defaultValue デフォルト値、this.onGetDefaultValue()の戻り値（保存された値がある場合は常にnullになる）
      */
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-
+Log.d("○○"+this.getClass().getSimpleName(), "onSetInitialValue(): " + restorePersistedValue);
+        //// 設定を表示した瞬間の値を生成 → calendarフィールドにセット
         if (restorePersistedValue) {    //SPに保存した値があるとき
-            if (defaultValue == null) {
-                calendar.setTimeInMillis(
-                        getPersistedLong(System.currentTimeMillis())
-                );
-            } else {
-                calendar.setTimeInMillis(
-                        Long.parseLong( getPersistedString((String) defaultValue) )
-                );
-            }
+            this.calendar.setTimeInMillis(
+                    // SPに保存された値を取得、引数はデフォルト値（デフォルト値は呼ばれないが関数の使用上仕方なく記述）
+                    this.getPersistedLong(getDefaultSpValue())
+            );
+
         } else {    // SPに保存した値がないとき
-            if (defaultValue == null) {
-                calendar.setTimeInMillis(
-                        System.currentTimeMillis()
+            if (defaultValue == null) { // XMLにdefaultValue属性がないとき
+               this.calendar.setTimeInMillis(
+                        getDefaultSpValue()
                 );
-            } else {
-                calendar.setTimeInMillis(
+            } else {                    // XMLにdefaultValue属性があるとき
+                this.calendar.setTimeInMillis(
+                        // XMLに設定されているデフォルト値
                         Long.parseLong((String) defaultValue)
                 );
             }
         }
-        setSummary(getSummary());
+
+        //// 設定を表示した瞬間の値をサマリーにセット
+        this.setSummary(getSummaryStr());
     }
+
 // TODO 回転時のあれをちゃんとする
+
     /************************************
-     *
-     *
+     * フィールドからサマリー用の文字列を生成する
      * @return String サマリーに表示する時刻
      */
-    @Override
-    public CharSequence getSummary() {
+    @Nullable
+    private CharSequence getSummaryStr() {
         if (calendar == null) {
             return null;
         }

@@ -49,11 +49,11 @@
             android:defaultValue="0"
             android:summary="%s"
             />
-
+        <!--defalue-->
         <xyz.monogatari.autowallpaper.TimePreference
             android:key="aaaaaaaaaa"
             android:title="タイトルですよ"
-            android:summary="fffffff"
+            android:defaultValue="11111"
             />
         <!-- valueは0.0～1.0 倍率 -->
         <!--<ListPreference-->
