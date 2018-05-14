@@ -51,9 +51,9 @@
             />
         <!--defalue-->
         <xyz.monogatari.autowallpaper.TimePreference
-            android:key="aaaaaaaaaa"
-            android:title="タイトルですよ"
-            android:defaultValue="11111"
+            android:key="when_timer_startTiming_1"
+            android:title="開始時間"
+            android:defaultValue="00:00"
             />
         <!-- valueは0.0～1.0 倍率 -->
         <!--<ListPreference-->

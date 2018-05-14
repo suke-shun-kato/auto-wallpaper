@@ -3,7 +3,7 @@
 <xyz.monogatari.autowallpaper.TimePreference
     android:key="aaaaaaaaaa"           // key名
     android:title="タイトルですよ"     // タイトルの文字列
-    android:defaultValue="11:11:11"    // デフォルト値
+    android:defaultValue="11:11:11"    // デフォルト値　
     />
 android:summary は設定しない。設定された値が表示されるので
 
@@ -26,6 +26,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.TimePicker;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -137,14 +139,19 @@ Log.d("○○"+getClass().getSimpleName(), "onBindDialogView()");
      * ※XMLにデフォルト値が設定されていないときは呼ばれない
      * @param tArray <Preference>の属性の全ての配列
      * @param index  <Preference>の属性配列に対する「defaultValue」属性のインデックス
-     * @return このクラスのデフォルト値
+     * @return このクラスのデフォルト値 UTCのlong型
      */
     @Override
     protected Object onGetDefaultValue(TypedArray tArray, int index) {
 Log.d("○○"+this.getClass().getSimpleName(), "onGetDefaultValue(): " + tArray.getString(index));
 
-        // TODO ここでDefalutValueを加工する
-        return tArray.getString(index);
+
+        String defaultValue = tArray.getString(index);
+        try {
+            return new SimpleDateFormat("HH:mm").parse(defaultValue).getTime();
+        } catch (ParseException e) {
+            return null;
+        }
     }
 
 
@@ -161,6 +168,7 @@ Log.d("○○"+this.getClass().getSimpleName(), "onGetDefaultValue(): " + tArray
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
 Log.d("○○"+this.getClass().getSimpleName(), "onSetInitialValue(): " + restorePersistedValue);
+
         //// 設定を表示した瞬間の値を生成 → calendarフィールドにセット
         if (restorePersistedValue) {    //SPに保存した値があるとき
             this.calendar.setTimeInMillis(
@@ -174,9 +182,11 @@ Log.d("○○"+this.getClass().getSimpleName(), "onSetInitialValue(): " + restor
                         getDefaultSpValue()
                 );
             } else {                    // XMLにdefaultValue属性があるとき
+
+ Log.d("ffffff", (long)defaultValue + "" );
                 this.calendar.setTimeInMillis(
                         // XMLに設定されているデフォルト値
-                        Long.parseLong((String) defaultValue)
+                        (long)defaultValue
                 );
             }
         }
