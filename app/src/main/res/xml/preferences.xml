@@ -26,6 +26,8 @@
             custom:textCantAccessAuthPage="@string/setting_from_twitter_oauth_text_cantAccessAuthPage"
             custom:textOauthSuccess="@string/setting_from_twitter_oauth_text_oauthSuccess"
             custom:textOauthFailed="@string/setting_from_twitter_oauth_text_oauthFailed" />
+
+
     </PreferenceCategory>
     <PreferenceCategory
         android:key="when"
@@ -46,6 +48,12 @@
             android:title="@string/setting_when_timer_startTime_title"
             android:defaultValue="0"
             android:summary="%s"
+            />
+
+        <xyz.monogatari.autowallpaper.TimePreference
+            android:key="aaaaaaaaaa"
+            android:title="タイトルですよ"
+            android:summary="fffffff"
             />
         <!-- valueは0.0～1.0 倍率 -->
         <!--<ListPreference-->

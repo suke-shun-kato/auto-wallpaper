@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">自動壁紙チェンジャー</string>
     <string name="util_ok">はい</string>
+    <string name="util_cancel">キャンセル</string>   <!-- android.R.string.cancel とかで代用できるTODO -->
     <string name="main_power">ON/OFF</string>
     <string name="main_next_wallpaper_set_screenOff">画面OFF時</string>
     <string name="main_next_wallpaper_set_no">壁紙変更のタイミングがの設定されていません</string>
