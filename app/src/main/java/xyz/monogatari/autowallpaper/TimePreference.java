@@ -18,6 +18,8 @@ package xyz.monogatari.autowallpaper;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
@@ -42,12 +44,49 @@ import java.util.GregorianCalendar;
  */
 public class TimePreference extends DialogPreference {
     // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+    private static class MyTimePicker extends TimePicker {
+        public MyTimePicker(Context context) {
+            super(context);
+        }
+
+
+        /************************************
+         * ミリ秒をTimePickerにセットする
+         */
+        public void setMilliTime(long msec) {
+            Calendar calendar = new GregorianCalendar();
+            calendar.setTimeInMillis(msec);
+
+Log.d("setMilliTime: ", "msec: " + msec + ", H: " + calendar.get(Calendar.HOUR_OF_DAY) + ", M: " + calendar.get(Calendar.MINUTE ));
+            this.setCurrentHour( calendar.get(Calendar.HOUR_OF_DAY) );
+            this.setCurrentMinute( calendar.get(Calendar.MINUTE) );
+        }
+
+        /************************************
+         * 内部の時間をミリ秒へ変換
+         * @return 変換した時間
+         */
+        public long getMilliTime() {
+            Calendar calendar = new GregorianCalendar();
+
+            calendar.set(Calendar.HOUR_OF_DAY, this.getCurrentHour());
+            calendar.set(Calendar.MINUTE, this.getCurrentMinute());
+
+            return calendar.getTimeInMillis();
+
+        }
+    }
+    
+    
+    // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
     // 内部的な設定の値、SPから読み込んだ値
-    private Calendar calendar;
+//    private Calendar calendar;
     // ビュー
-    private TimePicker picker = null;
+    private MyTimePicker picker;
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -67,9 +106,8 @@ Log.d("○○"+getClass().getSimpleName(),  "コンストラクタ、supre後()"
         this.setNegativeButtonText(android.R.string.cancel);
         this.setDialogIcon(null);
 
-        //// 時刻ダイアログに使うためのインスタンスを生成
-        // デフォルトロケールでデフォルトタイムゾーンの現在の時間に基づいてデフォルトの GregorianCalendar を構築します。
-        this.calendar = new GregorianCalendar();
+        ////
+        this.picker = new TimePreference.MyTimePicker(this.getContext());
 
     }
 
@@ -82,51 +120,40 @@ Log.d("○○"+getClass().getSimpleName(),  "コンストラクタ、supre後()"
      */
     @Override
     protected View onCreateDialogView() {
-Log.d("○○"+getClass().getSimpleName(),  "onCreateDialogView()");
-        //// TimePicker（時刻）ダイアログを表示するので、そのViewを返す
-        this.picker = new TimePicker(this.getContext());
+        //// pickerインスタンスを新しく生成→設定→フィールドにセット
+        MyTimePicker newPicker = new MyTimePicker(this.getContext());
+        newPicker.setIs24HourView(true);
 
-        // 24時間表示にする、ここらへんカスタム属性で設定できるようになったらいいな
-        this.picker.setIs24HourView(true);
+        // TimePicker に時間をセット
+        newPicker.setMilliTime(
+                // SP からデータを取得、ない場合はデフォルト値
+                this.getPersistedLong(getDefaultSpValue())
+        );
+
+        ////
+        this.picker = newPicker;
 
         return (this.picker);
     }
 
-    /************************************
-     * @param v 生成するビュー、ここでは時刻ダイアログ
-     */
-    @Override
-    protected void onBindDialogView(View v) {
-Log.d("○○"+getClass().getSimpleName(), "onBindDialogView()");
-        super.onBindDialogView(v);
-        picker.setCurrentHour(
-                calendar.get(Calendar.HOUR_OF_DAY) // 時間を取得（24時間）
-        );
-        // TODO これはAPIレベル23から非推奨になりました
-        picker.setCurrentMinute(
-                calendar.get(Calendar.MINUTE)   // 分を取得
-        );
-    }
 
+    /************************************
+     * ダイアログが閉じるとき、ここでSPに保存する
+     * @param positiveResult 押されたボタンは・・・
+     */
     @Override
     protected void onDialogClosed(boolean positiveResult) {
         super.onDialogClosed(positiveResult);
 
         if (positiveResult) {
-            //// ダイアログの値をcalendarフィールドにセット
-            this.calendar.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
-            this.calendar.set(Calendar.MINUTE, picker.getCurrentMinute());
-
             //// サマリーをセット
             this.setSummary(this.getSummaryStr());
 
             //// 値をSPに保存
             // 値を変更したというリスナーを叩いて、保存すべきというときだけ保存する
-            if ( this.callChangeListener(calendar.getTimeInMillis()) ) {
-                this.persistLong(
-                        this.calendar.getTimeInMillis()  //元期からの UTC ミリ秒値で表される現在の時間。
-                );
-
+            long msec = this.picker.getMilliTime();//元期からの UTC ミリ秒値で表される現在の時間。
+            if ( this.callChangeListener(msec) ) {
+                this.persistLong( msec );
                 // SPに値を保存したらコレを呼ばないとダメ
                 this.notifyChanged();
             }
@@ -156,9 +183,13 @@ Log.d("○○"+this.getClass().getSimpleName(), "onGetDefaultValue(): " + tArray
 
 
     // TODO XMLのDefaultValueを取得できるようにする
+    /************************************
+     *
+     */
     public static long getDefaultSpValue(){
         return System.currentTimeMillis();
     }
+
 
     /************************************
      * 現在の値を初期化する、コンストラクタの処理終了の後に呼ばれる、設定画面が表示された瞬間に呼ばれる
@@ -167,24 +198,23 @@ Log.d("○○"+this.getClass().getSimpleName(), "onGetDefaultValue(): " + tArray
      */
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-Log.d("○○"+this.getClass().getSimpleName(), "onSetInitialValue(): " + restorePersistedValue);
 
         //// 設定を表示した瞬間の値を生成 → calendarフィールドにセット
         if (restorePersistedValue) {    //SPに保存した値があるとき
-            this.calendar.setTimeInMillis(
+            this.picker.setMilliTime(
                     // SPに保存された値を取得、引数はデフォルト値（デフォルト値は呼ばれないが関数の使用上仕方なく記述）
                     this.getPersistedLong(getDefaultSpValue())
             );
 
         } else {    // SPに保存した値がないとき
             if (defaultValue == null) { // XMLにdefaultValue属性がないとき
-               this.calendar.setTimeInMillis(
+Log.d("aaaaaaaa: ",  getDefaultSpValue()+"");
+                this.picker.setMilliTime(
                         getDefaultSpValue()
                 );
             } else {                    // XMLにdefaultValue属性があるとき
-
- Log.d("ffffff", (long)defaultValue + "" );
-                this.calendar.setTimeInMillis(
+Log.d("bbbbbbb: ",  (long)defaultValue+ "" );
+                this.picker.setMilliTime(
                         // XMLに設定されているデフォルト値
                         (long)defaultValue
                 );
@@ -192,10 +222,9 @@ Log.d("○○"+this.getClass().getSimpleName(), "onSetInitialValue(): " + restor
         }
 
         //// 設定を表示した瞬間の値をサマリーにセット
-        this.setSummary(getSummaryStr());
+        this.setSummary( this.getSummaryStr() );
     }
 
-// TODO 回転時のあれをちゃんとする
 
     /************************************
      * フィールドからサマリー用の文字列を生成する
@@ -203,16 +232,114 @@ Log.d("○○"+this.getClass().getSimpleName(), "onSetInitialValue(): " + restor
      */
     @Nullable
     private CharSequence getSummaryStr() {
-        if (calendar == null) {
+        if (this.picker == null) {
             return null;
         }
         return DateFormat.getTimeFormat( this.getContext() )
                 .format(
                     new Date(
                             //元期からの UTC（世界協定時間）ミリ秒値で表される現在の時間。
-                            calendar.getTimeInMillis()
+                            this.picker.getMilliTime()
                     )
                 );
+    }
+/////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // --------------------------------------------------------------------
+    // onSaveInstanceState()やonRestoreInstanceState()で使う為のサブクラス
+    // --------------------------------------------------------------------
+    private static class SavedState extends BaseSavedState {
+        // Member that holds the setting's value
+        // Change this data type to match the type saved by your Preference
+        long value;
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        public SavedState(Parcel source) {
+            super(source);
+            // Get the current preference's value
+            this.value = source.readLong();  // Change this to read the appropriate data type
+        }
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags) {
+            super.writeToParcel(dest, flags);
+            // Write the preference's value
+            dest.writeLong(this.value);  // Change this to write the appropriate data type
+        }
+
+        // Standard creator object using an instance of this class
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<SavedState>() {
+
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
+                    }
+
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                };
+    }
+
+    // --------------------------------------------------------------------
+    // onSaveInstanceState()やonRestoreInstanceState()
+    // --------------------------------------------------------------------
+    @Override
+    protected Parcelable onSaveInstanceState() {
+Log.d("○"+this.getClass().getSimpleName(), "onSaveInstanceState()");
+        // ----------------------------------
+        // スーパークラスのParcelable
+        // ----------------------------------
+        final Parcelable superState = super.onSaveInstanceState();
+
+Log.d("○isPersistent", this.isPersistent()+"");
+
+        // ダイアログが表示されていないときは親クラスのメソッドを実行
+        if (this.getDialog() == null) {
+            // インスタンスの状態を回転時に保存する必要がないので、
+            // DialogPreferenceの戻り値のParcelableを返す
+            return superState;
+        }
+
+        // ----------------------------------
+        // 内部クラスのParcelable
+        // ----------------------------------
+        // Create instance of custom BaseSavedState
+        final SavedState myState = new SavedState(superState);
+        // Set the state's value with the class member that holds current
+        // setting value
+
+Log.d("bbbbb", getSummaryStr().toString());
+        myState.value = this.picker.getMilliTime(); //long型に変換して保存
+        return myState;
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+Log.d("○"+this.getClass().getSimpleName(), "onRestoreInstanceState()");
+        // Check whether we saved the state in onSaveInstanceState
+        if (state == null || !state.getClass().equals(SavedState.class)) {
+            // Didn't save the state, so call superclass
+            super.onRestoreInstanceState(state);
+            return;
+        }
+
+        // Cast state to custom BaseSavedState and pass to superclass
+        SavedState myState = (SavedState) state;
+        super.onRestoreInstanceState(myState.getSuperState());
+
+        // Set this Preference's widget to reflect the restored state
+//        this.calendar = new GregorianCalendar();
+        this.picker.setMilliTime(myState.value);
+
+Log.d("ccccccc", getSummaryStr().toString());
+
+
+//        this.picker()
+//        mNumberPicker.setValue(myState.value);
     }
 
 }
