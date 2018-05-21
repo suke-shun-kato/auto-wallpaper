@@ -29,7 +29,6 @@ import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
  * Created by k-shunsuke on 2017/12/12.
  * 裏で壁紙を変更するサービス
  */
-@SuppressWarnings("ALL")
 public class MainService extends Service {
     // --------------------------------------------------------------------
     // フィールド、Util
@@ -107,7 +106,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode
 Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCode: " + this.hashCode());
         super.onDestroy();
 
-        // ------------------------                                                                 ----------
+        // ----------------------------------
         // 途中で切り上げ
         // ----------------------------------
         if ( !this.isStarted ) {
@@ -179,23 +178,13 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
         // ----------------------------------
         //
         // ----------------------------------
-//
-//        //// アラームからスタートした場合
-//        if (intent != null && intent.getAction() != null && intent.getAction().equals(ACTION_WALLPAPER_CHANGE)) {
-//            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-//Log.d("○"+getClass().getSimpleName(), "onStartCommand(): Alarm");
-//                new WpManager(this).executeNewThread();
-//            }
-//        } else {
         //// 通常の場合
-            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
-                this.setScreenOnListener();
-            }
-            if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-//                this.persistStart0();
-                this.setTimerListener();
-            }
-//        }
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+            this.setScreenOnListener();
+        }
+        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+            this.setTimerListener();
+        }
 
         return START_STICKY;
     }

@@ -55,6 +55,8 @@
             />
         <service
             android:name=".service.MainService"
+            android:enabled="true"
+            android:exported="false"
             />
         <service android:name=".wpchange.WpManagerService" />
         <provider
