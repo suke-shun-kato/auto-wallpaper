@@ -12,6 +12,10 @@ android:summary は設定しない。設定された値が表示されるので
 
 ■SPに値が保存されていないときは↓の関数を呼ぶ
  TimePreference.getDefaultSpValue()
+
+■下記のエラーが出るが修正しようがなさそうなので放置、もしかして公式のエラー？
+ E/TimePickerClockDelegate: Unable to find keycodes for AM and PM.
+
 */
 
 package xyz.monogatari.autowallpaper;
@@ -43,8 +47,38 @@ import java.util.GregorianCalendar;
  *
  */
 public class TimePreference extends DialogPreference {
+
+    
+    
     // --------------------------------------------------------------------
-    //
+    // フィールド
+    // --------------------------------------------------------------------
+    // 時間取得するピッカーのビューと内部的な値を保存するフィールド
+    private MyTimePicker picker;
+
+    // --------------------------------------------------------------------
+    // コンストラクタ
+    // --------------------------------------------------------------------
+    public TimePreference(Context context, AttributeSet attrs) {
+        super(context, attrs);
+
+
+        //// 時刻ダイアログの設定をする
+        // ↓は不必要自分が作成したダイアログのレイアウトXMLを使うわけじゃないので不必要、
+        //     代わりにonCreateDialogView()で既存のダイアログを生成している
+        // setDialogLayoutResource(R.layout.xxxx );
+
+        this.setPositiveButtonText(android.R.string.ok);
+        this.setNegativeButtonText(android.R.string.cancel);
+        this.setDialogIcon(null);
+
+        ////
+        this.picker = new TimePreference.MyTimePicker(this.getContext());
+
+    }
+
+    // --------------------------------------------------------------------
+    // カスタムTimePickerを定義
     // --------------------------------------------------------------------
     private static class MyTimePicker extends TimePicker {
         public MyTimePicker(Context context) {
@@ -59,13 +93,12 @@ public class TimePreference extends DialogPreference {
             Calendar calendar = new GregorianCalendar();
             calendar.setTimeInMillis(msec);
 
-Log.d("setMilliTime: ", "msec: " + msec + ", H: " + calendar.get(Calendar.HOUR_OF_DAY) + ", M: " + calendar.get(Calendar.MINUTE ));
             this.setCurrentHour( calendar.get(Calendar.HOUR_OF_DAY) );
             this.setCurrentMinute( calendar.get(Calendar.MINUTE) );
         }
 
         /************************************
-         * 内部の時間をミリ秒へ変換
+         * TimePickerの時間をミリ秒へ変換
          * @return 変換した時間
          */
         public long getMilliTime() {
@@ -78,37 +111,16 @@ Log.d("setMilliTime: ", "msec: " + msec + ", H: " + calendar.get(Calendar.HOUR_O
 
         }
     }
-    
-    
-    // --------------------------------------------------------------------
-    // フィールド
-    // --------------------------------------------------------------------
-    // 内部的な設定の値、SPから読み込んだ値
-//    private Calendar calendar;
-    // ビュー
-    private MyTimePicker picker;
 
     // --------------------------------------------------------------------
-    // コンストラクタ
+    // static
     // --------------------------------------------------------------------
-    public TimePreference(Context context, AttributeSet attrs) {
-        super(context, attrs);
-Log.d("○○"+getClass().getSimpleName(),  "コンストラクタ、supre後()");
-
-
-        //// 時刻ダイアログの設定をする
-
-        // ↓は不必要自分が作成したダイアログのレイアウトXMLを使うわけじゃないので不必要、
-        // 代わりにonCreateDialogView()で既存のダイアログを生成している
-        // setDialogLayoutResource(R.layout.xxxx );
-
-        this.setPositiveButtonText(android.R.string.ok);
-        this.setNegativeButtonText(android.R.string.cancel);
-        this.setDialogIcon(null);
-
-        ////
-        this.picker = new TimePreference.MyTimePicker(this.getContext());
-
+    /************************************
+     * XMLにデフォルト値がない場合のデフォルト値
+     * sharedPref.getString() の引数のデフォルト値としても使用できる
+     */
+    public static long getDefaultSpValue(){
+        return System.currentTimeMillis();
     }
 
     // --------------------------------------------------------------------
@@ -122,6 +134,7 @@ Log.d("○○"+getClass().getSimpleName(),  "コンストラクタ、supre後()"
     protected View onCreateDialogView() {
         //// pickerインスタンスを新しく生成→設定→フィールドにセット
         MyTimePicker newPicker = new MyTimePicker(this.getContext());
+
         newPicker.setIs24HourView(true);
 
         // TimePicker に時間をセット
@@ -129,7 +142,6 @@ Log.d("○○"+getClass().getSimpleName(),  "コンストラクタ、supre後()"
                 // SP からデータを取得、ない場合はデフォルト値
                 this.getPersistedLong(getDefaultSpValue())
         );
-
         ////
         this.picker = newPicker;
 
@@ -170,8 +182,6 @@ Log.d("○○"+getClass().getSimpleName(),  "コンストラクタ、supre後()"
      */
     @Override
     protected Object onGetDefaultValue(TypedArray tArray, int index) {
-Log.d("○○"+this.getClass().getSimpleName(), "onGetDefaultValue(): " + tArray.getString(index));
-
 
         String defaultValue = tArray.getString(index);
         try {
@@ -182,15 +192,6 @@ Log.d("○○"+this.getClass().getSimpleName(), "onGetDefaultValue(): " + tArray
     }
 
 
-    // TODO XMLのDefaultValueを取得できるようにする
-    /************************************
-     *
-     */
-    public static long getDefaultSpValue(){
-        return System.currentTimeMillis();
-    }
-
-
     /************************************
      * 現在の値を初期化する、コンストラクタの処理終了の後に呼ばれる、設定画面が表示された瞬間に呼ばれる
      * @param restorePersistedValue true: 保存された設定値があるとき、false: ないとき
@@ -198,7 +199,6 @@ Log.d("○○"+this.getClass().getSimpleName(), "onGetDefaultValue(): " + tArray
      */
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-
         //// 設定を表示した瞬間の値を生成 → calendarフィールドにセット
         if (restorePersistedValue) {    //SPに保存した値があるとき
             this.picker.setMilliTime(
@@ -208,17 +208,21 @@ Log.d("○○"+this.getClass().getSimpleName(), "onGetDefaultValue(): " + tArray
 
         } else {    // SPに保存した値がないとき
             if (defaultValue == null) { // XMLにdefaultValue属性がないとき
-Log.d("aaaaaaaa: ",  getDefaultSpValue()+"");
                 this.picker.setMilliTime(
                         getDefaultSpValue()
                 );
+
+
             } else {                    // XMLにdefaultValue属性があるとき
-Log.d("bbbbbbb: ",  (long)defaultValue+ "" );
                 this.picker.setMilliTime(
                         // XMLに設定されているデフォルト値
                         (long)defaultValue
                 );
             }
+            //// SPにTimerPickerの値を保存する（ここの保存は、Android標準のPreferenceと処理を揃えるために必ずすること）
+            this.persistLong(
+                    this.picker.getMilliTime()
+            );
         }
 
         //// 設定を表示した瞬間の値をサマリーにセット
@@ -243,7 +247,6 @@ Log.d("bbbbbbb: ",  (long)defaultValue+ "" );
                     )
                 );
     }
-/////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // --------------------------------------------------------------------
     // onSaveInstanceState()やonRestoreInstanceState()で使う為のサブクラス
@@ -289,13 +292,11 @@ Log.d("bbbbbbb: ",  (long)defaultValue+ "" );
     // --------------------------------------------------------------------
     @Override
     protected Parcelable onSaveInstanceState() {
-Log.d("○"+this.getClass().getSimpleName(), "onSaveInstanceState()");
         // ----------------------------------
         // スーパークラスのParcelable
         // ----------------------------------
         final Parcelable superState = super.onSaveInstanceState();
 
-Log.d("○isPersistent", this.isPersistent()+"");
 
         // ダイアログが表示されていないときは親クラスのメソッドを実行
         if (this.getDialog() == null) {
@@ -312,14 +313,12 @@ Log.d("○isPersistent", this.isPersistent()+"");
         // Set the state's value with the class member that holds current
         // setting value
 
-Log.d("bbbbb", getSummaryStr().toString());
         myState.value = this.picker.getMilliTime(); //long型に変換して保存
         return myState;
     }
 
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-Log.d("○"+this.getClass().getSimpleName(), "onRestoreInstanceState()");
         // Check whether we saved the state in onSaveInstanceState
         if (state == null || !state.getClass().equals(SavedState.class)) {
             // Didn't save the state, so call superclass
@@ -332,14 +331,8 @@ Log.d("○"+this.getClass().getSimpleName(), "onRestoreInstanceState()");
         super.onRestoreInstanceState(myState.getSuperState());
 
         // Set this Preference's widget to reflect the restored state
-//        this.calendar = new GregorianCalendar();
         this.picker.setMilliTime(myState.value);
 
-Log.d("ccccccc", getSummaryStr().toString());
-
-
-//        this.picker()
-//        mNumberPicker.setValue(myState.value);
     }
 
 }
