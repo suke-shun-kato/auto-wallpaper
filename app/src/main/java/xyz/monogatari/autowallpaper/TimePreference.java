@@ -20,6 +20,7 @@ android:summary は設定しない。設定された値が表示されるので
 
 package xyz.monogatari.autowallpaper;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.os.Parcel;
@@ -28,7 +29,6 @@ import android.preference.DialogPreference;
 import android.support.annotation.Nullable;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.TimePicker;
 
@@ -46,6 +46,7 @@ import java.util.GregorianCalendar;
  * https://developer.android.com/guide/topics/ui/settings?hl=ja#Custom
  *
  */
+@SuppressWarnings("ALL")
 public class TimePreference extends DialogPreference {
 
     
@@ -89,6 +90,7 @@ public class TimePreference extends DialogPreference {
         /************************************
          * ミリ秒をTimePickerにセットする
          */
+        @SuppressWarnings("WeakerAccess")
         public void setMilliTime(long msec) {
             Calendar calendar = new GregorianCalendar();
             calendar.setTimeInMillis(msec);
@@ -180,6 +182,7 @@ public class TimePreference extends DialogPreference {
      * @param index  <Preference>の属性配列に対する「defaultValue」属性のインデックス
      * @return このクラスのデフォルト値 UTCのlong型
      */
+    @SuppressLint("SimpleDateFormat")
     @Override
     protected Object onGetDefaultValue(TypedArray tArray, int index) {
 

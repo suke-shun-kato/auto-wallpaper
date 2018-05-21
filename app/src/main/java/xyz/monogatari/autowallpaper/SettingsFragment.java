@@ -116,11 +116,6 @@ public class SettingsFragment extends PreferenceFragment
         this.addPreferencesFromResource(R.xml.preferences);
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
     public void onNewIntent(Intent intent) {
         // ----------------------------------
         // Twitter認証のコールバックのとき TwitterOAuthPreference にIntentでURLの情報を渡す
@@ -334,15 +329,6 @@ public class SettingsFragment extends PreferenceFragment
 //                    .show();
 //        }
 //    }
-
-    /************************************
-     * インスタンス消失前のデータを保存するタイミング（画面回転直前）
-     * @param outState このバンドルにデータを保存ずる
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);    //これ絶対呼ばないとダメ、selectDirのonSaveInstanceが呼ばれない
-    }
 
     // --------------------------------------------------------------------
     // メソッド、設定の変更感知用

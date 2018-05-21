@@ -49,7 +49,6 @@
             android:defaultValue="0"
             android:summary="%s"
             />
-        <!--defalue-->
         <xyz.monogatari.autowallpaper.TimePreference
             android:key="when_timer_startTiming_1"
             android:title="開始時間"

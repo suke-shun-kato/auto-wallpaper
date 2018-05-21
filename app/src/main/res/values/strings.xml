@@ -5,7 +5,6 @@
     <!--通常の文字列-->
     <string name="app_name">AutoWallpaperChanger</string>
     <string name="util_ok">OK</string>
-    <string name="util_cancel">Cancel</string>
     <string name="main_power">ON/OFF</string>
     <string name="main_next_wallpaper_set_screenOff">Next screen off</string>
     <string name="main_next_wallpaper_set_no">No next wallpaper change</string>
