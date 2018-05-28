@@ -9,6 +9,7 @@
     <string name="main_to_history">履歴へ</string>
     <string name="main_set_wallpaper">直ぐに壁紙変更</string>
     <string name="main_toast_no_image">取得可能な画像がありません</string>
+    <string name="mainService_notification_ch_name">自動壁紙チェンジャー起動中</string>
     <string name="mainService_notification_title">起動中</string>
     <string name="mainService_notification_text">壁紙が自動で変更されます</string>
     <string name="permission_toast">壁紙のデータをファイルから取得するために許可が必要です</string>
@@ -67,6 +68,7 @@
     <string name="histories_toolbar">履歴</string>
     <string name="histories_image">壁紙画像</string>
     <string name="histories_icon">アイコン</string>
+    <string name="histories_notification_ch_name">壁紙変更通知</string>
     <string name="histories_notification_title">壁紙が変更されました</string>
     <string name="histories_notification_body">タップすると履歴ページにとびます</string>
 
