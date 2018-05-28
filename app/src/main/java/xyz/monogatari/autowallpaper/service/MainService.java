@@ -2,6 +2,8 @@ package xyz.monogatari.autowallpaper.service;
 
 import android.app.AlarmManager;
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -13,6 +15,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import java.util.Timer;
@@ -91,10 +94,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onTaskRemoved()____________");
     public void onCreate() {
         super.onCreate();
         this.sp = PreferenceManager.getDefaultSharedPreferences(this);
-
-
-
-
 Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode: " + this.hashCode());
     }
 
@@ -149,31 +148,66 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
 
         this.isStarted = true;
 
+
         // ----------------------------------
-        // 通知に表示
+        // 通知を作成
         // ----------------------------------
-        Notification.Builder builder = new Notification.Builder(this)
-                .setContentTitle(this.getString(R.string.mainService_notification_title))
+        // ----------
+        // 通知チャンネルを作成
+        // ----------
+        if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){ //Android8.0（API 26）以上
+
+            NotificationChannel ntfChannel = new NotificationChannel(
+                    this.getString(R.string.notification_ch_id_main_service),
+                    this.getString(R.string.mainService_notification_ch_name),
+                    NotificationManager.IMPORTANCE_LOW
+            );
+
+            NotificationManager ntfManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+            if (ntfManager != null) {
+                ntfManager.createNotificationChannel(ntfChannel);
+            }
+        }
+        //TODO 音がならないようにする
+
+        // ----------
+        // PendingIntentを作成
+        // ----------
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                this,
+                PendingIntentRequestCode.RUNNING_SERVICE,   // TODO XMLに移す
+                new Intent(this, MainActivity.class),
+                PendingIntent.FLAG_CANCEL_CURRENT
+        );
+
+
+        // ----------
+        // NotificationBuilderを作成してフォアグラウンドでサービス開始＆通知
+        // ----------
+        // TODO v4のcompat読み込んでるけどOKか確認する
+        //// Notification.Builderを作成する
+        NotificationCompat.Builder notifBuilder;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {   //Android8.0（API 26）以上
+            notifBuilder = new NotificationCompat.Builder(
+                    this,
+                    this.getString(R.string.notification_ch_id_wp_change)
+            );
+        } else {
+            notifBuilder = new NotificationCompat.Builder(// この打ち消し線は問題ない
+                    this
+            );
+        }
+        notifBuilder.setContentTitle(this.getString(R.string.mainService_notification_title))
                 .setContentText(this.getString(R.string.mainService_notification_text))
                 .setSmallIcon(R.drawable.ic_notification_running_service)
                 .setWhen(System.currentTimeMillis())
+                .setContentIntent(pendingIntent)
+                //ロック画面に通知表示しない（注意、ここの設定は端末の設定で上書きされる）
+                .setVisibility(NotificationCompat.VISIBILITY_SECRET);
 
-                .setContentIntent(
-                        PendingIntent.getActivity(
-                                this,
-                                PendingIntentRequestCode.RUNNING_SERVICE,
-                                new Intent(this, MainActivity.class),
-                                PendingIntent.FLAG_CANCEL_CURRENT
-                        )
-                );
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            //APIレベル21以上の場合, Android5.0以上のとき
-            //ロック画面に通知表示しない（注意、ここの設定は端末の設定で上書きされる）
-            builder = builder.setVisibility(Notification.VISIBILITY_SECRET);
-        }
-
-        this.startForeground(NotifyId.RUNNING_SERVICE, builder.build());
+        //// フォアグラウンドでサービスを開始＆通知
+        Notification notification = notifBuilder.build();
+        this.startForeground(NotifyId.RUNNING_SERVICE, notification);
 
         // ----------------------------------
         //
