@@ -2,6 +2,7 @@ package xyz.monogatari.autowallpaper.wpchange;
 
 import android.Manifest;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.WallpaperManager;
@@ -17,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 
@@ -239,54 +241,81 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
         // ----------------------------------
         // 通知を作成
         // ----------------------------------
-        Intent historyIntent = new Intent(this.context, HistoryActivity.class);
+        NotificationManager notifManager = (NotificationManager)this.context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if ( notifManager == null ) {
+            return true;
+        }
+
+
+        // ----------
+        // 通知チャンネルを作成
+        // ----------
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){ //Android8.0（API 26）以上
+            //// 通知チャンネルを作成→通知マネージャーに登録
+            String channelName = "namanameaname";   //TODO XMLから取得するようにする
+            NotificationChannel ntfChannel = new NotificationChannel(
+                    this.context.getString(R.string.notification_ch_id_wp_change),
+                    channelName,
+                    NotificationManager.IMPORTANCE_DEFAULT
+            );
+
+            //// マネージャーに登録
+            notifManager.createNotificationChannel(ntfChannel);
+        }
+
+
+        // ----------
+        // PendingIntentを作成する
+        // ----------
         Intent mainIntent = new Intent(this.context, MainActivity.class)
                 // FLAG_ACTIVITY_NEW_TASK: スタックに残っていても、新しくタスクを起動させる
                 // FLAG_ACTIVITY_CLEAR_TOP：呼び出すActivity以外のActivityをクリアして起動させる
                 // 上記はセットで使うのが基本みたい
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        Intent historyIntent = new Intent(this.context, HistoryActivity.class);
         Intent[] intents = {mainIntent, historyIntent};
+        PendingIntent pendingIntent = PendingIntent.getActivities(
+                this.context,
+                PendingIntentRequestCode.WALLPAPER_CHANGED,    // リクエストコード TODO XMLに移す
+                intents,
+                //PendingIntentオブジェクトが既にあったらそのまま、ただしextraの値は最新に更新される
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
 
-        Notification.Builder builder = new Notification.Builder(this.context)
+        // ----------
+        // 通知をする
+        // ----------
+        //// 通知ビルダーを作成
+        NotificationCompat.Builder notifBuilder;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {   //Android8.0（API 26）以上
+            notifBuilder = new NotificationCompat.Builder(
+                    this.context,
+                    this.context.getString(R.string.notification_ch_id_wp_change)
+            );
+        } else {
+            notifBuilder = new NotificationCompat.Builder(// この打ち消し線は問題ない
+                    this.context
+            );
+        }
+        notifBuilder.setSmallIcon(R.drawable.ic_notification_changed_wallpaper)
                 .setAutoCancel(true)    //タップすると通知が消える
                 .setContentTitle(this.context.getString(R.string.histories_notification_title))
                 .setContentText(this.context.getString(R.string.histories_notification_body))
-//                .setSmallIcon(R.drawable.ic_notification_running_service)
-                .setSmallIcon(R.drawable.ic_notification_changed_wallpaper)
+                .setContentIntent(pendingIntent)
+
+
+
                 .setWhen(System.currentTimeMillis())
                 .setVibrate(new long[]{1000, 500})  //1秒後に0.5秒だけ振動
-                .setLights(Color.BLUE,2000,1000)    //2秒ON→1秒OFF→2秒ONを繰り返す
-                .setContentIntent(
-                        PendingIntent.getActivities(
-                                this.context,
-                                PendingIntentRequestCode.WALLPAPER_CHANGED,    // リクエストコード
-                                intents,
-                                PendingIntent.FLAG_UPDATE_CURRENT   //PendingIntentオブジェクトが既にあったらそのまま、ただしextraの値は最新に更新される
-                        )
-                );
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            //APIレベル21以上の場合, Android5.0以上のとき
-            //ロック画面に通知表示する
-            // （注意、ここの設定は端末の設定で上書きされる）
-            builder = builder.setVisibility(Notification.VISIBILITY_PUBLIC);
-        }
+                //2秒ON→1秒OFF→2秒ONを繰り返す
+                .setLights(Color.BLUE,2000,1000) ;
 
 
+        //// 通知をする
+        Notification notification = notifBuilder.build();
+        notifManager.notify(NotifyId.WALLPAPER_CHANGED, notification);  //TODO NotifyIdをXMLに移す
 
-        NotificationManager nManager
-                = (NotificationManager) this.context.getSystemService(Context.NOTIFICATION_SERVICE);
-        try {
-            if ( nManager != null ) {
-                nManager.notify(NotifyId.WALLPAPER_CHANGED, builder.build());
-            }
-        } catch(NullPointerException e) {
-            e.printStackTrace();
-        }
 
-        // ----------------------------------
-        //
-        // ----------------------------------
         return true;
     }
 }
