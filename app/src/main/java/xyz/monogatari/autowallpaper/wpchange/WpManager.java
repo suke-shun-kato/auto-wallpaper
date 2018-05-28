@@ -293,6 +293,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
                     NotificationChannelId.WALLPAPER_CHANGED
             );
         } else {
+            //noinspection deprecation
             notifBuilder = new NotificationCompat.Builder(// この打ち消し線は問題ない
                     this.context
             );

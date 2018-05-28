@@ -186,6 +186,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCod
                     NotificationChannelId.RUNNING_MAIN_SERVICE
             );
         } else {
+            //noinspection deprecation
             notifBuilder = new NotificationCompat.Builder(// この打ち消し線は問題ない
                     this
             );
@@ -314,10 +315,10 @@ Log.d("○"+getClass().getSimpleName(), "WHEN_TIMER_START_TIMING_0:" + this.sp.g
         }
     }
 
-    /************************************
-     * START_TIMING_1 とINTERVALからSTART_TIMING_0 に値を永続化（保存）する
-     * ※注意、ここに値を保存すると、サービス開始していて設定画面表示中だと onSPChanged() が発火します
-     */
+//    /************************************
+//     * START_TIMING_1 とINTERVALからSTART_TIMING_0 に値を永続化（保存）する
+//     * ※注意、ここに値を保存すると、サービス開始していて設定画面表示中だと onSPChanged() が発火します
+//     */
 //    private void persistStart0() {
 //        double mag = Double.parseDouble(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, "0.0"));
 //        long intervalMsec = Long.parseLong(this.sp.getString(SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "5000"));
@@ -536,10 +537,11 @@ Log.d("○"+getClass().getSimpleName(), "setAlarm(), delayMsec=" + delayMsec + "
             if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
                 this.alarmManager.set(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
 
-            } else if (19 <= Build.VERSION.SDK_INT && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
+            } else //noinspection ConstantConditions
+                if ( Build.VERSION.SDK_INT >= 19  && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
                 this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
 
-            } else if (23 <= Build.VERSION.SDK_INT ) {  // Android 6.0～
+            } else if ( Build.VERSION.SDK_INT >=  23 ) {  // Android 6.0～
                 this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
 
             }
