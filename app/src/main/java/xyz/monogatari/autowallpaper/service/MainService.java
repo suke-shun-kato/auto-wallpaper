@@ -22,6 +22,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import xyz.monogatari.autowallpaper.MainActivity;
+import xyz.monogatari.autowallpaper.NotificationChannelId;
 import xyz.monogatari.autowallpaper.NotifyId;
 import xyz.monogatari.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.autowallpaper.R;
@@ -139,13 +140,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCod
      */
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-String action = null;
-if (intent != null) {
-    action = intent.getAction();
-}
-Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + this.hashCode() + ", intent: " + intent + ",action: " + action + ", flags: "+flags + ", startId: "+ startId);
-
-
         this.isStarted = true;
 
 
@@ -158,8 +152,8 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){ //Android8.0（API 26）以上
 
             NotificationChannel ntfChannel = new NotificationChannel(
-                    this.getString(R.string.notification_ch_id_main_service),
-                    this.getString(R.string.mainService_notification_ch_name),
+                    NotificationChannelId.RUNNING_MAIN_SERVICE,
+                    this.getString(R.string.mainService_notification_ch_name),  //TODO 文言をちゃんとする
                     NotificationManager.IMPORTANCE_LOW
             );
 
@@ -175,7 +169,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
         // ----------
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
-                PendingIntentRequestCode.RUNNING_SERVICE,   // TODO XMLに移す
+                PendingIntentRequestCode.RUNNING_SERVICE,
                 new Intent(this, MainActivity.class),
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
@@ -184,13 +178,12 @@ Log.d("○"+this.getClass().getSimpleName(), "onStartCommand(): hashCode: " + th
         // ----------
         // NotificationBuilderを作成してフォアグラウンドでサービス開始＆通知
         // ----------
-        // TODO v4のcompat読み込んでるけどOKか確認する
         //// Notification.Builderを作成する
         NotificationCompat.Builder notifBuilder;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {   //Android8.0（API 26）以上
             notifBuilder = new NotificationCompat.Builder(
                     this,
-                    this.getString(R.string.notification_ch_id_wp_change)
+                    NotificationChannelId.RUNNING_MAIN_SERVICE
             );
         } else {
             notifBuilder = new NotificationCompat.Builder(// この打ち消し線は問題ない

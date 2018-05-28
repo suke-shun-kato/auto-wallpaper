@@ -13,8 +13,7 @@
     <string name="main_to_history">To History</string>
     <string name="main_set_wallpaper">Sets wallpaper now</string>
     <string name="main_toast_no_image">No image</string>
-    <!--<string name="mainService_notification_title">Running</string>-->
-    <string name="mainService_notification_ch_name">Runningggggggggggggggggggg</string>
+    <string name="mainService_notification_ch_name">Runningggggggggggggggggggg</string><!-- TODO もんごんちゃんとする-->
     <string name="mainService_notification_title">Running</string>
     <string name="mainService_notification_text">Running</string>
     <string name="permission_toast">wants a storage permission to display a wall paper of file.</string>
@@ -98,6 +97,7 @@
     <string name="histories_toolbar">History</string>
     <string name="histories_image">A wallpaper image</string>
     <string name="histories_icon">icon</string>
+    <string name="histories_notification_ch_name">AAaaaaaaa</string>
     <string name="histories_notification_title">The wallpaper has changed.</string>
     <string name="histories_notification_body">After you tap it, you jump the histories page.</string>
 

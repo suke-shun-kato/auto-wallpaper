@@ -29,6 +29,7 @@ import java.util.Random;
 
 import xyz.monogatari.autowallpaper.HistoryActivity;
 import xyz.monogatari.autowallpaper.MainActivity;
+import xyz.monogatari.autowallpaper.NotificationChannelId;
 import xyz.monogatari.autowallpaper.NotifyId;
 import xyz.monogatari.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.autowallpaper.R;
@@ -252,10 +253,9 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
         // ----------
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){ //Android8.0（API 26）以上
             //// 通知チャンネルを作成→通知マネージャーに登録
-            String channelName = "namanameaname";   //TODO XMLから取得するようにする
             NotificationChannel ntfChannel = new NotificationChannel(
-                    this.context.getString(R.string.notification_ch_id_wp_change),
-                    channelName,
+                    NotificationChannelId.WALLPAPER_CHANGED,
+                    this.context.getString(R.string.histories_notification_ch_name),
                     NotificationManager.IMPORTANCE_DEFAULT
             );
 
@@ -276,7 +276,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
         Intent[] intents = {mainIntent, historyIntent};
         PendingIntent pendingIntent = PendingIntent.getActivities(
                 this.context,
-                PendingIntentRequestCode.WALLPAPER_CHANGED,    // リクエストコード TODO XMLに移す
+                PendingIntentRequestCode.WALLPAPER_CHANGED,
                 intents,
                 //PendingIntentオブジェクトが既にあったらそのまま、ただしextraの値は最新に更新される
                 PendingIntent.FLAG_UPDATE_CURRENT
@@ -290,7 +290,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {   //Android8.0（API 26）以上
             notifBuilder = new NotificationCompat.Builder(
                     this.context,
-                    this.context.getString(R.string.notification_ch_id_wp_change)
+                    NotificationChannelId.WALLPAPER_CHANGED
             );
         } else {
             notifBuilder = new NotificationCompat.Builder(// この打ち消し線は問題ない
@@ -305,7 +305,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
 
 
 
-                .setWhen(System.currentTimeMillis())
+                .setWhen(System.currentTimeMillis())    //TODO ここの設定ちゃんとする
                 .setVibrate(new long[]{1000, 500})  //1秒後に0.5秒だけ振動
                 //2秒ON→1秒OFF→2秒ONを繰り返す
                 .setLights(Color.BLUE,2000,1000) ;
@@ -313,7 +313,7 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
 
         //// 通知をする
         Notification notification = notifBuilder.build();
-        notifManager.notify(NotifyId.WALLPAPER_CHANGED, notification);  //TODO NotifyIdをXMLに移す
+        notifManager.notify(NotifyId.WALLPAPER_CHANGED, notification);
 
 
         return true;
