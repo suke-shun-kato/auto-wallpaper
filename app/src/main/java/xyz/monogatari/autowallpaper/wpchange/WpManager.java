@@ -49,22 +49,11 @@ public class WpManager {
     private final Context context;
     private final SharedPreferences sp;
     private ImgGetter imgGetter = null;
-//    private final Map<String, Integer> sourceKindMap = new HashMap<>();
 
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
     public WpManager(Context context) {
-//        // ----------------------------------
-//        // クラス名→DBのsource_kind変換用のハッシュマップの作成
-//        // ----------------------------------
-//        this.sourceKindMap.put("ImgGetterDir", 1);
-//        this.sourceKindMap.put("ImgGetterTw", 2);
-
-
-        // ----------------------------------
-        //
-        // ----------------------------------
         this.context = context;
         this.sp = PreferenceManager.getDefaultSharedPreferences(context);
     }
@@ -78,37 +67,30 @@ public class WpManager {
      * @param db 書き込み先のdbオブジェクト
      */
     private void insertHistories(SQLiteDatabase db) {
-        //noinspection TryFinallyCanBeTryWithResources
-//        try {
-            // ----------------------------------
-            // INSERT
-            // ----------------------------------
-            //// コード準備
-            // ↓のコードでInspectionエラーが出るがAndroidStudioのバグなので放置、3.1では直るらしい
+        // ----------------------------------
+        // INSERT
+        // ----------------------------------
+        //// コード準備
+        // ↓のコードでInspectionエラーが出るがAndroidStudioのバグなので放置、3.1では直るらしい
 
-            SQLiteStatement dbStt = db.compileStatement("" +
-                    "INSERT INTO histories (" +
-                        "source_kind, img_uri, intent_action_uri, created_at" +
-                    ") VALUES ( ?, ?, ?, datetime('now') );");
+        SQLiteStatement dbStt = db.compileStatement("" +
+                "INSERT INTO histories (" +
+                    "source_kind, img_uri, intent_action_uri, created_at" +
+                ") VALUES ( ?, ?, ?, datetime('now') );");
 
-            //// bind
-Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は！:"+this.imgGetter.getClass().getSimpleName());
-            dbStt.bindString(1, this.imgGetter.getClass().getSimpleName() );
-            dbStt.bindString(2, this.imgGetter.getImgUri());
-            String uri = this.imgGetter.getActionUri();
-            if (uri == null) {
-                dbStt.bindNull(3);
-            } else {
-                dbStt.bindString(3, this.imgGetter.getActionUri());
-            }
+        //// bind
+        dbStt.bindString(1, this.imgGetter.getClass().getSimpleName() );
+        dbStt.bindString(2, this.imgGetter.getImgUri());
+        String uri = this.imgGetter.getActionUri();
+        if (uri == null) {
+            dbStt.bindNull(3);
+        } else {
+            dbStt.bindString(3, this.imgGetter.getActionUri());
+        }
 
-            //// insert実行
-            dbStt.executeInsert();
+        //// insert実行
+        dbStt.executeInsert();
 
-//
-//        } finally {
-//            db.close();
-//        }
     }
     private void deleteHistoriesOverflowMax(SQLiteDatabase db, @SuppressWarnings("SameParameterValue") int maxNum) {
         Cursor cursor = null;
@@ -118,7 +100,6 @@ Log.d("○○○"+this.getClass().getSimpleName(), "imgGetterのクラス名は�
 
             if (cursor != null && cursor.moveToFirst()) {
                 int recordCount = cursor.getInt(cursor.getColumnIndexOrThrow("count"));
-Log.d("○"+this.getClass().getSimpleName(), "count: " + recordCount);
                 if (recordCount > maxNum) {
                     SQLiteStatement dbStt = db.compileStatement(
                             "DELETE FROM histories WHERE created_at IN (" +
@@ -135,113 +116,12 @@ Log.d("○"+this.getClass().getSimpleName(), "count: " + recordCount);
         }
     }
 
-
     /************************************
-     * 壁紙を取得→加工→セット する一連の流れを行う関数
-     * 処理の都合上、別スレッドで壁紙をセットしないといけいないので直接使用は不可
+     * 壁紙が変更されたよという通知を送るメソッド
+     *
+     * @return boolean 通知送るのが成功したら true
      */
-    public boolean execute() {
-        // ----------------------------------
-        // 画像取得
-        // 取得元の選択が複数あるときは等確率で抽選を行う
-        // ----------------------------------
-        // ----------
-        // 画像リストを取得
-        // ----------
-        //// 抽選先の取得リストをListに入れる
-        List<ImgGetter> imgGetterList = new ArrayList<>();
-        if (sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
-                && ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            imgGetterList.addAll( ImgGetterDir.getImgGetterList(this.context) );
-        }
-        if (sp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
-                && sp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
-            imgGetterList.addAll( ImgGetterTw.getImgGetterList(this.context) );
-        }
-
-        // ----------
-        // 抽選
-        // ----------
-        if (imgGetterList.size() == 0) {
-            return false;
-        }
-        int drawnIndex = new Random().nextInt(imgGetterList.size());
-        this.imgGetter = imgGetterList.get(drawnIndex);
-
-        // ----------
-        // 画像取得
-        // ----------
-        Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap(this.context); //データ本体取得
-
-        // ----------------------------------
-        // 画像加工
-        // ----------------------------------
-Log.d("○" + this.getClass().getSimpleName(), "画像サイズ（加工前）: "
-+ ", width:" + wallpaperBitmap.getWidth()
-+ " height:" + wallpaperBitmap.getHeight());
-
-        // スクリーン（画面）サイズ取得
-        Point point = DisplaySizeCheck.getRealSize(this.context);
-        // 画像加工
-        Bitmap processedWallpaperBitmap = BitmapProcessor.process(
-                wallpaperBitmap, point.x, point.y,
-                sp.getBoolean(SettingsFragment.KEY_OTHER_AUTO_ROTATION, true)
-        );
-
-Log.d("○" + this.getClass().getSimpleName(), "画像サイズ（加工後）: "
-                + ", width:" + processedWallpaperBitmap.getWidth()
-                + " height:" + processedWallpaperBitmap.getHeight());
-Log.d("○" + this.getClass().getSimpleName(), "ディスプレイサイズ: "
-                + " width: " + point.x
-                + ", height: " + point.y);
-
-        // ----------------------------------
-        // 画像を壁紙にセット
-        // ----------------------------------
-        WallpaperManager wm = WallpaperManager.getInstance(this.context);
-        try {
-            if (Build.VERSION.SDK_INT >= 24) {
-                //APIレベル24以上の場合, Android7.0以上のとき
-                wm.setBitmap(
-                        processedWallpaperBitmap,
-                        null,
-                        false,
-                        WallpaperManager.FLAG_SYSTEM
-                );
-                wm.setBitmap(
-                        processedWallpaperBitmap,
-                        null,
-                        false,
-                        WallpaperManager.FLAG_LOCK
-                );
-            } else {
-                // 24未満のとき
-                wm.setBitmap(processedWallpaperBitmap);
-            }
-        } catch (IOException e) {
-Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません");
-        }
-
-
-        // ----------------------------------
-        // 履歴に書き込み
-        // ----------------------------------
-        MySQLiteOpenHelper mDbHelper = new MySQLiteOpenHelper(this.context);
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        //noinspection TryFinallyCanBeTryWithResources
-        try {
-            this.insertHistories(db);
-            // 記憶件数溢れたものを削除
-            this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
-        } finally {
-            db.close();
-        }
-
-        // ----------------------------------
-        // 通知を作成
-        // ----------------------------------
+    private boolean sendNotification() {
         NotificationManager notifManager = (NotificationManager)this.context.getSystemService(Context.NOTIFICATION_SERVICE);
         if ( notifManager == null ) {
             return true;
@@ -303,20 +183,119 @@ Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません")
                 .setContentTitle(this.context.getString(R.string.histories_notification_title))
                 .setContentText(this.context.getString(R.string.histories_notification_body))
                 .setContentIntent(pendingIntent)
-
-
-
-                .setWhen(System.currentTimeMillis())    //TODO ここの設定ちゃんとする
-                .setVibrate(new long[]{1000, 500})  //1秒後に0.5秒だけ振動
-                //2秒ON→1秒OFF→2秒ONを繰り返す
-                .setLights(Color.BLUE,2000,1000) ;
+                // 通知チャンネルをセット, Android8.0未満だとなにも処理しない
+                .setChannelId(NotificationChannelId.WALLPAPER_CHANGED)
+                .setWhen(System.currentTimeMillis());
 
 
         //// 通知をする
         Notification notification = notifBuilder.build();
         notifManager.notify(NotifyId.WALLPAPER_CHANGED, notification);
 
-
+        // ----------
+        //
+        // ----------
         return true;
+    }
+
+
+    /************************************
+     * 壁紙を取得→加工→セット する一連の流れを行う関数
+     * 処理の都合上、別スレッドで壁紙をセットしないといけいないので直接使用は不可
+     */
+    public boolean execute() {
+        // ----------------------------------
+        // 画像取得
+        // 取得元の選択が複数あるときは等確率で抽選を行う
+        // ----------------------------------
+        // ----------
+        // 画像リストを取得
+        // ----------
+        //// 抽選先の取得リストをListに入れる
+        List<ImgGetter> imgGetterList = new ArrayList<>();
+        if (sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+                && ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED) {
+            imgGetterList.addAll( ImgGetterDir.getImgGetterList(this.context) );
+        }
+        if (sp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
+                && sp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
+            imgGetterList.addAll( ImgGetterTw.getImgGetterList(this.context) );
+        }
+
+        // ----------
+        // 抽選
+        // ----------
+        if (imgGetterList.size() == 0) {
+            return false;
+        }
+        int drawnIndex = new Random().nextInt(imgGetterList.size());
+        this.imgGetter = imgGetterList.get(drawnIndex);
+
+        // ----------
+        // 画像取得
+        // ----------
+        Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap(this.context); //データ本体取得
+
+        // ----------------------------------
+        // 画像加工
+        // ----------------------------------
+        // スクリーン（画面）サイズ取得
+        Point point = DisplaySizeCheck.getRealSize(this.context);
+        // 画像加工
+        Bitmap processedWallpaperBitmap = BitmapProcessor.process(
+                wallpaperBitmap, point.x, point.y,
+                sp.getBoolean(SettingsFragment.KEY_OTHER_AUTO_ROTATION, true)
+        );
+
+        // ----------------------------------
+        // 画像を壁紙にセット
+        // ----------------------------------
+        WallpaperManager wm = WallpaperManager.getInstance(this.context);
+        try {
+            if (Build.VERSION.SDK_INT >= 24) {
+                //APIレベル24以上の場合, Android7.0以上のとき
+                wm.setBitmap(
+                        processedWallpaperBitmap,
+                        null,
+                        false,
+                        WallpaperManager.FLAG_SYSTEM
+                );
+                wm.setBitmap(
+                        processedWallpaperBitmap,
+                        null,
+                        false,
+                        WallpaperManager.FLAG_LOCK
+                );
+            } else {
+                // 24未満のとき
+                wm.setBitmap(processedWallpaperBitmap);
+            }
+        } catch (IOException e) {
+            Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません");
+        }
+
+
+        // ----------------------------------
+        // 履歴に書き込み
+        // ----------------------------------
+        MySQLiteOpenHelper mDbHelper = new MySQLiteOpenHelper(this.context);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        //noinspection TryFinallyCanBeTryWithResources
+        try {
+            this.insertHistories(db);
+            // 記憶件数溢れたものを削除
+            this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
+        } finally {
+            db.close();
+        }
+
+        // ----------------------------------
+        // 通知を作成
+        // ----------------------------------
+        boolean canSendNotification = this.sendNotification();
+
+        return canSendNotification;
     }
 }

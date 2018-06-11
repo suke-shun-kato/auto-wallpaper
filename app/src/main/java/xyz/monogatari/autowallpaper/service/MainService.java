@@ -82,12 +82,6 @@ public class MainService extends Service {
     // --------------------------------------------------------------------
     // メソッド（通常、バインド両方）
     // --------------------------------------------------------------------
-    @Override
-    public void onTaskRemoved(Intent rootIntent) {
-        super.onTaskRemoved(rootIntent);
-Log.d("○"+this.getClass().getSimpleName(), "onTaskRemoved()____________");
-    }
-
     /************************************
      * サービス開始時、たった1回だけ実行されるメソッド
      */
@@ -95,7 +89,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onTaskRemoved()____________");
     public void onCreate() {
         super.onCreate();
         this.sp = PreferenceManager.getDefaultSharedPreferences(this);
-Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode: " + this.hashCode());
     }
 
     /************************************
@@ -103,7 +96,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()が呼ばれた hashCode
      */
     @Override
     public void onDestroy() {
-Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCode: " + this.hashCode());
         super.onDestroy();
 
         // ----------------------------------
@@ -229,28 +221,7 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()が呼ばれた hashCod
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-Log.d("○"+this.getClass().getSimpleName(), "onBind()が呼ばれた  hashCode: " + this.hashCode());
         return this.binder;
-    }
-
-    /************************************
-     * バインドが終わった時、設定画面の表示が終わる時
-     * @param intent バインド時に貰ったインテントとおなじの
-     */
-    @Override
-    public boolean onUnbind(Intent intent) {
-Log.d("○"+this.getClass().getSimpleName(), "onUnbind()が呼ばれた hashCode: " + this.hashCode());
-
-        return super.onUnbind(intent);
-    }
-
-    /************************************
-     *
-     */
-    @Override
-    public void onRebind(Intent intent) {
-Log.d("○"+this.getClass().getSimpleName(), "onRebind()が呼ばれた hashCode: " + this.hashCode());
-        super.onRebind(intent);
     }
 
     /************************************
@@ -258,9 +229,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onRebind()が呼ばれた hashCode
      * @param key SharedPreferenceのキー名
      */
     public void onSPChanged(String key) {
-Log.d("○"+this.getClass().getSimpleName(), "onSPChanged()が呼ばれた hashCode: " + this.hashCode());
-Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
-
         // ----------------------------------
         // 例外処理
         // ----------------------------------
@@ -299,7 +267,6 @@ Log.d("○"+this.getClass().getSimpleName(), "key名: " + key);
                 break;
             case SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0:
                 if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-Log.d("○"+getClass().getSimpleName(), "WHEN_TIMER_START_TIMING_0:" + this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, 0L)+", NOW:"+System.currentTimeMillis() );
                     this.unsetTimerListener();
                     this.setTimerListener();
                 }
@@ -538,10 +505,10 @@ Log.d("○"+getClass().getSimpleName(), "setAlarm(), delayMsec=" + delayMsec + "
                 this.alarmManager.set(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
 
             } else //noinspection ConstantConditions
-                if ( Build.VERSION.SDK_INT >= 19  && Build.VERSION.SDK_INT <= 22) {// Android4.4～Android 5.1
+                if ( Build.VERSION.SDK_INT >= 19  && Build.VERSION.SDK_INT <= 22) {// Android4.4(KitKat) ～ Android 5.1(Lollipop)
                 this.alarmManager.setExact(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
 
-            } else if ( Build.VERSION.SDK_INT >=  23 ) {  // Android 6.0～
+            } else if (Build.VERSION.SDK_INT > 23) {  // Android 6.0(Marshmallow)～
                 this.alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
 
             }
