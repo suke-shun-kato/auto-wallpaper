@@ -59,6 +59,7 @@
         <item>5 seconds</item>
         <item>15 seconds</item>
         <item>30 seconds</item>
+        <item>1 minutes</item>
         <item>5 minutes</item>
         <item>30 minutes</item>
         <item>1 hour</item>
@@ -72,6 +73,7 @@
         <item>5000</item>  <!-- 5*1000 -->
         <item>15000</item>  <!-- 15*1000 -->
         <item>30000</item>  <!-- 30*1000 -->
+        <item>60000</item>  <!-- 1*60*1000 -->
         <item>300000</item>  <!-- 5*60*1000 -->
         <item>1800000</item> <!-- 30*60*1000 -->
         <item>3600000</item> <!-- 1*60*60*1000 -->

@@ -452,8 +452,10 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
             long intervalMsec = Long.parseLong(this.sp.getString(
                     SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
             ));
-            long settingUnixTimeMsec = this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis());
-            long delayMsec = MainService.calcDelayMsec(settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
+            long settingUnixTimeMsec = this.sp.getLong(
+                    SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis());
+            long delayMsec = MainService.calcDelayMsec(
+                    settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
 
             //// 表示を取得
             long nextUnixTimeMsec = delayMsec + System.currentTimeMillis();
@@ -483,6 +485,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
             return sb.substring(glue.length());
         }
     }
+
     // --------------------------------------------------------------------
     // ブロードキャストレシーバー受信時の挙動設定
     // --------------------------------------------------------------------
@@ -518,7 +521,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
     }
 
     public void onWpChangeError () {
-Log.d("○" + this.getClass().getSimpleName(), "onWpChangeError()ですよ！！！");
         Toast.makeText(this, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
     }
 

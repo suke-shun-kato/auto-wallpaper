@@ -43,26 +43,17 @@
             android:title="@string/setting_when_timer_title"
             android:summary="@string/setting_when_timer_summary" />
         <!-- long型の値が格納される, サービス開始された時に_1から計算されて書き込まれる（もしくは実行中に_1が変化したとき） -->
-        <Preference
-            android:key="when_timer_startTiming_0"
-            android:title="@string/setting_when_timer_startTime_title"
-            android:defaultValue="0"
-            android:summary="%s"
-            />
+        <!--<Preference-->
+            <!--android:key="when_timer_startTiming_0"-->
+            <!--android:title="@string/setting_when_timer_startTime_title"-->
+            <!--android:defaultValue="0"-->
+            <!--android:summary="%s"-->
+            <!--/>-->
         <xyz.monogatari.autowallpaper.TimePreference
             android:key="when_timer_startTiming_1"
             android:title="開始時間"
             android:defaultValue="00:00"
             />
-        <!-- valueは0.0～1.0 倍率 -->
-        <!--<ListPreference-->
-            <!--android:key="when_timer_startTiming_1"-->
-            <!--android:entries="@array/setting_when_timer_starTiming_1_entries"-->
-            <!--android:entryValues="@array/setting_when_timer_starTiming_1_values"-->
-            <!--android:defaultValue="0.0"-->
-            <!--android:title="@string/setting_when_timer_starTiming_1_title"-->
-            <!--android:summary="%s"-->
-            <!--/>-->
         <ListPreference
             android:key="when_timer_interval"
             android:entries="@array/setting_when_timer_interval_entries"

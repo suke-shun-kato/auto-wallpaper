@@ -89,9 +89,8 @@ public class SettingsFragment extends PreferenceFragment
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
     public static final String KEY_WHEN_TIMER = "when_timer";
-    public static final String KEY_WHEN_TIMER_START_TIMING_0 = "when_timer_startTiming_0";
-//    @SuppressWarnings("WeakerAccess")
-//    public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
+    public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
+
     public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";
 
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
@@ -200,10 +199,6 @@ public class SettingsFragment extends PreferenceFragment
             twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
         }
 
-        //// 開始タイミング_0（デバッグ用）
-        this.findPreference(KEY_WHEN_TIMER_START_TIMING_0).setSummary(
-                Long.toString( this.sp.getLong(KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()) )
-        );
 
         // ----------------------------------
         // <Preference>のイベントリスナの設定、主にパーミッションダイアログ表示用
@@ -357,6 +352,7 @@ public class SettingsFragment extends PreferenceFragment
                 .getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
+
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
@@ -412,12 +408,6 @@ public class SettingsFragment extends PreferenceFragment
                 fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
                 break;
 
-            //// 開始タイミング_0（デバッグ用）
-            case KEY_WHEN_TIMER_START_TIMING_0:
-                this.findPreference(key).setSummary(
-                        Long.toString( sp.getLong(key, -1L) )
-                );
-                break;
         }
 
         // ----------------------------------
