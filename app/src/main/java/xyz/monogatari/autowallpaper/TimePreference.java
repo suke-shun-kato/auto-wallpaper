@@ -46,11 +46,7 @@ import java.util.GregorianCalendar;
  * https://developer.android.com/guide/topics/ui/settings?hl=ja#Custom
  *
  */
-@SuppressWarnings("ALL")
 public class TimePreference extends DialogPreference {
-
-    
-    
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------

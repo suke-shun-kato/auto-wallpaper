@@ -370,7 +370,8 @@ public class MainService extends Service {
         // 変数準備
         // ----------
         final long intervalMsec = Long.parseLong(this.sp.getString(
-                SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
+                SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
+                this.getString(R.string.setting_when_timer_interval_values_default)
         ));
 
         final long startTimeUnixTime = this.sp.getLong(
@@ -426,7 +427,8 @@ public class MainService extends Service {
         long delayMsec = calcDelayMsec(
                 this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis()),
                 Long.parseLong( this.sp.getString(
-                                SettingsFragment.KEY_WHEN_TIMER_INTERVAL, "5000")),
+                                SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
+                                this.getString(R.string.setting_when_timer_interval_values_default))),
                 nowUnixTimeMsec
         );
         long wakeUpUnixTime = delayMsec + nowUnixTimeMsec;

@@ -23,6 +23,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -437,7 +438,8 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
             //// 遅延時間を計算
             long intervalMsec = Long.parseLong(this.sp.getString(
-                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
+                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
+                    this.getString(R.string.setting_when_timer_interval_values_default)
             ));
             long settingUnixTimeMsec = this.sp.getLong(
                     SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis());
@@ -449,12 +451,14 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
             String nextDateText = DateUtils.formatDateTime(
                     this,
                     nextUnixTimeMsec,
-                    DateUtils.FORMAT_SHOW_DATE
-                            | DateUtils.FORMAT_SHOW_WEEKDAY
-                            | DateUtils.FORMAT_SHOW_TIME
-                            | DateUtils.FORMAT_NUMERIC_DATE   //曜日表示の省略
-                            | DateUtils.FORMAT_ABBREV_ALL   //曜日表示の省略
+                    DateUtils.FORMAT_SHOW_DATE            // 日付を表示
+                            | DateUtils.FORMAT_SHOW_WEEKDAY     // 曜日を表示
+                            | DateUtils.FORMAT_SHOW_TIME        // 時刻を表示
+                            | DateUtils.FORMAT_NUMERIC_DATE     // 1月23日→1/23、時刻表示
+                            | DateUtils.FORMAT_ABBREV_WEEKDAY   // 月曜日→（月）、曜日の省略表示
             );
+
+
             list.add(nextDateText);
         }
 
