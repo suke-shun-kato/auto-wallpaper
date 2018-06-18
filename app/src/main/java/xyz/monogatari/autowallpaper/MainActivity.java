@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
-            Log.d("○" + MainActivity.this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
 
             // ----------
             // フィールドをセット
@@ -117,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onServiceDisconnected(ComponentName serviceClassName) {
-            Log.d("○________________" + this.getClass().getSimpleName(), "onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
             isBound = false;
             isServiceRunning = false;
         }
@@ -238,7 +236,6 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
      */
     @Override
     protected void onStart() {
-Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         super.onStart();
         // ----------------------------------
         //
@@ -248,21 +245,13 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         // flags:0 だと自動でstartService()が開始されない（戻り値はサービス開始されていなくてもバインド成功したらtrueが返る）
         // Context.BIND_AUTO_CREATEだと自動開始される
         this.isBound = this.bindService(intent, this.myConnection, 0);
-//        boolean rtnBool = this.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
 
-        // ----------------------------------
-        // 表示関連の更新
-        // ----------------------------------
-//        if (this.isServiceRunning) {
-//            this.nextWpSetTextView.setText(this.getNextWpChangeText());
-//        }
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-Log.d("○"+this.getClass().getSimpleName(), "onStop()");
         if (this.isBound) {
             this.unbindService(this.myConnection);
             this.isBound = false;
@@ -272,7 +261,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onStop()");
     @Override
     protected void onDestroy() {
         super.onDestroy();
-Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
         this.unregisterReceiver(this.progressBcastReceiver);
     }
 
@@ -370,7 +358,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
     @Override
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
         switch (requestCode) {
             case REQUEST_PERMISSION_ONOFF_SERVICE:   //サービスのON/OFFボタンを押してパーミッション許可したとき
                 // パーミッションを許可したとき

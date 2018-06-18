@@ -274,43 +274,6 @@ public class MainService extends Service {
         }
     }
 
-
-    /************************************
-     * Timerの開始時刻のUnixTime[ms] を求める
-     * @param intervalMsec Timerの間隔
-     * @param mag a
-     * @param nowUnixTimeMsec 現在のUNIXタイム
-     * @return Timerの開始時刻のUnixTime[ms]
-     */
-    private static double calcStartUnixTime(long intervalMsec, double mag, long nowUnixTimeMsec) {
-        // 境界値辺りの値の修正はば[ms]
-        final double  COMPRESS_MSEC = 500.0;
-        
-        // タイマーをセットするときには少し秒数が経過しているので、500ms秒をここで追加
-        // ----------------------------------
-        // 例外処理
-        // ----------------------------------
-        if (intervalMsec < COMPRESS_MSEC * 2) {
-            throw new RuntimeException("intervalMsecが大きすぎます");
-        }
-        
-        // ----------------------------------
-        // 本番
-        // ----------------------------------
-        //// メイン処理
-        double xxxMSecondsAfter = mag * intervalMsec;
-
-        //// 境界値付近（0[ms]付近とintervalMsec[ms]付近）は実際にTimerセットするときずれるので内側に値を修正
-        if ( 0.0 <= xxxMSecondsAfter && xxxMSecondsAfter < COMPRESS_MSEC) {
-            xxxMSecondsAfter = COMPRESS_MSEC;
-        }
-        if ( intervalMsec - COMPRESS_MSEC < xxxMSecondsAfter && xxxMSecondsAfter <= intervalMsec ) {
-            xxxMSecondsAfter = intervalMsec - COMPRESS_MSEC;
-        }
-
-        return xxxMSecondsAfter + nowUnixTimeMsec;
-    }
-
     // --------------------------------------------------------------------
     // 自作リスナー登録
     // --------------------------------------------------------------------
