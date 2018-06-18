@@ -14,7 +14,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.Point;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -124,7 +123,7 @@ public class WpManager {
     private boolean sendNotification() {
         NotificationManager notifManager = (NotificationManager)this.context.getSystemService(Context.NOTIFICATION_SERVICE);
         if ( notifManager == null ) {
-            return true;
+            return false;
         }
 
 
@@ -294,6 +293,7 @@ public class WpManager {
         // ----------------------------------
         // 通知を作成
         // ----------------------------------
+        //noinspection UnnecessaryLocalVariable
         boolean canSendNotification = this.sendNotification();
 
         return canSendNotification;

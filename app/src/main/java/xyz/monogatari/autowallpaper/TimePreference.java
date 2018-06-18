@@ -99,6 +99,7 @@ public class TimePreference extends DialogPreference {
          * TimePickerの時間をミリ秒へ変換
          * @return 変換した時間
          */
+        @SuppressWarnings("WeakerAccess")
         public long getMilliTime() {
             Calendar calendar = new GregorianCalendar();
 
@@ -117,6 +118,7 @@ public class TimePreference extends DialogPreference {
      * XMLにデフォルト値がない場合のデフォルト値
      * sharedPref.getString() の引数のデフォルト値としても使用できる
      */
+    @SuppressWarnings("WeakerAccess")
     public static long getDefaultSpValue(){
         return System.currentTimeMillis();
     }
@@ -255,10 +257,12 @@ public class TimePreference extends DialogPreference {
         // Change this data type to match the type saved by your Preference
         long value;
 
+        @SuppressWarnings("WeakerAccess")
         public SavedState(Parcelable superState) {
             super(superState);
         }
 
+        @SuppressWarnings("WeakerAccess")
         public SavedState(Parcel source) {
             super(source);
             // Get the current preference's value

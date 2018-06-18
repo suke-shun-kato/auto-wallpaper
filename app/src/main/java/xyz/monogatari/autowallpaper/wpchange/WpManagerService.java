@@ -3,7 +3,6 @@ package xyz.monogatari.autowallpaper.wpchange;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
