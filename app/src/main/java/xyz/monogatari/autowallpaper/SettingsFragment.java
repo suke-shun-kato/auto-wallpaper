@@ -89,9 +89,8 @@ public class SettingsFragment extends PreferenceFragment
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
     public static final String KEY_WHEN_TIMER = "when_timer";
-    public static final String KEY_WHEN_TIMER_START_TIMING_0 = "when_timer_startTiming_0";
-    @SuppressWarnings("WeakerAccess")
     public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
+
     public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";
 
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
@@ -110,23 +109,13 @@ public class SettingsFragment extends PreferenceFragment
      */
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた:start");
         super.onCreate(savedInstanceState);
 
         // 設定xmlを読み込む
         this.addPreferencesFromResource(R.xml.preferences);
-Log.d("○" + this.getClass().getSimpleName(), "onCreate()が呼ばれた:end");
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-Log.d("○○○○○"+this.getClass().getSimpleName(), "onActivityCreated():start");
-        super.onActivityCreated(savedInstanceState);
-Log.d("○○○○○"+this.getClass().getSimpleName(), "onActivityCreated():end");
     }
 
     public void onNewIntent(Intent intent) {
-Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先頭）");
         // ----------------------------------
         // Twitter認証のコールバックのとき TwitterOAuthPreference にIntentでURLの情報を渡す
         // コールバックではonActivityCreated()は呼ばれないのでこの場所
@@ -144,7 +133,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先�
      */
     @Override
     public void onStart() {
-Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先頭）");
         super.onStart();
         // ----------------------------------
         // サービスへバインドする
@@ -165,7 +153,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onStart()が呼ばれた（先�
      */
     @Override
     public void onStop() {
-Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
         super.onStop();
 
         // ----------------------------------
@@ -183,7 +170,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onStop()が呼ばれた");
      */
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先頭）");
 
         // ----------------------------------
         // タイトル表示の設定
@@ -213,10 +199,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
             twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
         }
 
-        //// 開始タイミング_0（デバッグ用）
-        this.findPreference(KEY_WHEN_TIMER_START_TIMING_0).setSummary(
-                Long.toString( this.sp.getLong(KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis()) )
-        );
 
         // ----------------------------------
         // <Preference>のイベントリスナの設定、主にパーミッションダイアログ表示用
@@ -233,7 +215,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateView() 呼ばれた（先�
              */
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-Log.d("○SettingsFragment", "onPreferenceChange() 呼ばれた: "+(boolean)newValue);
                 // ----------
                 // パーミッション許可ダイアログを出るようにしている
                 // ----------
@@ -293,7 +274,6 @@ Log.d("○SettingsFragment", "onPreferenceChange() 呼ばれた: "+(boolean)newV
              */
             @Override
             public boolean onPreferenceClick(Preference preference) {
-Log.d("○" + this.getClass().getSimpleName(), "onPreferenceClick() 呼ばれたdirPath");
                 if ( ContextCompat.checkSelfPermission(SettingsFragment.this.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
                        != PackageManager.PERMISSION_GRANTED
                   ||
@@ -317,7 +297,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onPreferenceClick() 呼ばれた
                 new Preference.OnPreferenceClickListener(){
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
-Log.d("○SettingFragment", "クリックされた！！！");
                         Intent i = new Intent(getActivity(), AboutActivity.class);
                         startActivity(i);
                         return true;
@@ -346,16 +325,6 @@ Log.d("○SettingFragment", "クリックされた！！！");
 //        }
 //    }
 
-    /************************************
-     * インスタンス消失前のデータを保存するタイミング（画面回転直前）
-     * @param outState このバンドルにデータを保存ずる
-     */
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);    //これ絶対呼ばないとダメ、selectDirのonSaveInstanceが呼ばれない
-Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれた");
-    }
-
     // --------------------------------------------------------------------
     // メソッド、設定の変更感知用
     // --------------------------------------------------------------------
@@ -383,6 +352,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
                 .getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
+
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
@@ -395,9 +365,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれ�
     public void onRequestPermissionsResultFragment(
             int requestCode, @SuppressWarnings("unused") @NonNull String[] permissions, @NonNull int[] grantResults
     ) {
-Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
-//Log.d("○_"+this.getClass().getSimpleName(), grantResults[0]+"");
-//Log.d("○_"+this.getClass().getSimpleName(), grantResults[1]+"");
         switch (requestCode) {
             case RQ_CODE_FROM_DIR:
                 // 許可をクリックしたとき
@@ -426,7 +393,6 @@ Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
      */
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
-Log.d("○"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): key名:" + key);
         // ----------------------------------
         // 設定値をSummaryに反映
         // ----------------------------------
@@ -442,12 +408,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onSharedPreferenceChanged(): key�
                 fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
                 break;
 
-            //// 開始タイミング_0（デバッグ用）
-            case KEY_WHEN_TIMER_START_TIMING_0:
-                this.findPreference(key).setSummary(
-                        Long.toString( sp.getLong(key, -1L) )
-                );
-                break;
         }
 
         // ----------------------------------

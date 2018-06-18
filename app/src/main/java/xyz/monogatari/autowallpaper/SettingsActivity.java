@@ -7,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 
 /**
@@ -34,7 +33,6 @@ public class SettingsActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults
     ) {
-Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
         this.settingFragment.onRequestPermissionsResultFragment(requestCode, permissions, grantResults);
 
     }
@@ -51,10 +49,8 @@ Log.d("○_"+this.getClass().getSimpleName(), "onRequestPermissionsResult():");
         // ----------------------------------
         // 
         // ----------------------------------
-Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: ");
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_settings);
-Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2");
 
 
         // ----------------------------------
@@ -76,14 +72,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super2"
         // ----------------------------------
         this.settingFragment = (SettingsFragment)this.getFragmentManager().findFragmentById(R.id.setting_fragment);
 
-Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: super3");
-    }
-
-    @Override
-    protected void onStart() {
-Log.d("○" + this.getClass().getSimpleName(), "onStart() 呼ばれた: top");
-        super.onStart();
-Log.d("○" + this.getClass().getSimpleName(), "onStart() 呼ばれた: end");
     }
 
     /**
@@ -101,7 +89,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onStart() 呼ばれた: end");
      */
     @Override
     protected void onNewIntent(Intent intent) {
-Log.d("○" + this.getClass().getSimpleName(), "onNewIntent(): data: "+intent.getData());
         super.onNewIntent(intent);
 
         this.settingFragment.onNewIntent(intent);
@@ -112,24 +99,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onNewIntent(): data: "+intent.ge
      */
     @Override
     public void onSaveInstanceState(Bundle outState) {
-Log.d("○" + this.getClass().getSimpleName(), "onSaveInstanceState() 呼ばれた");
         super.onSaveInstanceState(outState);
     }
 
-//
-//    /************************************
-//     * オプションんのハンドラ
-//     * 戻るボタンを押したときにアクティビティを終了する（ホームに戻る）ようにしている
-//     * @param item 選択されたmenuアイテム
-//     */
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case android.R.id.home:
-//                this.finish();
-//                return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
 }

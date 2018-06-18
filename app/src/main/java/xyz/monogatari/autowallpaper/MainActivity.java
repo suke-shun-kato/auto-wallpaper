@@ -67,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
-            Log.d("○" + MainActivity.this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
 
             // ----------
             // フィールドをセット
@@ -117,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onServiceDisconnected(ComponentName serviceClassName) {
-            Log.d("○________________" + this.getClass().getSimpleName(), "onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
             isBound = false;
             isServiceRunning = false;
         }
@@ -238,7 +236,6 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
      */
     @Override
     protected void onStart() {
-Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         super.onStart();
         // ----------------------------------
         //
@@ -248,21 +245,13 @@ Log.d("○"+this.getClass().getSimpleName(), "onStart()");
         // flags:0 だと自動でstartService()が開始されない（戻り値はサービス開始されていなくてもバインド成功したらtrueが返る）
         // Context.BIND_AUTO_CREATEだと自動開始される
         this.isBound = this.bindService(intent, this.myConnection, 0);
-//        boolean rtnBool = this.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
 
-        // ----------------------------------
-        // 表示関連の更新
-        // ----------------------------------
-//        if (this.isServiceRunning) {
-//            this.nextWpSetTextView.setText(this.getNextWpChangeText());
-//        }
 
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-Log.d("○"+this.getClass().getSimpleName(), "onStop()");
         if (this.isBound) {
             this.unbindService(this.myConnection);
             this.isBound = false;
@@ -272,7 +261,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onStop()");
     @Override
     protected void onDestroy() {
         super.onDestroy();
-Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
         this.unregisterReceiver(this.progressBcastReceiver);
     }
 
@@ -370,7 +358,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onDestroy()");
     @Override
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
         switch (requestCode) {
             case REQUEST_PERMISSION_ONOFF_SERVICE:   //サービスのON/OFFボタンを押してパーミッション許可したとき
                 // パーミッションを許可したとき
@@ -450,22 +437,27 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
         if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
             //// 遅延時間を計算
             long intervalMsec = Long.parseLong(this.sp.getString(
-                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL, ""
+                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
+                    this.getString(R.string.setting_when_timer_interval_values_default)
             ));
-            long settingUnixTimeMsec = this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_0, System.currentTimeMillis());
-            long delayMsec = MainService.calcDelayMsec(settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
+            long settingUnixTimeMsec = this.sp.getLong(
+                    SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis());
+            long delayMsec = MainService.calcDelayMsec(
+                    settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
 
             //// 表示を取得
             long nextUnixTimeMsec = delayMsec + System.currentTimeMillis();
             String nextDateText = DateUtils.formatDateTime(
                     this,
                     nextUnixTimeMsec,
-                    DateUtils.FORMAT_SHOW_DATE
-                            | DateUtils.FORMAT_SHOW_WEEKDAY
-                            | DateUtils.FORMAT_SHOW_TIME
-                            | DateUtils.FORMAT_NUMERIC_DATE   //曜日表示の省略
-                            | DateUtils.FORMAT_ABBREV_ALL   //曜日表示の省略
+                    DateUtils.FORMAT_SHOW_DATE            // 日付を表示
+                            | DateUtils.FORMAT_SHOW_WEEKDAY     // 曜日を表示
+                            | DateUtils.FORMAT_SHOW_TIME        // 時刻を表示
+                            | DateUtils.FORMAT_NUMERIC_DATE     // 1月23日→1/23、時刻表示
+                            | DateUtils.FORMAT_ABBREV_WEEKDAY   // 月曜日→（月）、曜日の省略表示
             );
+
+
             list.add(nextDateText);
         }
 
@@ -483,6 +475,7 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
             return sb.substring(glue.length());
         }
     }
+
     // --------------------------------------------------------------------
     // ブロードキャストレシーバー受信時の挙動設定
     // --------------------------------------------------------------------
@@ -518,7 +511,6 @@ Log.d("○" + this.getClass().getSimpleName(), "onRequestPermissionsResult()");
     }
 
     public void onWpChangeError () {
-Log.d("○" + this.getClass().getSimpleName(), "onWpChangeError()ですよ！！！");
         Toast.makeText(this, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
     }
 

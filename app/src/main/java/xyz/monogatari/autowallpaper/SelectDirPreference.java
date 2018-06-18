@@ -11,7 +11,6 @@ import android.preference.DialogPreference;
 import android.preference.Preference;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -68,7 +67,6 @@ public class SelectDirPreference extends DialogPreference {
      */
     public SelectDirPreference(Context context, AttributeSet attrs) {
         super(context, attrs);  //XMLにデフォルト値があるなら、onGetDefaultValue() がここで呼ばれる
-Log.d("○"+this.getClass().getSimpleName(), "コンストラクタ呼ばれた"+this.hashCode());
 
         // ----------------------------------
         // XMLでデフォルト値が設定されていない場合のデフォルト値の設定
@@ -106,7 +104,6 @@ Log.d("○"+this.getClass().getSimpleName(), "コンストラクタ呼ばれた"
     @SuppressWarnings("WeakerAccess")
     @Override
     protected void onClick() {
-Log.d("○"+this.getClass().getSimpleName(), "onClick(): super前");
         // ----------------------------------
         // パーミッションの要求
         // ----------------------------------
@@ -115,7 +112,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onClick(): super前");
             // パーミッションがあるときだけディレクトリ選択ダイアログが開く
             super.onClick();    //ここでonCreateDialogView()が呼ばれる
         }
-Log.d("○"+this.getClass().getSimpleName(), "onClick(): super後");
     }
 
     /************************************
@@ -124,7 +120,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onClick(): super後");
      */
     @Override
     protected View onCreateDialogView()  {
-Log.d("○"+this.getClass().getSimpleName(), "onCreateDialogView(): 最初");
         // ----------------------------------
         // 初期化
         // ----------------------------------
@@ -154,7 +149,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreateDialogView(): 最初");
                      */
                     @Override
                     public void onItemClick(AdapterView<?> parentAdapterView, View view, int i, long l) {
-Log.d("○"+this.getClass().getSimpleName(), "i: "+ i + " l:" + l);
                         // ----------------------------------
                         // ファイルをクリックしたときの処理、途中で処理を切り上げ
                         // ----------------------------------
@@ -245,7 +239,6 @@ Log.d("○"+this.getClass().getSimpleName(), "i: "+ i + " l:" + l);
      */
     @Override
     protected void onDialogClosed(boolean positiveResult) {
-Log.d("○"+this.getClass().getSimpleName(), "onDialogClosed() が呼ばれた: " + this.hashCode());
         // OKボタンを押してダイアログを閉じたとき選択ディレクトリパスを保存する
         if (positiveResult) {
             // 設定値を保存
@@ -274,7 +267,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onDialogClosed() が呼ばれた: 
      */
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
-Log.d("○"+this.getClass().getSimpleName(), "onSetInitialValue() が呼ばれた: " + restorePersistedValue);
         if ( restorePersistedValue ) {
             this.dirPath = this.getPersistedString(null);
         } else {
@@ -292,9 +284,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onSetInitialValue() が呼ばれ�
      */
     @Override
     protected Object onGetDefaultValue(TypedArray tArray, int index) {
-Log.d("○"+this.getClass().getSimpleName(), "onGetDefaultValue() が呼ばれた: " + tArray.getString(index));
-Log.d("○"+this.getClass().getSimpleName(), "onGetDefaultValue() が呼ばれた: " + tArray.length());
-Log.d("○"+this.getClass().getSimpleName(), "onGetDefaultValue() が呼ばれた: " + index);
 
         //// 特殊文字の時初期値を加工
         String defaultStr = tArray.getString(index);
@@ -331,7 +320,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onGetDefaultValue() が呼ばれ�
      */
     @Override
     protected Parcelable onSaveInstanceState() {
-Log.d("○"+this.getClass().getSimpleName(), "onSaveInstanceState() が呼ばれた: " +this.hashCode());
 
         // ----------------------------------
         // スーパークラスのParcelable
@@ -355,7 +343,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onSaveInstanceState() が呼ばれ
         // Parcelableの設定を行う
         myState.value = this.dirPath;
 
-Log.d("○"+this.getClass().getSimpleName(), "onSaveInstanceState() が呼ばれた: myState.value:" +myState.value);
         // 返す
         return myState;
     }
@@ -366,7 +353,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onSaveInstanceState() が呼ばれ
      */
     @Override
     protected void onRestoreInstanceState(Parcelable state) {
-Log.d("○"+this.getClass().getSimpleName(), "onRestoreInstanceState() が呼ばれた:"+this.hashCode());
 
         // ----------------------------------
         // 値がないとき、スーパークラスのParcelableのとき（ダイアログが表示されていないとき）
@@ -384,7 +370,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onRestoreInstanceState() が呼ば
         // Cast state to custom BaseSavedState and pass to superclass
         MySavedState myState = (MySavedState) state;
         super.onRestoreInstanceState(myState.getSuperState());
-Log.d("○"+this.getClass().getSimpleName(), "onRestoreInstanceState() が呼ばれた: myState.value:" +myState.value);
 
         // この時点でダイアログは表示されているので、あとは値を設定して表示するだけ
         this.dirPath = myState.value;

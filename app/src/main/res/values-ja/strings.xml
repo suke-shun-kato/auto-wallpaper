@@ -9,6 +9,7 @@
     <string name="main_to_history">履歴へ</string>
     <string name="main_set_wallpaper">直ぐに壁紙変更</string>
     <string name="main_toast_no_image">取得可能な画像がありません</string>
+    <string name="mainService_notification_ch_name">自動壁紙チェンジャー起動中</string>
     <string name="mainService_notification_title">起動中</string>
     <string name="mainService_notification_text">壁紙が自動で変更されます</string>
     <string name="permission_toast">壁紙のデータをファイルから取得するために許可が必要です</string>
@@ -33,17 +34,12 @@
     <string name="setting_when_turnOn_summary">画面がONになるタイミングで壁紙が変更されます</string>
     <string name="setting_when_timer_title">指定時間時</string>
     <string name="setting_when_timer_summary">↓で設定した時間で壁紙がセットされます（ただし、スクリーンOFF時は1回限定）</string>
-    <string name="setting_when_timer_startTime_title">開始タイミング</string>
-    <string name="setting_when_timer_starTiming_1_title">開始タイミング</string>
-    <string-array name="setting_when_timer_starTiming_1_entries">
-        <item>すぐに</item>
-        <item>設定時間後</item>
-    </string-array>
     <string name="setting_when_timer_interval_title">間隔</string>
     <string-array name="setting_when_timer_interval_entries">
         <item>5秒</item>
         <item>15秒</item>
         <item>30秒</item>
+        <item>1分</item>
         <item>5分</item>
         <item>30分</item>
         <item>1時間</item>
@@ -67,6 +63,7 @@
     <string name="histories_toolbar">履歴</string>
     <string name="histories_image">壁紙画像</string>
     <string name="histories_icon">アイコン</string>
+    <string name="histories_notification_ch_name">壁紙変更通知</string>
     <string name="histories_notification_title">壁紙が変更されました</string>
     <string name="histories_notification_body">タップすると履歴ページにとびます</string>
 

@@ -3,7 +3,6 @@ package xyz.monogatari.autowallpaper.wpchange;
 import android.app.IntentService;
 import android.content.Intent;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -30,12 +29,10 @@ public class WpManagerService extends IntentService {
     // --------------------------------------------------------------------
     public WpManagerService(String name) {
         super(name);
-Log.d("○"+ this.getClass().getSimpleName(), "WpManagerService(name), スレッド名:" + Thread.currentThread().getName());
     }
 
     public WpManagerService() {
         super("WpManagerService");
-Log.d("○" + this.getClass().getSimpleName(), "WpManagerService(), スレッド名:" + Thread.currentThread().getName());
     }
 
     // --------------------------------------------------------------------
@@ -43,7 +40,6 @@ Log.d("○" + this.getClass().getSimpleName(), "WpManagerService(), スレッド
     // --------------------------------------------------------------------
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-Log.d("○□" + this.getClass().getSimpleName(), "onStartCommand(), スレッド名:" + Thread.currentThread().getName());
         if (this.timer == null) {   //連続でこのサービスが走ったらonDestroy()でタイマーがcancelされる前にインスタンスが上書きされるから、最初のTimerがcancelされないのでその対策
             this.timer = new Timer();
             this.timer.schedule(new TimerTask() {
@@ -65,7 +61,6 @@ Log.d("○□" + this.getClass().getSimpleName(), "onStartCommand(), スレッ�
      */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-Log.d("○" + this.getClass().getSimpleName(), "onHandleIntent(), スレッド名:" + Thread.currentThread().getName());
         // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
         WpManager wpManager = new WpManager(this);
         boolean canExe = wpManager.execute();
@@ -87,6 +82,5 @@ Log.d("○" + this.getClass().getSimpleName(), "onHandleIntent(), スレッド�
         Intent i = new Intent(ACTION_NAME);
         i.putExtra(KEY_NAME, STATE_DESTROY);
         this.sendBroadcast(i);
-Log.d("○□" + this.getClass().getSimpleName(), "onDestroy(), スレッド名:" + Thread.currentThread().getName());
     }
 }

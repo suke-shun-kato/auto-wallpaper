@@ -12,4 +12,7 @@
         <attr name="textDialogTitle" format="string" />
         <attr name="textResult" format="string" />
     </declare-styleable>
+    <declare-styleable name="TimePreference">
+        <!--<attr name="textDialogTitle" format="string" />-->
+    </declare-styleable>
 </resources>

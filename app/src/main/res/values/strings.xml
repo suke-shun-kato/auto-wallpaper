@@ -13,6 +13,7 @@
     <string name="main_to_history">To History</string>
     <string name="main_set_wallpaper">Sets wallpaper now</string>
     <string name="main_toast_no_image">No image</string>
+    <string name="mainService_notification_ch_name">Running Auto Wallpaper Changer</string>
     <string name="mainService_notification_title">Running</string>
     <string name="mainService_notification_text">Running</string>
     <string name="permission_toast">wants a storage permission to display a wall paper of file.</string>
@@ -37,27 +38,12 @@
     <string name="setting_when_timer_title">set time</string>
     <string name="setting_when_timer_summary">will set at set time.</string>
 
-    <string name="setting_when_timer_startTime_title">start time</string>
-    <!--<string name="setting_when_timer_startTime_entries_0">Now</string>-->
-    <!--<string name="setting_when_timer_startTime_values_0">0</string>-->
-
-    <string name="setting_when_timer_starTiming_1_title">start timing</string>
-    <string-array name="setting_when_timer_starTiming_1_entries">
-        <item>soon</item>
-        <item>after set time</item>
-    </string-array>
-    <string-array name="setting_when_timer_starTiming_1_values" tools:ignore="MissingTranslation">
-        <item>0.0</item><!-- floatで設定する -->
-        <item>1.0</item>
-    </string-array>
-
-
-
     <string name="setting_when_timer_interval_title">Interval</string>
     <string-array name="setting_when_timer_interval_entries">
         <item>5 seconds</item>
         <item>15 seconds</item>
         <item>30 seconds</item>
+        <item>1 minutes</item>
         <item>5 minutes</item>
         <item>30 minutes</item>
         <item>1 hour</item>
@@ -71,6 +57,7 @@
         <item>5000</item>  <!-- 5*1000 -->
         <item>15000</item>  <!-- 15*1000 -->
         <item>30000</item>  <!-- 30*1000 -->
+        <item>60000</item>  <!-- 1*60*1000 -->
         <item>300000</item>  <!-- 5*60*1000 -->
         <item>1800000</item> <!-- 30*60*1000 -->
         <item>3600000</item> <!-- 1*60*60*1000 -->
@@ -96,6 +83,7 @@
     <string name="histories_toolbar">History</string>
     <string name="histories_image">A wallpaper image</string>
     <string name="histories_icon">icon</string>
+    <string name="histories_notification_ch_name">Wallpaper Changed</string>
     <string name="histories_notification_title">The wallpaper has changed.</string>
     <string name="histories_notification_body">After you tap it, you jump the histories page.</string>
 
