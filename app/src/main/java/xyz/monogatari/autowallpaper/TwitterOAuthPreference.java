@@ -59,10 +59,8 @@ public class TwitterOAuthPreference extends Preference {
         // ----------------------------------
         // XMLのカスタム属性をフィールドに読み込む
         // ----------------------------------
-        TypedArray typedAry = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.TwitterOAuthPreference,
-                0, 0);
+        TypedArray typedAry = context.obtainStyledAttributes(attrs, R.styleable.TwitterOAuthPreference);
+
         try {
              this.textCantAccessAuthPage
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textCantAccessAuthPage);
