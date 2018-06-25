@@ -43,7 +43,7 @@ public class TwitterOAuthPreference extends Preference {
     // 定数
     // --------------------------------------------------------------------
     /** 認証後のコールバックURL、アクセストークン取得場所 */
-    public static final String CALLBACK_URL = "android-suke://twitter";
+    public static final String CALLBACK_URL = "xyzgisautowallpaper://";
 
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_TOKEN = "token";
@@ -59,10 +59,8 @@ public class TwitterOAuthPreference extends Preference {
         // ----------------------------------
         // XMLのカスタム属性をフィールドに読み込む
         // ----------------------------------
-        TypedArray typedAry = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.TwitterOAuthPreference,
-                0, 0);
+        TypedArray typedAry = context.obtainStyledAttributes(attrs, R.styleable.TwitterOAuthPreference);
+
         try {
              this.textCantAccessAuthPage
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textCantAccessAuthPage);
@@ -105,13 +103,12 @@ public class TwitterOAuthPreference extends Preference {
         @Override
         protected RequestToken doInBackground(Void... params) {
             try {
-                return this.twPreference.twitter.getOAuthRequestToken(CALLBACK_URL);
+                RequestToken rqToken = this.twPreference.twitter.getOAuthRequestToken(CALLBACK_URL);
+                return rqToken;
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.d("○○○",e.getMessage());
+               return null;
             }
-//Log.d("○", "ブロックの後");
-            return null;
         }
 
         /************************************
@@ -122,7 +119,7 @@ public class TwitterOAuthPreference extends Preference {
         protected void onPostExecute(RequestToken requestToken) {
             this.requestToken = requestToken;
 
-            String url = this.requestToken!=null ? this.requestToken.getAuthorizationURL() : null;
+            String url = this.requestToken != null ? this.requestToken.getAuthorizationURL() : null;
             if (url != null) {
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
 
@@ -165,7 +162,11 @@ public class TwitterOAuthPreference extends Preference {
         this.getRequestTokenAsyncTask = new GetRequestTokenAsyncTask(this);
         getRequestTokenAsyncTask.execute();
     }
-///////////////////////////////////////////////
+
+
+    /************************************
+     * アクセストークンを取得するクラス
+     */
     private static class GetAccessTokenAsyncTask extends  AsyncTask<Void, Void, AccessToken> {
         private final TwitterOAuthPreference twPreference;
         private final RequestToken requestToken;
@@ -176,6 +177,7 @@ public class TwitterOAuthPreference extends Preference {
          */
         public GetAccessTokenAsyncTask(
                 TwitterOAuthPreference twPreference, RequestToken requestToken, String verifierStr) {
+
             super();
             this.twPreference = twPreference;
             this.requestToken = requestToken;
@@ -204,7 +206,6 @@ public class TwitterOAuthPreference extends Preference {
          */
         @Override
         protected void onPostExecute(AccessToken accessToken) {
-// accessToken=null;
             if (accessToken != null) {
                 // 認証成功！
                 Toast.makeText(this.twPreference.getContext(),
@@ -237,7 +238,6 @@ public class TwitterOAuthPreference extends Preference {
      * getIntent()はこのPreferenceでsetIntent()したものを取り出すのでここでは違う
      */
     public void onNewIntent(Intent intent) {
-Log.d("○"+getClass().getSimpleName(), "onNewIntent():top");
         // ----------------------------------
         // 例外処理、途中で切り上げ
         // ----------------------------------
@@ -248,7 +248,6 @@ Log.d("○"+getClass().getSimpleName(), "onNewIntent():top");
                 ) {
             return;
         }
-Log.d("○"+getClass().getSimpleName(), "intentのURI: "+intent.getData().toString());
 
         // ----------------------------------
         // メイン処理、アクセストークンを取得→SharedPreferenceに保存
