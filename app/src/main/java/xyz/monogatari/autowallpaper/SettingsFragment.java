@@ -123,7 +123,7 @@ public class SettingsFragment extends PreferenceFragment
         // Twitter認証のコールバックのとき
         if ( intent != null
                 && intent.getData() != null
-                && intent.getData().toString().startsWith(TwitterOAuthPreference.CALLBACK_URL)) {
+                && intent.getData().toString().startsWith(this.getString(R.string.twitter_callback_url))) {
             ((TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH)).onNewIntent(intent);
         }
     }

@@ -6,6 +6,7 @@
         <attr name="textCantAccessAuthPage" format="string" />
         <attr name="textOauthSuccess" format="string" />
         <attr name="textOauthFailed" format="string" />
+        <attr name="callbackUrl" format="string" />
     </declare-styleable>
     <declare-styleable name="ResetBtnPreference">
         <attr name="textDialogMsg" format="string" />
