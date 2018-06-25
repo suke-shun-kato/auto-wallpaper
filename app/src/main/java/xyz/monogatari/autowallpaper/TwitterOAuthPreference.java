@@ -38,12 +38,13 @@ public class TwitterOAuthPreference extends Preference {
     private String textCantAccessAuthPage;
     private String textOauthSuccess;
     private String textOauthFailed;
+    /** 認証後のコールバックURL、アクセストークン取得場所 */
+    private String callbackUrl;
 
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
-    /** 認証後のコールバックURL、アクセストークン取得場所 */
-    public static final String CALLBACK_URL = "xyzgisautowallpaper://";
+//    public static final String CALLBACK_URL = "xyzgisautowallpaper://";
 
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_TOKEN = "token";
@@ -68,6 +69,8 @@ public class TwitterOAuthPreference extends Preference {
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthSuccess);
              this.textOauthFailed
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthFailed);
+             this.callbackUrl
+                     = typedAry.getString(R.styleable.TwitterOAuthPreference_callbackUrl);
         } finally {
             typedAry.recycle();
         }
@@ -103,7 +106,8 @@ public class TwitterOAuthPreference extends Preference {
         @Override
         protected RequestToken doInBackground(Void... params) {
             try {
-                RequestToken rqToken = this.twPreference.twitter.getOAuthRequestToken(CALLBACK_URL);
+                RequestToken rqToken = this.twPreference.twitter.getOAuthRequestToken(
+                                                                    this.twPreference.callbackUrl);
                 return rqToken;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -243,7 +247,7 @@ public class TwitterOAuthPreference extends Preference {
         // ----------------------------------
         if (intent == null
                 || intent.getData() == null // intend.getData() は Uriオブジェクトが返ってくる
-                || !intent.getData().toString().startsWith(CALLBACK_URL)
+                || !intent.getData().toString().startsWith(this.callbackUrl)
                 || intent.getData().getQueryParameter("oauth_verifier") == null //キャンセルボタンを押したとき
                 ) {
             return;
