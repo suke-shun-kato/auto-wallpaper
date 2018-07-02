@@ -84,7 +84,6 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_FROM_DIR_PATH = "from_dir_path";
 
     public static final String KEY_FROM_TWITTER_FAV = "from_twitter_fav";
-    public static final String KEY_FROM_TWITTER_BOOKMARK = "from_twitter_bookmark";
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_FROM_TWITTER_OAUTH = "from_twitter_oauth";
 

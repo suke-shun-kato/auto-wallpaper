@@ -20,10 +20,6 @@
             android:defaultValue="false"
             android:key="from_twitter_fav"
             android:title="@string/setting_form_twitter_fav_title" />
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="from_twitter_bookmark"
-            android:title="@string/setting_form_twitter_bookmark_title" />
         <xyz.monogatari.autowallpaper.TwitterOAuthPreference
             android:key="from_twitter_oauth"
             android:title="@string/setting_from_twitter_oauth"
