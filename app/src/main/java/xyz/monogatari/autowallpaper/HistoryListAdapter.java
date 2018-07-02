@@ -108,40 +108,42 @@ public class HistoryListAdapter extends BaseAdapter {
         // ----------
         // クリックしたらソースに飛ぶように設定
         // ----------
-        wpImageView.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-Log.d("○"+this.getClass().getSimpleName(), "imgUri: " + itemDataStore.getImg_uri());
-Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + itemDataStore.getIntent_action_uri());
-                //// intent先のURI
-                String intentUriStr = itemDataStore.getIntent_action_uri();
-                if (intentUriStr == null) {
-                    intentUriStr = itemDataStore.getImg_uri();
-                }
-Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + intentUriStr);
+        // TODO あとで復活させる
+//        wpImageView.setOnClickListener(new View.OnClickListener(){
+//            @Override
+//            public void onClick(View view) {
+//Log.d("○"+this.getClass().getSimpleName(), "imgUri: " + itemDataStore.getImg_uri());
+//Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + itemDataStore.getIntent_action_uri());
+//                //// intent先のURI
+//                String intentUriStr = itemDataStore.getIntent_action_uri();
+//                if (intentUriStr == null) {
+//                    intentUriStr = itemDataStore.getImg_uri();
+//                }
+//Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + intentUriStr);
+//
+//                //// intentをセット
+//                Intent intent = new Intent(Intent.ACTION_VIEW);
+//                if (intentUriStr.startsWith("content://")) {
+//                    intent.setDataAndType(Uri.parse(intentUriStr),"image/*");
+//                    intent.addFlags(
+//                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION
+//                    );
+//
+//                } else {
+//                    intent.setData(Uri.parse(intentUriStr));
+//                }
+//
+//                // resolveActivity() インテントで動作するアクティビティを決める、
+//                // 戻り値はコンポーネント（アクティビティとかサービスとか）名オブジェクト
+//                if (intent.resolveActivity(context.getPackageManager()) != null) {
+//                    context.startActivity(intent);
+//                } else {
+//Log.d("○"+this.getClass().getSimpleName(), "インテントできません！！！！！");
+//                }
+//
+//            }
+//        });
 
-                //// intentをセット
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                if (intentUriStr.startsWith("content://")) {
-                    intent.setDataAndType(Uri.parse(intentUriStr),"image/*");
-                    intent.addFlags(
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    );
-
-                } else {
-                    intent.setData(Uri.parse(intentUriStr));
-                }
-
-                // resolveActivity() インテントで動作するアクティビティを決める、
-                // 戻り値はコンポーネント（アクティビティとかサービスとか）名オブジェクト
-                if (intent.resolveActivity(context.getPackageManager()) != null) {
-                    context.startActivity(intent);
-                } else {
-Log.d("○"+this.getClass().getSimpleName(), "インテントできません！！！！！");
-                }
-
-            }
-        });
 
         // ----------
         // 取得元のアイコン画像（Twitterやディレクトリなど）

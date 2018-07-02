@@ -8,6 +8,10 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListView;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -32,6 +36,7 @@ public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLa
     // フィールド
     // --------------------------------------------------------------------
     private SwipeRefreshLayout swipeRefreshLayout;
+    private ListView _lv;
 
     // --------------------------------------------------------------------
     // 定数
@@ -46,9 +51,10 @@ public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLa
     // --------------------------------------------------------------------
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_history);
+
+        _lv = findViewById(R.id.history_list);
 
         // ----------------------------------
         // アクションバーの設定
@@ -100,22 +106,44 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
         this.swipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
         this.swipeRefreshLayout.setOnRefreshListener(this);
         this.swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+
+        // ----------------------------------
+        // 長押し時のコンテキストメニューの表示
+        // ----------------------------------
+        this.registerForContextMenu(_lv);
     }
 
 
-//    /************************************
-//     * 戻るボタンが押されたときの処理
-//     */
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch(item.getItemId()) {
-//            case android.R.id.home:
-//                finish();
-//                return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+    /**
+     * Called when a context menu for the {@code view} is about to be shown.
+     * Unlike {@link #onCreateOptionsMenu(Menu)}, this will be called every
+     * time the context menu is about to be shown and should be populated for
+     * the view (or item inside the view for {@link AdapterView} subclasses,
+     * this can be found in the {@code menuInfo})).
+     * <p>
+     * Use {@link #onContextItemSelected(MenuItem)} to know when an
+     * item has been selected.
+     * <p>
+     * It is not safe to hold onto the context menu after this method returns.
+     *
+     * 長押ししたときに出るコンテキストメニューが作成されたとき
+     *
+     *
+     * @param menu
+     * @param v
+     * @param menuInfo
+     */
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+Log.d("aaaaaaaaaaaaaaaaaaaaa", "ccccccccccccccccccc");
+
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater inflater = this.getMenuInflater();
+        inflater.inflate(R.menu.menu_history, menu);
+
+        menu.setHeaderTitle(R.string.histories_contextMenu_title);
+    }
 
     /*************************************
      * Handle onNewIntent() to inform the fragment manager that the
@@ -132,7 +160,6 @@ Log.d("○"+this.getClass().getSimpleName(), "onCreate()のstart");
      */
     @Override
     protected void onNewIntent(Intent intent) {
-Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onNewIntent()");
         super.onNewIntent(intent);
         this.updateListView();
     }
@@ -143,7 +170,6 @@ Log.d("○○○○○○○○" + this.getClass().getSimpleName(), "onNewIntent
      */
     @Override
     public void onRefresh() {
-Log.d("○○○○"+this.getClass().getSimpleName(), "onRefresh()");
         // リストの更新
         this.updateListView();
     }
@@ -166,11 +192,11 @@ Log.d("○○○○"+this.getClass().getSimpleName(), "onRefresh()");
             @Override
             public void onSuccess(List<HistoryItemListDataStore> itemList) {
                 //// 履歴を表示する
-                ListView lv = findViewById(R.id.history_list);
+//                ListView lv = findViewById(R.id.history_list);
                 HistoryListAdapter adapter = new HistoryListAdapter(
                         HistoryActivity.this, itemList, R.layout.item_list_history
                 );
-                lv.setAdapter(adapter);
+                _lv.setAdapter(adapter);
 
                 //// グルグルあればを消す
                 swipeRefreshLayout.setRefreshing(false);

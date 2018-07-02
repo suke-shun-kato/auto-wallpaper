@@ -17,6 +17,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:targetApi="lollipop" />
     <TextView
+        android:id="@+id/history_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="ここに広告表示させる予定"
