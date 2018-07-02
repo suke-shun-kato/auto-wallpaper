@@ -25,7 +25,8 @@
     <string name="setting_form_dir_onoff_summary">App gets wallpaper from the directory.</string>
     <string name="setting_form_dir_which_title">Select directory.</string>
     <string name="setting_from_dir_which_default_summary">A directory is not selected.</string>
-    <string name="setting_form_twitter_fav_title">From any favorite of Twitter</string>
+    <string name="setting_form_twitter_fav_title">Twitter Likes</string>
+    <string name="setting_form_twitter_bookmark_title">Twitter Bookmarks</string>
     <string name="setting_form_twitter_fav_error">Please authorize on Twitter</string>
     <string name="setting_from_twitter_oauth">Get setting of Twitter</string>
     <string name="setting_from_twitter_oauth_summary_done">done</string>

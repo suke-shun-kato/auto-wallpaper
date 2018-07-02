@@ -73,7 +73,6 @@ public abstract class ImgGetter {
         if (imgUri.startsWith("https:") || imgUri.startsWith("http:")) {
 
             try {
-                Log.d("○ImgGetter", "壁紙のURI:" + imgUri);
                 URL url = new URL(imgUri);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");

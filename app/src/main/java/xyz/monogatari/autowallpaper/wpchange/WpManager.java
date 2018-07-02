@@ -222,6 +222,7 @@ public class WpManager {
             imgGetterList.addAll( ImgGetterTw.getImgGetterList(this.context) );
         }
 
+
         // ----------
         // 抽選
         // ----------
