@@ -3,6 +3,8 @@ package xyz.monogatari.autowallpaper;
 /**
  * historiesテーブルを取得時に格納しておくデータオブジェクト、List作るよう
  * Created by k-shunsuke on 2018/02/07.
+ *
+ * todo List<Map<String, Object>> で代用できるのではないか!
  */
 
 @SuppressWarnings({"WeakerAccess", "unused"})

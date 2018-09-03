@@ -10,6 +10,9 @@ import android.database.sqlite.SQLiteOpenHelper;
  */
 
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
+
+
+
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
@@ -19,14 +22,31 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     @SuppressWarnings("WeakerAccess")
     public static final String DATABASE_NAME = "master.sqlite3";
 
+    private static MySQLiteOpenHelper sMySQLiteOpenHelper = null;
+
     
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    public MySQLiteOpenHelper(Context context) {
+    private MySQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    public static synchronized MySQLiteOpenHelper getInstance(Context context) {
+        if (sMySQLiteOpenHelper == null) {
+            sMySQLiteOpenHelper = new MySQLiteOpenHelper(context);
+        }
+        return sMySQLiteOpenHelper;
+    }
+
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+
+    /**
+     * TODO id → _id にする
+     * @param db
+     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         // デーブル作成

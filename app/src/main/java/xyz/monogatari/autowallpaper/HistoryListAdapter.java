@@ -51,6 +51,7 @@ public class HistoryListAdapter extends BaseAdapter {
      */
     @Override
     public int getCount() {
+Log.d("adapter", "nakanaka");
         return itemList.size();
     }
 
@@ -103,7 +104,7 @@ public class HistoryListAdapter extends BaseAdapter {
         String imgUrl = itemDataStore.getImg_uri();
 
         ImageLoader imgLoader = ImageLoader.getInstance();
-        imgLoader.displayImage(imgUrl, wpImageView);
+        imgLoader.displayImage(imgUrl, +);
 
         // ----------
         // クリックしたらソースに飛ぶように設定

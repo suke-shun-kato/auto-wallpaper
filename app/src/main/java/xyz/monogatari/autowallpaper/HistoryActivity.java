@@ -1,8 +1,15 @@
 package xyz.monogatari.autowallpaper;
 
+import android.content.Context;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,12 +19,16 @@ import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import java.net.URI;
 import java.util.List;
 
 import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
@@ -27,16 +38,15 @@ import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
  * Created by k-shunsuke on 2017/12/20.
  */
 
-public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
-
-
+public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private ListView _lv;
+    private SwipeRefreshLayout _swipeRefreshLayout;
+    private ListView _listView;
+    SimpleCursorAdapter mAdapter = null;
 
     // --------------------------------------------------------------------
     // 定数
@@ -54,7 +64,7 @@ public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLa
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_history);
 
-        _lv = findViewById(R.id.history_list);
+        _listView = findViewById(R.id.history_list);
 
         // ----------------------------------
         // アクションバーの設定
@@ -98,20 +108,60 @@ public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLa
         // ----------------------------------
         // DBから取得したデータを表示
         // ----------------------------------
-        this.updateListView();
+        // TODO ここ、idが0でよいか検証する
+
+        //// TODO ↓のようにadapter を セットする
+//        mAdapter = new SimpleCursorAdapter(getActivity(),
+//                android.R.layout.simple_list_item_2, null,
+//                new String[] { Contacts.DISPLAY_NAME, Contacts.CONTACT_STATUS },
+//                new int[] { android.R.id.text1, android.R.id.text2 }, 0);
+//        setListAdapter(mAdapter);
+
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one
+        this.getLoaderManager().initLoader(0, null, this);
+
+
 
         // ----------------------------------
         // リフレッシュのグルグルの設定
         // ----------------------------------
-        this.swipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
-        this.swipeRefreshLayout.setOnRefreshListener(this);
-        this.swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        this._swipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
+        this._swipeRefreshLayout.setOnRefreshListener(this);
+        this._swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
         // ----------------------------------
         // 長押し時のコンテキストメニューの表示
         // ----------------------------------
-        this.registerForContextMenu(_lv);
+        this.registerForContextMenu(_listView);
+        _listView.setOnItemClickListener(new HistoryActivity.ListItemClickListener());
     }
+
+    /************************************
+     * listViewをクリックしたときのリスナー
+     */
+    private class ListItemClickListener implements AdapterView.OnItemClickListener {
+        /**
+         * Callback method to be invoked when an item in this AdapterView has
+         * been clicked.
+         * <p>
+         * Implementers can call getItemAtPosition(position) if they need
+         * to access the data associated with the selected item.
+         *
+         * @param parent   The AdapterView where the click happened.
+         * @param view     The view within the AdapterView that was clicked (this
+         *                 will be a view provided by the adapter)
+         * @param position The position of the view in the adapter.
+         * @param id       The row id of the item that was clicked.
+         */
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+Log.d("ssssssssssssssss", parent.getClass().getSimpleName() + "   :" + parent.getCount());
+        }
+    }
+
+
 
 
     /**
@@ -135,14 +185,54 @@ public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLa
      */
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-Log.d("aaaaaaaaaaaaaaaaaaaaa", "ccccccccccccccccccc");
-
         super.onCreateContextMenu(menu, v, menuInfo);
 
+        //// メニューをセット（タイトル除く）
         MenuInflater inflater = this.getMenuInflater();
         inflater.inflate(R.menu.menu_history, menu);
 
+        //// タイトルをセット
         menu.setHeaderTitle(R.string.histories_contextMenu_title);
+    }
+
+    /**
+     * This hook is called whenever an item in a context menu is selected. The
+     * default implementation simply returns false to have the normal processing
+     * happen (calling the item's Runnable or sending a message to its Handler
+     * as appropriate). You can use this method for any items for which you
+     * would like to do processing without those other facilities.
+     * <p>
+     * Use {@link MenuItem#getMenuInfo()} to get extra information set by the
+     * View that added this menu item.
+     * <p>
+     * Derived classes should call through to the base class for it to perform
+     * the default menu handling.
+     *
+     * @param item The context menu item that was selected.
+     * @return boolean Return false to allow normal context menu processing to
+     * proceed, true to consume it here.
+     */
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        int listPosition = info.position;
+
+
+
+        int menuItemId = item.getItemId();
+        switch (menuItemId) { // コンテキストメニューの選択した項目によって処理を分ける
+            case R.id.histories_contextMenu_item_jump:
+                Log.d("aaaaaaa", "uuuuu");
+                break;
+
+            case R.id.histories_contextMenu_item_wpSet:
+                Log.d("aaaaaaa", "ssssss");
+                break;
+
+        }
+
+
+        return super.onContextItemSelected(item);
     }
 
     /*************************************
@@ -175,32 +265,104 @@ Log.d("aaaaaaaaaaaaaaaaaaaaa", "ccccccccccccccccccc");
     }
 
     // --------------------------------------------------------------------
+    // HistoryCursorLoaderのコールバック
+    // --------------------------------------------------------------------
+    /**
+     * Instantiate and return a new Loader for the given ID.
+     *
+     * @param id   The ID whose loader is to be created.
+     * @param args Any arguments supplied by the caller.
+     * @return Return a new Loader instance that is ready to start loading.
+     */
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new HistoryCursorLoader(this);
+    }
+
+    /**
+     * Called when a previously created loader has finished its load.  Note
+     * that normally an application is <em>not</em> allowed to commit fragment
+     * transactions while in this call, since it can happen after an
+     * activity's state is saved.  See {@link FragmentManager#beginTransaction()
+     * FragmentManager.openTransaction()} for further discussion on this.
+     * <p>
+     * <p>This function is guaranteed to be called prior to the release of
+     * the last data that was supplied for this Loader.  At this point
+     * you should remove all use of the old data (since it will be released
+     * soon), but should not do your own release of the data since its Loader
+     * owns it and will take care of that.  The Loader will take care of
+     * management of its data so you don't have to.  In particular:
+     * <p>
+     * <ul>
+     * <li> <p>The Loader will monitor for changes to the data, and report
+     * them to you through new calls here.  You should not monitor the
+     * data yourself.  For example, if the data is a {@link Cursor}
+     * and you place it in a {@link CursorAdapter}, use
+     * the {@link CursorAdapter#CursorAdapter(Context, * Cursor, int)} constructor <em>without</em> passing
+     * in either {@link CursorAdapter#FLAG_AUTO_REQUERY}
+     * or {@link CursorAdapter#FLAG_REGISTER_CONTENT_OBSERVER}
+     * (that is, use 0 for the flags argument).  This prevents the CursorAdapter
+     * from doing its own observing of the Cursor, which is not needed since
+     * when a change happens you will get a new Cursor throw another call
+     * here.
+     * <li> The Loader will release the data once it knows the application
+     * is no longer using it.  For example, if the data is
+     * a {@link Cursor} from a {@link CursorLoader},
+     * you should not call close() on it yourself.  If the Cursor is being placed in a
+     * {@link CursorAdapter}, you should use the
+     * {@link CursorAdapter#swapCursor(Cursor)}
+     * method so that the old Cursor is not closed.
+     * </ul>
+     *
+     * @param loader The Loader that has finished.
+     * @param data   The data generated by the Loader.
+     */
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mAdapter.swapCursor(data);
+    }
+
+    /**
+     * Called when a previously created loader is being reset, and thus
+     * making its data unavailable.  The application should at this point
+     * remove any references it has to the Loader's data.
+     *
+     * @param loader The Loader that is being reset.
+     */
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // Swap the new cursor in.  (The framework will take care of closing the
+        // old cursor once we return.)
+        mAdapter.swapCursor(data);
+    }
+
+
+    // --------------------------------------------------------------------
     // メソッド、通常
     // --------------------------------------------------------------------
     /************************************
      * 履歴のListViewを更新する
      */
-    private void updateListView() {
-        HistoryAsyncTask hat = new HistoryAsyncTask(
-                new MySQLiteOpenHelper(this), this.createListener()
-        );
-        hat.execute();
-    }
-
-    private HistoryAsyncTask.Listener createListener() {
-        return new HistoryAsyncTask.Listener() {
-            @Override
-            public void onSuccess(List<HistoryItemListDataStore> itemList) {
-                //// 履歴を表示する
-//                ListView lv = findViewById(R.id.history_list);
-                HistoryListAdapter adapter = new HistoryListAdapter(
-                        HistoryActivity.this, itemList, R.layout.item_list_history
-                );
-                _lv.setAdapter(adapter);
-
-                //// グルグルあればを消す
-                swipeRefreshLayout.setRefreshing(false);
-            }
-        };
+//    private void updateListView() {
+//        HistoryAsyncTask hat = new HistoryAsyncTask(
+//                new MySQLiteOpenHelper(this), this.createListener()
+//        );
+//        hat.execute();
+//    }
+//
+//    private HistoryAsyncTask.Listener createListener() {
+//        return new HistoryAsyncTask.Listener() {
+//            @Override
+//            public void onSuccess(List<HistoryItemListDataStore> itemList) {
+//                //// 履歴を表示する
+//                HistoryListAdapter adapter = new HistoryListAdapter(
+//                        HistoryActivity.this, itemList, R.layout.item_list_history
+//                );
+//                _listView.setAdapter(adapter);
+//
+//                //// グルグルあればを消す
+//                _swipeRefreshLayout.setRefreshing(false);
+//            }
+//        };
     }
 }
