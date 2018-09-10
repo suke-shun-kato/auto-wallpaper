@@ -45,13 +45,13 @@ public class HistoryAsyncTask extends AsyncTask<Void, Void, List<HistoryItemList
 
         //noinspection TryFinallyCanBeTryWithResources
         try {
-            cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at) AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
+            cursor = db.rawQuery("SELECT _id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at) AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
 
             List<HistoryItemListDataStore> itemList = new ArrayList<>();
             if (cursor != null) {
                 while (cursor.moveToNext()) {
                     HistoryItemListDataStore item = new HistoryItemListDataStore(
-                            cursor.getInt(cursor.getColumnIndexOrThrow("id")),
+                            cursor.getInt(cursor.getColumnIndexOrThrow("_id")),
                             cursor.getString(cursor.getColumnIndexOrThrow("source_kind")),
                             cursor.getString(cursor.getColumnIndexOrThrow("img_uri")),
                             cursor.getString(cursor.getColumnIndexOrThrow("intent_action_uri")),
