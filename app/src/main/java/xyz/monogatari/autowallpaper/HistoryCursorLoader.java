@@ -14,19 +14,21 @@ public class HistoryCursorLoader extends AsyncTaskLoader<Cursor> {
     }
 
     /**
-     * TODO クエリの部分をなんとかする
-     * @return
+     * @return Cursor
      */
     @Override
     public Cursor loadInBackground() {
-
-
         MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(this.getContext());
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        Cursor cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at) AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
+        return db.query(
+                MySQLiteOpenHelper.TABLE_HISTORIES,
+                MySQLiteOpenHelper.HISTORIES_PROJECTION,
+                null, null, null, null,
+                "created_at DESC",
+                "100");
+//        Cursor cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at) AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
 
-        return cursor;
 
 
     }
