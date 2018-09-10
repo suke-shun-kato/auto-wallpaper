@@ -11,9 +11,6 @@ import android.util.Log;
  */
 
 public class MySQLiteOpenHelper extends SQLiteOpenHelper {
-
-
-
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
@@ -27,7 +24,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     
     // --------------------------------------------------------------------
-    // 
+    // コンストラクタ、シングルトンにする
     // --------------------------------------------------------------------
     private MySQLiteOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -43,11 +40,6 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
-
-    /**
-     * TODO id → _id にする
-     * @param db
-     */
     @Override
     public void onCreate(SQLiteDatabase db) {
         // デーブル作成
