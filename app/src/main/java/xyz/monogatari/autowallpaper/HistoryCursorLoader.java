@@ -26,11 +26,7 @@ public class HistoryCursorLoader extends AsyncTaskLoader<Cursor> {
                 MySQLiteOpenHelper.HISTORIES_PROJECTION,
                 null, null, null, null,
                 "created_at DESC",
-                "100");
-//        Cursor cursor = db.rawQuery("SELECT id, source_kind, img_uri, intent_action_uri, strftime('%s', created_at) AS created_at_unix FROM histories ORDER BY created_at DESC LIMIT " + HistoryActivity.MAX_RECORD_STORE, null);
-
-
-
+                String.valueOf(HistoryActivity.MAX_RECORD_STORE));
     }
 }
 

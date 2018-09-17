@@ -279,7 +279,7 @@ public class WpManager {
         // ----------------------------------
         // 履歴に書き込み
         // ----------------------------------
-        MySQLiteOpenHelper mDbHelper = new MySQLiteOpenHelper(this.context);
+        MySQLiteOpenHelper mDbHelper = MySQLiteOpenHelper.getInstance(this.context);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         //noinspection TryFinallyCanBeTryWithResources

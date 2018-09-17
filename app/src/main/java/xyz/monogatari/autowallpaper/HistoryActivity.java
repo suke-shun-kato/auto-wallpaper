@@ -2,12 +2,10 @@ package xyz.monogatari.autowallpaper;
 
 import android.content.Context;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -22,31 +20,25 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
-import java.net.URI;
-import java.util.List;
-
-import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 履歴ページ、ひとまず作成
  * Created by k-shunsuke on 2017/12/20.
  */
 
-public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor> {
-
+public class HistoryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+//public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-    private SwipeRefreshLayout _swipeRefreshLayout;
-    private ListView _listView;
-    SimpleCursorAdapter mAdapter = null;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
+    private ListView mListView;
+    HistoryListAdapter mAdapter = null;
 
     // --------------------------------------------------------------------
     // 定数
@@ -64,77 +56,80 @@ public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLa
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_history);
 
-        _listView = findViewById(R.id.history_list);
+
 
         // ----------------------------------
         // アクションバーの設定
         // ----------------------------------
-        ////　ツールバーをアクションバーとして表示
-        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        this.setSupportActionBar(myToolbar);
-
-        //// アクションバーに「←」ボタンを表示、
-        // onOptionsItemSelected(){} でボタンを押したときのリスナを設定する必要はない
-        // （XMLで親アクティビティを設定しているので）
-        // ここのActionBar は android.support.v7.app.ActionBar の方のクラスになる
-        ActionBar actionBar = this.getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setDisplayHomeAsUpEnabled(true);
-        }
+//        ////　ツールバーをアクションバーとして表示
+//        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+//        this.setSupportActionBar(myToolbar);
+//
+//        //// アクションバーに「←」ボタンを表示、
+//        // onOptionsItemSelected(){} でボタンを押したときのリスナを設定する必要はない
+//        // （XMLで親アクティビティを設定しているので）
+//        // ここのActionBar は android.support.v7.app.ActionBar の方のクラスになる
+//        ActionBar actionBar = this.getSupportActionBar();
+//        if (actionBar != null) {
+//            actionBar.setDisplayHomeAsUpEnabled(true);
+//        }
 
         // ----------------------------------
         // 画像ローダーの初期設定
         // ----------------------------------
-        //// displayImage() 関数の設定
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-            // ダウンロード中の表示画像
-            .showImageOnLoading(R.drawable.anim_refresh)
-            // URLが空だったときの表示画像
-            .showImageForEmptyUri(R.drawable.ic_history_remove)
-            // ネット未接続やURLが間違っていて失敗したときの表示画像
-            .showImageOnFail(R.drawable.ic_history_error)
-            // メモリにキャッシュを有効
-            .cacheInMemory(true)
-//           .cacheOnDisk(true)
-            .build();
-
-        //// imageLoader自体の設定
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
-            .defaultDisplayImageOptions(defaultOptions)
-            .memoryCacheSizePercentage(25)
-            .build();
-        ImageLoader.getInstance().init(config);
+//        //// displayImage() 関数の設定
+//        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+//            // ダウンロード中の表示画像
+//            .showImageOnLoading(R.drawable.anim_refresh)
+//            // URLが空だったときの表示画像
+//            .showImageForEmptyUri(R.drawable.ic_history_remove)
+//            // ネット未接続やURLが間違っていて失敗したときの表示画像
+//            .showImageOnFail(R.drawable.ic_history_error)
+//            // メモリにキャッシュを有効
+//            .cacheInMemory(true)
+////           .cacheOnDisk(true)
+//            .build();
+//
+//        //// imageLoader自体の設定
+//        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
+//            .defaultDisplayImageOptions(defaultOptions)
+//            .memoryCacheSizePercentage(25)
+//            .build();
+//        ImageLoader.getInstance().init(config);
 
         // ----------------------------------
         // DBから取得したデータを表示
         // ----------------------------------
-        // TODO ここ、idが0でよいか検証する
-
-        //// TODO ↓のようにadapter を セットする
-//        mAdapter = new SimpleCursorAdapter(getActivity(),
+        //// アダプターをセット（まだビューには反映していない）
+//        this.mAdapter = new HistoryListAdapter(getActivity(),
 //                android.R.layout.simple_list_item_2, null,
 //                new String[] { Contacts.DISPLAY_NAME, Contacts.CONTACT_STATUS },
 //                new int[] { android.R.id.text1, android.R.id.text2 }, 0);
-//        setListAdapter(mAdapter);
+//        this.mAdapter = new HistoryListAdapter(this, null, 0);
+        this.mListView = findViewById(R.id.history_list);
+        this.mAdapter = new HistoryListAdapter(
+                this, null, HistoryListAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        mListView.setAdapter(mAdapter);
 
-        // Prepare the loader.  Either re-connect with an existing one,
-        // or start a new one
-        this.getLoaderManager().initLoader(0, null, this);
-
+        //// ローダーの初期化、読み込みが始まる
+        LoaderManager loaderManager = this.getSupportLoaderManager();
+        // ここはappcompatを使っているときはforceLoad()をしないとだめ
+        // （参考）https://stackoverflow.com/questions/10524667/android-asynctaskloader-doesnt-start-loadinbackground
+        loaderManager.initLoader(1, null, this).forceLoad();
 
 
         // ----------------------------------
         // リフレッシュのグルグルの設定
         // ----------------------------------
-        this._swipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
-        this._swipeRefreshLayout.setOnRefreshListener(this);
-        this._swipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+//        this.mSwipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
+//        this.mSwipeRefreshLayout.setOnRefreshListener(this);
+//        this.mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
         // ----------------------------------
         // 長押し時のコンテキストメニューの表示
         // ----------------------------------
-        this.registerForContextMenu(_listView);
-        _listView.setOnItemClickListener(new HistoryActivity.ListItemClickListener());
+//        this.registerForContextMenu(mListView);
+//        mListView.setOnItemClickListener(new HistoryActivity.ListItemClickListener());
     }
 
     /************************************
@@ -248,21 +243,21 @@ Log.d("ssssssssssssssss", parent.getClass().getSimpleName() + "   :" + parent.ge
      * 通知から起動したとき呼ばれる
      * @param intent このアクティビティを起動したときに送ったインテント
      */
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        this.updateListView();
-    }
+//    @Override
+//    protected void onNewIntent(Intent intent) {
+//        super.onNewIntent(intent);
+//        this.updateListView();
+//    }
 
     /*************************************
      * Called when a swipe gesture triggers a refresh.
      * 下スワイプしたときに呼ばれる
      */
-    @Override
-    public void onRefresh() {
-        // リストの更新
-        this.updateListView();
-    }
+//    @Override
+//    public void onRefresh() {
+//        // リストの更新
+//        this.updateListView();
+//    }
 
     // --------------------------------------------------------------------
     // HistoryCursorLoaderのコールバック
@@ -315,11 +310,11 @@ Log.d("ssssssssssssssss", parent.getClass().getSimpleName() + "   :" + parent.ge
      * </ul>
      *
      * @param loader The Loader that has finished.
-     * @param data   The data generated by the Loader.
+     * @param cursor   The data generated by the Loader.
      */
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        mAdapter.swapCursor(data);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        mAdapter.swapCursor(cursor);
     }
 
     /**
@@ -333,7 +328,7 @@ Log.d("ssssssssssssssss", parent.getClass().getSimpleName() + "   :" + parent.ge
     public void onLoaderReset(Loader<Cursor> loader) {
         // Swap the new cursor in.  (The framework will take care of closing the
         // old cursor once we return.)
-        mAdapter.swapCursor(data);
+        mAdapter.swapCursor(null);
     }
 
 
@@ -358,11 +353,11 @@ Log.d("ssssssssssssssss", parent.getClass().getSimpleName() + "   :" + parent.ge
 //                HistoryListAdapter adapter = new HistoryListAdapter(
 //                        HistoryActivity.this, itemList, R.layout.item_list_history
 //                );
-//                _listView.setAdapter(adapter);
+//                mListView.setAdapter(adapter);
 //
 //                //// グルグルあればを消す
-//                _swipeRefreshLayout.setRefreshing(false);
+//                mSwipeRefreshLayout.setRefreshing(false);
 //            }
 //        };
-    }
+//    }
 }
