@@ -119,6 +119,11 @@ public class HistoryListAdapter extends CursorAdapter {
 
         // view にセット
         updateTimeTextView.setText(updateTimeStr);
+
+        // ----------------------------------
+        // クリック時のイベント
+        // ----------------------------------
+
     }
 
 
