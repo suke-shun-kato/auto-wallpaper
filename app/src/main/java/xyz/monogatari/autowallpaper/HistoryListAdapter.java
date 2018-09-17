@@ -3,6 +3,7 @@ package xyz.monogatari.autowallpaper;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
 
 
 /**
@@ -69,14 +72,18 @@ public class HistoryListAdapter extends CursorAdapter {
         //
         // ----------------------------------
         ImageView imageView = view.findViewById(R.id.history_item_image);
-        String img_uri = cursor.getString(cursor.getColumnIndexOrThrow("img_uri"));
-        imageView.setImageResource(R.drawable.ic_twitter);
+        String imgUri = cursor.getString(cursor.getColumnIndexOrThrow("img_uri"));
+        imageView.setImageURI(Uri.parse(imgUri));
 
         // ----------------------------------
-        //
+        // 取得元のアイコン（Twitterから、ディレクトリから）
         // ----------------------------------
-        ImageView imageView2 = view.findViewById(R.id.history_item_sourceKind);
-        imageView2.setImageResource(R.drawable.ic_dir);
+        ImageView sourceKindImageView = view.findViewById(R.id.history_item_sourceKind);
+        String sourceKind = cursor.getString(cursor.getColumnIndexOrThrow("source_kind"));
+
+
+        int rId = MySQLiteOpenHelper.sourceKindToRId(sourceKind);
+        sourceKindImageView.setImageResource(rId);
 
         // ----------------------------------
         // 更新時間

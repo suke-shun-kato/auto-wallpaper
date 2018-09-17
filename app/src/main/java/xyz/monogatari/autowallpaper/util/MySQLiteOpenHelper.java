@@ -5,6 +5,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import xyz.monogatari.autowallpaper.R;
+
 /**
  * Created by k-shunsuke on 2018/02/04.
  * データベースヘルパークラス
@@ -47,7 +49,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     }
 
     // --------------------------------------------------------------------
-    //
+    // オーバーライド
     // --------------------------------------------------------------------
     @Override
     public void onCreate(SQLiteDatabase db) {
@@ -92,5 +94,18 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         }
     }
 
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+    public static int sourceKindToRId(String sourceKind) {
+        switch (sourceKind) {
+            case "ImgGetterDir":
+                return  R.drawable.ic_dir;
+            case "ImgGetterTw":
+                return R.drawable.ic_twitter;
+            default:
+                return 0;
+        }
+    }
 
 }
