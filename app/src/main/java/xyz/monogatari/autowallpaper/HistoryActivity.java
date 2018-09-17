@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -125,32 +124,86 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
         // 長押し時のコンテキストメニューの表示
         // ----------------------------------
         this.registerForContextMenu(mListView);
-//        mListView.setOnItemClickListener(new HistoryActivity.ListItemClickListener());
+        mListView.setOnItemClickListener(new HistoryActivity.ListItemClickListener());
     }
 
-//    /************************************
-//     * listViewをクリックしたときのリスナー
-//     */
-//    private class ListItemClickListener implements AdapterView.OnItemClickListener {
-//        /**
-//         * Callback method to be invoked when an item in this AdapterView has
-//         * been clicked.
-//         * <p>
-//         * Implementers can call getItemAtPosition(position) if they need
-//         * to access the data associated with the selected item.
-//         *
-//         * @param parent   The AdapterView where the click happened.
-//         * @param view     The view within the AdapterView that was clicked (this
-//         *                 will be a view provided by the adapter)
-//         * @param position The position of the view in the adapter.
-//         * @param id       The row id of the item that was clicked. データベースの_idカラムの値
-//         */
-//        @Override
-//        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//
-//Log.d("ssssssssssssssss", parent.getClass().getSimpleName() + "   :" + parent.getCount() + ", p:"+position + ", id:" + id);
-//        }
-//    }
+    /************************************
+     * listViewをクリックしたときのリスナー
+     */
+    private class ListItemClickListener implements AdapterView.OnItemClickListener {
+        /**
+         * Callback method to be invoked when an item in this AdapterView has
+         * been clicked.
+         * <p>
+         * Implementers can call getItemAtPosition(position) if they need
+         * to access the data associated with the selected item.
+         *
+         * @param parent   The AdapterView where the click happened.
+         * @param view     The view within the AdapterView that was clicked (this
+         *                 will be a view provided by the adapter)
+         * @param position The position of the view in the adapter.
+         * @param id       The row id of the item that was clicked. データベースの_idカラムの値
+         */
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            jumpToSource(id);
+        }
+    }
+
+
+    /**
+     * 壁紙の取得元にジャンプ（Intent）する関数
+     * @param id historiesテーブルの_idの値
+     */
+    public void jumpToSource(long id) {
+        MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(this);
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+
+        // TODO リファクタリング
+        Cursor cursor = db.query(
+                MySQLiteOpenHelper.TABLE_HISTORIES,
+                MySQLiteOpenHelper.HISTORIES_PROJECTION,
+                "_id=?",
+                new String[] {String.valueOf(id)},
+                null, null, null);
+
+        cursor.moveToFirst();
+
+        //// intent先のURI
+        String intentUriStr = cursor.getString(
+                cursor.getColumnIndexOrThrow("intent_action_uri"));
+
+
+
+
+
+        if (intentUriStr == null) {
+            intentUriStr = cursor.getString(
+                    cursor.getColumnIndexOrThrow("img_uri"));
+        }
+        Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + intentUriStr);
+
+        //// intentをセット
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        if (intentUriStr.startsWith("content://")) {
+            intent.setDataAndType(Uri.parse(intentUriStr),"image/*");
+            intent.addFlags(
+                    Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION
+            );
+
+        } else {
+            intent.setData(Uri.parse(intentUriStr));
+        }
+
+        // resolveActivity() インテントで動作するアクティビティを決める、
+        // 戻り値はコンポーネント（アクティビティとかサービスとか）名オブジェクト
+        if (intent.resolveActivity(this.getPackageManager()) != null) {
+            this.startActivity(intent);
+        } else {
+            Log.d("○"+this.getClass().getSimpleName(), "インテントできません！！！！！");
+        }
+    }
 
 
 
@@ -213,55 +266,8 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
         int menuItemId = item.getItemId();
         switch (menuItemId) { // コンテキストメニューの選択した項目によって処理を分ける
             case R.id.histories_contextMenu_item_jump:
-                MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(this);
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
+                jumpToSource(info.id);
 
-
-                // TODO リファクタリング
-                Cursor cursor = db.query(
-                    MySQLiteOpenHelper.TABLE_HISTORIES,
-                        MySQLiteOpenHelper.HISTORIES_PROJECTION,
-                        "_id=?",
-                        new String[] {String.valueOf(info.id)},
-                        null, null, null);
-
-                cursor.moveToFirst();
-
-                //// intent先のURI
-                String intentUriStr = cursor.getString(
-                        cursor.getColumnIndexOrThrow("intent_action_uri"));
-
-
-
-
-
-                if (intentUriStr == null) {
-                    return true;
-                }
-Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + intentUriStr);
-
-                //// intentをセット
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                if (intentUriStr.startsWith("content://")) {
-                    intent.setDataAndType(Uri.parse(intentUriStr),"image/*");
-                    intent.addFlags(
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION
-                    );
-
-                } else {
-                    intent.setData(Uri.parse(intentUriStr));
-                }
-
-                // resolveActivity() インテントで動作するアクティビティを決める、
-                // 戻り値はコンポーネント（アクティビティとかサービスとか）名オブジェクト
-                if (intent.resolveActivity(this.getPackageManager()) != null) {
-                    this.startActivity(intent);
-                } else {
-Log.d("○"+this.getClass().getSimpleName(), "インテントできません！！！！！");
-                }
-
-
-//                Log.d("aaaaaaa", "uuuuu:" +listPosition + ", id:" + intentActionUri);
                 break;
 
             case R.id.histories_contextMenu_item_wpSet:
