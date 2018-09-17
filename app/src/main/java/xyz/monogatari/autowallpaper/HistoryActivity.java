@@ -59,18 +59,18 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
         // ----------------------------------
         // アクションバーの設定
         // ----------------------------------
-//        ////　ツールバーをアクションバーとして表示
-//        Toolbar myToolbar = findViewById(R.id.my_toolbar);
-//        this.setSupportActionBar(myToolbar);
-//
-//        //// アクションバーに「←」ボタンを表示、
-//        // onOptionsItemSelected(){} でボタンを押したときのリスナを設定する必要はない
-//        // （XMLで親アクティビティを設定しているので）
-//        // ここのActionBar は android.support.v7.app.ActionBar の方のクラスになる
-//        ActionBar actionBar = this.getSupportActionBar();
-//        if (actionBar != null) {
-//            actionBar.setDisplayHomeAsUpEnabled(true);
-//        }
+        //// ツールバーをアクションバーとして表示
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        this.setSupportActionBar(myToolbar);
+
+        //// アクションバーに「←」ボタンを表示、
+        // onOptionsItemSelected(){} でボタンを押したときのリスナを設定する必要はない
+        // （XMLで親アクティビティを設定しているので）
+        // ここのActionBar は android.support.v7.app.ActionBar の方のクラスになる
+        ActionBar actionBar = this.getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         // ----------------------------------
         // 画像ローダーの初期設定
