@@ -43,8 +43,6 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
-//    /** 履歴ページに表示する件数 */
-//    public static int MAX_RECORD_DISPLAY = 100;   //DBに保存する履歴件数の方で調整できるので不要
     /** DBに保存する履歴件数 */
     public static final int MAX_RECORD_STORE = 100;
 
@@ -77,35 +75,30 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
         // ----------------------------------
         // 画像ローダーの初期設定
         // ----------------------------------
-//        //// displayImage() 関数の設定
-//        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-//            // ダウンロード中の表示画像
-//            .showImageOnLoading(R.drawable.anim_refresh)
-//            // URLが空だったときの表示画像
-//            .showImageForEmptyUri(R.drawable.ic_history_remove)
-//            // ネット未接続やURLが間違っていて失敗したときの表示画像
-//            .showImageOnFail(R.drawable.ic_history_error)
-//            // メモリにキャッシュを有効
-//            .cacheInMemory(true)
-////           .cacheOnDisk(true)
-//            .build();
-//
-//        //// imageLoader自体の設定
-//        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
-//            .defaultDisplayImageOptions(defaultOptions)
-//            .memoryCacheSizePercentage(25)
-//            .build();
-//        ImageLoader.getInstance().init(config);
+        //// displayImage() 関数の設定
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+            // ダウンロード中の表示画像
+            .showImageOnLoading(R.drawable.anim_refresh)
+            // URLが空だったときの表示画像
+            .showImageForEmptyUri(R.drawable.ic_history_remove)
+            // ネット未接続やURLが間違っていて失敗したときの表示画像
+            .showImageOnFail(R.drawable.ic_history_error)
+            // メモリにキャッシュを有効
+            .cacheInMemory(true)
+//           .cacheOnDisk(true)
+            .build();
+
+        //// imageLoader自体の設定
+        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
+            .defaultDisplayImageOptions(defaultOptions)
+            .memoryCacheSizePercentage(25)
+            .build();
+        ImageLoader.getInstance().init(config);
 
         // ----------------------------------
-        // DBから取得したデータを表示
+        // 履歴リストの読み込み設定
         // ----------------------------------
         //// アダプターをセット（まだビューには反映していない）
-//        this.mAdapter = new HistoryListAdapter(getActivity(),
-//                android.R.layout.simple_list_item_2, null,
-//                new String[] { Contacts.DISPLAY_NAME, Contacts.CONTACT_STATUS },
-//                new int[] { android.R.id.text1, android.R.id.text2 }, 0);
-//        this.mAdapter = new HistoryListAdapter(this, null, 0);
         this.mListView = findViewById(R.id.history_list);
         this.mAdapter = new HistoryListAdapter(
                 this, null, HistoryListAdapter.FLAG_REGISTER_CONTENT_OBSERVER);

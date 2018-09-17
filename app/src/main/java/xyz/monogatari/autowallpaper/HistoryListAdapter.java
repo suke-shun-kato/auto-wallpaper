@@ -3,7 +3,6 @@ package xyz.monogatari.autowallpaper;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -69,11 +70,15 @@ public class HistoryListAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         // ----------------------------------
-        //
+        // 画像
         // ----------------------------------
-        ImageView imageView = view.findViewById(R.id.history_item_image);
+        //// 画像読み込み処理
+        ImageView wpImageView = view.findViewById(R.id.history_item_image);
         String imgUri = cursor.getString(cursor.getColumnIndexOrThrow("img_uri"));
-        imageView.setImageURI(Uri.parse(imgUri));
+
+        ImageLoader imgLoader = ImageLoader.getInstance();
+        imgLoader.displayImage(imgUri, wpImageView);
+
 
         // ----------------------------------
         // 取得元のアイコン（Twitterから、ディレクトリから）
