@@ -145,7 +145,6 @@ public class MainActivity extends AppCompatActivity {
         // ----------------------------------
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
-Log.d("○" + this.getClass().getSimpleName(), "onCreate() 呼ばれた: " + R.layout.activity_main);
 
         // ----------------------------------
         // アクションバーの設定
@@ -373,7 +372,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // ボタンを再度クリックする
-                    this.setWallpaper(this);
+                    WpManagerService.changeWpRandam(this);
                 }
 
                 break;
@@ -403,15 +402,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
             return;
         }
 
-        this.setWallpaper(this);
-    }
-
-    /************************************
-     * 壁紙を変更するサービスを実行する、ボタンが押されたときにリスナー
-     */
-    private void setWallpaper(Context packageContext) {
-        Intent i = new Intent(packageContext, WpManagerService.class);
-        startService(i);
+        WpManagerService.changeWpRandam(this);
     }
 
     // --------------------------------------------------------------------
@@ -500,7 +491,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         btnView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                setWallpaper(MainActivity.this);
+                WpManagerService.changeWpRandam(MainActivity.this);
             }
         });
 
