@@ -15,7 +15,7 @@ import java.util.TimerTask;
  */
 public class WpManagerService extends IntentService {
     // --------------------------------------------------------------------
-    // 
+    //
     // --------------------------------------------------------------------
     // TODO これブロードギャスとレシーバーの方に持っていきたい
     public static final String ACTION_NAME = "xyz.monogatari.autowallpaper.WP_SERVICE_ACTION";
@@ -113,7 +113,8 @@ public class WpManagerService extends IntentService {
             // ランダムで壁紙変更
             // ----------------------------------
                 // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
-                boolean canExe = wpManager.execute();
+                boolean canExe = wpManager.executeWpSetRandamTransaction();
+
                 if ( !canExe ) {
                     Intent i = new Intent(ACTION_NAME);
                     i.putExtra(KEY_NAME, STATE_ERROR);
