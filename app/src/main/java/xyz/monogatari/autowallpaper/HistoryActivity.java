@@ -28,6 +28,11 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
+import xyz.monogatari.autowallpaper.wpchange.ImgGetter;
+import xyz.monogatari.autowallpaper.wpchange.ImgGetterDir;
+import xyz.monogatari.autowallpaper.wpchange.ImgGetterTw;
+import xyz.monogatari.autowallpaper.wpchange.WpManager;
+import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
 /**
  * 履歴ページ、ひとまず作成
@@ -155,35 +160,39 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
      * 壁紙の取得元にジャンプ（Intent）する関数
      * @param id historiesテーブルの_idの値
      */
-    public void jumpToSource(long id) {
+    public boolean jumpToSource(long id) {
+        // ----------------------------------
+        // DBから取得 ジャンプ先のURIを取得
+        // ----------------------------------
         MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(this);
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-
-        // TODO リファクタリング
         Cursor cursor = db.query(
                 MySQLiteOpenHelper.TABLE_HISTORIES,
                 MySQLiteOpenHelper.HISTORIES_PROJECTION,
                 "_id=?",
                 new String[] {String.valueOf(id)},
                 null, null, null);
-
-        cursor.moveToFirst();
+        boolean canGetCursor = cursor.moveToFirst();
+        if (!canGetCursor) {
+            return false;
+        }
 
         //// intent先のURI
         String intentUriStr = cursor.getString(
                 cursor.getColumnIndexOrThrow("intent_action_uri"));
 
-
-
-
-
+        // ----------------------------------
+        //
+        // ----------------------------------
         if (intentUriStr == null) {
             intentUriStr = cursor.getString(
                     cursor.getColumnIndexOrThrow("img_uri"));
         }
-        Log.d("○"+this.getClass().getSimpleName(), "intentUri: " + intentUriStr);
 
+        // ----------------------------------
+        // ジャンプ
+        // ----------------------------------
         //// intentをセット
         Intent intent = new Intent(Intent.ACTION_VIEW);
         if (intentUriStr.startsWith("content://")) {
@@ -196,13 +205,15 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
             intent.setData(Uri.parse(intentUriStr));
         }
 
-        // resolveActivity() インテントで動作するアクティビティを決める、
+        // resolveActivity() インテントで動作するアクティビティを取得、
         // 戻り値はコンポーネント（アクティビティとかサービスとか）名オブジェクト
         if (intent.resolveActivity(this.getPackageManager()) != null) {
             this.startActivity(intent);
         } else {
-            Log.d("○"+this.getClass().getSimpleName(), "インテントできません！！！！！");
+            return false;
         }
+
+        return true;
     }
 
 
@@ -259,7 +270,7 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        int listPosition = info.position;
+//        int listPosition = info.position;
 
 
 
@@ -271,9 +282,49 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
                 break;
 
             case R.id.histories_contextMenu_item_wpSet:
-                Log.d("aaaaaaa", "ssssss:" + listPosition + ", id:" + info.id);
-                break;
+                // TODO ココらへんの処理、モデルでまとめる
+                MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(this);
+                SQLiteDatabase db = dbHelper.getReadableDatabase();
 
+                Cursor cursor = db.query(
+                        MySQLiteOpenHelper.TABLE_HISTORIES,
+                        MySQLiteOpenHelper.HISTORIES_PROJECTION,
+                        "_id=?",
+                        new String[] {String.valueOf(info.id)},
+                        null, null, null);
+                boolean canGetCursor = cursor.moveToFirst();
+                if (!canGetCursor) {
+                    return false;
+                }
+
+                String sourceKind = cursor.getString(
+                        cursor.getColumnIndexOrThrow("source_kind"));
+                String imgUri = cursor.getString(
+                        cursor.getColumnIndexOrThrow("img_uri"));
+                String intentActionUri = cursor.getString(
+                        cursor.getColumnIndexOrThrow("intent_action_uri"));
+
+
+                WpManagerService.changeWpSpecified(this, imgUri, sourceKind, intentActionUri);
+//                ImgGetter imgGetter = null;
+//                switch (source_kind) {
+//                    case "ImgGetterDir":
+//                        imgGetter = new ImgGetterDir(imgUri, intentActionUri);
+//                        break;
+//                    case "ImgGetterTw":
+//                        imgGetter = new ImgGetterTw(imgUri, intentActionUri);
+//                        break;
+//                    default:
+//                        // TODO 例外を投げる
+//                        break;
+//
+//                }
+//
+//
+//
+//                WpManager wpManager = new WpManager(this);
+//                wpManager.executeWpSetTransaction(imgGetter);
+                break;
         }
 
 

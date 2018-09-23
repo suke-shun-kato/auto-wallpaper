@@ -1,8 +1,12 @@
 package xyz.monogatari.autowallpaper.wpchange;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -15,7 +19,14 @@ public class WpManagerService extends IntentService {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
+    // TODO これブロードギャスとレシーバーの方に持っていきたい
     public static final String ACTION_NAME = "xyz.monogatari.autowallpaper.WP_SERVICE_ACTION";
+
+    // 壁紙をランダムに変更するIntentService用のアクション
+    public static final String ACTION_CHANGE_RANDAM = "xyz.monogatari.autowallpaper.action.CHANGE_WP_RANDAM";
+    // 指定の壁紙に変更するIntentService用のアクション
+    public static final String ACTION_CHANGE_SPECIFIED = "xyz.monogatari.autowallpaper.action.CHANGE_WP_SPECIFIED";
+
     public static final String KEY_NAME = "state";
     public static final int STATE_ON = 1;
     public static final int STATE_DESTROY = 2;
@@ -34,6 +45,40 @@ public class WpManagerService extends IntentService {
     public WpManagerService() {
         super("WpManagerService");
     }
+
+
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+
+    /**
+     * ランダムに壁紙を変更するIntentServiceを実行
+     * @param context
+     */
+    public static void changeWpRandam(Context context) {
+        Intent i = new Intent(context, WpManagerService.class);
+        i.setAction(ACTION_CHANGE_RANDAM);
+        context.startService(i);
+    }
+
+    /**
+     * 指定の画像に壁紙を変更するIntentServiceを実行
+     * @param context
+     * @param imgUri
+     * @param sourceKind
+     * @param intentActionUri
+     */
+    public static void changeWpSpecified(Context context, String imgUri, String sourceKind, String intentActionUri) {
+        Intent i = new Intent(context, WpManagerService.class);
+        i.setAction(ACTION_CHANGE_SPECIFIED);
+
+        i.setData(Uri.parse(imgUri));
+        i.putExtra("sourceKind", sourceKind);
+        i.putExtra("intentActionUri", intentActionUri);
+
+        context.startService(i);
+    }
+
 
     // --------------------------------------------------------------------
     //
@@ -61,14 +106,50 @@ public class WpManagerService extends IntentService {
      */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
-        WpManager wpManager = new WpManager(this);
-        boolean canExe = wpManager.execute();
-        if ( !canExe ) {
-            Intent i = new Intent(ACTION_NAME);
-            i.putExtra(KEY_NAME, STATE_ERROR);
-            this.sendBroadcast(i);
+        if (intent != null) {
+            final String action = intent.getAction();
+            WpManager wpManager = new WpManager(this);
+
+            if ( ACTION_CHANGE_RANDAM.equals(action) ) {
+            // ----------------------------------
+            // ランダムで壁紙変更
+            // ----------------------------------
+                // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
+                boolean canExe = wpManager.execute();
+                if ( !canExe ) {
+                    Intent i = new Intent(ACTION_NAME);
+                    i.putExtra(KEY_NAME, STATE_ERROR);
+                    this.sendBroadcast(i);
+                }
+
+            } else if ( ACTION_CHANGE_SPECIFIED.equals(action) ) {
+            // ----------------------------------
+            // 指定の壁紙に変更
+            // ----------------------------------
+                //// intent からデータを取得
+                Uri dataUri = intent.getData();
+                String sourceKind = intent.getStringExtra("sourceKind");
+                String intentActionUri = intent.getStringExtra("intentActionUri");
+
+                //// 壁紙変更
+                ImgGetter imgGetter;
+                switch (sourceKind) {
+                    case "ImgGetterDir":
+                        imgGetter = new ImgGetterDir(dataUri.toString(), intentActionUri);
+                        break;
+                    case "ImgGetterTw":
+                        imgGetter = new ImgGetterTw(dataUri.toString(), intentActionUri);
+                        break;
+                    default:
+                        throw new RuntimeException("histories.source_kindの値が不正です。");
+
+                }
+                wpManager.executeWpSetTransaction(imgGetter);
+            } else {
+                throw new RuntimeException("intentのactionの値が不正です。");
+            }
         }
+
     }
 
 

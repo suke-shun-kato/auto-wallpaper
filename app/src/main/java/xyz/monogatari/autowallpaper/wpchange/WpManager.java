@@ -70,7 +70,6 @@ public class WpManager {
         // INSERT
         // ----------------------------------
         //// コード準備
-        // ↓のコードでInspectionエラーが出るがAndroidStudioのバグなので放置、3.1では直るらしい
 
         SQLiteStatement dbStt = db.compileStatement("" +
                 "INSERT INTO histories (" +
@@ -197,6 +196,76 @@ public class WpManager {
         return true;
     }
 
+    public boolean executeWpSetTransaction(ImgGetter imgGetter) {
+        this.imgGetter = imgGetter;
+        // ----------
+        // 画像取得
+        // ----------
+        Bitmap wallpaperBitmap = imgGetter.getImgBitmap(this.context); //データ本体取得
+
+        // ----------------------------------
+        // 画像加工
+        // ----------------------------------
+        // スクリーン（画面）サイズ取得
+        Point point = DisplaySizeCheck.getRealSize(this.context);
+        // 画像加工
+        Bitmap processedWallpaperBitmap = BitmapProcessor.process(
+                wallpaperBitmap, point.x, point.y,
+                sp.getBoolean(SettingsFragment.KEY_OTHER_AUTO_ROTATION, true)
+        );
+
+        // ----------------------------------
+        // 画像を壁紙にセット
+        // ----------------------------------
+        WallpaperManager wm = WallpaperManager.getInstance(this.context);
+        try {
+            if (Build.VERSION.SDK_INT >= 24) {
+                //APIレベル24以上の場合, Android7.0以上のとき
+                wm.setBitmap(
+                        processedWallpaperBitmap,
+                        null,
+                        false,
+                        WallpaperManager.FLAG_SYSTEM
+                );
+                wm.setBitmap(
+                        processedWallpaperBitmap,
+                        null,
+                        false,
+                        WallpaperManager.FLAG_LOCK
+                );
+            } else {
+                // 24未満のとき
+                wm.setBitmap(processedWallpaperBitmap);
+            }
+        } catch (IOException e) {
+            Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません");
+        }
+
+
+        // ----------------------------------
+        // 履歴に書き込み
+        // ----------------------------------
+        MySQLiteOpenHelper mDbHelper = MySQLiteOpenHelper.getInstance(this.context);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        //noinspection TryFinallyCanBeTryWithResources
+        try {
+            this.insertHistories(db);
+            // 記憶件数溢れたものを削除
+            this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
+        } finally {
+            db.close();
+        }
+
+        // ----------------------------------
+        // 通知を作成
+        // ----------------------------------
+        //noinspection UnnecessaryLocalVariable
+        boolean canSendNotification = this.sendNotification();
+
+        return canSendNotification;
+    }
+
 
     /************************************
      * 壁紙を取得→加工→セット する一連の流れを行う関数
@@ -231,6 +300,11 @@ public class WpManager {
         }
         int drawnIndex = new Random().nextInt(imgGetterList.size());
         this.imgGetter = imgGetterList.get(drawnIndex);
+
+
+
+
+
 
         // ----------
         // 画像取得
@@ -298,5 +372,7 @@ public class WpManager {
         boolean canSendNotification = this.sendNotification();
 
         return canSendNotification;
+
+//        return true; // TODO 後で消す
     }
 }
