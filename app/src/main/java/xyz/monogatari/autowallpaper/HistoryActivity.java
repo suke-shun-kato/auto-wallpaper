@@ -39,7 +39,7 @@ import xyz.monogatari.autowallpaper.wpchange.WpManager;
 import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
 /**
- * 履歴ページ、ひとまず作成
+ * 履歴ページ
  * Created by k-shunsuke on 2017/12/20.
  */
 
@@ -346,32 +346,12 @@ public class HistoryActivity
     }
 
     /*************************************
-     * Handle onNewIntent() to inform the fragment manager that the
-     * state is not saved.  If you are handling new intents and may be
-     * making changes to the fragment state, you want to be sure to call
-     * through to the super-class here first.  Otherwise, if your state
-     * is saved but the activity is not stopped, you could get an
-     * onNewIntent() call which happens before onResume() and trying to
-     * perform fragment operations at that point will throw IllegalStateException
-     * because the fragment manager thinks the state is still saved.
-     *
-     * 通知から起動したとき呼ばれる
-     * @param intent このアクティビティを起動したときに送ったインテント
-     */
-//    @Override
-//    protected void onNewIntent(Intent intent) {
-//        super.onNewIntent(intent);
-//        this.updateListView();
-//    }
-
-    /*************************************
      * Called when a swipe gesture triggers a refresh.
      * 下スワイプしたときに呼ばれる
      */
     @Override
     public void onRefresh() {
-        // ここはappcompatを使っているときはforceLoad()をしないとだめ
-        // （参考）https://stackoverflow.com/questions/10524667/android-asynctaskloader-doesnt-start-loadinbackground
+        //// 履歴データを読み込み始める
         mLoaderManager.initLoader(1, null, this).forceLoad();
 
         //// グルグルあればを消す
@@ -464,6 +444,9 @@ public class HistoryActivity
 
     @Override
     public void onWpChangeDone() {
+        //// 履歴データを読み込み始める
+        mLoaderManager.initLoader(1, null, this).forceLoad();
+
         //// プログレスバー（グルグル）を非表示にする
         View v = this.findViewById(R.id.history_setWallpaper_progress);
         v.setVisibility(ProgressBar.GONE);
@@ -475,32 +458,4 @@ Log.d("xxxxx", "onWpChangeError()");
         Toast.makeText(this, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
     }
 
-    // --------------------------------------------------------------------
-    // メソッド、通常
-    // --------------------------------------------------------------------
-    /************************************
-     * 履歴のListViewを更新する
-     */
-//    private void updateListView() {
-//        HistoryAsyncTask hat = new HistoryAsyncTask(
-//                new MySQLiteOpenHelper(this), this.createListener()
-//        );
-//        hat.execute();
-//    }
-//
-//    private HistoryAsyncTask.Listener createListener() {
-//        return new HistoryAsyncTask.Listener() {
-//            @Override
-//            public void onSuccess(List<HistoryItemListDataStore> itemList) {
-//                //// 履歴を表示する
-//                HistoryListAdapter adapter = new HistoryListAdapter(
-//                        HistoryActivity.this, itemList, R.layout.item_list_history
-//                );
-//                mListView.setAdapter(adapter);
-//
-//                //// グルグルあればを消す
-//                mSwipeRefreshLayout.setRefreshing(false);
-//            }
-//        };
-//    }
 }
