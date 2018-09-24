@@ -2,7 +2,6 @@ package xyz.monogatari.autowallpaper;
 
 import android.Manifest;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -32,7 +31,7 @@ import xyz.monogatari.autowallpaper.util.ProgressBcastReceiver;
 import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ProgressBcastReceiver.OnStateChangeListener {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
@@ -186,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
         // ----------------------------------
         this.progressBcastReceiver = new ProgressBcastReceiver();
         IntentFilter iFilter = new IntentFilter();
-        iFilter.addAction(WpManagerService.ACTION_NAME);
+        iFilter.addAction(WpManagerService.ACTION_WPCHANGE_STATE);
         this.registerReceiver(this.progressBcastReceiver, iFilter);
 
         // ----------------------------------
@@ -470,7 +469,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
     // --------------------------------------------------------------------
     // ブロードキャストレシーバー受信時の挙動設定
     // --------------------------------------------------------------------
-    public void onWpChanging() {
+    public void onWpChangeStart() {
         //// プログレスバー（グルグル）を表示する
         View progressView = this.findViewById(R.id.main_setWallpaper_progress);
         progressView.setVisibility(ProgressBar.VISIBLE);
@@ -501,7 +500,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         }
     }
 
-    public void onWpChangeError () {
+    public void onWpChangeError() {
         Toast.makeText(this, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
     }
 

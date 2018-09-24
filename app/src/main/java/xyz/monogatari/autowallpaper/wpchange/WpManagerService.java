@@ -17,18 +17,19 @@ public class WpManagerService extends IntentService {
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
-    // TODO これブロードギャスとレシーバーの方に持っていきたい
-    public static final String ACTION_NAME = "xyz.monogatari.autowallpaper.WP_SERVICE_ACTION";
+    // 壁紙変更中にブロードキャストレシーバーへ送信されるアクション
+    public static final String ACTION_WPCHANGE_STATE = "xyz.monogatari.autowallpaper.action.WPCHANGE_STATE";
+    public static final String EXTRA_WP_STATE = "wp_state";
+    public static final int WP_STATE_CHANGING = 1;
+    public static final int WP_STATE_DONE = 2;
+    public static final int WP_STATE_ERROR = 3;
+
 
     // 壁紙をランダムに変更するIntentService用のアクション
     public static final String ACTION_CHANGE_RANDAM = "xyz.monogatari.autowallpaper.action.CHANGE_WP_RANDAM";
     // 指定の壁紙に変更するIntentService用のアクション
     public static final String ACTION_CHANGE_SPECIFIED = "xyz.monogatari.autowallpaper.action.CHANGE_WP_SPECIFIED";
 
-    public static final String KEY_NAME = "state";
-    public static final int STATE_ON = 1;
-    public static final int STATE_DESTROY = 2;
-    public static final int STATE_ERROR = 3;
 
 
     private Timer timer;
@@ -83,13 +84,13 @@ public class WpManagerService extends IntentService {
     // --------------------------------------------------------------------
     @Override
     public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
-        if (this.timer == null) {   //連続でこのサービスが走ったらonDestroy()でタイマーがcancelされる前にインスタンスが上書きされるから、最初のTimerがcancelされないのでその対策
+        if (this.timer == null) {   // タイマー実行中のときはタイマーセット処理を飛ばす
             this.timer = new Timer();
             this.timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    Intent i = new Intent(ACTION_NAME);
-                    i.putExtra(KEY_NAME, STATE_ON);
+                    Intent i = new Intent(ACTION_WPCHANGE_STATE);
+                    i.putExtra(EXTRA_WP_STATE, WP_STATE_CHANGING);
                     WpManagerService.this.sendBroadcast(i);
                 }
             }, 0, 500); //0秒後、500ms秒間隔で実行
@@ -108,18 +109,14 @@ public class WpManagerService extends IntentService {
             final String action = intent.getAction();
             WpManager wpManager = new WpManager(this);
 
+            boolean canExe = false;
+
             if ( ACTION_CHANGE_RANDAM.equals(action) ) {
             // ----------------------------------
             // ランダムで壁紙変更
             // ----------------------------------
                 // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
-                boolean canExe = wpManager.executeWpSetRandamTransaction();
-
-                if ( !canExe ) {
-                    Intent i = new Intent(ACTION_NAME);
-                    i.putExtra(KEY_NAME, STATE_ERROR);
-                    this.sendBroadcast(i);
-                }
+                canExe = wpManager.executeWpSetRandamTransaction();
 
             } else if ( ACTION_CHANGE_SPECIFIED.equals(action) ) {
             // ----------------------------------
@@ -143,9 +140,16 @@ public class WpManagerService extends IntentService {
                         throw new RuntimeException("histories.source_kindの値が不正です。");
 
                 }
-                wpManager.executeWpSetTransaction(imgGetter);
+                canExe = wpManager.executeWpSetTransaction(imgGetter);
             } else {
                 throw new RuntimeException("intentのactionの値が不正です。");
+            }
+
+            // 壁紙変更がうまく行かなかったらブロードキャストでエラーを送信
+            if ( !canExe ) {
+                Intent i = new Intent(ACTION_WPCHANGE_STATE);
+                i.putExtra(EXTRA_WP_STATE, WP_STATE_ERROR);
+                this.sendBroadcast(i);
             }
         }
 
@@ -157,10 +161,13 @@ public class WpManagerService extends IntentService {
     public void onDestroy() {
         super.onDestroy();
 
-        this.timer.cancel();
+        if (this.timer != null) {
+            this.timer.cancel();
+        }
+        this.timer = null;
 
-        Intent i = new Intent(ACTION_NAME);
-        i.putExtra(KEY_NAME, STATE_DESTROY);
+        Intent i = new Intent(ACTION_WPCHANGE_STATE);
+        i.putExtra(EXTRA_WP_STATE, WP_STATE_DONE);
         this.sendBroadcast(i);
     }
 }

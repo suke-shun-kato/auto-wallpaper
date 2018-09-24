@@ -3,6 +3,7 @@ package xyz.monogatari.autowallpaper;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -22,12 +23,15 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
+import xyz.monogatari.autowallpaper.util.ProgressBcastReceiver;
 import xyz.monogatari.autowallpaper.wpchange.ImgGetter;
 import xyz.monogatari.autowallpaper.wpchange.ImgGetterDir;
 import xyz.monogatari.autowallpaper.wpchange.ImgGetterTw;
@@ -39,7 +43,8 @@ import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
  * Created by k-shunsuke on 2017/12/20.
  */
 
-public class HistoryActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class HistoryActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>, ProgressBcastReceiver.OnStateChangeListener {
 //public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     // --------------------------------------------------------------------
@@ -48,6 +53,9 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ListView mListView;
     HistoryListAdapter mAdapter = null;
+
+    // 壁紙変更状態を検知するブロードキャストレシーバー
+    private ProgressBcastReceiver mProgressBcastReceiver;
 
     // --------------------------------------------------------------------
     // 定数
@@ -130,7 +138,31 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
         // ----------------------------------
         this.registerForContextMenu(mListView);
         mListView.setOnItemClickListener(new HistoryActivity.ListItemClickListener());
+
+        // ----------------------------------
+        // IntentServiceで壁紙変更しているときのブロードキャストレシーバーの設置
+        // ----------------------------------
+
+        // ----------------------------------
+        // 壁紙変更中のプログレスバー用のBcastレシーバーを登録
+        // ----------------------------------
+        mProgressBcastReceiver = new ProgressBcastReceiver();
+        IntentFilter iFilter = new IntentFilter();
+        iFilter.addAction(WpManagerService.ACTION_WPCHANGE_STATE);
+        this.registerReceiver(mProgressBcastReceiver, iFilter);
     }
+
+    @Override
+    protected void onDestroy() {
+        //// 壁紙セット状態を検知するBroadcastRecieverを解除
+        super.onDestroy();
+        unregisterReceiver(mProgressBcastReceiver);
+    }
+
+
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
 
     /************************************
      * listViewをクリックしたときのリスナー
@@ -270,9 +302,6 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-//        int listPosition = info.position;
-
-
 
         int menuItemId = item.getItemId();
         switch (menuItemId) { // コンテキストメニューの選択した項目によって処理を分ける
@@ -306,24 +335,6 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
 
 
                 WpManagerService.changeWpSpecified(this, imgUri, sourceKind, intentActionUri);
-//                ImgGetter imgGetter = null;
-//                switch (source_kind) {
-//                    case "ImgGetterDir":
-//                        imgGetter = new ImgGetterDir(imgUri, intentActionUri);
-//                        break;
-//                    case "ImgGetterTw":
-//                        imgGetter = new ImgGetterTw(imgUri, intentActionUri);
-//                        break;
-//                    default:
-//                        // TODO 例外を投げる
-//                        break;
-//
-//                }
-//
-//
-//
-//                WpManager wpManager = new WpManager(this);
-//                wpManager.executeWpSetTransaction(imgGetter);
                 break;
         }
 
@@ -432,6 +443,32 @@ public class HistoryActivity extends AppCompatActivity implements LoaderManager.
         mAdapter.swapCursor(null);
     }
 
+
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+
+    @Override
+    public void onWpChangeStart() {
+Log.d("xxxxx", "onWpChangeStart()");
+        //// プログレスバー（グルグル）を表示する
+        View progressView = this.findViewById(R.id.history_setWallpaper_progress);
+        progressView.setVisibility(ProgressBar.VISIBLE);
+    }
+
+    @Override
+    public void onWpChangeDone() {
+Log.d("xxxxx", "onWpChangeDone()");
+        //// プログレスバー（グルグル）を非表示にする
+        View v = this.findViewById(R.id.history_setWallpaper_progress);
+        v.setVisibility(ProgressBar.GONE);
+    }
+
+    @Override
+    public void onWpChangeError() {
+Log.d("xxxxx", "onWpChangeError()");
+        Toast.makeText(this, R.string.main_toast_no_image, Toast.LENGTH_SHORT).show();
+    }
 
     // --------------------------------------------------------------------
     // メソッド、通常
