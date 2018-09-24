@@ -43,9 +43,11 @@ import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
  * Created by k-shunsuke on 2017/12/20.
  */
 
-public class HistoryActivity extends AppCompatActivity
-        implements LoaderManager.LoaderCallbacks<Cursor>, ProgressBcastReceiver.OnStateChangeListener {
-//public class HistoryActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class HistoryActivity
+        extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>,
+        SwipeRefreshLayout.OnRefreshListener,
+        ProgressBcastReceiver.OnStateChangeListener {
 
     // --------------------------------------------------------------------
     // フィールド
@@ -53,6 +55,7 @@ public class HistoryActivity extends AppCompatActivity
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ListView mListView;
     HistoryListAdapter mAdapter = null;
+    LoaderManager mLoaderManager;
 
     // 壁紙変更状態を検知するブロードキャストレシーバー
     private ProgressBcastReceiver mProgressBcastReceiver;
@@ -114,37 +117,33 @@ public class HistoryActivity extends AppCompatActivity
         // 履歴リストの読み込み設定
         // ----------------------------------
         //// アダプターをセット（まだビューには反映していない）
-        this.mListView = findViewById(R.id.history_list);
-        this.mAdapter = new HistoryListAdapter(
+        mListView = findViewById(R.id.history_list);
+        mAdapter = new HistoryListAdapter(
                 this, null, HistoryListAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
         mListView.setAdapter(mAdapter);
 
         //// ローダーの初期化、読み込みが始まる
-        LoaderManager loaderManager = this.getSupportLoaderManager();
+        mLoaderManager = getSupportLoaderManager();
         // ここはappcompatを使っているときはforceLoad()をしないとだめ
         // （参考）https://stackoverflow.com/questions/10524667/android-asynctaskloader-doesnt-start-loadinbackground
-        loaderManager.initLoader(1, null, this).forceLoad();
+        mLoaderManager.initLoader(1, null, this).forceLoad();
 
 
         // ----------------------------------
         // リフレッシュのグルグルの設定
         // ----------------------------------
-//        this.mSwipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
-//        this.mSwipeRefreshLayout.setOnRefreshListener(this);
-//        this.mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
+        mSwipeRefreshLayout = findViewById(R.id.history_swipe_refresh);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
+        mSwipeRefreshLayout.setColorSchemeResources(R.color.colorPrimary);
 
         // ----------------------------------
         // 長押し時のコンテキストメニューの表示
         // ----------------------------------
-        this.registerForContextMenu(mListView);
+        registerForContextMenu(mListView);
         mListView.setOnItemClickListener(new HistoryActivity.ListItemClickListener());
 
         // ----------------------------------
-        // IntentServiceで壁紙変更しているときのブロードキャストレシーバーの設置
-        // ----------------------------------
-
-        // ----------------------------------
-        // 壁紙変更中のプログレスバー用のBcastレシーバーを登録
+        // IntentServiceでの壁紙変更状態のブロードキャストを受信するレシーバーの設置
         // ----------------------------------
         mProgressBcastReceiver = new ProgressBcastReceiver();
         IntentFilter iFilter = new IntentFilter();
@@ -154,9 +153,13 @@ public class HistoryActivity extends AppCompatActivity
 
     @Override
     protected void onDestroy() {
+        //// DBから履歴を読み込むローダーをnullにする
+        mLoaderManager = null;
+
         //// 壁紙セット状態を検知するBroadcastRecieverを解除
-        super.onDestroy();
         unregisterReceiver(mProgressBcastReceiver);
+
+        super.onDestroy();
     }
 
 
@@ -365,11 +368,15 @@ public class HistoryActivity extends AppCompatActivity
      * Called when a swipe gesture triggers a refresh.
      * 下スワイプしたときに呼ばれる
      */
-//    @Override
-//    public void onRefresh() {
-//        // リストの更新
-//        this.updateListView();
-//    }
+    @Override
+    public void onRefresh() {
+        // ここはappcompatを使っているときはforceLoad()をしないとだめ
+        // （参考）https://stackoverflow.com/questions/10524667/android-asynctaskloader-doesnt-start-loadinbackground
+        mLoaderManager.initLoader(1, null, this).forceLoad();
+
+        //// グルグルあればを消す
+        mSwipeRefreshLayout.setRefreshing(false);
+    }
 
     // --------------------------------------------------------------------
     // HistoryCursorLoaderのコールバック
@@ -445,12 +452,11 @@ public class HistoryActivity extends AppCompatActivity
 
 
     // --------------------------------------------------------------------
-    //
+    // 壁紙変更時にブロードキャストレシーバーから叩かれるコールバック
     // --------------------------------------------------------------------
 
     @Override
     public void onWpChangeStart() {
-Log.d("xxxxx", "onWpChangeStart()");
         //// プログレスバー（グルグル）を表示する
         View progressView = this.findViewById(R.id.history_setWallpaper_progress);
         progressView.setVisibility(ProgressBar.VISIBLE);
@@ -458,7 +464,6 @@ Log.d("xxxxx", "onWpChangeStart()");
 
     @Override
     public void onWpChangeDone() {
-Log.d("xxxxx", "onWpChangeDone()");
         //// プログレスバー（グルグル）を非表示にする
         View v = this.findViewById(R.id.history_setWallpaper_progress);
         v.setVisibility(ProgressBar.GONE);
