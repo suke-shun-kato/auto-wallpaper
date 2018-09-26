@@ -26,7 +26,7 @@ public class WpManagerService extends IntentService {
 
 
     // 壁紙をランダムに変更するIntentService用のアクション
-    public static final String ACTION_CHANGE_RANDAM = "xyz.monogatari.autowallpaper.action.CHANGE_WP_RANDAM";
+    private static final String ACTION_CHANGE_RANDAM = "xyz.monogatari.autowallpaper.action.CHANGE_WP_RANDAM";
     // 指定の壁紙に変更するIntentService用のアクション
     public static final String ACTION_CHANGE_SPECIFIED = "xyz.monogatari.autowallpaper.action.CHANGE_WP_SPECIFIED";
 
@@ -52,7 +52,7 @@ public class WpManagerService extends IntentService {
 
     /**
      * ランダムに壁紙を変更するIntentServiceを実行
-     * @param context
+     * @param context コンテキスト
      */
     public static void changeWpRandam(Context context) {
         Intent i = new Intent(context, WpManagerService.class);
@@ -62,10 +62,10 @@ public class WpManagerService extends IntentService {
 
     /**
      * 指定の画像に壁紙を変更するIntentServiceを実行
-     * @param context
-     * @param imgUri
-     * @param sourceKind
-     * @param intentActionUri
+     * @param context コンテキスト
+     * @param imgUri 画像の取得元のURI
+     * @param sourceKind ディレクトリからかツイッターからか
+     * @param intentActionUri クリックしたときの飛ばし先へのIntent
      */
     public static void changeWpSpecified(Context context, String imgUri, String sourceKind, String intentActionUri) {
         Intent i = new Intent(context, WpManagerService.class);

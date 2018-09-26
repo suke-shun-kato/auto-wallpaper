@@ -5,7 +5,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -30,19 +29,13 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
 import xyz.monogatari.autowallpaper.util.ProgressBcastReceiver;
-import xyz.monogatari.autowallpaper.wpchange.ImgGetter;
-import xyz.monogatari.autowallpaper.wpchange.ImgGetterDir;
-import xyz.monogatari.autowallpaper.wpchange.ImgGetterTw;
-import xyz.monogatari.autowallpaper.wpchange.WpManager;
 import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
 /**
  * 履歴ページ
  * Created by k-shunsuke on 2017/12/20.
  */
-
 public class HistoryActivity
         extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor>,
@@ -54,8 +47,8 @@ public class HistoryActivity
     // --------------------------------------------------------------------
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private ListView mListView;
-    HistoryListAdapter mAdapter = null;
-    LoaderManager mLoaderManager;
+    private HistoryListAdapter mAdapter = null;
+    private LoaderManager mLoaderManager;
 
     // 壁紙変更状態を検知するブロードキャストレシーバー
     private ProgressBcastReceiver mProgressBcastReceiver;
@@ -195,34 +188,33 @@ public class HistoryActivity
      * 壁紙の取得元にジャンプ（Intent）する関数
      * @param id historiesテーブルの_idの値
      */
-    public boolean jumpToSource(long id) {
+    private boolean jumpToSource(long id) {
         // ----------------------------------
         // DBから取得 ジャンプ先のURIを取得
         // ----------------------------------
-        MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(this);
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        String intentUriStr;
+        try {
+            HistoryModel historyModel = new HistoryModel(this);
+            Cursor cursor = historyModel.getHistoryById(id);
+            boolean canGetCursor = cursor.moveToFirst();
+            if (!canGetCursor) {
+                return false;
+            }
 
-        Cursor cursor = db.query(
-                MySQLiteOpenHelper.TABLE_HISTORIES,
-                MySQLiteOpenHelper.HISTORIES_PROJECTION,
-                "_id=?",
-                new String[] {String.valueOf(id)},
-                null, null, null);
-        boolean canGetCursor = cursor.moveToFirst();
-        if (!canGetCursor) {
-            return false;
-        }
-
-        //// intent先のURI
-        String intentUriStr = cursor.getString(
-                cursor.getColumnIndexOrThrow("intent_action_uri"));
-
-        // ----------------------------------
-        //
-        // ----------------------------------
-        if (intentUriStr == null) {
+            //// intent先のURI
             intentUriStr = cursor.getString(
-                    cursor.getColumnIndexOrThrow("img_uri"));
+                    cursor.getColumnIndexOrThrow("intent_action_uri"));
+
+            // ----------------------------------
+            //
+            // ----------------------------------
+            if (intentUriStr == null) {
+                intentUriStr = cursor.getString(
+                        cursor.getColumnIndexOrThrow("img_uri"));
+            }
+            cursor.close();
+        } catch (Exception e) {
+            return false;
         }
 
         // ----------------------------------
@@ -273,12 +265,13 @@ public class HistoryActivity
      * @param v
      * @param menuInfo
      */
+    @SuppressWarnings({"JavadocReference", "JavaDoc"})
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
         //// メニューをセット（タイトル除く）
-        MenuInflater inflater = this.getMenuInflater();
+        MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_history, menu);
 
         //// タイトルをセット
@@ -314,16 +307,8 @@ public class HistoryActivity
                 break;
 
             case R.id.histories_contextMenu_item_wpSet:
-                // TODO ココらへんの処理、モデルでまとめる
-                MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(this);
-                SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-                Cursor cursor = db.query(
-                        MySQLiteOpenHelper.TABLE_HISTORIES,
-                        MySQLiteOpenHelper.HISTORIES_PROJECTION,
-                        "_id=?",
-                        new String[] {String.valueOf(info.id)},
-                        null, null, null);
+                HistoryModel historyModel = new HistoryModel(this);
+                Cursor cursor = historyModel.getHistoryById(info.id);
                 boolean canGetCursor = cursor.moveToFirst();
                 if (!canGetCursor) {
                     return false;
@@ -411,6 +396,7 @@ public class HistoryActivity
      * @param loader The Loader that has finished.
      * @param cursor   The data generated by the Loader.
      */
+    @SuppressWarnings("JavadocReference")
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         mAdapter.swapCursor(cursor);

@@ -45,15 +45,15 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
     private boolean isServiceRunning = false;
 
     /** アクティビティ内で使いまわすSharedPreferences、ここでgetDefaultSharedPreferences()はダメ */
-    private SharedPreferences sp;
+    private SharedPreferences mSp;
 
-    private ProgressBcastReceiver progressBcastReceiver;
+    private ProgressBcastReceiver mProgressBcastReceiver;
 
     /** メインサービスのオブジェクト */
     @SuppressWarnings("FieldCanBeLocal")
     private MainService mainService;
     /** メインサービスがこのアクティビティにバインドされているか */
-    private boolean isBound;
+    private boolean mIsBound;
 
     /** ServiceConnectionを継承したクラスのインスタンス */
     private final ServiceConnection myConnection = new ServiceConnection() {
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
             // パーミッション許可ダイアログを表示
             // ----------
 //            if ( isServiceRunning //サービスが起動中
-//                    && sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
+//                    && mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
 //                    && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
 //                    != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
 //                    ) {
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
          */
         @Override
         public void onServiceDisconnected(ComponentName serviceClassName) {
-            isBound = false;
+            mIsBound = false;
             isServiceRunning = false;
         }
     };
@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
         // 変数の初期化
         // ----------------------------------
         //
-        this.sp = PreferenceManager.getDefaultSharedPreferences(this);
+        this.mSp = PreferenceManager.getDefaultSharedPreferences(this);
 
         // サービス開始用のインテントを作成
         this.serviceIntent = new Intent(this, MainService.class);
@@ -183,10 +183,10 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
         // 壁紙変更中のプログレスバー用のBcastレシーバーを登録
         // これは必ずonCreateで行うこと、onStartで登録→onStopで解除などすると別画面でサービスOFFのブロードキャストが検知できなくなるため
         // ----------------------------------
-        this.progressBcastReceiver = new ProgressBcastReceiver();
+        this.mProgressBcastReceiver = new ProgressBcastReceiver();
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(WpManagerService.ACTION_WPCHANGE_STATE);
-        this.registerReceiver(this.progressBcastReceiver, iFilter);
+        this.registerReceiver(this.mProgressBcastReceiver, iFilter);
 
         // ----------------------------------
         //
@@ -204,29 +204,6 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
     }
 
 
-//
-//    static void loggggg(long unixTimeMsec) {
-//        Date date = new Date(unixTimeMsec);
-//        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset() + TimeZone.getDefault().getDSTSavings());
-////        Date date2 = new Date(unixTimeMsec + TimeZone.getDefault().getRawOffset());
-//
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-//        sdf.setTimeZone(TimeZone.getTimeZone("GMT+9"));
-//
-//        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-//        sdf2.setTimeZone(TimeZone.getTimeZone("GMT+0"));
-//
-//        SimpleDateFormat sdf3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-//        sdf3.setTimeZone(TimeZone.getTimeZone("GMT-8"));
-//
-//
-//
-//
-//        Log.d("○MainActivity", "__"+sdf.format(date));
-//        Log.d("○MainActivity", "________________________"+sdf2.format(date2));
-//        Log.d("○MainActivity", "________________________"+sdf2.format(date));
-//        Log.d("○MainActivity", "________________________"+sdf3.format(date));
-//    }
 
     /************************************
      * アクティビティが描画される直前
@@ -242,7 +219,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
 
         // flags:0 だと自動でstartService()が開始されない（戻り値はサービス開始されていなくてもバインド成功したらtrueが返る）
         // Context.BIND_AUTO_CREATEだと自動開始される
-        this.isBound = this.bindService(intent, this.myConnection, 0);
+        this.mIsBound = this.bindService(intent, this.myConnection, 0);
 
 
     }
@@ -250,16 +227,16 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
     @Override
     protected void onStop() {
         super.onStop();
-        if (this.isBound) {
+        if (this.mIsBound) {
             this.unbindService(this.myConnection);
-            this.isBound = false;
+            this.mIsBound = false;
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        this.unregisterReceiver(this.progressBcastReceiver);
+        this.unregisterReceiver(this.mProgressBcastReceiver);
     }
 
     // --------------------------------------------------------------------
@@ -319,7 +296,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
             // (参考)https://developer.android.com/training/permissions/requesting.html?hl=ja
             // ----------------------------------
             // ディレクトリから壁紙取得がONのとき、かつディレクトリアクセスパーミッションがOFFのとき
-            if ( this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+            if ( this.mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
                     && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED
                             ) {
@@ -391,7 +368,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
      * @param view 押されたボタンのビュー
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
-        if ( this.sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+        if ( this.mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
                 ) {
@@ -417,20 +394,20 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         // ----------------------------------
         // 電源OFF時に変更
         // ----------------------------------
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+        if ( this.mSp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
             list.add(this.getString(R.string.main_next_wallpaper_set_screenOff));
         }
 
         // ----------------------------------
         // 設定時間で変更
         // ----------------------------------
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+        if ( this.mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
             //// 遅延時間を計算
-            long intervalMsec = Long.parseLong(this.sp.getString(
+            long intervalMsec = Long.parseLong(this.mSp.getString(
                     SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
                     this.getString(R.string.setting_when_timer_interval_values_default)
             ));
-            long settingUnixTimeMsec = this.sp.getLong(
+            long settingUnixTimeMsec = this.mSp.getLong(
                     SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis());
             long delayMsec = MainService.calcDelayMsec(
                     settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());

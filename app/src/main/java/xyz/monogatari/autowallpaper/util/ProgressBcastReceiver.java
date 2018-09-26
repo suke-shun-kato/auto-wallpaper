@@ -24,6 +24,7 @@ public class ProgressBcastReceiver extends BroadcastReceiver {
 
 
     /**
+     * // TODO タイミングがうまいこと行くようにする
      * 壁紙変更IntentServiceから送るブロードキャストのレシーバー
      * @param context レシーバーを設置するクラスのcontext
      * @param intent 送られてくるintent
