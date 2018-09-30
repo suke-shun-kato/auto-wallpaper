@@ -17,9 +17,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
-
-
 /**
  * 履歴ページのListViewを作成するためのアダプター
  */
@@ -87,7 +84,7 @@ public class HistoryListAdapter extends CursorAdapter {
         String sourceKind = cursor.getString(cursor.getColumnIndexOrThrow("source_kind"));
 
 
-        int rId = MySQLiteOpenHelper.sourceKindToRId(sourceKind);
+        int rId = HistoryModel.ICON_R_IDS.get(sourceKind);
         sourceKindImageView.setImageResource(rId);
 
         // ----------------------------------

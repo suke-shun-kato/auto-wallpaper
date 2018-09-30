@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
 
 @SuppressWarnings("WeakerAccess")
@@ -22,6 +25,15 @@ public class HistoryModel {
             "intent_action_uri",
             "created_at"
     };
+
+    public static final String SOURCE_TW = "ImgGetterTw";
+    public static final String SOURCE_DIR = "ImgGetterDir";
+
+    public static final Map<String, Integer> ICON_R_IDS = new HashMap<>();
+    static {
+        ICON_R_IDS.put("ImgGetterDir", R.drawable.ic_dir);
+        ICON_R_IDS.put("ImgGetterTw", R.drawable.ic_twitter);
+    }
 
     // --------------------------------------------------------------------
     // 
