@@ -328,10 +328,15 @@ public class HistoryActivity
                 try {
                     HistoryModel historyModel2 = new HistoryModel(this);
                     int numDeletedRows = historyModel2.deleteHistories(info.id);
-                    mLoaderManager.initLoader(1, null, this).forceLoad();
 
+                    if (numDeletedRows >= 1) {
+                        // historiesテーブルから再読込して表示
+                        mLoaderManager.initLoader(1, null, this).forceLoad();
+                    } else {
+                        throw new RuntimeException("履歴削除エラー");
+                    }
                 } catch (Exception e) {
-
+                    Toast.makeText(this, R.string.histories_contextMenu_item_delete_errorMessage, Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
