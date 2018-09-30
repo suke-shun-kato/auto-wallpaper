@@ -66,6 +66,8 @@
     <string name="histories_contextMenu_title">選択してください</string>
     <string name="histories_contextMenu_item_jump">取得元にジャンプ</string>
     <string name="histories_contextMenu_item_wpSet">壁紙に設定する</string>
+    <string name="histories_contextMenu_item_delete">履歴から削除する</string>
+    <string name="histories_contextMenu_item_delete_errorMessage">削除に失敗しました</string>
     <string name="histories_notification_ch_name">壁紙変更通知</string>
     <string name="histories_notification_title">壁紙が変更されました</string>
     <string name="histories_notification_body">タップすると履歴ページにとびます</string>

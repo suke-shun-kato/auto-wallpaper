@@ -27,8 +27,6 @@ import java.util.Random;
 
 import xyz.monogatari.autowallpaper.HistoryActivity;
 import xyz.monogatari.autowallpaper.MainActivity;
-import xyz.monogatari.autowallpaper.NotificationChannelId;
-import xyz.monogatari.autowallpaper.NotifyId;
 import xyz.monogatari.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.autowallpaper.R;
 import xyz.monogatari.autowallpaper.SettingsFragment;
@@ -44,15 +42,15 @@ public class WpManager {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-    private final Context context;
-    private final SharedPreferences sp;
+    private final Context mContext;
+    private final SharedPreferences mSp;
 
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
     public WpManager(Context context) {
-        this.context = context;
-        this.sp = PreferenceManager.getDefaultSharedPreferences(context);
+        mContext = context;
+        mSp = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     // --------------------------------------------------------------------
@@ -120,11 +118,13 @@ public class WpManager {
      * @return boolean 通知送るのが成功したら true
      */
     private boolean sendNotification() {
-        NotificationManager notifManager = (NotificationManager)this.context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notifManager = (NotificationManager)mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         if ( notifManager == null ) {
             return false;
         }
 
+        String notificationChannelId = mContext.getResources()
+                .getString(R.string.id_notificationChannel_wallpaperChanged);
 
         // ----------
         // 通知チャンネルを作成
@@ -132,8 +132,8 @@ public class WpManager {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){ //Android8.0（API 26）以上
             //// 通知チャンネルを作成→通知マネージャーに登録
             NotificationChannel ntfChannel = new NotificationChannel(
-                    NotificationChannelId.WALLPAPER_CHANGED,
-                    this.context.getString(R.string.histories_notification_ch_name),
+                    notificationChannelId,
+                    mContext.getString(R.string.histories_notification_ch_name),
                     NotificationManager.IMPORTANCE_DEFAULT
             );
 
@@ -145,15 +145,15 @@ public class WpManager {
         // ----------
         // PendingIntentを作成する
         // ----------
-        Intent mainIntent = new Intent(this.context, MainActivity.class)
+        Intent mainIntent = new Intent(mContext, MainActivity.class)
                 // FLAG_ACTIVITY_NEW_TASK: スタックに残っていても、新しくタスクを起動させる
                 // FLAG_ACTIVITY_CLEAR_TOP：呼び出すActivity以外のActivityをクリアして起動させる
                 // 上記はセットで使うのが基本みたい
                 .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        Intent historyIntent = new Intent(this.context, HistoryActivity.class);
+        Intent historyIntent = new Intent(mContext, HistoryActivity.class);
         Intent[] intents = {mainIntent, historyIntent};
         PendingIntent pendingIntent = PendingIntent.getActivities(
-                this.context,
+                mContext,
                 PendingIntentRequestCode.WALLPAPER_CHANGED,
                 intents,
                 //PendingIntentオブジェクトが既にあったらそのまま、ただしextraの値は最新に更新される
@@ -166,29 +166,27 @@ public class WpManager {
         //// 通知ビルダーを作成
         NotificationCompat.Builder notifBuilder;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {   //Android8.0（API 26）以上
-            notifBuilder = new NotificationCompat.Builder(
-                    this.context,
-                    NotificationChannelId.WALLPAPER_CHANGED
-            );
+            notifBuilder = new NotificationCompat.Builder(mContext,  notificationChannelId);
         } else {
             //noinspection deprecation
-            notifBuilder = new NotificationCompat.Builder(// この打ち消し線は問題ない
-                    this.context
-            );
+            notifBuilder = new NotificationCompat.Builder(mContext);
         }
         notifBuilder.setSmallIcon(R.drawable.ic_notification_changed_wallpaper)
                 .setAutoCancel(true)    //タップすると通知が消える
-                .setContentTitle(this.context.getString(R.string.histories_notification_title))
-                .setContentText(this.context.getString(R.string.histories_notification_body))
+                .setContentTitle(mContext.getString(R.string.histories_notification_title))
+                .setContentText(mContext.getString(R.string.histories_notification_body))
                 .setContentIntent(pendingIntent)
                 // 通知チャンネルをセット, Android8.0未満だとなにも処理しない
-                .setChannelId(NotificationChannelId.WALLPAPER_CHANGED)
+                .setChannelId(notificationChannelId)
                 .setWhen(System.currentTimeMillis());
 
 
         //// 通知をする
         Notification notification = notifBuilder.build();
-        notifManager.notify(NotifyId.WALLPAPER_CHANGED, notification);
+        int notificationId = mContext
+                .getResources()
+                .getInteger(R.integer.id_notification_wallpaperChanged);
+        notifManager.notify(notificationId, notification);
 
         // ----------
         //
@@ -206,23 +204,23 @@ public class WpManager {
         // ----------------------------------
         // 画像取得
         // ----------------------------------
-        Bitmap wallpaperBitmap = imgGetter.getImgBitmap(this.context); //データ本体取得
+        Bitmap wallpaperBitmap = imgGetter.getImgBitmap(mContext); //データ本体取得
 
         // ----------------------------------
         // 画像加工
         // ----------------------------------
         // スクリーン（画面）サイズ取得
-        Point point = DisplaySizeCheck.getRealSize(this.context);
+        Point point = DisplaySizeCheck.getRealSize(mContext);
         // 画像加工
         Bitmap processedWallpaperBitmap = BitmapProcessor.process(
                 wallpaperBitmap, point.x, point.y,
-                sp.getBoolean(SettingsFragment.KEY_OTHER_AUTO_ROTATION, true)
+                mSp.getBoolean(SettingsFragment.KEY_OTHER_AUTO_ROTATION, true)
         );
 
         // ----------------------------------
         // 画像を壁紙にセット
         // ----------------------------------
-        WallpaperManager wm = WallpaperManager.getInstance(this.context);
+        WallpaperManager wm = WallpaperManager.getInstance(mContext);
         try {
             if (Build.VERSION.SDK_INT >= 24) {
             // APIレベル24以上の場合, Android7.0以上のとき
@@ -246,7 +244,7 @@ public class WpManager {
         // ----------------------------------
         // 履歴に書き込み
         // ----------------------------------
-        MySQLiteOpenHelper mDbHelper = MySQLiteOpenHelper.getInstance(this.context);
+        MySQLiteOpenHelper mDbHelper = MySQLiteOpenHelper.getInstance(mContext);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         //noinspection TryFinallyCanBeTryWithResources
@@ -281,14 +279,14 @@ public class WpManager {
         // ----------
         //// 抽選先の取得リストをListに入れる
         List<ImgGetter> imgGetterList = new ArrayList<>();
-        if (sp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
-                && ContextCompat.checkSelfPermission(this.context, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+                && ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
-            imgGetterList.addAll( ImgGetterDir.getImgGetterList(this.context) );
+            imgGetterList.addAll( ImgGetterDir.getImgGetterList(mContext) );
         }
-        if (sp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
-                && sp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
-            imgGetterList.addAll( ImgGetterTw.getImgGetterList(this.context) );
+        if (mSp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
+                && mSp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
+            imgGetterList.addAll( ImgGetterTw.getImgGetterList(mContext) );
         }
 
 
