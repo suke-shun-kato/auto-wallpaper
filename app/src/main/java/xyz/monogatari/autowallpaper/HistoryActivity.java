@@ -51,6 +51,8 @@ public class HistoryActivity
     // 壁紙変更状態を検知するブロードキャストレシーバー
     private ProgressBcastReceiver mProgressBcastReceiver;
 
+    private int mLoaderId;
+
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
@@ -64,6 +66,7 @@ public class HistoryActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_history);
+
 
         // ----------------------------------
         // アクションバーの設定
@@ -107,6 +110,9 @@ public class HistoryActivity
         // ----------------------------------
         // 履歴リストの読み込み設定
         // ----------------------------------
+        //// 変数セット
+        mLoaderId = getResources().getInteger(R.integer.id_loader_histories);
+
         //// アダプターをセット（まだビューには反映していない）
         ListView listView = findViewById(R.id.history_list);
         mAdapter = new HistoryListAdapter(
@@ -117,7 +123,7 @@ public class HistoryActivity
         mLoaderManager = getSupportLoaderManager();
         // ここはappcompatを使っているときはforceLoad()をしないとだめ
         // （参考）https://stackoverflow.com/questions/10524667/android-asynctaskloader-doesnt-start-loadinbackground
-        mLoaderManager.initLoader(1, null, this).forceLoad();
+        mLoaderManager.initLoader(mLoaderId, null, this).forceLoad();
 
 
         // ----------------------------------
@@ -331,7 +337,7 @@ public class HistoryActivity
 
                     if (numDeletedRows >= 1) {
                         // historiesテーブルから再読込して表示
-                        mLoaderManager.initLoader(1, null, this).forceLoad();
+                        mLoaderManager.initLoader(mLoaderId, null, this).forceLoad();
                     } else {
                         throw new RuntimeException("履歴削除エラー");
                     }
@@ -352,7 +358,7 @@ public class HistoryActivity
     @Override
     public void onRefresh() {
         //// 履歴データを読み込み始める
-        mLoaderManager.initLoader(1, null, this).forceLoad();
+        mLoaderManager.initLoader(mLoaderId, null, this).forceLoad();
 
         //// グルグルあればを消す
         mSwipeRefreshLayout.setRefreshing(false);
