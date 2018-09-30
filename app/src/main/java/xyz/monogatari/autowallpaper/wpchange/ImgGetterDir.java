@@ -118,10 +118,7 @@ Log.d("○ImgGetterDir", "ストレージアクセス権限がない！！！");
 
             //// Listに追加
             getImgGetterList.add(
-                    new ImgGetterDir(
-                            contentUri.toString(),
-                            null
-                    )
+                    new ImgGetterDir(contentUri.toString(),null )
             );
         }
 

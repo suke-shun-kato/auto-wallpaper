@@ -13,6 +13,7 @@ import static org.junit.Assert.*;
 @SuppressWarnings("ConstantConditions")
 public class ExampleUnitTest {
 
+    @SuppressWarnings("RedundantStringOperation")
     @Test
     public void addition_isCorrect() {
 

@@ -19,7 +19,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -37,17 +36,16 @@ import xyz.monogatari.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
- * 壁紙を取得→加工→セットまでの一連の流れを行うクラス
+ * 壁紙周りの管理を行うクラス
  * Created by k-shunsuke on 2017/12/27.
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
 public class WpManager {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
     private final Context context;
     private final SharedPreferences sp;
-    private ImgGetter imgGetter = null;
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -64,13 +62,13 @@ public class WpManager {
     /************************************
      * データベースを履歴を記録
      * @param db 書き込み先のdbオブジェクト
+     * @param imgGetter 変更対象の画像のImgGetterクラス
      */
-    private void insertHistories(SQLiteDatabase db) {
+    private void insertHistories(SQLiteDatabase db, ImgGetter imgGetter) {
         // ----------------------------------
         // INSERT
         // ----------------------------------
         //// コード準備
-        // ↓のコードでInspectionエラーが出るがAndroidStudioのバグなので放置、3.1では直るらしい
 
         SQLiteStatement dbStt = db.compileStatement("" +
                 "INSERT INTO histories (" +
@@ -78,13 +76,13 @@ public class WpManager {
                 ") VALUES ( ?, ?, ?, datetime('now') );");
 
         //// bind
-        dbStt.bindString(1, this.imgGetter.getClass().getSimpleName() );
-        dbStt.bindString(2, this.imgGetter.getImgUri());
-        String uri = this.imgGetter.getActionUri();
+        dbStt.bindString(1, imgGetter.getClass().getSimpleName() );
+        dbStt.bindString(2, imgGetter.getImgUri());
+        String uri = imgGetter.getActionUri();
         if (uri == null) {
             dbStt.bindNull(3);
         } else {
-            dbStt.bindString(3, this.imgGetter.getActionUri());
+            dbStt.bindString(3, imgGetter.getActionUri());
         }
 
         //// insert実行
@@ -94,6 +92,7 @@ public class WpManager {
     private void deleteHistoriesOverflowMax(SQLiteDatabase db, @SuppressWarnings("SameParameterValue") int maxNum) {
         Cursor cursor = null;
 
+        //noinspection TryFinallyCanBeTryWithResources
         try {
             cursor = db.rawQuery("SELECT count(*) AS count FROM histories", null);
 
@@ -197,12 +196,82 @@ public class WpManager {
         return true;
     }
 
+    /**
+     * 壁紙セットの一連の流れを実行するメソッド
+     * 壁紙を取得→加工→壁紙セット→履歴に書き込み→通知作成
+     * @param imgGetter 変更対象の画像のImgGetterクラス
+     * @return 壁紙を設定できたか
+     */
+    public boolean executeWpSetTransaction(ImgGetter imgGetter) {
+        // ----------------------------------
+        // 画像取得
+        // ----------------------------------
+        Bitmap wallpaperBitmap = imgGetter.getImgBitmap(this.context); //データ本体取得
+
+        // ----------------------------------
+        // 画像加工
+        // ----------------------------------
+        // スクリーン（画面）サイズ取得
+        Point point = DisplaySizeCheck.getRealSize(this.context);
+        // 画像加工
+        Bitmap processedWallpaperBitmap = BitmapProcessor.process(
+                wallpaperBitmap, point.x, point.y,
+                sp.getBoolean(SettingsFragment.KEY_OTHER_AUTO_ROTATION, true)
+        );
+
+        // ----------------------------------
+        // 画像を壁紙にセット
+        // ----------------------------------
+        WallpaperManager wm = WallpaperManager.getInstance(this.context);
+        try {
+            if (Build.VERSION.SDK_INT >= 24) {
+            // APIレベル24以上の場合, Android7.0以上のとき
+                // 通常の壁紙とロックスクリーンの壁紙を変更
+                wm.setBitmap(
+                        processedWallpaperBitmap,
+                        null,
+                        false,
+                        WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK
+                );
+            } else {
+            // 24未満のとき
+                // 通常の壁紙を変更
+                wm.setBitmap(processedWallpaperBitmap);
+            }
+        } catch (IOException e) {
+            return false;
+        }
+
+
+        // ----------------------------------
+        // 履歴に書き込み
+        // ----------------------------------
+        MySQLiteOpenHelper mDbHelper = MySQLiteOpenHelper.getInstance(this.context);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        //noinspection TryFinallyCanBeTryWithResources
+        try {
+            this.insertHistories(db,imgGetter);
+            // 記憶件数溢れたものを削除
+            this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
+        } finally {
+            db.close();
+        }
+
+        // ----------------------------------
+        // 通知を作成
+        // ----------------------------------
+        this.sendNotification();
+
+        return true;
+    }
+
 
     /************************************
      * 壁紙を取得→加工→セット する一連の流れを行う関数
      * 処理の都合上、別スレッドで壁紙をセットしないといけいないので直接使用は不可
      */
-    public boolean execute() {
+    public boolean executeWpSetRandomTransaction() {
         // ----------------------------------
         // 画像取得
         // 取得元の選択が複数あるときは等確率で抽選を行う
@@ -230,73 +299,10 @@ public class WpManager {
             return false;
         }
         int drawnIndex = new Random().nextInt(imgGetterList.size());
-        this.imgGetter = imgGetterList.get(drawnIndex);
-
-        // ----------
-        // 画像取得
-        // ----------
-        Bitmap wallpaperBitmap = this.imgGetter.getImgBitmap(this.context); //データ本体取得
-
-        // ----------------------------------
-        // 画像加工
-        // ----------------------------------
-        // スクリーン（画面）サイズ取得
-        Point point = DisplaySizeCheck.getRealSize(this.context);
-        // 画像加工
-        Bitmap processedWallpaperBitmap = BitmapProcessor.process(
-                wallpaperBitmap, point.x, point.y,
-                sp.getBoolean(SettingsFragment.KEY_OTHER_AUTO_ROTATION, true)
-        );
-
-        // ----------------------------------
-        // 画像を壁紙にセット
-        // ----------------------------------
-        WallpaperManager wm = WallpaperManager.getInstance(this.context);
-        try {
-            if (Build.VERSION.SDK_INT >= 24) {
-                //APIレベル24以上の場合, Android7.0以上のとき
-                wm.setBitmap(
-                        processedWallpaperBitmap,
-                        null,
-                        false,
-                        WallpaperManager.FLAG_SYSTEM
-                );
-                wm.setBitmap(
-                        processedWallpaperBitmap,
-                        null,
-                        false,
-                        WallpaperManager.FLAG_LOCK
-                );
-            } else {
-                // 24未満のとき
-                wm.setBitmap(processedWallpaperBitmap);
-            }
-        } catch (IOException e) {
-            Log.d("○" + this.getClass().getSimpleName(), "壁紙セットできません");
-        }
+        ImgGetter imgGetter = imgGetterList.get(drawnIndex);
 
 
-        // ----------------------------------
-        // 履歴に書き込み
-        // ----------------------------------
-        MySQLiteOpenHelper mDbHelper = new MySQLiteOpenHelper(this.context);
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        return executeWpSetTransaction(imgGetter);
 
-        //noinspection TryFinallyCanBeTryWithResources
-        try {
-            this.insertHistories(db);
-            // 記憶件数溢れたものを削除
-            this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
-        } finally {
-            db.close();
-        }
-
-        // ----------------------------------
-        // 通知を作成
-        // ----------------------------------
-        //noinspection UnnecessaryLocalVariable
-        boolean canSendNotification = this.sendNotification();
-
-        return canSendNotification;
     }
 }
