@@ -17,7 +17,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     // If you change the database schema, you must increment the database version.
     @SuppressWarnings("WeakerAccess")
-    public static final int DATABASE_VERSION = 26;
+    public static final int DATABASE_VERSION = 27;
     @SuppressWarnings("WeakerAccess")
     public static final String DATABASE_NAME = "master.sqlite3";
 
@@ -81,6 +81,9 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
                     "SELECT source_kind, img_uri, intent_action_uri, created_at FROM histories_temp");
 
             db.execSQL("DROP TABLE histories_temp");
+        }
+        if (oldVersion <= 26 && newVersion >= 27) {
+            db.execSQL("UPDATE histories SET intent_action_uri = img_uri WHERE source_kind = 'ImgGetterDir' AND intent_action_uri IS NULL");
         }
     }
 
