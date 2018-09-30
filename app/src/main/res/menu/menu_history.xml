@@ -9,5 +9,8 @@
     <item
         android:id="@+id/histories_contextMenu_item_wpSet"
         android:title="@string/histories_contextMenu_item_wpSet" />
+    <item
+        android:id="@+id/histories_contextMenu_item_delete"
+        android:title="@string/histories_contextMenu_item_delete" />
 
 </menu>

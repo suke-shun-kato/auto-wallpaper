@@ -323,6 +323,17 @@ public class HistoryActivity
 
                 WpManagerService.changeWpSpecified(this, imgUri, sourceKind, intentActionUri);
                 break;
+
+            case R.id.histories_contextMenu_item_delete:
+                try {
+                    HistoryModel historyModel2 = new HistoryModel(this);
+                    int numDeletedRows = historyModel2.deleteHistories(info.id);
+                    mLoaderManager.initLoader(1, null, this).forceLoad();
+
+                } catch (Exception e) {
+
+                }
+                break;
         }
 
 

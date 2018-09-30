@@ -11,7 +11,8 @@ public class HistoryModel {
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
-    private final SQLiteDatabase mDb;
+    private final SQLiteDatabase mDbReadable;
+    private final SQLiteDatabase mDbWritable;
 
     public static final String TABLE_HISTORIES = "histories";
     public static final String[] HISTORIES_PROJECTION = new String[] {
@@ -27,7 +28,8 @@ public class HistoryModel {
     // --------------------------------------------------------------------
     HistoryModel(Context context) {
         MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(context);
-        mDb = dbHelper.getReadableDatabase();
+        mDbReadable = dbHelper.getReadableDatabase();
+        mDbWritable = dbHelper.getWritableDatabase();
 
     }
     // --------------------------------------------------------------------
@@ -39,7 +41,7 @@ public class HistoryModel {
      * @return cursor
      */
     public Cursor getHistoryById(long id) {
-        return mDb.query(
+        return mDbReadable.query(
                 TABLE_HISTORIES,
                 HISTORIES_PROJECTION,
                 "_id=?",
@@ -52,11 +54,21 @@ public class HistoryModel {
      * @return 履歴データ
      */
     public Cursor getAllHistories() {
-        return mDb.query(
+        return mDbReadable.query(
                 TABLE_HISTORIES,
                 HISTORIES_PROJECTION,
                 null, null, null, null,
                 "created_at DESC",
                 String.valueOf(HistoryActivity.MAX_RECORD_STORE));
+    }
+
+    /**
+     * idを指定して削除
+     * @param id 削除対象のid
+     * @return 削除したレコード数
+     */
+    public int deleteHistories(long id) {
+        return mDbWritable.delete(TABLE_HISTORIES, "_id = ?", new String[] {String.valueOf(id)});
+
     }
 }
