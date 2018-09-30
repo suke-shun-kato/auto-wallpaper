@@ -22,7 +22,6 @@ import java.util.TimerTask;
 
 import xyz.monogatari.autowallpaper.MainActivity;
 import xyz.monogatari.autowallpaper.NotificationChannelId;
-import xyz.monogatari.autowallpaper.NotifyId;
 import xyz.monogatari.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.autowallpaper.R;
 import xyz.monogatari.autowallpaper.SettingsFragment;
@@ -193,7 +192,9 @@ public class MainService extends Service {
 
         //// フォアグラウンドでサービスを開始＆通知
         Notification notification = notifBuilder.build();
-        this.startForeground(NotifyId.RUNNING_SERVICE, notification);
+
+        int notificationId = this.getResources().getInteger(R.integer.id_notification_runningService);
+        this.startForeground(notificationId, notification);
 
         // ----------------------------------
         //

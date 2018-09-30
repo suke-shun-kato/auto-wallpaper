@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer  name="id_loader_histories">1</integer>
+
+    <integer  name="id_notification_wallpaperChanged">1</integer>
+    <integer  name="id_notification_runningService">2</integer>
 </resources>
