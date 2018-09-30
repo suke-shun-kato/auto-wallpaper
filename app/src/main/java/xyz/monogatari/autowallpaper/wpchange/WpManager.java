@@ -27,7 +27,6 @@ import java.util.Random;
 
 import xyz.monogatari.autowallpaper.HistoryActivity;
 import xyz.monogatari.autowallpaper.MainActivity;
-import xyz.monogatari.autowallpaper.NotificationChannelId;
 import xyz.monogatari.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.autowallpaper.R;
 import xyz.monogatari.autowallpaper.SettingsFragment;
@@ -124,6 +123,8 @@ public class WpManager {
             return false;
         }
 
+        String notificationChannelId = mContext.getResources()
+                .getString(R.string.id_notificationChannel_wallpaperChanged);
 
         // ----------
         // 通知チャンネルを作成
@@ -131,7 +132,7 @@ public class WpManager {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){ //Android8.0（API 26）以上
             //// 通知チャンネルを作成→通知マネージャーに登録
             NotificationChannel ntfChannel = new NotificationChannel(
-                    NotificationChannelId.WALLPAPER_CHANGED,
+                    notificationChannelId,
                     mContext.getString(R.string.histories_notification_ch_name),
                     NotificationManager.IMPORTANCE_DEFAULT
             );
@@ -165,15 +166,10 @@ public class WpManager {
         //// 通知ビルダーを作成
         NotificationCompat.Builder notifBuilder;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {   //Android8.0（API 26）以上
-            notifBuilder = new NotificationCompat.Builder(
-                    mContext,
-                    NotificationChannelId.WALLPAPER_CHANGED
-            );
+            notifBuilder = new NotificationCompat.Builder(mContext,  notificationChannelId);
         } else {
             //noinspection deprecation
-            notifBuilder = new NotificationCompat.Builder(// この打ち消し線は問題ない
-                    mContext
-            );
+            notifBuilder = new NotificationCompat.Builder(mContext);
         }
         notifBuilder.setSmallIcon(R.drawable.ic_notification_changed_wallpaper)
                 .setAutoCancel(true)    //タップすると通知が消える
@@ -181,7 +177,7 @@ public class WpManager {
                 .setContentText(mContext.getString(R.string.histories_notification_body))
                 .setContentIntent(pendingIntent)
                 // 通知チャンネルをセット, Android8.0未満だとなにも処理しない
-                .setChannelId(NotificationChannelId.WALLPAPER_CHANGED)
+                .setChannelId(notificationChannelId)
                 .setWhen(System.currentTimeMillis());
 
 

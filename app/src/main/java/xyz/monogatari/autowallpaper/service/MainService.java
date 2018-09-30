@@ -21,7 +21,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import xyz.monogatari.autowallpaper.MainActivity;
-import xyz.monogatari.autowallpaper.NotificationChannelId;
 import xyz.monogatari.autowallpaper.PendingIntentRequestCode;
 import xyz.monogatari.autowallpaper.R;
 import xyz.monogatari.autowallpaper.SettingsFragment;
@@ -135,6 +134,8 @@ public class MainService extends Service {
         this.isStarted = true;
 
 
+        String notificationChannelId = getResources().getString(
+                R.string.id_notificationChannel_runningMainService);
         // ----------------------------------
         // 通知を作成
         // ----------------------------------
@@ -144,7 +145,7 @@ public class MainService extends Service {
         if ( Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ){ //Android8.0（API 26）以上
 
             NotificationChannel ntfChannel = new NotificationChannel(
-                    NotificationChannelId.RUNNING_MAIN_SERVICE,
+                    notificationChannelId,
                     this.getString(R.string.mainService_notification_ch_name),  //TODO 文言をちゃんとする
                     NotificationManager.IMPORTANCE_LOW
             );
@@ -172,15 +173,10 @@ public class MainService extends Service {
         //// Notification.Builderを作成する
         NotificationCompat.Builder notifBuilder;
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {   //Android8.0（API 26）以上
-            notifBuilder = new NotificationCompat.Builder(
-                    this,
-                    NotificationChannelId.RUNNING_MAIN_SERVICE
-            );
+            notifBuilder = new NotificationCompat.Builder(this, notificationChannelId);
         } else {
             //noinspection deprecation
-            notifBuilder = new NotificationCompat.Builder(
-                    this
-            );
+            notifBuilder = new NotificationCompat.Builder(this);
         }
         notifBuilder.setContentTitle(this.getString(R.string.mainService_notification_title))
                 .setContentText(this.getString(R.string.mainService_notification_text))

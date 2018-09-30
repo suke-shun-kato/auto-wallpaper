@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <integer  name="id_loader_histories">1</integer>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <integer name="id_loader_histories">1</integer>
 
-    <integer  name="id_notification_wallpaperChanged">1</integer>
-    <integer  name="id_notification_runningService">2</integer>
+    <integer name="id_notification_wallpaperChanged">1</integer>
+    <integer name="id_notification_runningService">2</integer>
+
+    <string  name="id_notificationChannel_runningMainService" tools:ignore="MissingTranslation">running_main_service</string>
+    <string  name="id_notificationChannel_wallpaperChanged" tools:ignore="MissingTranslation">wallpaper_changed</string>
 </resources>
