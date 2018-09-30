@@ -4,8 +4,6 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import xyz.monogatari.autowallpaper.R;
-
 /**
  * Created by k-shunsuke on 2018/02/04.
  * データベースヘルパークラス
@@ -17,7 +15,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     // If you change the database schema, you must increment the database version.
     @SuppressWarnings("WeakerAccess")
-    public static final int DATABASE_VERSION = 26;
+    public static final int DATABASE_VERSION = 27;
     @SuppressWarnings("WeakerAccess")
     public static final String DATABASE_NAME = "master.sqlite3";
 
@@ -82,19 +80,10 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
             db.execSQL("DROP TABLE histories_temp");
         }
-    }
 
-    // --------------------------------------------------------------------
-    //
-    // --------------------------------------------------------------------
-    public static int sourceKindToRId(String sourceKind) {
-        switch (sourceKind) {
-            case "ImgGetterDir":
-                return  R.drawable.ic_dir;
-            case "ImgGetterTw":
-                return R.drawable.ic_twitter;
-            default:
-                return 0;
+        //// 26以下 → 27
+        if (oldVersion <= 26 && newVersion >= 27) {
+            db.execSQL("UPDATE histories SET intent_action_uri = img_uri WHERE source_kind = 'ImgGetterDir' AND intent_action_uri IS NULL");
         }
     }
 
