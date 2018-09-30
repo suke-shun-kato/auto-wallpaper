@@ -3,7 +3,6 @@ package xyz.monogatari.autowallpaper.util;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import xyz.monogatari.autowallpaper.R;
 
@@ -24,15 +23,6 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
     private static MySQLiteOpenHelper sMySQLiteOpenHelper = null;
 
-
-    public static final String TABLE_HISTORIES = "histories";
-    public static final String[] HISTORIES_PROJECTION = new String[] {
-            "_id",
-            "source_kind",
-            "img_uri",
-            "intent_action_uri",
-            "created_at"
-    };
     
     // --------------------------------------------------------------------
     // コンストラクタ、シングルトンにする

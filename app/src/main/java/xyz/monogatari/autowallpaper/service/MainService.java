@@ -32,6 +32,7 @@ import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
  * Created by k-shunsuke on 2017/12/12.
  * 裏で壁紙を変更するサービス
  */
+@SuppressWarnings("unused")
 public class MainService extends Service {
     // --------------------------------------------------------------------
     // フィールド、Util
@@ -129,6 +130,7 @@ public class MainService extends Service {
      * @param flags 追加データ、0 か START_FLAG_REDELIVERY か START_FLAG_RETRY
      * @param startId ユニークなID, startService()を重複して実行するたびに ++startId される
      */
+    @SuppressWarnings("SameReturnValue")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         this.isStarted = true;

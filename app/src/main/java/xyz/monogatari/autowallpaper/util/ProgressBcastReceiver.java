@@ -3,7 +3,6 @@ package xyz.monogatari.autowallpaper.util;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
 import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 

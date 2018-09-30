@@ -115,7 +115,7 @@ public class DisplaySizeCheck {
     /************************************
      * DPを取得する関数
      */
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"ConstantConditions", "unused"})
     public static int getScreenWidthInDPs(Context context){
         /*
             DisplayMetrics

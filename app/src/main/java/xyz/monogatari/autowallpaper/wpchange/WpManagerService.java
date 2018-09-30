@@ -26,9 +26,9 @@ public class WpManagerService extends IntentService {
 
 
     // 壁紙をランダムに変更するIntentService用のアクション
-    private static final String ACTION_CHANGE_RANDAM = "xyz.monogatari.autowallpaper.action.CHANGE_WP_RANDAM";
+    private static final String ACTION_CHANGE_RANDOM = "xyz.monogatari.autowallpaper.action.CHANGE_WP_RANDOM";
     // 指定の壁紙に変更するIntentService用のアクション
-    public static final String ACTION_CHANGE_SPECIFIED = "xyz.monogatari.autowallpaper.action.CHANGE_WP_SPECIFIED";
+    private static final String ACTION_CHANGE_SPECIFIED = "xyz.monogatari.autowallpaper.action.CHANGE_WP_SPECIFIED";
 
 
 
@@ -54,9 +54,9 @@ public class WpManagerService extends IntentService {
      * ランダムに壁紙を変更するIntentServiceを実行
      * @param context コンテキスト
      */
-    public static void changeWpRandam(Context context) {
+    public static void changeWpRandom(Context context) {
         Intent i = new Intent(context, WpManagerService.class);
-        i.setAction(ACTION_CHANGE_RANDAM);
+        i.setAction(ACTION_CHANGE_RANDOM);
         context.startService(i);
     }
 
@@ -109,21 +109,26 @@ public class WpManagerService extends IntentService {
             final String action = intent.getAction();
             WpManager wpManager = new WpManager(this);
 
-            boolean canExe = false;
+            boolean canExe;
 
-            if ( ACTION_CHANGE_RANDAM.equals(action) ) {
+            if ( ACTION_CHANGE_RANDOM.equals(action) ) {
             // ----------------------------------
             // ランダムで壁紙変更
             // ----------------------------------
                 // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
-                canExe = wpManager.executeWpSetRandamTransaction();
+                canExe = wpManager.executeWpSetRandomTransaction();
 
             } else if ( ACTION_CHANGE_SPECIFIED.equals(action) ) {
             // ----------------------------------
             // 指定の壁紙に変更
             // ----------------------------------
                 //// intent からデータを取得
-                Uri dataUri = intent.getData();
+                String dataUri;
+                try {
+                    dataUri = intent.getData().toString();
+                } catch (Exception e) {
+                    throw new RuntimeException("uriの値が不正です。");
+                }
                 String sourceKind = intent.getStringExtra("sourceKind");
                 String intentActionUri = intent.getStringExtra("intentActionUri");
 
@@ -131,10 +136,10 @@ public class WpManagerService extends IntentService {
                 ImgGetter imgGetter;
                 switch (sourceKind) {
                     case "ImgGetterDir":
-                        imgGetter = new ImgGetterDir(dataUri.toString(), intentActionUri);
+                        imgGetter = new ImgGetterDir(dataUri, intentActionUri);
                         break;
                     case "ImgGetterTw":
-                        imgGetter = new ImgGetterTw(dataUri.toString(), intentActionUri);
+                        imgGetter = new ImgGetterTw(dataUri, intentActionUri);
                         break;
                     default:
                         throw new RuntimeException("histories.source_kindの値が不正です。");

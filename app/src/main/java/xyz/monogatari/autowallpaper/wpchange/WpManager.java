@@ -19,7 +19,6 @@ import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +39,7 @@ import xyz.monogatari.autowallpaper.util.MySQLiteOpenHelper;
  * 壁紙周りの管理を行うクラス
  * Created by k-shunsuke on 2017/12/27.
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "UnusedReturnValue"})
 public class WpManager {
     // --------------------------------------------------------------------
     // フィールド
@@ -93,6 +92,7 @@ public class WpManager {
     private void deleteHistoriesOverflowMax(SQLiteDatabase db, @SuppressWarnings("SameParameterValue") int maxNum) {
         Cursor cursor = null;
 
+        //noinspection TryFinallyCanBeTryWithResources
         try {
             cursor = db.rawQuery("SELECT count(*) AS count FROM histories", null);
 
@@ -271,7 +271,7 @@ public class WpManager {
      * 壁紙を取得→加工→セット する一連の流れを行う関数
      * 処理の都合上、別スレッドで壁紙をセットしないといけいないので直接使用は不可
      */
-    public boolean executeWpSetRandamTransaction() {
+    public boolean executeWpSetRandomTransaction() {
         // ----------------------------------
         // 画像取得
         // 取得元の選択が複数あるときは等確率で抽選を行う

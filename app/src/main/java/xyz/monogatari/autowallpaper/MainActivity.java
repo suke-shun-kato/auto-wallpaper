@@ -348,7 +348,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // ボタンを再度クリックする
-                    WpManagerService.changeWpRandam(this);
+                    WpManagerService.changeWpRandom(this);
                 }
 
                 break;
@@ -378,7 +378,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
             return;
         }
 
-        WpManagerService.changeWpRandam(this);
+        WpManagerService.changeWpRandom(this);
     }
 
     // --------------------------------------------------------------------
@@ -467,7 +467,7 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         btnView.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                WpManagerService.changeWpRandam(MainActivity.this);
+                WpManagerService.changeWpRandom(MainActivity.this);
             }
         });
 
