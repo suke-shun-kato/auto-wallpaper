@@ -69,7 +69,7 @@
         </provider>
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-7787731222816296~9468202549"/>
+            android:value="@string/id_adMob_appId"/>
     </application>
 
 </manifest>

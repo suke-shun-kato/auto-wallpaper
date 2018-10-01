@@ -76,7 +76,7 @@ public class HistoryActivity
         // 広告の設定
         // ----------------------------------
         //// 初期化
-        MobileAds.initialize(this, "ca-app-pub-7787731222816296~9468202549");
+        MobileAds.initialize(this, getString(R.string.id_adMob_appId));
 
         //// viewにセット
         mAdView = findViewById(R.id.adView);

@@ -7,4 +7,10 @@
 
     <string  name="id_notificationChannel_runningMainService" tools:ignore="MissingTranslation">running_main_service</string>
     <string  name="id_notificationChannel_wallpaperChanged" tools:ignore="MissingTranslation">wallpaper_changed</string>
+
+    <string name="id_adMob_appId" tools:ignore="MissingTranslation">ca-app-pub-7787731222816296~9468202549</string>
+    <!-- ↓本番用 -->
+    <!--<string name="id_adMob_addUnitId" tools:ignore="MissingTranslation">ca-app-pub-7787731222816296/6682257105</string>-->
+    <!-- ↓テスト用 -->
+    <string name="id_adMob_addUnitId" tools:ignore="MissingTranslation">ca-app-pub-3940256099942544/6300978111</string>
 </resources>

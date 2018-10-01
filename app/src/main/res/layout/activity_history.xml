@@ -30,9 +30,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 ads:adSize="BANNER"
-                ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+                ads:adUnitId="@string/id_adMob_addUnitId"
                 >
-                <!--ads:adUnitId="ca-app-pub-7787731222816296/6682257105"-->
             </com.google.android.gms.ads.AdView>
             <android.support.v4.widget.SwipeRefreshLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
