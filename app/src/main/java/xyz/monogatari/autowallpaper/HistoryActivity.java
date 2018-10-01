@@ -24,6 +24,9 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -44,6 +47,8 @@ public class HistoryActivity
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
+    private AdView mAdView;
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private HistoryListAdapter mAdapter = null;
     private LoaderManager mLoaderManager;
@@ -66,6 +71,17 @@ public class HistoryActivity
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_history);
+
+        // ----------------------------------
+        // 広告の設定
+        // ----------------------------------
+        //// 初期化
+        MobileAds.initialize(this, "ca-app-pub-7787731222816296~9468202549");
+
+        //// viewにセット
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
 
         // ----------------------------------
