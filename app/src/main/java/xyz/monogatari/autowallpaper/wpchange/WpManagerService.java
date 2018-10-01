@@ -9,6 +9,8 @@ import android.support.annotation.Nullable;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import xyz.monogatari.autowallpaper.HistoryModel;
+
 /**
  * 壁紙を変更する用のサービス
  * Created by k-shunsuke on 2018/02/01.
@@ -135,10 +137,10 @@ public class WpManagerService extends IntentService {
                 //// 壁紙変更
                 ImgGetter imgGetter;
                 switch (sourceKind) {
-                    case "ImgGetterDir":
+                    case HistoryModel.SOURCE_DIR:
                         imgGetter = new ImgGetterDir(dataUri, intentActionUri);
                         break;
-                    case "ImgGetterTw":
+                    case HistoryModel.SOURCE_TW:
                         imgGetter = new ImgGetterTw(dataUri, intentActionUri);
                         break;
                     default:
