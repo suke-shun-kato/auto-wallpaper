@@ -8,6 +8,10 @@
     <string  name="id_notificationChannel_runningMainService" tools:ignore="MissingTranslation">running_main_service</string>
     <string  name="id_notificationChannel_wallpaperChanged" tools:ignore="MissingTranslation">wallpaper_changed</string>
 
+    <string name="twitter_consumer_key" tools:ignore="MissingTranslation">i27LkK5rUNoXKxNXTjrvqhnbx</string>
+    <string name="twitter_consumer_secret" tools:ignore="MissingTranslation">dCQFHUUD6jS8zt1xEF4DBdTKiTFgfRBdFUjCxUdq1jMTBJpi1p</string>
+    <string name="twitter_callback_url" tools:ignore="MissingTranslation">xyzgisautowallpaper://</string>
+
     <string name="id_adMob_appId" tools:ignore="MissingTranslation">ca-app-pub-7787731222816296~9468202549</string>
     <!-- ↓本番用 -->
     <!--<string name="id_adMob_addUnitId" tools:ignore="MissingTranslation">ca-app-pub-7787731222816296/6682257105</string>-->
