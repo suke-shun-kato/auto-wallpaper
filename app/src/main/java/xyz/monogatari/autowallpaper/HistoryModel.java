@@ -31,8 +31,8 @@ public class HistoryModel {
 
     public static final Map<String, Integer> ICON_R_IDS = new HashMap<>();
     static {
-        ICON_R_IDS.put(SOURCE_TW, R.drawable.ic_dir);
-        ICON_R_IDS.put(SOURCE_DIR, R.drawable.ic_twitter);
+        ICON_R_IDS.put(SOURCE_DIR, R.drawable.ic_dir);
+        ICON_R_IDS.put(SOURCE_TW, R.drawable.ic_twitter);
     }
 
     // --------------------------------------------------------------------
