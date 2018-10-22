@@ -105,8 +105,10 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
                     "`img_uri` TEXT NOT NULL, " +
                     "`intent_action_uri` TEXT, " +
                     "`created_at` TEXT NOT NULL )");
+            // 同じ名前のインデックスを作成したらエラーがでるので、
+            // その前に変更前のテーブルのインデックスを削除
+            db.execSQL("DROP INDEX IF EXISTS created_at");
             db.execSQL("CREATE INDEX created_at ON histories(created_at)");
-
 
             db.execSQL("INSERT INTO histories(source_kind, img_uri, intent_action_uri, created_at) " +
                     "SELECT source_kind, img_uri, intent_action_uri, created_at FROM histories_temp");
