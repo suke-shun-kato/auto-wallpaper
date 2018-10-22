@@ -198,9 +198,8 @@ public class WpManager {
      * 壁紙セットの一連の流れを実行するメソッド
      * 壁紙を取得→加工→壁紙セット→履歴に書き込み→通知作成
      * @param imgGetter 変更対象の画像のImgGetterクラス
-     * @return 壁紙を設定できたか
      */
-    public boolean executeWpSetTransaction(ImgGetter imgGetter) {
+    public void executeWpSetTransaction(ImgGetter imgGetter) throws Exception {
         // ----------------------------------
         // 画像取得
         // ----------------------------------
@@ -221,25 +220,21 @@ public class WpManager {
         // 画像を壁紙にセット
         // ----------------------------------
         WallpaperManager wm = WallpaperManager.getInstance(mContext);
-        try {
-            if (Build.VERSION.SDK_INT >= 24) {
-            // APIレベル24以上の場合, Android7.0以上のとき
-                // 通常の壁紙とロックスクリーンの壁紙を変更
-                wm.setBitmap(
-                        processedWallpaperBitmap,
-                        null,
-                        false,
-                        WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK
-                );
-            } else {
-            // 24未満のとき
-                // 通常の壁紙を変更
-                wm.setBitmap(processedWallpaperBitmap);
-            }
-        } catch (IOException e) {
-            return false;
-        }
 
+        if (Build.VERSION.SDK_INT >= 24) {
+        // APIレベル24以上の場合, Android7.0以上のとき
+            // 通常の壁紙とロックスクリーンの壁紙を変更
+            wm.setBitmap(
+                    processedWallpaperBitmap,
+                    null,
+                    false,
+                    WallpaperManager.FLAG_SYSTEM | WallpaperManager.FLAG_LOCK
+            );
+        } else {
+        // 24未満のとき
+            // 通常の壁紙を変更
+            wm.setBitmap(processedWallpaperBitmap);
+        }
 
         // ----------------------------------
         // 履歴に書き込み
@@ -249,9 +244,10 @@ public class WpManager {
 
         //noinspection TryFinallyCanBeTryWithResources
         try {
-            this.insertHistories(db,imgGetter);
+            this.insertHistories(db, imgGetter);
             // 記憶件数溢れたものを削除
             this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
+        // catch がない場合はfinallyが実行されて（db.close() されて）エラーがthrowされる
         } finally {
             db.close();
         }
@@ -260,8 +256,6 @@ public class WpManager {
         // 通知を作成
         // ----------------------------------
         this.sendNotification();
-
-        return true;
     }
 
 
@@ -269,7 +263,7 @@ public class WpManager {
      * 壁紙を取得→加工→セット する一連の流れを行う関数
      * 処理の都合上、別スレッドで壁紙をセットしないといけいないので直接使用は不可
      */
-    public boolean executeWpSetRandomTransaction() {
+    public void executeWpSetRandomTransaction() throws Exception {
         // ----------------------------------
         // 画像取得
         // 取得元の選択が複数あるときは等確率で抽選を行う
@@ -294,13 +288,15 @@ public class WpManager {
         // 抽選
         // ----------
         if (imgGetterList.size() == 0) {
-            return false;
+            throw new RuntimeException("ランダム変更対象の壁紙がありません。");
         }
         int drawnIndex = new Random().nextInt(imgGetterList.size());
         ImgGetter imgGetter = imgGetterList.get(drawnIndex);
 
 
-        return executeWpSetTransaction(imgGetter);
-
+        // ----------
+        // 実行
+        // ----------
+        executeWpSetTransaction(imgGetter);
     }
 }

@@ -390,9 +390,7 @@ public class MainService extends Service {
                 new TimerTask() {
                     @Override
                     public void run() {
-
-                        Intent i = new Intent(MainService.this, WpManagerService.class);
-                        startService(i);
+                        WpManagerService.changeWpRandom(MainService.this);
                     }
                 },
                 delayMsec,
