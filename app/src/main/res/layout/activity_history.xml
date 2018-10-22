@@ -24,15 +24,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <com.google.android.gms.ads.AdView
-                xmlns:ads="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/adView"
+
+            <LinearLayout
+                android:id="@+id/history_add_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                ads:adSize="BANNER"
-                ads:adUnitId="@string/id_adMob_addUnitId"
-                >
-            </com.google.android.gms.ads.AdView>
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@color/colorPrimaryDark"
+                android:padding="8dp">
+                <!--<com.google.android.gms.ads.AdView-->
+                    <!--xmlns:ads="http://schemas.android.com/apk/res-auto"-->
+                    <!--android:id="@+id/adView"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--ads:adSize="BANNER"-->
+                    <!--ads:adUnitId="@string/id_adMob_addUnitId" />-->
+                <!--TODO 文字をリソース化-->
+            </LinearLayout>
             <android.support.v4.widget.SwipeRefreshLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/history_swipe_refresh"

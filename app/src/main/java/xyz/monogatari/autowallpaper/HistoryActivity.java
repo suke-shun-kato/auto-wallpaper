@@ -14,17 +14,21 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -47,7 +51,7 @@ public class HistoryActivity
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-    private AdView mAdView;
+//    private AdView mAdView;
 
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private HistoryListAdapter mAdapter = null;
@@ -65,8 +69,8 @@ public class HistoryActivity
     public static final int MAX_RECORD_STORE = 100;
 
     // --------------------------------------------------------------------
-    // メソッド（オーバーライド）
     // --------------------------------------------------------------------
+    // メソッド（オーバーライド）
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,10 +82,23 @@ public class HistoryActivity
         //// 初期化
         MobileAds.initialize(this, getString(R.string.id_adMob_appId));
 
+//
+//        AdView mAdView = findViewById(R.id.adView);
+//        AdRequest adRequest = new AdRequest.Builder().build();
+//        mAdView.loadAd(adRequest);
+
         //// viewにセット
-        mAdView = findViewById(R.id.adView);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        mAdView.loadAd(adRequest);
+        AdView mAdView = new AdView(this);
+        // バナーのサイズ指定
+        mAdView.setAdSize(AdSize.BANNER);
+        // バナーIDを指定
+        mAdView.setAdUnitId( getString(R.string.id_adMob_addUnitId) );
+        // バナーを読み込む
+        mAdView.loadAd(new AdRequest.Builder().build());
+
+        LinearLayout linearLayout = findViewById(R.id.history_add_container);
+        linearLayout.addView(mAdView, 0);
+
 
 
         // ----------------------------------

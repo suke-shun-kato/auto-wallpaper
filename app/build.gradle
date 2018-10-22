@@ -1,3 +1,4 @@
+//// apply(plugin: 'com.android.application') の省略記法、名前付き引数
 apply plugin: 'com.android.application'
 
 
@@ -55,7 +56,7 @@ dependencies {
     // -------------------------------------
     // 広告（add）
     // -------------------------------------
-    implementation 'com.google.android.gms:play-services-ads:15.0.1'
+    implementation 'com.google.android.gms:play-services-ads:17.0.0'
 
 
     // -------------------------------------
