@@ -35,6 +35,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import xyz.monogatari.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.autowallpaper.util.ProgressBcastReceiver;
 import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
@@ -82,23 +83,46 @@ public class HistoryActivity
         //// 初期化
         MobileAds.initialize(this, getString(R.string.id_adMob_appId));
 
-//
-//        AdView mAdView = findViewById(R.id.adView);
-//        AdRequest adRequest = new AdRequest.Builder().build();
-//        mAdView.loadAd(adRequest);
 
-        //// viewにセット
+        //// 必要な変数を準備
         AdView mAdView = new AdView(this);
-        // バナーのサイズ指定
-        mAdView.setAdSize(AdSize.BANNER);
-        // バナーIDを指定
-        mAdView.setAdUnitId( getString(R.string.id_adMob_addUnitId) );
-        // バナーを読み込む
-        mAdView.loadAd(new AdRequest.Builder().build());
+        LinearLayout addContainerLayout = findViewById(R.id.history_add_container);
 
-        LinearLayout linearLayout = findViewById(R.id.history_add_container);
-        linearLayout.addView(mAdView, 0);
+        //// バナーのサイズを指定
+        // ディスプレイの横幅取得
+        int displayWidth = DisplaySizeCheck.getScreenWidthInDPs(this);
+        // padding の dp を計算
+        int pdLeftPx = addContainerLayout.getPaddingLeft();
+        int pdRightPx = addContainerLayout.getPaddingRight();
+        float scale = this.getResources().getDisplayMetrics().density; // dp * scale = pixel
+        float paddingSumDp =  (pdLeftPx + pdRightPx) / scale;
 
+        // 決定
+        // SMART_BANNER は自動でサイズを決定してくれるが、端に変な表示が入るので使わない
+        boolean setBanner = false;
+        if ( displayWidth >= AdSize.BANNER.getWidth() + paddingSumDp
+                && displayWidth < AdSize.FULL_BANNER.getWidth() + paddingSumDp) {
+            mAdView.setAdSize(AdSize.BANNER); // 320x50
+            setBanner = true;
+        } else if( displayWidth >= AdSize.FULL_BANNER.getWidth() + paddingSumDp
+                && displayWidth < AdSize.LEADERBOARD.getWidth() + paddingSumDp) {
+            mAdView.setAdSize(AdSize.FULL_BANNER);  // 468x60
+            setBanner = true;
+        } else if (displayWidth >= AdSize.LEADERBOARD.getWidth() + paddingSumDp) {
+            mAdView.setAdSize(AdSize.LEADERBOARD);  // 728x90
+            setBanner = true;
+        }
+
+        if (setBanner) {
+            //// バナーIDをセット
+            mAdView.setAdUnitId( getString(R.string.id_adMob_addUnitId) );
+
+            //// バナーを読み込む
+            mAdView.loadAd(new AdRequest.Builder().build());
+
+            //// バナーをViewにセット
+            addContainerLayout.addView(mAdView, 0);
+        }
 
 
         // ----------------------------------

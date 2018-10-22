@@ -11,6 +11,7 @@
 
     <dimen name="main_activity_power_btn_size">280dp</dimen>
 
+    <dimen name="history_add_container_padding">8dp</dimen>
     <dimen name="history_activity_item_margin">8dp</dimen>
     <dimen name="history_activity_item_text_padding_h">4dp</dimen>
     <dimen name="history_activity_item_text_padding_v">0dp</dimen>
