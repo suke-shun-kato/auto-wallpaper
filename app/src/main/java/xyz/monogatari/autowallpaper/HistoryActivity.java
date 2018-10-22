@@ -63,6 +63,8 @@ public class HistoryActivity
 
     private int mLoaderId;
 
+    AdView mAdView = null;
+
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
@@ -84,46 +86,37 @@ public class HistoryActivity
         MobileAds.initialize(this, getString(R.string.id_adMob_appId));
 
 
-        //// 必要な変数を準備
-        AdView mAdView = new AdView(this);
+        //// 必要な変数の準備
         LinearLayout addContainerLayout = findViewById(R.id.history_add_container);
 
-        //// バナーのサイズを指定
-        // ディスプレイの横幅取得
-        int displayWidth = DisplaySizeCheck.getScreenWidthInDPs(this);
-        // padding の dp を計算
+        int displayWidth = DisplaySizeCheck.getScreenWidthInDPs(this);//ディスプレイの横幅取得
         int pdLeftPx = addContainerLayout.getPaddingLeft();
         int pdRightPx = addContainerLayout.getPaddingRight();
         float scale = this.getResources().getDisplayMetrics().density; // dp * scale = pixel
-        float paddingSumDp =  (pdLeftPx + pdRightPx) / scale;
+        float paddingSumDp =  (pdLeftPx + pdRightPx) / scale; // padding の dp を計算
 
-        // 決定
-        // SMART_BANNER は自動でサイズを決定してくれるが、端に変な表示が入るので使わない
-        boolean setBanner = false;
-        if ( displayWidth >= AdSize.BANNER.getWidth() + paddingSumDp
-                && displayWidth < AdSize.FULL_BANNER.getWidth() + paddingSumDp) {
-            mAdView.setAdSize(AdSize.BANNER); // 320x50
-            setBanner = true;
-        } else if( displayWidth >= AdSize.FULL_BANNER.getWidth() + paddingSumDp
-                && displayWidth < AdSize.LEADERBOARD.getWidth() + paddingSumDp) {
-            mAdView.setAdSize(AdSize.FULL_BANNER);  // 468x60
-            setBanner = true;
-        } else if (displayWidth >= AdSize.LEADERBOARD.getWidth() + paddingSumDp) {
-            mAdView.setAdSize(AdSize.LEADERBOARD);  // 728x90
-            setBanner = true;
-        }
+        // 広告サイズより小さいデバイスは広告を表示させない
+        if (displayWidth >= AdSize.BANNER.getWidth() + paddingSumDp) {
+            ////
+            mAdView = new AdView(this);
 
-        if (setBanner) {
+            //// バナーのサイズを指定
+            // SMART_BANNER は自動でサイズを決定してくれるが、端に変な表示が入るので使わない
+            if ( displayWidth < AdSize.FULL_BANNER.getWidth() + paddingSumDp) {
+                mAdView.setAdSize(AdSize.BANNER); // 320x50
+            } else if( displayWidth >= AdSize.FULL_BANNER.getWidth() + paddingSumDp
+                    && displayWidth < AdSize.LEADERBOARD.getWidth() + paddingSumDp) {
+                mAdView.setAdSize(AdSize.FULL_BANNER);  // 468x60
+            } else if (displayWidth >= AdSize.LEADERBOARD.getWidth() + paddingSumDp) {
+                mAdView.setAdSize(AdSize.LEADERBOARD);  // 728x90
+            }
+
             //// バナーIDをセット
             mAdView.setAdUnitId( getString(R.string.id_adMob_addUnitId) );
-
-            //// バナーを読み込む
-            mAdView.loadAd(new AdRequest.Builder().build());
 
             //// バナーをViewにセット
             addContainerLayout.addView(mAdView, 0);
         }
-
 
         // ----------------------------------
         // アクションバーの設定
@@ -203,6 +196,23 @@ public class HistoryActivity
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(WpManagerService.ACTION_WPCHANGE_STATE);
         this.registerReceiver(mProgressBcastReceiver, iFilter);
+    }
+
+    /**
+     * Dispatch onResume() to fragments.  Note that for better inter-operation
+     * with older versions of the platform, at the point of this call the
+     * fragments attached to the activity are <em>not</em> resumed.  This means
+     * that in some cases the previous state may still be saved, not allowing
+     * fragment transactions that modify the state.  To correctly interact
+     * with fragments in their proper state, you should instead override
+     * {@link #onResumeFragments()}.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.loadAd(new AdRequest.Builder().build());
+        }
     }
 
     @Override
