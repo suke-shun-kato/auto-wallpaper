@@ -14,20 +14,28 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import xyz.monogatari.autowallpaper.util.DisplaySizeCheck;
 import xyz.monogatari.autowallpaper.util.ProgressBcastReceiver;
 import xyz.monogatari.autowallpaper.wpchange.WpManagerService;
 
@@ -44,6 +52,8 @@ public class HistoryActivity
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
+//    private AdView mAdView;
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private HistoryListAdapter mAdapter = null;
     private LoaderManager mLoaderManager;
@@ -53,6 +63,8 @@ public class HistoryActivity
 
     private int mLoaderId;
 
+    AdView mAdView = null;
+
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
@@ -60,13 +72,51 @@ public class HistoryActivity
     public static final int MAX_RECORD_STORE = 100;
 
     // --------------------------------------------------------------------
-    // メソッド（オーバーライド）
     // --------------------------------------------------------------------
+    // メソッド（オーバーライド）
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_history);
 
+        // ----------------------------------
+        // 広告の設定
+        // ----------------------------------
+        //// 初期化
+        MobileAds.initialize(this, getString(R.string.id_adMob_appId));
+
+
+        //// 必要な変数の準備
+        LinearLayout addContainerLayout = findViewById(R.id.history_add_container);
+
+        int displayWidth = DisplaySizeCheck.getScreenWidthInDPs(this);//ディスプレイの横幅取得
+        int pdLeftPx = addContainerLayout.getPaddingLeft();
+        int pdRightPx = addContainerLayout.getPaddingRight();
+        float scale = this.getResources().getDisplayMetrics().density; // dp * scale = pixel
+        float paddingSumDp =  (pdLeftPx + pdRightPx) / scale; // padding の dp を計算
+
+        // 広告サイズより小さいデバイスは広告を表示させない
+        if (displayWidth >= AdSize.BANNER.getWidth() + paddingSumDp) {
+            ////
+            mAdView = new AdView(this);
+
+            //// バナーのサイズを指定
+            // SMART_BANNER は自動でサイズを決定してくれるが、端に変な表示が入るので使わない
+            if ( displayWidth < AdSize.FULL_BANNER.getWidth() + paddingSumDp) {
+                mAdView.setAdSize(AdSize.BANNER); // 320x50
+            } else if( displayWidth >= AdSize.FULL_BANNER.getWidth() + paddingSumDp
+                    && displayWidth < AdSize.LEADERBOARD.getWidth() + paddingSumDp) {
+                mAdView.setAdSize(AdSize.FULL_BANNER);  // 468x60
+            } else if (displayWidth >= AdSize.LEADERBOARD.getWidth() + paddingSumDp) {
+                mAdView.setAdSize(AdSize.LEADERBOARD);  // 728x90
+            }
+
+            //// バナーIDをセット
+            mAdView.setAdUnitId( getString(R.string.id_adMob_addUnitId) );
+
+            //// バナーをViewにセット
+            addContainerLayout.addView(mAdView, 0);
+        }
 
         // ----------------------------------
         // アクションバーの設定
@@ -146,6 +196,23 @@ public class HistoryActivity
         IntentFilter iFilter = new IntentFilter();
         iFilter.addAction(WpManagerService.ACTION_WPCHANGE_STATE);
         this.registerReceiver(mProgressBcastReceiver, iFilter);
+    }
+
+    /**
+     * Dispatch onResume() to fragments.  Note that for better inter-operation
+     * with older versions of the platform, at the point of this call the
+     * fragments attached to the activity are <em>not</em> resumed.  This means
+     * that in some cases the previous state may still be saved, not allowing
+     * fragment transactions that modify the state.  To correctly interact
+     * with fragments in their proper state, you should instead override
+     * {@link #onResumeFragments()}.
+     */
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (mAdView != null) {
+            mAdView.loadAd(new AdRequest.Builder().build());
+        }
     }
 
     @Override

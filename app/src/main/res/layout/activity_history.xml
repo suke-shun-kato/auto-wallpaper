@@ -24,12 +24,16 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-            <TextView
-                android:id="@+id/history_text"
+
+            <LinearLayout
+                android:id="@+id/history_add_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="ここに広告表示させる予定"
-                tools:ignore="HardcodedText" />
+                android:orientation="vertical"
+                android:gravity="center"
+                android:background="@color/colorPrimaryDark"
+                android:padding="@dimen/history_add_container_padding">
+            </LinearLayout>
             <android.support.v4.widget.SwipeRefreshLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
                 android:id="@+id/history_swipe_refresh"
