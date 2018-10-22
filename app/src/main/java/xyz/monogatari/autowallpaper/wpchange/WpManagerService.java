@@ -107,19 +107,30 @@ public class WpManagerService extends IntentService {
      */
     @Override
     protected void onHandleIntent(@Nullable Intent intent) {
-        if (intent != null) {
-            final String action = intent.getAction();
-            WpManager wpManager = new WpManager(this);
+        // ----------------------------------
+        // intentがなければそこで終了
+        // ----------------------------------
+        if (intent == null) {
+            Intent i = new Intent(ACTION_WPCHANGE_STATE);
+            i.putExtra(EXTRA_WP_STATE, WP_STATE_ERROR);
+            this.sendBroadcast(i);
+            return;
+        }
 
-            boolean canExe;
+        // ----------------------------------
+        //
+        // ----------------------------------
+        final String action = intent.getAction();
+        WpManager wpManager = new WpManager(this);
+        try {
+
 
             if ( ACTION_CHANGE_RANDOM.equals(action) ) {
             // ----------------------------------
             // ランダムで壁紙変更
             // ----------------------------------
                 // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
-                canExe = wpManager.executeWpSetRandomTransaction();
-
+                wpManager.executeWpSetRandomTransaction();
             } else if ( ACTION_CHANGE_SPECIFIED.equals(action) ) {
             // ----------------------------------
             // 指定の壁紙に変更
@@ -147,17 +158,14 @@ public class WpManagerService extends IntentService {
                         throw new RuntimeException("histories.source_kindの値が不正です。");
 
                 }
-                canExe = wpManager.executeWpSetTransaction(imgGetter);
+                wpManager.executeWpSetTransaction(imgGetter);
             } else {
                 throw new RuntimeException("intentのactionの値が不正です。");
             }
-
-            // 壁紙変更がうまく行かなかったらブロードキャストでエラーを送信
-            if ( !canExe ) {
-                Intent i = new Intent(ACTION_WPCHANGE_STATE);
-                i.putExtra(EXTRA_WP_STATE, WP_STATE_ERROR);
-                this.sendBroadcast(i);
-            }
+        } catch (Exception e) {
+            Intent i = new Intent(ACTION_WPCHANGE_STATE);
+            i.putExtra(EXTRA_WP_STATE, WP_STATE_ERROR);
+            this.sendBroadcast(i);
         }
 
     }
