@@ -32,7 +32,7 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:background="@color/colorPrimaryDark"
-                android:padding="@dimen/history_add_container_padding">
+                android:padding="@dimen/history_advertisement_container_padding">
             </LinearLayout>
             <android.support.v4.widget.SwipeRefreshLayout
                 xmlns:android="http://schemas.android.com/apk/res/android"
