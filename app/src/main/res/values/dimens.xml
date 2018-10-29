@@ -11,12 +11,12 @@
 
     <dimen name="main_activity_power_btn_size">280dp</dimen>
 
-    <dimen name="history_advertisement_container_padding">8dp</dimen>
+    <dimen name="history_advertisement_container_padding">4dp</dimen>
     <dimen name="history_activity_item_margin">8dp</dimen>
     <dimen name="history_activity_item_text_padding_h">4dp</dimen>
     <dimen name="history_activity_item_text_padding_v">0dp</dimen>
 
-    <dimen name="about_activity_padding">4dp</dimen>
+    <dimen name="about_activity_padding">8dp</dimen>
     <dimen name="about_activity_textSize">20sp</dimen>
     <dimen name="about_activity_paddingTop">16dp</dimen>
     <dimen name="about_activity_license_list_padding">8dp</dimen>
