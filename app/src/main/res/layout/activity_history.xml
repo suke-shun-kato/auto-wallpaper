@@ -11,42 +11,36 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        android:elevation="@dimen/actionbar_elevation"
+        android:elevation="@dimen/history_actionbar_elevation"
         android:theme="@style/ActionBarTheme"
         app:title="@string/histories_toolbar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:targetApi="lollipop" />
+    <LinearLayout
+        android:id="@+id/history_add_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:elevation="@dimen/actionbar_elevation"
+        android:background="@color/colorPrimaryDark"
+        android:padding="@dimen/history_advertisement_container_padding">
+    </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        <LinearLayout
-            android:id="@+id/main_root"
+        <android.support.v4.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/history_swipe_refresh"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:id="@+id/history_add_container"
+            android:layout_height="match_parent">
+            <ListView
+                android:id="@+id/history_list"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center"
+                android:layout_height="match_parent"
                 android:background="@color/colorPrimaryDark"
-                android:padding="@dimen/history_advertisement_container_padding">
-            </LinearLayout>
-            <android.support.v4.widget.SwipeRefreshLayout
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/history_swipe_refresh"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <ListView
-                    android:id="@+id/history_list"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorPrimaryDark"
-                    />
-            </android.support.v4.widget.SwipeRefreshLayout>
-        </LinearLayout>
+                />
+        </android.support.v4.widget.SwipeRefreshLayout>
         <ProgressBar
         android:id="@+id/history_setWallpaper_progress"
         style="?android:attr/progressBarStyle"
