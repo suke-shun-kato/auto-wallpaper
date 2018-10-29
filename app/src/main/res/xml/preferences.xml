@@ -45,7 +45,7 @@
             android:summary="@string/setting_when_timer_summary" />
         <xyz.monogatari.autowallpaper.TimePreference
             android:key="when_timer_startTiming_1"
-            android:title="開始時間"
+            android:title="@string/setting_when_timer_start_time"
             android:defaultValue="00:00"
             />
         <ListPreference

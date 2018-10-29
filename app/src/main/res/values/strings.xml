@@ -29,11 +29,11 @@
     <string name="setting_from_twitter_oauth_text_oauthSuccess">Auth Success</string>
     <string name="setting_from_twitter_oauth_text_oauthFailed">Auth failed</string>
     <string name="setting_when">WHEN</string>
-    <string name="setting_when_turnOn_title">screen turns on</string>
+    <string name="setting_when_turnOn_title">Screen turns on</string>
     <string name="setting_when_turnOn_summary">When screen turns on, wallpaper changes.</string>
-    <string name="setting_when_timer_title">set time</string>
+    <string name="setting_when_timer_title">Set time</string>
     <string name="setting_when_timer_summary">will set at set time.</string>
-
+    <string name="setting_when_timer_start_time">Start Time</string>
     <string name="setting_when_timer_interval_title">Interval</string>
     <string-array name="setting_when_timer_interval_entries">
         <item>5 seconds</item>
