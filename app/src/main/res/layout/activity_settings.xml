@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context="xyz.monogatari.autowallpaper.SettingsActivity"
+    tools:context="xyz.goodistory.autowallpaper.SettingsActivity"
     >
     <android.support.v7.widget.Toolbar
         android:id="@+id/my_toolbar"
@@ -19,7 +19,7 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:targetApi="lollipop" />
     <fragment
-        android:name="xyz.monogatari.autowallpaper.SettingsFragment"
+        android:name="xyz.goodistory.autowallpaper.SettingsFragment"
         android:id="@+id/setting_fragment"
         android:layout_weight="1"
         android:layout_width="match_parent"

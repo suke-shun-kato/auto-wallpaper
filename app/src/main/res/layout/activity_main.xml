@@ -42,7 +42,7 @@
                 android:paddingRight="@dimen/main_activity_horizontal_margin"
                 android:paddingStart="@dimen/main_activity_horizontal_margin"
                 android:paddingTop="@dimen/main_activity_top_margin"
-                tools:context="xyz.monogatari.autowallpaper.MainActivity">
+                tools:context="xyz.goodistory.autowallpaper.MainActivity">
 
                 <TextView
                     android:id="@+id/main_text_next_set"

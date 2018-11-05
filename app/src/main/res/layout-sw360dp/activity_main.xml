@@ -31,7 +31,7 @@
             android:paddingRight="@dimen/main_activity_horizontal_margin"
             android:paddingEnd="@dimen/main_activity_horizontal_margin"
             android:orientation="vertical"
-            tools:context="xyz.monogatari.autowallpaper.MainActivity"
+            tools:context="xyz.goodistory.autowallpaper.MainActivity"
             tools:ignore="UselessParent"
             >
 
