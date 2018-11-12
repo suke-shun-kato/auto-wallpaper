@@ -36,9 +36,10 @@ public class FileExtended extends File {
      * ディレクトリは最後に/を付ける
      * 親ディレクトリのパス「../」も入れる
      * ディレクトリ→ファイルの順番に並んでいる
+     * @param excludeDirCantGetChildrenList リストから子供のリストを取得できないディレクトリを除外するか
      * @return ディレクトリ＆ファイル一覧, this がファイルのときはnullを返す
      */
-    public List<String> listDirFile() {
+    public List<String> listDirFile(boolean excludeDirCantGetChildrenList) {
         // ----------------------------------
         // 初期処理
         // ----------------------------------
@@ -68,7 +69,9 @@ public class FileExtended extends File {
         //// 通常ディレクトリのリストへの追加
         for (File childFile : childrenFilesAry) {
             if ( childFile.isDirectory() ) {
-                childrenDirPathList.add(childFile.getName() + System.getProperty("file.separator"));
+                if (excludeDirCantGetChildrenList && childFile.list() != null) {
+                    childrenDirPathList.add(childFile.getName() + System.getProperty("file.separator"));
+                }
             } else {
                 childrenFilePathList.add(childFile.getName());
             }

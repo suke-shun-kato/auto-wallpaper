@@ -190,14 +190,16 @@ public class SelectDirPreference extends DialogPreference {
         if ( !newDirFile.exists() ) {   //ディレクトリがないとき作成する
             boolean canMakeDir = newDirFile.mkdirs();
             if ( !canMakeDir ) {
-                throw new IllegalStateException ("dirPathでディレクトリが作成できませんでした");
+                throw new IllegalStateException ("dirPathのディレクトリを作成できませんでした。");
             }
         }
-        if ( !newDirFile.isDirectory()
-                || newDirFile.list() == null
-                ) {
-            // newDirFile.list() == null はマニュフェストでストレージにアクセス権限を与えていなかったときに発生
-            throw new IllegalStateException ("dirPathがディレクトリではありません。もしくはファイル一覧を取得できる権限がありません");
+        if ( !newDirFile.isDirectory() ) {
+            throw new IllegalStateException ("dirPathがディレクトリではありません。");
+        }
+
+        if ( newDirFile.list() == null ) {
+            throw new IllegalStateException ("dirPathのファイル一覧を取得できません。");
+
         }
 
         // ----------------------------------
@@ -227,7 +229,7 @@ public class SelectDirPreference extends DialogPreference {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 context.getContext(),
                 android.R.layout.simple_list_item_1,
-                new FileExtended(context.dirPath).listDirFile()   //Sting[]、ファイル一覧
+                new FileExtended(context.dirPath).listDirFile(true)   //Sting[]、ファイル一覧
         );
         dirListLv.setAdapter(adapter);
     }
