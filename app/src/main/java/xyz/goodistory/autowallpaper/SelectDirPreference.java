@@ -206,15 +206,24 @@ public class SelectDirPreference extends DialogPreference {
         // 初期化
         // ----------------------------------
         //// ディレクトリパスを正規化する
-        String normalizeDirPath;  // 正規化されたディレクトリパス
+        String normalizedDirPath;  // 正規化されたディレクトリパス
         try {
-            normalizeDirPath = newDirFile.getCanonicalPath() + System.getProperty("file.separator");
+            // 正規パス名を取得
+            // 現在のディレクトリが"/"の場合は"/"、"aaaa/.."などでルートのときは""空文字列が返る）
+            String normalizedPath = newDirFile.getCanonicalPath();
+            if (normalizedPath.length() != 0 && normalizedPath.charAt(normalizedPath.length()-1) == '/') {
+            // 末尾が"/"の場合はそのまま
+                normalizedDirPath = normalizedPath;
+            } else {
+            // 末尾に/がないとき、空文字列のときは/を追加、ルートディレクトリ以外はここを通る
+                normalizedDirPath = normalizedPath + System.getProperty("file.separator");
+            }
         } catch (IOException e) {
-            normalizeDirPath = this.dDirPath;
+            normalizedDirPath = this.dDirPath;
         }
 
         //// 初期化
-        context.dirPath = normalizeDirPath;
+        context.dirPath = normalizedDirPath;
         TextView dirPathTextView = context.dialogDirView.findViewById(R_ID_DIALOG_CURRENT_PATH);
         ListView dirListLv = context.dialogDirView.findViewById(R_ID_DIALOG_FILE_LIST);
 
