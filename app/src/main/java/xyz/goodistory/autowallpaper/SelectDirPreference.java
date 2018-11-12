@@ -296,9 +296,6 @@ public class SelectDirPreference extends DialogPreference {
                         + System.getProperty("file.separator");
                 break;
             case "PICTURES":
-
-//this.dDirPath = "/sdcard/Pictures/";
-//this.dDirPath = Environment.getDataDirectory().getAbsolutePath() + System.getProperty("file.separator");
                 this.dDirPath = Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                         .getAbsolutePath()

@@ -60,7 +60,7 @@ public class FileExtended extends File {
         // このメソッド特有の変換処理
         // ----------------------------------
         //// 親ディレクトリのリストへの追加
-        if ( this.getParentFile().list() != null ) {
+        if ( this.getParentFile() != null && this.getParentFile().list() != null ) {
             //親ディレクトリがあれば、if(this.getParentFile().exists())だとダメ
             childrenDirPathList.add(".." + System.getProperty("file.separator"));
         }
