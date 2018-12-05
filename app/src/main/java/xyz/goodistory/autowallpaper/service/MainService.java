@@ -1,6 +1,7 @@
 package xyz.goodistory.autowallpaper.service;
 
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -12,14 +13,17 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import xyz.goodistory.autowallpaper.ExperimentSv;
 import xyz.goodistory.autowallpaper.MainActivity;
 import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
@@ -38,20 +42,22 @@ public class MainService extends Service {
     /** 通常の開始されたサービスが実行中か？ */
     private boolean isStarted = false;
 
-
     /** 画面がOFFになったときブロードキャストを受信して壁紙を変更するブロードキャストレシーバー */
     private final ScreenOnOffWPChangeBcastReceiver onOffWPChangeReceiver = new ScreenOnOffWPChangeBcastReceiver();
-    /** 画面がON/OFFでTimerとAlarmを切り替えるブロードキャストレシーバー */
-    private TimerBcastReceiver timerReceiver;
 
     /** SharedPreference */
     private SharedPreferences sp;
 
     /** 時間設定用のタイマー、タイマーは一度cancel()したら再度schedule()できないのでここでnewしない */
     private Timer timer;
+
+    /** 指定時間に壁紙がランダムチェンジする */
     private AlarmManager alarmManager;
+    /** 指定時間に壁紙がランダムチェンジする */
+    private PendingIntent senderIntent;
 
     private PendingIntent pendingIntent;
+
 
     // --------------------------------------------------------------------
     // フィールド（バインド用）
@@ -87,7 +93,13 @@ public class MainService extends Service {
     public void onCreate() {
         super.onCreate();
         this.sp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        this.alarmManager
+                = (AlarmManager) getSystemService(ALARM_SERVICE);
+
     }
+
+
 
     /************************************
      * サービスが停止時に呼ばれるメソッド
@@ -291,52 +303,68 @@ public class MainService extends Service {
         this.unregisterReceiver(this.onOffWPChangeReceiver);
     }
 
-    /************************************
-     * 設定タイマー壁紙変更のイベントリスナー登録
+
+    /**
+     * 時間で壁紙チェンジのリスナーをセット
      */
-    private void setTimerListener() {
-        // ----------------------------------
-        // タイマーセット
-        // ----------------------------------
-        this.setTimer();
+    public void setTimerListener() {
+Log.d("www", "setTimerListener1");
+
+
+        this.senderIntent = PendingIntent.getBroadcast(
+                this, ExperimentSv.REQUEST_CODE_MAIN_SERVICE,
+                new Intent(this, ExperimentSv.class),
+                PendingIntent.FLAG_ONE_SHOT);
+
 
         // ----------------------------------
-        // ブロードキャストレシーバーを設置
+        // インスタンス取得
         // ----------------------------------
-        this.timerReceiver = new TimerBcastReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
-        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        this.registerReceiver(this.timerReceiver, intentFilter);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 
-    }
-    /************************************
-     * 設定タイマー時壁紙変更のイベントリスナー削除
-     *
-     * @return unsetできたらtrue、元々 unset状態でunsetする必要なかったらfalse
-     */
-    @SuppressWarnings("UnusedReturnValue")
-    private boolean unsetTimerListener() {
-        // ----------
-        // 時間で壁紙セットするタイマー
-        // ----------
-        boolean canCancelTimer = this.cancelTimer();
+        // ----------------------------------
+        // 設定値取得
+        // ----------------------------------
+        final long intervalMillis = Long.parseLong(sp.getString(
+                SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
+                this.getString(
+                        R.string.setting_when_timer_interval_values_default)));
+        final long startTimeUnixTime = sp.getLong(
+                SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1,
+                System.currentTimeMillis() );
 
-        // ----------
-        // 画面OFF or ONになったとき Timer→Alarm or Alarm→Timer にするブロードキャストレシーバーの処理
-        // ----------
-        boolean canCancelReceiver;  //return用
-        if (this.timerReceiver == null) {
-            canCancelReceiver = false;
-        } else {
-            this.unregisterReceiver(this.timerReceiver);
-            this.timerReceiver = null;
-            canCancelReceiver = true;
+        final long wpChangeUnixTimeMsec = calcNextWpChangeUnixTimeMsec(
+                startTimeUnixTime, intervalMillis, System.currentTimeMillis());
+
+        
+        // ----------------------------------
+        //
+        // ----------------------------------
+
+        if (this.alarmManager != null) {
+Log.d("www", "setTimerListener2");
+            this.alarmManager.setRepeating (
+                    AlarmManager.RTC_WAKEUP,
+                    wpChangeUnixTimeMsec,
+                    intervalMillis,
+                    senderIntent);
         }
-
-        return canCancelTimer && canCancelReceiver;
     }
 
+    public static long calcNextWpChangeUnixTimeMsec(
+            long startUnixTimeMsec, long periodMsec, long nowUnixTimeMsec) {
+        // xxxは整数
+        // startUnixTimeMsec + (xxx-1) * periodMsec < nowUnixTimeMsec < startUnixTimeMsec + xxx * periodMsec
+        // (xxx-1) * periodMsec < nowUnixTimeMsec - startUnixTimeMsec < xxx * periodMsec
+        // xxx-1 < (nowUnixTimeMsec - startUnixTimeMsec)/periodMsec < xxx
+
+        long xxx = (long)Math.ceil(
+                (double)(nowUnixTimeMsec - startUnixTimeMsec)/periodMsec );
+
+        return startUnixTimeMsec + xxx * periodMsec;
+
+    }
     /************************************
      * 次のタイマーが実行されるdelayのミリ秒を求める
      * 未来の設定時刻でもOK
@@ -358,118 +386,13 @@ public class MainService extends Service {
 
         return startUnixTimeMsec + xxx * periodMsec - nowUnixTimeMsec;
     }
-    
-    /************************************
-     * これはブロードキャストレシーバーからも呼ばれているので敢えてpublicでsetTimerListener()の外に外している
-     */
-    public void setTimer() {
-
-        // ----------
-        // 変数準備
-        // ----------
-        final long intervalMsec = Long.parseLong(this.sp.getString(
-                SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
-                this.getString(R.string.setting_when_timer_interval_values_default)
-        ));
-
-        final long startTimeUnixTime = this.sp.getLong(
-                SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis()
-        );
-        final long delayMsec = calcDelayMsec(startTimeUnixTime, intervalMsec, System.currentTimeMillis());
-
-
-        // ----------
-        // 本番
-        // ----------
-        this.timer = new Timer();
-        // schedule() は実行が遅延したらその後も遅延する、
-        // （例）1分間隔のタイマーが10秒遅れで実行されると次のタイマーは1分後に実行される
-        // scheduleAtFixedRate() は実行が遅延したら遅延を取り戻そうと実行する、
-        // （例）1分間隔のタイマーが10秒遅れで実行されると次のタイマーは50秒後に実行される
-        this.timer.scheduleAtFixedRate(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        WpManagerService.changeWpRandom(MainService.this);
-                    }
-                },
-                delayMsec,
-                intervalMsec
-        );
-    }
-    
-    /************************************
-     * 電源OFF時のタイマーのアラーム起動
-     */
-    public void setAlarm() {
-        // ----------------------------------
-        // 準備
-        // ----------------------------------
-        //// alarmManager
-        this.alarmManager = (AlarmManager)this.getSystemService(Context.ALARM_SERVICE);
-
-        //// pendingIntent
-        this.pendingIntent = PendingIntent.getService(
-                this,
-                //呼び出し元を識別するためのコード
-                PendingIntentRequestCode.TIMER_ALARM,
-                new Intent(this, WpManagerService.class),
-                //PendingIntentの挙動を決めるためのflag、複数回送る場合一番初めに生成したものだけ有効になる
-                PendingIntent.FLAG_ONE_SHOT
-        );
-
-        //// wakeUpUnixTime アラームの起動時間
-        long nowUnixTimeMsec = System.currentTimeMillis();
-        long delayMsec = calcDelayMsec(
-                this.sp.getLong(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis()),
-                Long.parseLong( this.sp.getString(
-                                SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
-                                this.getString(R.string.setting_when_timer_interval_values_default))),
-                nowUnixTimeMsec
-        );
-        long wakeUpUnixTime = delayMsec + nowUnixTimeMsec;
-
-
-        // ----------------------------------
-        // 本番
-        // ----------------------------------
-        try {
-            if (Build.VERSION.SDK_INT <= 18) {   // ～Android 4.3
-                this.alarmManager.set(AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
-
-            } else if ( Build.VERSION.SDK_INT <= 22) { // Android4.4(KitKat) ～ Android 5.1(Lollipop)
-                this.alarmManager.setExact(
-                        AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
-
-            } else {  // Android 6.0(Marshmallow)～
-                this.alarmManager.setExactAndAllowWhileIdle(
-                        AlarmManager.RTC_WAKEUP, wakeUpUnixTime, this.pendingIntent);
-
-            }
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
-    }
-
 
     /************************************
-     * これはブロードキャストレシーバーからも呼ばれてるから敢えて外に外している
+     * 設定タイマー時壁紙変更のイベントリスナー削除
      */
-    public boolean cancelTimer() {
-        if (this.timer == null) {   // 元々タイマーがセットされていないときは何もしない
-            return false;
-        } else {
-            this.timer.cancel();
-            return true;
-        }
+    public void unsetTimerListener() {
+Log.d("www", "unsetTimerListener");
+        this.alarmManager.cancel(this.senderIntent);
     }
-    /************************************
-     *
-     */
-    public void cancelAlarm() {
-        this.alarmManager.cancel(this.pendingIntent);
-    }
-    
-
 
 }
