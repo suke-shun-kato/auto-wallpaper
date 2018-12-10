@@ -1,7 +1,6 @@
 package xyz.goodistory.autowallpaper.service;
 
 import android.app.AlarmManager;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -13,22 +12,17 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import xyz.goodistory.autowallpaper.ExperimentSv;
 import xyz.goodistory.autowallpaper.MainActivity;
 import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
 import xyz.goodistory.autowallpaper.SettingsFragment;
-import xyz.goodistory.autowallpaper.wpchange.WpManagerService;
 
 /**
  * Created by k-shunsuke on 2017/12/12.
@@ -43,21 +37,13 @@ public class MainService extends Service {
     private boolean isStarted = false;
 
     /** 画面がOFFになったときブロードキャストを受信して壁紙を変更するブロードキャストレシーバー */
-    private final ScreenOnOffWPChangeBcastReceiver onOffWPChangeReceiver = new ScreenOnOffWPChangeBcastReceiver();
+    private final ScreenOnOffWPChangeBcastReceiver mOnOffWPChangeReceiver = new ScreenOnOffWPChangeBcastReceiver();
 
     /** SharedPreference */
-    private SharedPreferences sp;
-
-    /** 時間設定用のタイマー、タイマーは一度cancel()したら再度schedule()できないのでここでnewしない */
-    private Timer timer;
+    private SharedPreferences mSp;
 
     /** 指定時間に壁紙がランダムチェンジする */
-    private AlarmManager alarmManager;
-    /** 指定時間に壁紙がランダムチェンジする */
-    private PendingIntent senderIntent;
-
-    private PendingIntent pendingIntent;
-
+    PendingIntent mWpChangePdIntent;
 
     // --------------------------------------------------------------------
     // フィールド（バインド用）
@@ -92,14 +78,13 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        this.sp = PreferenceManager.getDefaultSharedPreferences(this);
+        mSp = PreferenceManager.getDefaultSharedPreferences(this);
 
-        this.alarmManager
-                = (AlarmManager) getSystemService(ALARM_SERVICE);
-
+        mWpChangePdIntent = PendingIntent.getBroadcast(
+                this, ExperimentSv.REQUEST_CODE_MAIN_SERVICE,
+                new Intent(this, ExperimentSv.class),
+                PendingIntent.FLAG_UPDATE_CURRENT);
     }
-
-
 
     /************************************
      * サービスが停止時に呼ばれるメソッド
@@ -118,10 +103,10 @@ public class MainService extends Service {
         // ----------------------------------
         //
         // ----------------------------------
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+        if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
             this.unsetScreenOnListener();
         }
-        if (this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false)) {
+        if (mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false)) {
             this.unsetTimerListener();
         }
 
@@ -144,6 +129,7 @@ public class MainService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         this.isStarted = true;
+
 
 
         String notificationChannelId = getResources().getString(
@@ -171,13 +157,12 @@ public class MainService extends Service {
         // ----------
         // PendingIntentを作成
         // ----------
-        PendingIntent pendingIntent = PendingIntent.getActivity(
+        PendingIntent foregroundPdIntent = PendingIntent.getActivity(
                 this,
                 PendingIntentRequestCode.RUNNING_SERVICE,
                 new Intent(this, MainActivity.class),
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
-
 
         // ----------
         // NotificationBuilderを作成してフォアグラウンドでサービス開始＆通知
@@ -194,7 +179,7 @@ public class MainService extends Service {
                 .setContentText(this.getString(R.string.mainService_notification_text))
                 .setSmallIcon(R.drawable.ic_notification_running_service)
                 .setWhen(System.currentTimeMillis())
-                .setContentIntent(pendingIntent)
+                .setContentIntent(foregroundPdIntent)
                 //ロック画面に通知表示しない（注意、ここの設定は端末の設定で上書きされる）
                 .setVisibility(NotificationCompat.VISIBILITY_SECRET);
 
@@ -208,10 +193,10 @@ public class MainService extends Service {
         //
         // ----------------------------------
         //// 通常の場合
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+        if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
             this.setScreenOnListener();
         }
-        if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+        if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
             this.setTimerListener();
         }
 
@@ -260,7 +245,7 @@ public class MainService extends Service {
             // ----------------------------------
             case SettingsFragment.KEY_WHEN_SCREEN_ON:
                 // 電源ON設定がONのとき設定
-                if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+                if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
                     this.setScreenOnListener();
                 } else {
                     this.unsetScreenOnListener();
@@ -268,7 +253,7 @@ public class MainService extends Service {
                 break;
             case SettingsFragment.KEY_WHEN_TIMER:
                 // 時間設定
-                if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+                if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
                     this.setTimerListener();
                 } else {
                     this.unsetTimerListener();
@@ -276,7 +261,7 @@ public class MainService extends Service {
                 break;
             case SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1:
             case SettingsFragment.KEY_WHEN_TIMER_INTERVAL:
-                if ( this.sp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+                if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
                     this.unsetTimerListener();
                     this.setTimerListener();
                 }
@@ -294,13 +279,13 @@ public class MainService extends Service {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        this.registerReceiver(this.onOffWPChangeReceiver, intentFilter);
+        this.registerReceiver(this.mOnOffWPChangeReceiver, intentFilter);
     }
     /************************************
      * 画面ON時壁紙変更のイベントリスナー削除
      */
     private void unsetScreenOnListener() {
-        this.unregisterReceiver(this.onOffWPChangeReceiver);
+        this.unregisterReceiver(this.mOnOffWPChangeReceiver);
     }
 
 
@@ -308,47 +293,29 @@ public class MainService extends Service {
      * 時間で壁紙チェンジのリスナーをセット
      */
     public void setTimerListener() {
-Log.d("www", "setTimerListener1");
-
-
-        this.senderIntent = PendingIntent.getBroadcast(
-                this, ExperimentSv.REQUEST_CODE_MAIN_SERVICE,
-                new Intent(this, ExperimentSv.class),
-                PendingIntent.FLAG_ONE_SHOT);
-
-
-        // ----------------------------------
-        // インスタンス取得
-        // ----------------------------------
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
-        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-
+Log.d("www", "setTimerListener()");
         // ----------------------------------
         // 設定値取得
         // ----------------------------------
-        final long intervalMillis = Long.parseLong(sp.getString(
+        final long intervalMillis = Long.parseLong(mSp.getString(
                 SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
-                this.getString(
-                        R.string.setting_when_timer_interval_values_default)));
-        final long startTimeUnixTime = sp.getLong(
+                this.getString(R.string.setting_when_timer_interval_values_default)) );
+        final long startTimeUnixTime = mSp.getLong(
                 SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1,
                 System.currentTimeMillis() );
 
         final long wpChangeUnixTimeMsec = calcNextWpChangeUnixTimeMsec(
                 startTimeUnixTime, intervalMillis, System.currentTimeMillis());
 
-        
         // ----------------------------------
         //
         // ----------------------------------
-
-        if (this.alarmManager != null) {
-Log.d("www", "setTimerListener2");
-            this.alarmManager.setRepeating (
-                    AlarmManager.RTC_WAKEUP,
-                    wpChangeUnixTimeMsec,
-                    intervalMillis,
-                    senderIntent);
+        // am はシングルトンなので都度取得でOK
+        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        if (am != null) {
+Log.d("www", "setTimerListener(): alarmManager exec");
+            am.setRepeating (AlarmManager.RTC_WAKEUP, wpChangeUnixTimeMsec,
+                    intervalMillis, mWpChangePdIntent);
         }
     }
 
@@ -391,8 +358,11 @@ Log.d("www", "setTimerListener2");
      * 設定タイマー時壁紙変更のイベントリスナー削除
      */
     public void unsetTimerListener() {
-Log.d("www", "unsetTimerListener");
-        this.alarmManager.cancel(this.senderIntent);
+Log.d("MainService", "unsetTimerListener()");
+        AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        if (am != null) {
+            am.cancel(mWpChangePdIntent);
+        }
     }
 
 }
