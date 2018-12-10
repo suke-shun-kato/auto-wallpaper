@@ -37,9 +37,6 @@
     <string name="setting_when_timer_start_time">開始時間</string>
     <string name="setting_when_timer_interval_title">間隔</string>
     <string-array name="setting_when_timer_interval_entries">
-        <item>5秒</item>
-        <item>15秒</item>
-        <item>30秒</item>
         <item>1分</item>
         <item>5分</item>
         <item>30分</item>
