@@ -16,9 +16,8 @@ import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
-import xyz.goodistory.autowallpaper.ExperimentSv;
+import xyz.goodistory.autowallpaper.TimerWpChangeReceiver;
 import xyz.goodistory.autowallpaper.MainActivity;
 import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
@@ -34,7 +33,7 @@ public class MainService extends Service {
     // フィールド、Util
     // --------------------------------------------------------------------
     /** 通常の開始されたサービスが実行中か？ */
-    private boolean isStarted = false;
+    private boolean mIsStarted = false;
 
     /** 画面がOFFになったときブロードキャストを受信して壁紙を変更するブロードキャストレシーバー */
     private final ScreenOnOffWPChangeBcastReceiver mOnOffWPChangeReceiver = new ScreenOnOffWPChangeBcastReceiver();
@@ -51,7 +50,7 @@ public class MainService extends Service {
     /**
      * バインド開始時に返すオブジェクト
      */
-    private final IBinder binder = new MainService.MainServiceBinder();
+    private final IBinder mBinder = new MainService.MainServiceBinder();
 
     /**
      * ここは匿名クラスでは宣言していはいけない、バインドした側のコールバックでこのクラスが使われているから
@@ -81,8 +80,8 @@ public class MainService extends Service {
         mSp = PreferenceManager.getDefaultSharedPreferences(this);
 
         mWpChangePdIntent = PendingIntent.getBroadcast(
-                this, ExperimentSv.REQUEST_CODE_MAIN_SERVICE,
-                new Intent(this, ExperimentSv.class),
+                this, TimerWpChangeReceiver.REQUEST_CODE_MAIN_SERVICE,
+                new Intent(this, TimerWpChangeReceiver.class),
                 PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -96,7 +95,7 @@ public class MainService extends Service {
         // ----------------------------------
         // 途中で切り上げ
         // ----------------------------------
-        if ( !this.isStarted ) {
+        if ( !this.mIsStarted) {
             return;
         }
 
@@ -110,7 +109,7 @@ public class MainService extends Service {
             this.unsetTimerListener();
         }
 
-        this.isStarted = false;
+        this.mIsStarted = false;
 
     }
     // --------------------------------------------------------------------
@@ -128,7 +127,7 @@ public class MainService extends Service {
     @SuppressWarnings("SameReturnValue")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        this.isStarted = true;
+        this.mIsStarted = true;
 
 
 
@@ -215,7 +214,7 @@ public class MainService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return this.binder;
+        return this.mBinder;
     }
 
     /************************************
@@ -226,7 +225,7 @@ public class MainService extends Service {
         // ----------------------------------
         // 例外処理
         // ----------------------------------
-        if (!this.isStarted) {
+        if (!this.mIsStarted) {
             //開始されたサービス（通常サービス）が起動中でないときは途中で切り上げ
             return;
         }
@@ -293,7 +292,6 @@ public class MainService extends Service {
      * 時間で壁紙チェンジのリスナーをセット
      */
     public void setTimerListener() {
-Log.d("www", "setTimerListener()");
         // ----------------------------------
         // 設定値取得
         // ----------------------------------
@@ -313,7 +311,6 @@ Log.d("www", "setTimerListener()");
         // am はシングルトンなので都度取得でOK
         AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         if (am != null) {
-Log.d("www", "setTimerListener(): alarmManager exec");
             am.setRepeating (AlarmManager.RTC_WAKEUP, wpChangeUnixTimeMsec,
                     intervalMillis, mWpChangePdIntent);
         }
@@ -358,7 +355,6 @@ Log.d("www", "setTimerListener(): alarmManager exec");
      * 設定タイマー時壁紙変更のイベントリスナー削除
      */
     public void unsetTimerListener() {
-Log.d("MainService", "unsetTimerListener()");
         AlarmManager am = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
         if (am != null) {
             am.cancel(mWpChangePdIntent);
