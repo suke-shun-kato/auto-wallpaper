@@ -92,7 +92,7 @@ public class HistoryListAdapter extends CursorAdapter {
         String updateTimeStr;   // 表示する更新時間の文字列
         try {
 
-            long unixTimeMsec = HistoryModel.toUnixTimeMillis(yyyymmddhhmmss);
+            long unixTimeMsec = HistoryModel.sqliteToUnixTimeMillis(yyyymmddhhmmss);
 
             // UTCを入れると「時差」と「言語による表示形式」を考慮した文字列を返してくれる
             updateTimeStr = DateUtils.formatDateTime(

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Random;
 
 import xyz.goodistory.autowallpaper.HistoryActivity;
+import xyz.goodistory.autowallpaper.HistoryModel;
 import xyz.goodistory.autowallpaper.MainActivity;
 import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
@@ -54,62 +55,7 @@ public class WpManager {
 
     // --------------------------------------------------------------------
     // メソッド
-    // CREATE INDEX created_at ON histories(created_at);
     // --------------------------------------------------------------------
-    /************************************
-     * データベースを履歴を記録
-     * @param db 書き込み先のdbオブジェクト
-     * @param imgGetter 変更対象の画像のImgGetterクラス
-     */
-    private void insertHistories(SQLiteDatabase db, ImgGetter imgGetter) {
-        // ----------------------------------
-        // INSERT
-        // ----------------------------------
-        //// コード準備
-
-        SQLiteStatement dbStt = db.compileStatement("" +
-                "INSERT INTO histories (" +
-                    "source_kind, img_uri, intent_action_uri, created_at" +
-                ") VALUES ( ?, ?, ?, datetime('now') );");
-
-        //// bind
-        dbStt.bindString(1, imgGetter.getClass().getSimpleName() );
-        dbStt.bindString(2, imgGetter.getImgUri());
-        String uri = imgGetter.getActionUri();
-        if (uri == null) {
-            dbStt.bindNull(3);
-        } else {
-            dbStt.bindString(3, imgGetter.getActionUri());
-        }
-
-        //// insert実行
-        dbStt.executeInsert();
-
-    }
-    private void deleteHistoriesOverflowMax(SQLiteDatabase db, @SuppressWarnings("SameParameterValue") int maxNum) {
-        Cursor cursor = null;
-
-        //noinspection TryFinallyCanBeTryWithResources
-        try {
-            cursor = db.rawQuery("SELECT count(*) AS count FROM histories", null);
-
-            if (cursor != null && cursor.moveToFirst()) {
-                int recordCount = cursor.getInt(cursor.getColumnIndexOrThrow("count"));
-                if (recordCount > maxNum) {
-                    SQLiteStatement dbStt = db.compileStatement(
-                            "DELETE FROM histories WHERE created_at IN (" +
-                                    "SELECT created_at FROM histories ORDER BY created_at ASC LIMIT ?)"
-                    );
-                    dbStt.bindLong(1, recordCount - maxNum);
-                    dbStt.executeUpdateDelete();
-                }
-            }
-        } finally {
-            if (cursor != null) {
-                cursor.close();
-            }
-        }
-    }
 
     /************************************
      * 壁紙が変更されたよという通知を送るメソッド
@@ -238,17 +184,15 @@ public class WpManager {
         // ----------------------------------
         // 履歴に書き込み
         // ----------------------------------
-        MySQLiteOpenHelper mDbHelper = MySQLiteOpenHelper.getInstance(mContext);
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        //noinspection TryFinallyCanBeTryWithResources
+        HistoryModel historyMdl = new HistoryModel(mContext);
         try {
-            this.insertHistories(db, imgGetter);
+            historyMdl.insertHistories(imgGetter);
+
             // 記憶件数溢れたものを削除
-            this.deleteHistoriesOverflowMax(db, HistoryActivity.MAX_RECORD_STORE);
+            historyMdl.deleteHistoriesOverflowMax(HistoryActivity.MAX_RECORD_STORE);
         // catch がない場合はfinallyが実行されて（db.close() されて）エラーがthrowされる
         } finally {
-            db.close();
+            historyMdl.close();
         }
 
         // ----------------------------------

@@ -3,6 +3,7 @@ package xyz.goodistory.autowallpaper;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper;
+import xyz.goodistory.autowallpaper.wpchange.ImgGetter;
 
 @SuppressWarnings("WeakerAccess")
 public class HistoryModel {
@@ -42,11 +44,16 @@ public class HistoryModel {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    HistoryModel(Context context) {
+    public HistoryModel(Context context) {
         MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(context);
         mDbReadable = dbHelper.getReadableDatabase();
         mDbWritable = dbHelper.getWritableDatabase();
 
+    }
+
+    public void close() {
+        mDbReadable.close();
+        mDbWritable.close();
     }
     // --------------------------------------------------------------------
     // 
@@ -79,6 +86,38 @@ public class HistoryModel {
     }
 
     /**
+     * 壁紙の履歴をDBに登録する
+     * @param imgGetter 登録対象
+     */
+    public void insertHistories(ImgGetter imgGetter) {
+        // ----------------------------------
+        // INSERT
+        // ----------------------------------
+        //// コード準備
+
+        SQLiteStatement dbStt = mDbWritable.compileStatement("" +
+                "INSERT INTO histories (" +
+                "source_kind, img_uri, intent_action_uri, created_at" +
+                ") VALUES ( ?, ?, ?, datetime('now') );");
+
+        //// bind
+        dbStt.bindString(1, imgGetter.getClass().getSimpleName() );
+        dbStt.bindString(2, imgGetter.getImgUri());
+        String uri = imgGetter.getActionUri();
+        if (uri == null) {
+            dbStt.bindNull(3);
+        } else {
+            dbStt.bindString(3, imgGetter.getActionUri());
+        }
+
+        //// insert実行
+        dbStt.executeInsert();
+
+    }
+
+
+
+    /**
      * idを指定して削除
      * @param id 削除対象のid
      * @return 削除したレコード数
@@ -88,7 +127,39 @@ public class HistoryModel {
 
     }
 
-    public static long toUnixTimeMillis(String yyyymmddhhmmss) throws ParseException {
+    /**
+     * 古いものを削除
+     * @param maxNum 残しておく最大値
+     */
+    public void deleteHistoriesOverflowMax(int maxNum) {
+        Cursor cursor = mDbWritable.rawQuery(
+                "SELECT count(*) AS count FROM histories", null);
+        if (cursor == null) {
+            return;
+        }
+
+        if ( cursor.moveToFirst()) {
+            int recordCount = cursor.getInt(cursor.getColumnIndexOrThrow("count"));
+
+            if (recordCount > maxNum) {
+                SQLiteStatement dbStt = mDbWritable.compileStatement(
+                        "DELETE FROM histories WHERE created_at IN (" +
+                                "SELECT created_at FROM histories ORDER BY created_at ASC LIMIT ?)"
+                );
+                dbStt.bindLong(1, recordCount - maxNum);
+                dbStt.executeUpdateDelete();
+            }
+        }
+        cursor.close();
+    }
+
+    /**
+     * 日時を yyyy-mm-dd hh:mm:ss 形式からUnixTimeに変換（UTC）
+     * @param yyyymmddhhmmss 変換したい日時
+     * @return UnixTime(millisecond)
+     * @throws ParseException 変換失敗時例外を投げる
+     */
+    public static long sqliteToUnixTimeMillis(String yyyymmddhhmmss) throws ParseException {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
         sdf.setTimeZone( TimeZone.getTimeZone("UTC") );
         Date date = sdf.parse(yyyymmddhhmmss);
