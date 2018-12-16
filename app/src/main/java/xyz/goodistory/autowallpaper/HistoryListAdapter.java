@@ -13,10 +13,6 @@ import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
 /**
  * 履歴ページのListViewを作成するためのアダプター
  */
@@ -93,11 +89,10 @@ public class HistoryListAdapter extends CursorAdapter {
         TextView updateTimeTextView = view.findViewById(R.id.history_item_createdAt);
         String yyyymmddhhmmss = cursor.getString(cursor.getColumnIndexOrThrow("created_at"));
 
-        SimpleDateFormat sdFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault());
         String updateTimeStr;   // 表示する更新時間の文字列
         try {
-            Date date = sdFormat.parse(yyyymmddhhmmss);
-            long unixTimeMsec = date.getTime();
+
+            long unixTimeMsec = HistoryModel.sqliteToUnixTimeMillis(yyyymmddhhmmss);
 
             // UTCを入れると「時差」と「言語による表示形式」を考慮した文字列を返してくれる
             updateTimeStr = DateUtils.formatDateTime(
@@ -107,7 +102,7 @@ public class HistoryListAdapter extends CursorAdapter {
                             | DateUtils.FORMAT_SHOW_DATE
                             | DateUtils.FORMAT_SHOW_WEEKDAY
                             | DateUtils.FORMAT_SHOW_TIME
-                            | DateUtils.FORMAT_ABBREV_ALL
+                            | DateUtils.FORMAT_ABBREV_ALL   // ABBREV: 短縮された
             );
         } catch (Exception e) {
             // parse() に失敗したら空文字列を表示する
@@ -116,11 +111,6 @@ public class HistoryListAdapter extends CursorAdapter {
 
         // view にセット
         updateTimeTextView.setText(updateTimeStr);
-
-        // ----------------------------------
-        // クリック時のイベント
-        // ----------------------------------
-
     }
 
 
