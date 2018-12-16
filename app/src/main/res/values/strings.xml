@@ -36,9 +36,6 @@
     <string name="setting_when_timer_start_time">Start Time</string>
     <string name="setting_when_timer_interval_title">Interval</string>
     <string-array name="setting_when_timer_interval_entries">
-        <item>5 seconds</item>
-        <item>15 seconds</item>
-        <item>30 seconds</item>
         <item>1 minutes</item>
         <item>5 minutes</item>
         <item>30 minutes</item>
@@ -50,9 +47,6 @@
     </string-array>
     <!-- ↓はPreferenceで読み込んでいるのでinteger-arrayにはできない -->
     <string-array name="setting_when_timer_interval_values" tools:ignore="MissingTranslation">
-        <item>5000</item>  <!-- 5*1000 -->
-        <item>15000</item>  <!-- 15*1000 -->
-        <item>30000</item>  <!-- 30*1000 -->
         <item>60000</item>  <!-- 1*60*1000 -->
         <item>300000</item>  <!-- 5*60*1000 -->
         <item>1800000</item> <!-- 30*60*1000 -->
