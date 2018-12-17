@@ -157,7 +157,7 @@ public class WpManagerService extends IntentService {
                         imgGetter = new ImgGetterTw(dataUri, intentActionUri);
                         break;
                     case HistoryModel.SOURCE_SHARE:
-                        imgGetter = new ImgGetterDir(dataUri, intentActionUri);
+                        imgGetter = new ImgGetter(dataUri, intentActionUri, sourceKind);
                         break;
                     default:
                         IllegalStateException e = new IllegalStateException("intentのsourceKindの値が不正です。");

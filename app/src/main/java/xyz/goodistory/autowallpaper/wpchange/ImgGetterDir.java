@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.goodistory.autowallpaper.HistoryModel;
 import xyz.goodistory.autowallpaper.SelectDirPreference;
 import xyz.goodistory.autowallpaper.SettingsFragment;
 import xyz.goodistory.autowallpaper.util.FileExtended;
@@ -35,11 +36,11 @@ public class ImgGetterDir extends ImgGetter {
     // コンストラクタ
     // --------------------------------------------------------------------
     public ImgGetterDir(String imgUri) {
-        super(imgUri, imgUri);  //imgUri と actionUriは同じ
+        super(imgUri, imgUri, HistoryModel.SOURCE_DIR);  //imgUri と actionUriは同じ
     }
     @SuppressWarnings("WeakerAccess")
     public ImgGetterDir(String imgUri, @SuppressWarnings("SameParameterValue") String actionUri) {
-        super(imgUri, actionUri);
+        super(imgUri, actionUri,  HistoryModel.SOURCE_DIR);
     }
 
     // --------------------------------------------------------------------
@@ -58,7 +59,6 @@ public class ImgGetterDir extends ImgGetter {
         //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-Log.d("○ImgGetterDir", "ストレージアクセス権限がない！！！");
             return getImgGetterList;
         }
 

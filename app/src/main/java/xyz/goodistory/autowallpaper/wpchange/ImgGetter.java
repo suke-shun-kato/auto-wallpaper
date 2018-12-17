@@ -18,29 +18,27 @@ import java.net.URL;
  * Created by k-shunsuke on 2017/12/14.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class ImgGetter {
+public class ImgGetter {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
     /** 画像の自体のURI、Twitterだと「https://.....png」、ディレクトリだと「content://.....」 */
-    @SuppressWarnings("CanBeFinal")
-    String imgUri;
+    protected final String imgUri;
+
     /** 画像が掲載されているページのURL、履歴の画像をクリックしたら飛ぶ場所 */
-    @SuppressWarnings("CanBeFinal")
-    String actionUri;
+    protected final String actionUri;
+
+    /** 画像の取得元の種類、HistoryModel.SOURCE_XXXの値 */
+    protected final String sourceKind;
 
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
-    protected ImgGetter(String imgUri, String actionUri) {
+    protected ImgGetter(String imgUri, String actionUri, String sourceKind) {
         this.imgUri = imgUri;
         this.actionUri = actionUri;
+        this.sourceKind = sourceKind;
     }
-    // --------------------------------------------------------------------
-    // 抽象メソッド
-    // --------------------------------------------------------------------
-//    public abstract List<ImgGetter> getImgGetterList();
-
     // --------------------------------------------------------------------
     // メソッド（アクセサ）
     // --------------------------------------------------------------------
@@ -49,6 +47,9 @@ public abstract class ImgGetter {
     }
     public String getActionUri() {
         return this.actionUri;
+    }
+    public String getSourceKind() {
+        return this.sourceKind;
     }
     // --------------------------------------------------------------------
     // メソッド（通常）

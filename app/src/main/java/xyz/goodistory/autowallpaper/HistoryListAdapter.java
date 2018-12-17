@@ -4,6 +4,7 @@ package xyz.goodistory.autowallpaper;
 import android.content.Context;
 import android.database.Cursor;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,8 +81,10 @@ public class HistoryListAdapter extends CursorAdapter {
         String sourceKind = cursor.getString(cursor.getColumnIndexOrThrow("source_kind"));
 
 
-        int rId = HistoryModel.ICON_R_IDS.get(sourceKind);
-        sourceKindImageView.setImageResource(rId);
+        Integer rId = HistoryModel.ICON_R_IDS.get(sourceKind);
+        if (rId != null) {
+            sourceKindImageView.setImageResource(rId);
+        }
 
         // ----------------------------------
         // 更新時間

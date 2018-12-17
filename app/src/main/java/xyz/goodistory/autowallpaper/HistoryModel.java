@@ -103,7 +103,7 @@ public class HistoryModel {
                 ") VALUES ( ?, ?, ?, datetime('now') );");
 
         //// bind
-        dbStt.bindString(1, imgGetter.getClass().getSimpleName() );
+        dbStt.bindString(1, imgGetter.getSourceKind() );
         dbStt.bindString(2, imgGetter.getImgUri());
         String uri = imgGetter.getActionUri();
         if (uri == null) {

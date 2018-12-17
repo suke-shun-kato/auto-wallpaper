@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import xyz.goodistory.autowallpaper.HistoryModel;
 import xyz.goodistory.autowallpaper.util.Token;
 
 /**
@@ -32,7 +33,7 @@ import xyz.goodistory.autowallpaper.util.Token;
 public class ImgGetterTw extends ImgGetter {
     @SuppressWarnings("WeakerAccess")
     public ImgGetterTw(String imgUri, String actionUri) {
-        super(imgUri, actionUri);
+        super(imgUri, actionUri, HistoryModel.SOURCE_TW);
     }
 
     /************************************
@@ -145,29 +146,6 @@ public class ImgGetterTw extends ImgGetter {
 
         return jsonObj;
     }
-////////////////////////////////////////////////////////////////
-
-//    public boolean drawImg() {
-//        // ----------------------------------
-//        // お気に入りから画像のURLを取得
-//        // ----------------------------------
-//        JSONArray favListJsonAry = this.getFavList();
-//
-//        List<JSONObject> flattenJson = editJson(favListJsonAry);
-//
-//        // ----------------------------------
-//        // 抽選
-//        // ----------------------------------
-//        if ( flattenJson.size() == 0) {
-//            return false;
-//        }
-//
-//        int drawnIndex = new Random().nextInt(flattenJson.size());
-//        this.imgUri = flattenJson.get(drawnIndex).optString("media_url_https");
-//        this.actionUri = flattenJson.get(drawnIndex).optString("url");
-//
-//        return true;
-//    }
 
     public static List<ImgGetterTw> getImgGetterList(Context context) {
         List<ImgGetterTw> imgGetterTwList = new ArrayList<>();
