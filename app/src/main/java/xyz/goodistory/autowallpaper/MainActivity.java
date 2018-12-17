@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -145,10 +146,27 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
 
+
+
+        // ----------------------------------
+        //
+        // ----------------------------------
+        Intent intent = getIntent();
+        if (intent != null) {
+            String action = intent.getAction();
+            String type = intent.getType();
+            if ( action != null && action.equals(Intent.ACTION_SEND)
+                    && type != null && intent.getType().contains("image/") ) {
+                ShareImageFragment f = new ShareImageFragment();
+                f.show(getSupportFragmentManager(), ShareImageFragment.TAG);
+
+            }
+        }
+
         // ----------------------------------
         // アクションバーの設定
         // ----------------------------------
-        ////　ツールバーをアクションバーとして表示
+        //// ツールバーをアクションバーとして表示
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         this.setSupportActionBar(myToolbar);
 
@@ -160,9 +178,6 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
 
         // サービス開始用のインテントを作成
         this.serviceIntent = new Intent(this, MainService.class);
-
-        //
-//        this.isServiceRunning = this.isServiceRunningSystem(MainService.class);
 
         // ----------------------------------
         // Viewなどの表示の動的な設定
@@ -188,19 +203,6 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
         iFilter.addAction(WpManagerService.ACTION_WPCHANGE_STATE);
         this.registerReceiver(this.mProgressBcastReceiver, iFilter);
 
-        // ----------------------------------
-        //
-        // ----------------------------------
-Log.d("○" + this.getClass().getSimpleName(), "ディスプレイの横幅: " + DisplaySizeCheck.getScreenWidthInDPs(this) + "dp");
-
-//java.util.logging.Logger.getLogger("org.apache.http.wire").setLevel(java.util.logging.Level.FINEST);
-//java.util.logging.Logger.getLogger("org.apache.http.headers").setLevel(java.util.logging.Level.FINEST);
-
-System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
-System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
-System.setProperty("org.apache.commons.logging.simplelog.log.httpclient.wire", "debug");
-System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http", "debug");
-System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.headers", "debug");
     }
 
 
@@ -238,32 +240,6 @@ System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.http.hea
         super.onDestroy();
         this.unregisterReceiver(this.mProgressBcastReceiver);
     }
-
-    // --------------------------------------------------------------------
-    // メソッド、Util
-    // --------------------------------------------------------------------
-//    /************************************
-//     * とあるサービスが実行中か確認するメソッド
-//     * （注意）この関数は下記の理由で極力使わないでください、this.isServiceRunning でサービス実行中か確認してください
-//     * ※バインドされた画面（設定画面）から戻ってきた時にonStart(),onResume()で実行したときは常にtrueになるので注意
-//     * @param serviceClass 確認したサービスのClassオブジェクト
-//     */
-//    private boolean isServiceRunningSystem(Class<?> serviceClass) {
-//        ActivityManager manager = (ActivityManager) this.getSystemService(Context.ACTIVITY_SERVICE);
-//        if (manager == null ){
-//            return false;
-//        }
-//
-////for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE) ) {
-////    Log.d("○□□", serviceInfo.service.getClassName());
-////}
-//        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE) ) {
-//            if (serviceClass.getName().equals(serviceInfo.service.getClassName())) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
 
     // --------------------------------------------------------------------
     // メソッド、ボタン押したときのイベントハンドラ
