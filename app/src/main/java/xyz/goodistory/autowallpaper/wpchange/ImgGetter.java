@@ -23,57 +23,52 @@ public class ImgGetter {
     // フィールド
     // --------------------------------------------------------------------
     /** 画像の自体のURI、Twitterだと「https://.....png」、ディレクトリだと「content://.....」 */
-    protected final String imgUri;
+    protected final String mImgUri;
 
     /** 画像が掲載されているページのURL、履歴の画像をクリックしたら飛ぶ場所 */
-    protected final String actionUri;
+    protected final String mActionUri;
 
     /** 画像の取得元の種類、HistoryModel.SOURCE_XXXの値 */
-    protected final String sourceKind;
+    protected final String mSourceKind;
 
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
     protected ImgGetter(String imgUri, String actionUri, String sourceKind) {
-        this.imgUri = imgUri;
-        this.actionUri = actionUri;
-        this.sourceKind = sourceKind;
+        this.mImgUri = imgUri;
+        this.mActionUri = actionUri;
+        this.mSourceKind = sourceKind;
     }
     // --------------------------------------------------------------------
     // メソッド（アクセサ）
     // --------------------------------------------------------------------
     public String getImgUri() {
-        return this.imgUri;
+        return this.mImgUri;
     }
     public String getActionUri() {
-        return this.actionUri;
+        return this.mActionUri;
     }
     public String getSourceKind() {
-        return this.sourceKind;
+        return this.mSourceKind;
     }
     // --------------------------------------------------------------------
     // メソッド（通常）
     // --------------------------------------------------------------------
-    public Bitmap getImgBitmap(Context context) {
-        return getImgBitmapStatic(this.imgUri, context);
-    }
 
-    // --------------------------------------------------------------------
-    //
-    // --------------------------------------------------------------------
-    /************************************
-     * Bitmapオブジェクトを取得する
-     * サブクラスに実装しなかったのは別々のサブクラスでもUriのスキームが同じ場合があるから
+    /**
+     * this.mImgUri から Bitmapオブジェクトを取得する
+     * @param context コンテクスト
+     * @return 取得したBitmap
      */
     @Nullable
-    public static Bitmap getImgBitmapStatic(String imgUri, Context context) {
+    public Bitmap getImgBitmap(Context context) {
         // ----------
         // WEB上の画像のとき
         // ----------
-        if (imgUri.startsWith("https:") || imgUri.startsWith("http:")) {
+        if (mImgUri.startsWith("https:") || mImgUri.startsWith("http:")) {
 
             try {
-                URL url = new URL(imgUri);
+                URL url = new URL(mImgUri);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
 
@@ -86,11 +81,11 @@ public class ImgGetter {
         // ----------
         //
         // ----------    
-        } else if(imgUri.startsWith("file:") ) {    //file:スキームは実際には使われていない、現在はcontent:が使われている
-            return BitmapFactory.decodeFile(imgUri.replace("file://", ""));
-        } else if(imgUri.startsWith("content:") ) {
+        } else if(mImgUri.startsWith("file:") ) {    //file:スキームは実際には使われていない、現在はcontent:が使われている
+            return BitmapFactory.decodeFile(mImgUri.replace("file://", ""));
+        } else if(mImgUri.startsWith("content:") ) {
             try {
-                InputStream is = context.getContentResolver().openInputStream(Uri.parse(imgUri));
+                InputStream is = context.getContentResolver().openInputStream(Uri.parse(mImgUri));
                 if (is == null) {
                     return null;
                 } else {
