@@ -28,7 +28,6 @@ import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
 import xyz.goodistory.autowallpaper.SettingsFragment;
 import xyz.goodistory.autowallpaper.util.DisplaySizeCheck;
-import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 壁紙周りの管理を行うクラス
