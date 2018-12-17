@@ -34,11 +34,13 @@ public class HistoryModel {
 
     public static final String SOURCE_TW = "ImgGetterTw";
     public static final String SOURCE_DIR = "ImgGetterDir";
+    public static final String SOURCE_SHARE = "share";
 
     public static final Map<String, Integer> ICON_R_IDS = new HashMap<>();
     static {
         ICON_R_IDS.put(SOURCE_DIR, R.drawable.ic_dir);
         ICON_R_IDS.put(SOURCE_TW, R.drawable.ic_twitter);
+        ICON_R_IDS.put(SOURCE_SHARE, R.drawable.ic_share);
     }
 
     // --------------------------------------------------------------------

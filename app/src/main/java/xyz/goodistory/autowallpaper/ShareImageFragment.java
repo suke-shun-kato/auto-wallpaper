@@ -12,6 +12,8 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.widget.Toast;
 
+import xyz.goodistory.autowallpaper.wpchange.WpManagerService;
+
 /**
  * share で画像が送られてきたときのダイアログ、OKボタンを押すと壁紙をセットする
  */
@@ -63,8 +65,11 @@ public class ShareImageFragment extends DialogFragment {
             .setPositiveButton(R.string.util_ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    Uri uri = Uri.parse(uriStr.toString());
-    Log.d("onCreateDialog", "action:" + action + ",\n type:" + type + ",\n uri:" + i.getDataString() + ",\n Bundle:" + uri);
+//                    Uri uri = Uri.parse(uriStr.toString());
+
+                    WpManagerService.changeWpSpecified(activity, uriStr.toString(), HistoryModel.SOURCE_SHARE, uriStr.toString());
+
+Log.d("onCreateDialog", "action:" + action + ",\n type:" + type + ",\n uri:" + i.getDataString() + ",\n Bundle:" + uriStr.toString());
                 }
             })
             .setNegativeButton(R.string.util_cancel, new DialogInterface.OnClickListener() {

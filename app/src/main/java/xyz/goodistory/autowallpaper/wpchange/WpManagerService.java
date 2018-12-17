@@ -154,6 +154,9 @@ public class WpManagerService extends IntentService {
                     case HistoryModel.SOURCE_TW:
                         imgGetter = new ImgGetterTw(dataUri, intentActionUri);
                         break;
+                    case HistoryModel.SOURCE_SHARE:
+                        imgGetter = new ImgGetterDir(dataUri, intentActionUri);
+                        break;
                     default:
                         throw new RuntimeException("histories.source_kindの値が不正です。");
 
