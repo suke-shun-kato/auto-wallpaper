@@ -149,20 +149,13 @@ public class WpManagerService extends IntentService {
 
                 //// 壁紙変更
                 ImgGetter imgGetter;
-                switch (sourceKind) {
-                    case HistoryModel.SOURCE_DIR:
-                        imgGetter = new ImgGetterDir(dataUri, intentActionUri);
-                        break;
-                    case HistoryModel.SOURCE_TW:
-                        imgGetter = new ImgGetterTw(dataUri, intentActionUri);
-                        break;
-                    case HistoryModel.SOURCE_SHARE:
-                        imgGetter = new ImgGetter(dataUri, intentActionUri, sourceKind);
-                        break;
-                    default:
-                        IllegalStateException e = new IllegalStateException("intentのsourceKindの値が不正です。");
-                        Log.e(e.getClass().getSimpleName(), e.getMessage(), e);
-                        throw e;
+                if ( HistoryModel.SOURCE_KINDS.contains(sourceKind) ) {
+                    imgGetter = new ImgGetter(dataUri, intentActionUri, sourceKind);
+                } else {
+                    IllegalStateException e = new IllegalStateException(
+                            "intentのsourceKindの値が不正です。");
+                    Log.e(e.getClass().getSimpleName(), e.getMessage(), e);
+                    throw e;
                 }
                 wpManager.executeWpSetTransaction(imgGetter);
             } else {

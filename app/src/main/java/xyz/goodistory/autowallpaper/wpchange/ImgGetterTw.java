@@ -30,12 +30,7 @@ import xyz.goodistory.autowallpaper.util.Token;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class ImgGetterTw extends ImgGetter {
-    @SuppressWarnings("WeakerAccess")
-    public ImgGetterTw(String imgUri, String actionUri) {
-        super(imgUri, actionUri, HistoryModel.SOURCE_TW);
-    }
-
+public class ImgGetterTw  {
     /************************************
      * APIでTwitterのお気に入りのJSONを取得
      * @param context sharedPreferenceからトークン取得時に必要なコンテキスト
@@ -147,8 +142,8 @@ public class ImgGetterTw extends ImgGetter {
         return jsonObj;
     }
 
-    public static List<ImgGetterTw> getImgGetterList(Context context) {
-        List<ImgGetterTw> imgGetterTwList = new ArrayList<>();
+    public static List<ImgGetter> getImgGetterList(Context context) {
+        List<ImgGetter> imgGetterTwList = new ArrayList<>();
 
         // ----------------------------------
         // お気に入りから画像のURLを取得
@@ -161,9 +156,10 @@ public class ImgGetterTw extends ImgGetter {
         // ----------------------------------
         for (JSONObject flattenJson : flattenJsonList) {
             imgGetterTwList.add(
-                new ImgGetterTw(
+                new ImgGetter(
                         flattenJson.optString("media_url_https"),
-                        flattenJson.optString("expanded_url")
+                        flattenJson.optString("expanded_url"),
+                        HistoryModel.SOURCE_TW
                 )
             );
         }

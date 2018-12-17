@@ -26,22 +26,11 @@ import xyz.goodistory.autowallpaper.util.FileExtended;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class ImgGetterDir extends ImgGetter {
+public class ImgGetterDir {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
     private static final String[] EXTENSIONS = {"jpg", "jpeg", "png"};
-
-    // --------------------------------------------------------------------
-    // コンストラクタ
-    // --------------------------------------------------------------------
-    public ImgGetterDir(String imgUri) {
-        super(imgUri, imgUri, HistoryModel.SOURCE_DIR);  //imgUri と actionUriは同じ
-    }
-    @SuppressWarnings("WeakerAccess")
-    public ImgGetterDir(String imgUri, @SuppressWarnings("SameParameterValue") String actionUri) {
-        super(imgUri, actionUri,  HistoryModel.SOURCE_DIR);
-    }
 
     // --------------------------------------------------------------------
     // メソッド
@@ -50,8 +39,8 @@ public class ImgGetterDir extends ImgGetter {
      * 画像一覧から画像のURIを抽選する
      * @return boolean true:成功したとき、false:失敗したとき（ファイルが0のときなど）
      */
-    public static List<ImgGetterDir> getImgGetterList(Context context) {
-        List<ImgGetterDir> getImgGetterList = new ArrayList<>();
+    public static List<ImgGetter> getImgGetterList(Context context) {
+        List<ImgGetter> getImgGetterList = new ArrayList<>();
 
         // ----------------------------------
         // 取得対象の画像のパスリストを取得
@@ -80,14 +69,12 @@ public class ImgGetterDir extends ImgGetter {
             Uri contentUri = FileProvider.getUriForFile(context, "xyz.goodistory.autowallpaper.fileprovider", new File(imgPath));
 
             //// Listに追加
-            getImgGetterList.add(
-                    new ImgGetterDir(contentUri.toString())
-            );
+            getImgGetterList.add( new ImgGetter(
+                    contentUri.toString(),
+                    contentUri.toString(),
+                    HistoryModel.SOURCE_DIR) );
         }
 
         return getImgGetterList;
     }
-
-
-
 }

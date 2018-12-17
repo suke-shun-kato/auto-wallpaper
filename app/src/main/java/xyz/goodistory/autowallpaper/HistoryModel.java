@@ -9,7 +9,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
 import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper;
@@ -35,6 +37,12 @@ public class HistoryModel {
     public static final String SOURCE_TW = "ImgGetterTw";
     public static final String SOURCE_DIR = "ImgGetterDir";
     public static final String SOURCE_SHARE = "share";
+    public static final Set<String> SOURCE_KINDS = new HashSet<>();
+    static {
+        SOURCE_KINDS.add(SOURCE_TW);
+        SOURCE_KINDS.add(SOURCE_DIR);
+        SOURCE_KINDS.add(SOURCE_SHARE);
+    }
 
     public static final Map<String, Integer> ICON_R_IDS = new HashMap<>();
     static {
