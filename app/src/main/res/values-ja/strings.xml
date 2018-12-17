@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">G.I.S 自動壁紙チェンジャー</string>
     <string name="util_ok">はい</string>
+    <string name="util_cancel">キャンセル</string>
     <string name="main_power">ON/OFF</string>
     <string name="main_next_wallpaper_set_screenOff">画面OFF時</string>
     <string name="main_next_wallpaper_set_no">壁紙変更のタイミングがの設定されていません</string>
@@ -9,6 +10,8 @@
     <string name="main_to_history">履歴へ</string>
     <string name="main_set_wallpaper">直ぐに壁紙変更</string>
     <string name="main_toast_no_image">取得可能な画像がありません</string>
+    <string name="main_share_dialog_title">壁紙設定</string>
+    <string name="main_share_dialog_message">壁紙にセットしますか？</string>
     <string name="mainService_notification_ch_name">自動壁紙チェンジャー起動中</string>
     <string name="mainService_notification_title">起動中</string>
     <string name="mainService_notification_text">壁紙が自動で変更されます</string>

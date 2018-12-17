@@ -24,15 +24,15 @@ public class ShareImageFragment extends DialogFragment {
         }
 
         return new AlertDialog.Builder(getActivity())
-                .setTitle("壁紙をセットしますか？")
-                .setMessage("しますか")
-                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                .setTitle(R.string.main_share_dialog_title)
+                .setMessage(R.string.main_share_dialog_message)
+                .setPositiveButton(R.string.util_ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Toast.makeText(getActivity(), "OOOOOO", Toast.LENGTH_LONG).show();
                     }
                 })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                .setNegativeButton(R.string.util_cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         // 何もしない

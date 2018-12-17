@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
 
 
         // ----------------------------------
-        //
+        // 共有からintentが来たときの処理、壁紙のセットするかダイアログを表示
         // ----------------------------------
         Intent intent = getIntent();
         if (intent != null) {
@@ -159,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
                     && type != null && intent.getType().contains("image/") ) {
                 ShareImageFragment f = new ShareImageFragment();
                 f.show(getSupportFragmentManager(), ShareImageFragment.TAG);
-
             }
         }
 
