@@ -5,12 +5,9 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
-import android.widget.Toast;
 
 import xyz.goodistory.autowallpaper.wpchange.WpManagerService;
 
@@ -60,21 +57,26 @@ public class ShareImageFragment extends DialogFragment {
         // builder で ダイアログの中身を作成
         // ----------------------------------
         AlertDialog.Builder builder =  new AlertDialog.Builder(activity)
-            .setTitle(R.string.main_share_dialog_title)
-            .setMessage(R.string.main_share_dialog_message)
+            .setTitle(R.string.share_dialog_title)
+            .setMessage(R.string.share_dialog_message)
             .setPositiveButton(R.string.util_ok, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    WpManagerService.changeWpSpecified(activity, uriStr.toString(), HistoryModel.SOURCE_SHARE, uriStr.toString());
+                    WpManagerService.changeWpSpecified(
+                            activity, uriStr.toString(), HistoryModel.SOURCE_SHARE, uriStr.toString());
+
+                    Intent i = new Intent(activity, MainActivity.class);
+                    startActivity(i);
                 }
             })
             .setNegativeButton(R.string.util_cancel, new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    // 何もしない
+                    activity.finish();
                 }
             });
-
         return builder.create();
     }
+
+
 }

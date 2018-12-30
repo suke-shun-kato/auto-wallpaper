@@ -146,22 +146,6 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
         super.onCreate(savedInstanceState);
         this.setContentView(R.layout.activity_main);
 
-
-
-        // ----------------------------------
-        // 共有からintentが来たときの処理、壁紙のセットするかダイアログを表示
-        // ----------------------------------
-        Intent intent = getIntent();
-        if (intent != null) {
-            String action = intent.getAction();
-            String type = intent.getType();
-            if ( action != null && action.equals(Intent.ACTION_SEND)
-                    && type != null && intent.getType().contains("image/") ) {
-                ShareImageFragment f = new ShareImageFragment();
-                f.show(getSupportFragmentManager(), ShareImageFragment.TAG);
-            }
-        }
-
         // ----------------------------------
         // アクションバーの設定
         // ----------------------------------
