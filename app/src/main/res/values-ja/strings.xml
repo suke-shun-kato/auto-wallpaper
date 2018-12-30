@@ -13,6 +13,7 @@
     <string name="share_dialog_title">壁紙設定</string>
     <string name="share_dialog_message">この画像を壁紙にセットしますか？</string>
     <string name="share_error_message">壁紙に設定できませんでした</string>
+    <string name="share_image">壁紙に設定する画像</string>
     <string name="mainService_notification_ch_name">自動壁紙チェンジャー起動中</string>
     <string name="mainService_notification_title">起動中</string>
     <string name="mainService_notification_text">壁紙が自動で変更されます</string>

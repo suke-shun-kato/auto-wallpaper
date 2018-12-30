@@ -17,4 +17,10 @@
         app:title="@string/app_name"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         tools:targetApi="lollipop" />
+    <ImageView
+        android:id="@+id/share_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/share_image"
+        />
 </LinearLayout>

@@ -149,7 +149,8 @@ public class HistoryActivity
             .build();
 
         //// imageLoader自体の設定
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
+        ImageLoaderConfiguration config
+            = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
             .defaultDisplayImageOptions(defaultOptions)
             .memoryCacheSizePercentage(25)
             .build();
