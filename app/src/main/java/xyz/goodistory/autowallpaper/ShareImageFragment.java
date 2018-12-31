@@ -75,7 +75,12 @@ public class ShareImageFragment extends DialogFragment {
                     activity.finish();
                 }
             });
-        return builder.create();
+
+        // ダイアログの外側をクリックしたときにダイアログを閉じないようにする
+        AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        return alertDialog;
     }
 
 
