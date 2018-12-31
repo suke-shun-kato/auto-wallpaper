@@ -61,6 +61,7 @@ public class ShareActivity extends AppCompatActivity {
                 // ----------------------------------
                 // 背景をシェアした画像に設定
                 // ----------------------------------
+                // TODO 初期化は一回にしないといけない
                 //// displayImage() 関数の設定
                 DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                         // ダウンロード中の表示画像

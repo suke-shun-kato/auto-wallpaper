@@ -11,7 +11,7 @@
         android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/colorPrimaryTranslucent"
+        android:background="?attr/colorPrimary"
         android:elevation="@dimen/actionbar_elevation"
         android:theme="@style/ActionBarTheme"
         app:title="@string/app_name"
@@ -21,6 +21,7 @@
         android:id="@+id/share_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
         android:contentDescription="@string/share_image"
         />
 </LinearLayout>
