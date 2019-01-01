@@ -36,7 +36,6 @@ public class ShareActivity extends AppCompatActivity {
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         this.setSupportActionBar(myToolbar);
 
-
         // ----------------------------------
         //
         // ----------------------------------
@@ -61,28 +60,6 @@ public class ShareActivity extends AppCompatActivity {
                 // ----------------------------------
                 // 背景をシェアした画像に設定
                 // ----------------------------------
-                // TODO 初期化は一回にしないといけない
-                //// displayImage() 関数の設定
-                DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                        // ダウンロード中の表示画像
-                        .showImageOnLoading(R.drawable.anim_refresh)
-                        // URLが空だったときの表示画像
-                        .showImageForEmptyUri(R.drawable.ic_history_remove)
-                        // ネット未接続やURLが間違っていて失敗したときの表示画像
-                        .showImageOnFail(R.drawable.ic_history_error)
-                        // メモリにキャッシュを有効
-                        .cacheInMemory(true)
-//           .cacheOnDisk(true)
-                        .build();
-
-                //// imageLoader自体の設定
-                ImageLoaderConfiguration config
-                        = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
-                        .defaultDisplayImageOptions(defaultOptions)
-                        .memoryCacheSizePercentage(25)
-                        .build();
-                ImageLoader.getInstance().init(config);
-
                 //// 読み込み
                 ImageView imageView = findViewById(R.id.share_image);
                 final Object uriStr = bundle.get(Intent.EXTRA_STREAM);

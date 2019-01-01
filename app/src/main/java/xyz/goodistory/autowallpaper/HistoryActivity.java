@@ -133,30 +133,6 @@ public class HistoryActivity
         }
 
         // ----------------------------------
-        // 画像ローダーの初期設定
-        // ----------------------------------
-        //// displayImage() 関数の設定
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-            // ダウンロード中の表示画像
-            .showImageOnLoading(R.drawable.anim_refresh)
-            // URLが空だったときの表示画像
-            .showImageForEmptyUri(R.drawable.ic_history_remove)
-            // ネット未接続やURLが間違っていて失敗したときの表示画像
-            .showImageOnFail(R.drawable.ic_history_error)
-            // メモリにキャッシュを有効
-            .cacheInMemory(true)
-//           .cacheOnDisk(true)
-            .build();
-
-        //// imageLoader自体の設定
-        ImageLoaderConfiguration config
-            = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
-            .defaultDisplayImageOptions(defaultOptions)
-            .memoryCacheSizePercentage(25)
-            .build();
-        ImageLoader.getInstance().init(config);
-
-        // ----------------------------------
         // 履歴リストの読み込み設定
         // ----------------------------------
         //// 変数セット
