@@ -12,11 +12,14 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -145,6 +148,21 @@ public class WpManager {
         // 画像取得
         // ----------------------------------
         Bitmap wallpaperBitmap = imgGetter.getImgBitmap(mContext); //データ本体取得
+        if (wallpaperBitmap == null) {  // TODO ちゃんとする、エラー処理にするかただたんにreturn するかどうか
+            return;
+        }
+
+        // ----------------------------------
+        // アプリ内にファイルを保存
+        // ----------------------------------
+        // ファイル名の文字列を作成
+        Long nowMillis = System.currentTimeMillis();
+        String saveFileName = nowMillis.toString() + Uri.encode(imgGetter.getImgUri()) + ".png";
+
+        // MODE_PRIVATEはファイルを作成したアプリケーションからのみ読み出せるファイルを作成
+        FileOutputStream fileOutputStream = mContext.openFileOutput(saveFileName, Context.MODE_PRIVATE);
+        // 保存、第二引数は圧縮度、pngはなんでもよいらしいが100にしている
+        wallpaperBitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
 
         // ----------------------------------
         // 画像加工
