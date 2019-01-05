@@ -152,7 +152,7 @@ public class ImgGetterTw  {
         List<JSONObject> flattenJsonList = editJson(favListJsonAry);//「entities > media」「extended_entities > media」の部分
 
         // ----------------------------------
-        // 抽選
+        // リストに入れる
         // ----------------------------------
         for (JSONObject flattenJson : flattenJsonList) {
             imgGetterTwList.add(

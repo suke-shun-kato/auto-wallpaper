@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.ArrayMap;
 
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
@@ -12,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 画像取得インターフェイス
@@ -24,8 +28,11 @@ public class ImgGetter {
     // --------------------------------------------------------------------
     /** 画像の自体のURI、Twitterだと「https://.....png」、ディレクトリだと「content://.....」 */
     protected final String mImgUri;
+    @Nullable
+    protected String mDeviceImgUri = null;
 
     /** 画像が掲載されているページのURL、履歴の画像をクリックしたら飛ぶ場所 */
+    @Nullable
     protected final String mActionUri;
 
     /** 画像の取得元の種類、HistoryModel.SOURCE_XXXの値 */
@@ -34,22 +41,47 @@ public class ImgGetter {
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
-    protected ImgGetter(String imgUri, String actionUri, String sourceKind) {
+    protected ImgGetter(String imgUri, @Nullable String actionUri, String sourceKind) {
         this.mImgUri = imgUri;
         this.mActionUri = actionUri;
         this.mSourceKind = sourceKind;
     }
+
+    protected ImgGetter(String imgUri, @Nullable String actionUri, String sourceKind, @Nullable String deviceImgUri) {
+        this.mImgUri = imgUri;
+        this.mActionUri = actionUri;
+        this.mSourceKind = sourceKind;
+        this.mDeviceImgUri = deviceImgUri;
+    }
+
     // --------------------------------------------------------------------
     // メソッド（アクセサ）
     // --------------------------------------------------------------------
+    public String getSourceKind() {
+        return mSourceKind;
+    }
     public String getImgUri() {
-        return this.mImgUri;
+        return mImgUri;
     }
     public String getActionUri() {
-        return this.mActionUri;
+        return mActionUri;
     }
-    public String getSourceKind() {
-        return this.mSourceKind;
+    public String getDeviceImgUri() {
+        return mDeviceImgUri;
+    }
+    public Map<String, String> getAll() {
+        Map<String, String> fMap = new HashMap<>();
+        fMap.put("source_kind", getSourceKind());
+        fMap.put("img_uri", getImgUri());
+        fMap.put("intent_action_uri", getActionUri());
+        fMap.put("device_img_uri", getDeviceImgUri());
+        return fMap;
+    }
+
+    public String generateDeviceImgName() {
+        Long nowMillis = System.currentTimeMillis();
+
+        return nowMillis.toString() + Uri.encode(this.getImgUri()) + ".png";
     }
     // --------------------------------------------------------------------
     // メソッド（通常）

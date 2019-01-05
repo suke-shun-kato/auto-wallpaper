@@ -67,7 +67,8 @@ public class HistoryActivity
     // 定数
     // --------------------------------------------------------------------
     /** DBに保存する履歴件数 */
-    public static final int MAX_RECORD_STORE = 100;
+//    public static final int MAX_RECORD_STORE = 100;
+    public static final int MAX_RECORD_STORE = 40; // TODO 元に戻す
 
     // --------------------------------------------------------------------
     // --------------------------------------------------------------------

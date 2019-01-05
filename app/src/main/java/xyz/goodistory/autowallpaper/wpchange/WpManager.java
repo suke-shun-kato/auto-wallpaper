@@ -10,18 +10,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import xyz.goodistory.autowallpaper.HistoryActivity;
@@ -31,6 +30,7 @@ import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
 import xyz.goodistory.autowallpaper.SettingsFragment;
 import xyz.goodistory.autowallpaper.util.DisplaySizeCheck;
+import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 壁紙周りの管理を行うクラス
@@ -148,21 +148,9 @@ public class WpManager {
         // 画像取得
         // ----------------------------------
         Bitmap wallpaperBitmap = imgGetter.getImgBitmap(mContext); //データ本体取得
-        if (wallpaperBitmap == null) {  // TODO ちゃんとする、エラー処理にするかただたんにreturn するかどうか
-            return;
+        if (wallpaperBitmap == null) {
+            throw new RuntimeException("画像を取得できませんでした。");
         }
-
-        // ----------------------------------
-        // アプリ内にファイルを保存
-        // ----------------------------------
-        // ファイル名の文字列を作成
-        Long nowMillis = System.currentTimeMillis();
-        String saveFileName = nowMillis.toString() + Uri.encode(imgGetter.getImgUri()) + ".png";
-
-        // MODE_PRIVATEはファイルを作成したアプリケーションからのみ読み出せるファイルを作成
-        FileOutputStream fileOutputStream = mContext.openFileOutput(saveFileName, Context.MODE_PRIVATE);
-        // 保存、第二引数は圧縮度、pngはなんでもよいらしいが100にしている
-        wallpaperBitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
 
         // ----------------------------------
         // 画像加工
@@ -198,14 +186,30 @@ public class WpManager {
         // ----------------------------------
         // 履歴に書き込み
         // ----------------------------------
-        HistoryModel historyMdl = new HistoryModel(mContext);
-        try {
-            historyMdl.insertHistories(imgGetter);
+        //// 変数の準備
+        // TODO ちゃんとする
+        Map<String, String> paramsHistoryMap = imgGetter.getAll();
+        paramsHistoryMap.put("device_img_uri", imgGetter.generateDeviceImgName());
 
-            // 記憶件数溢れたものを削除
+        HistoryModel historyMdl = new HistoryModel(mContext);
+        SQLiteDatabase db = MySQLiteOpenHelper.getInstance(mContext).getWritableDatabase();
+
+        //// DBに書き込み
+        db.beginTransaction();
+        try {
+            // histories に保存 & 画像も保存
+            historyMdl.insertAndSaveBitmap(paramsHistoryMap, wallpaperBitmap);
+
+            // 記憶件数溢れたものを削除, TODO 画像も削除する
             historyMdl.deleteHistoriesOverflowMax(HistoryActivity.MAX_RECORD_STORE);
-        // catch がない場合はfinallyが実行されて（db.close() されて）エラーがthrowされる
+
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            historyMdl.deleteImg("device_img_uri");
+
+            throw e;
         } finally {
+            db.endTransaction();
             historyMdl.close();
         }
 
