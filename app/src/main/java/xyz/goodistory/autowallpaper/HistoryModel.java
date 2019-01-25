@@ -121,7 +121,9 @@ public class HistoryModel {
     }
 
     public void deleteImg(String fileName) {
-        mContext.deleteFile(fileName);
+        if (fileName != null) {
+            mContext.deleteFile(fileName);
+        }
     }
 
     public void deleteImgs(String[] fileNames) {
@@ -220,19 +222,19 @@ public class HistoryModel {
 
         //// 情報取得
         int[] historyIds = new int[delCursor.getCount()];
-        String[] uris = new String[delCursor.getCount()];
+        String[] imgUris = new String[delCursor.getCount()];
         int i = 0;
         while (delCursor.moveToNext()) {
             historyIds[i] = delCursor.getInt(
                     delCursor.getColumnIndexOrThrow("_id"));
-            uris[i] = delCursor.getString(
+            imgUris[i] = delCursor.getString(
                     delCursor.getColumnIndexOrThrow("device_img_uri"));
             i++;
         }
 
         //// 削除
         deleteByIds(historyIds);
-        deleteImgs(uris);
+        deleteImgs(imgUris);
 
         delCursor.moveToFirst();
         return delCursor;
