@@ -5,8 +5,10 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -104,9 +106,10 @@ public class HistoryModel {
      * Bitmapをアプリ内ストレージにPNGで保存する
      * @param bitmap 保存するファイル
      * @param fileName 保存するファイル名, 拡張子なし
+     * @return 保存したファイルのFileオブジェクト
      * @throws Exception FileNotFountException, IOException
      */
-    public void saveImg(Bitmap bitmap, String fileName) throws Exception {
+    public File saveImg(Bitmap bitmap, String fileName) throws Exception {
         //// ファイルの拡張子がpngかどうかチェック
         int i = fileName.lastIndexOf('.');
         if (i < 0 || !fileName.substring(i + 1).equals("png")) {
@@ -118,6 +121,8 @@ public class HistoryModel {
         // 保存、第二引数は圧縮度、pngはなんでもよいらしいが100にしている
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
         fileOutputStream.close();
+
+        return mContext.getFileStreamPath(fileName);
     }
 
     public void deleteImg(String fileName) {
@@ -165,10 +170,15 @@ public class HistoryModel {
         dbStt.executeInsert();
     }
 
-    public void insertAndSaveBitmap(Map<String, String> insertParams, Bitmap bitmap)
+    public void insertAndSaveBitmap(Map<String, String> insertParams, Bitmap bitmap, String saveBitmapName)
             throws Exception {
+        // 画像を保存
+        File savedFile = saveImg(bitmap, saveBitmapName);
+
+        //保存した画像のUriをinsertParamsに上書き
+        insertParams.put("device_img_uri", Uri.fromFile(savedFile).toString() );
+
         insert(insertParams);
-        saveImg(bitmap, insertParams.get("device_img_uri"));
     }
 
     /**

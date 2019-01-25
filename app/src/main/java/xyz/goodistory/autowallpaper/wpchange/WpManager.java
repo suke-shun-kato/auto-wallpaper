@@ -187,9 +187,7 @@ public class WpManager {
         // 履歴に書き込み
         // ----------------------------------
         //// 変数の準備
-        // TODO ちゃんとする
         Map<String, String> paramsHistoryMap = imgGetter.getAll();
-        paramsHistoryMap.put("device_img_uri", imgGetter.generateDeviceImgName());
 
         HistoryModel historyMdl = new HistoryModel(mContext);
         SQLiteDatabase db = MySQLiteOpenHelper.getInstance(mContext).getWritableDatabase();
@@ -198,9 +196,9 @@ public class WpManager {
         db.beginTransaction();
         try {
             // histories に保存 & 画像も保存
-            historyMdl.insertAndSaveBitmap(paramsHistoryMap, wallpaperBitmap);
+            historyMdl.insertAndSaveBitmap(paramsHistoryMap, wallpaperBitmap, imgGetter.generateDeviceImgName());
 
-            // 記憶件数溢れたものを削除, TODO 画像も削除する
+            // 記憶件数溢れたものを削除
             historyMdl.deleteHistoriesOverflowMax(HistoryActivity.MAX_RECORD_STORE);
 
             db.setTransactionSuccessful();
