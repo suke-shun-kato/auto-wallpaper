@@ -14,6 +14,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -68,6 +69,7 @@ public class HistoryActivity
     // --------------------------------------------------------------------
     /** DBに保存する履歴件数 */
     public static final int MAX_RECORD_STORE = 100;
+//    public static final int MAX_RECORD_STORE = 10; // TODO 元に戻す
 
     // --------------------------------------------------------------------
     // --------------------------------------------------------------------
@@ -225,11 +227,31 @@ public class HistoryActivity
          */
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            jumpToSource(id);
+            if (canJumpToSource(id)) {
+                jumpToSource(id);
+            }
         }
     }
 
+    /**
+     * 指定のhistory_idの履歴がソースにジャンプ可能化どうが
+     * @param history_id histories.id
+     * @return jump可能かどうか
+     */
+    private boolean canJumpToSource(long history_id) {
+        HistoryModel history_mdl = new HistoryModel(this);
+        Cursor cursor = history_mdl.getHistoryById(history_id);
 
+        boolean hasGotCursor = cursor.moveToFirst();
+        if (!hasGotCursor) {
+            throw new IllegalStateException("history_id: " + history_id + " のレコードは存在しません");
+        }
+
+        String intentActionUri = cursor.getString(
+                cursor.getColumnIndexOrThrow("intent_action_uri"));
+
+        return intentActionUri != null;
+    }
     /**
      * 壁紙の取得元にジャンプ（Intent）する関数
      * @param id historiesテーブルの_idの値
@@ -321,11 +343,26 @@ public class HistoryActivity
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        //// メニューをセット（タイトル除く）
+        // ----------------------------------
+        // メニューをセット（タイトル除く）
+        // ----------------------------------
+        //// inflate
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_history, menu);
 
-        //// タイトルをセット
+        //// intent_action_uri がnullのときはjumpボタンは色を変える
+        // クエリ実行して Cursor取得
+        long history_id = ((AdapterView.AdapterContextMenuInfo)menuInfo).id;
+        if (!canJumpToSource(history_id)) {
+            MenuItem menuItem = menu.findItem(R.id.histories_contextMenu_item_jump);
+            if (menuItem != null) {
+                menuItem.setEnabled(false);
+            }
+        }
+
+        // ----------------------------------
+        // タイトルをセット
+        // ----------------------------------
         menu.setHeaderTitle(R.string.histories_contextMenu_title);
     }
 

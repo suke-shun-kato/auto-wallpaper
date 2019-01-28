@@ -78,7 +78,7 @@
     <string name="histories_toolbar">History</string>
     <string name="histories_image">A wallpaper image</string>
     <string name="histories_icon">Please choose</string>
-    <string name="histories_contextMenu_title">icon</string>
+    <string name="histories_contextMenu_title">select</string>
     <string name="histories_contextMenu_item_jump">Jump to the source of this wallpaper</string>
     <string name="histories_contextMenu_item_wpSet">Set this wallpaper</string>
     <string name="histories_contextMenu_item_delete">Delete from the list.</string>
