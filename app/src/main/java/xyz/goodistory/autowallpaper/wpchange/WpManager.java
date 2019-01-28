@@ -184,7 +184,7 @@ public class WpManager {
         }
 
         // ----------------------------------
-        // 履歴に書き込み
+        // 履歴に書き込み & 画像に保存
         // ----------------------------------
         //// 変数の準備
         Map<String, String> paramsHistoryMap = imgGetter.getAll();
@@ -194,18 +194,18 @@ public class WpManager {
 
         //// DBに書き込み
         db.beginTransaction();
+        String deviceImgFileName = imgGetter.generateDeviceImgName();
         try {
             // histories に保存 & 画像も保存
-            historyMdl.insertAndSaveBitmap(paramsHistoryMap, wallpaperBitmap, imgGetter.generateDeviceImgName());
+            historyMdl.insertAndSaveBitmap(
+                    paramsHistoryMap, wallpaperBitmap, deviceImgFileName);
 
             // 記憶件数溢れたものを削除
             historyMdl.deleteHistoriesOverflowMax(HistoryActivity.MAX_RECORD_STORE);
-
             db.setTransactionSuccessful();
         } catch (Exception e) {
-            historyMdl.deleteImg("device_img_uri");
-
-            throw e;
+            historyMdl.deleteImg( deviceImgFileName );
+            throw e; // ここでthrow してもfinallyは実行される
         } finally {
             db.endTransaction();
             historyMdl.close();

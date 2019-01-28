@@ -78,10 +78,15 @@ public class ImgGetter {
         return fMap;
     }
 
+    /**
+     * 名前
+     * @return 名前
+     */
     public String generateDeviceImgName() {
-        Long nowMillis = System.currentTimeMillis();
+        long nowMillis = System.currentTimeMillis();
+        String filename = Uri.parse(this.getImgUri()).getLastPathSegment();
 
-        return nowMillis.toString() + Uri.encode(this.getImgUri()) + ".png";
+        return nowMillis + filename + ".png";
     }
     // --------------------------------------------------------------------
     // メソッド（通常）

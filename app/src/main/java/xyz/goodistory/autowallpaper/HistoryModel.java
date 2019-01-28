@@ -125,16 +125,32 @@ public class HistoryModel {
         return mContext.getFileStreamPath(fileName);
     }
 
-    public void deleteImg(String fileName) {
-        if (fileName != null) {
-            mContext.deleteFile(fileName);
+    /**
+     * 指定ファイル名の画像（アプリ内部）を削除
+     * @param fileName
+     * @return
+     */
+    public boolean deleteImg(String fileName) {
+        try {
+            return mContext.deleteFile(fileName);
+        } catch (Exception e){
+            return false;
         }
     }
 
-    public void deleteImgs(String[] fileNames) {
+    /**
+     * 指定画像をまとめて削除するメソッド
+     * @param fileNames 削除したいファイルの名前、複数
+     * @return 削除が成功したかどうか
+     */
+    public Map<String, Boolean> deleteImgs(String[] fileNames) {
+        Map<String, Boolean> areDeleted = new HashMap<>();
+
         for (String fileName: fileNames) {
-            deleteImg(fileName);
+            Boolean isDelete = deleteImg(fileName);
+            areDeleted.put(fileName, isDelete);
         }
+        return areDeleted;
     }
     /**
      * 壁紙の履歴をDBに登録する
@@ -170,8 +186,10 @@ public class HistoryModel {
         dbStt.executeInsert();
     }
 
-    public void insertAndSaveBitmap(Map<String, String> insertParams, Bitmap bitmap, String saveBitmapName)
-            throws Exception {
+    public void insertAndSaveBitmap(
+            Map<String, String> insertParams, Bitmap bitmap, String saveBitmapName)
+            throws Exception
+    {
         // 画像を保存
         File savedFile = saveImg(bitmap, saveBitmapName);
 
@@ -202,10 +220,6 @@ public class HistoryModel {
         // ----------------------------------
         Cursor countCursor = mDbWritable.rawQuery(
                 "SELECT count(*) AS count FROM histories", null);
-        // TODO これじたいいらないんじゃ・・・
-        if (countCursor == null) {
-            throw new NullPointerException("数が取得できません。");// TODO メッセージをちゃんとする
-        }
 
         if ( !countCursor.moveToFirst() ) {
             countCursor.close();
@@ -232,19 +246,25 @@ public class HistoryModel {
 
         //// 情報取得
         int[] historyIds = new int[delCursor.getCount()];
-        String[] imgUris = new String[delCursor.getCount()];
+        String[] imgFileNames = new String[delCursor.getCount()];
         int i = 0;
         while (delCursor.moveToNext()) {
+            // historyId を取得
             historyIds[i] = delCursor.getInt(
                     delCursor.getColumnIndexOrThrow("_id"));
-            imgUris[i] = delCursor.getString(
+
+            // fileNameを取得
+            String deviceImgUriStr = delCursor.getString(
                     delCursor.getColumnIndexOrThrow("device_img_uri"));
+            Uri deviceImgUri = Uri.parse(deviceImgUriStr);
+            imgFileNames[i] = deviceImgUri.getLastPathSegment();
+
             i++;
         }
 
         //// 削除
         deleteByIds(historyIds);
-        deleteImgs(imgUris);
+        deleteImgs(imgFileNames);
 
         delCursor.moveToFirst();
         return delCursor;
