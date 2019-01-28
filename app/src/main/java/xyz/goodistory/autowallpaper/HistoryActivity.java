@@ -30,9 +30,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import xyz.goodistory.autowallpaper.util.DisplaySizeCheck;
 import xyz.goodistory.autowallpaper.util.ProgressBcastReceiver;
@@ -228,7 +225,12 @@ public class HistoryActivity
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             if (canJumpToSource(id)) {
-                jumpToSource(id);
+                boolean hasJumped = jumpToSource(id);
+                if (!hasJumped) {
+                    Toast.makeText(HistoryActivity.this, R.string.histories_cant_jump, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(HistoryActivity.this, R.string.histories_cant_jump, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -255,6 +257,7 @@ public class HistoryActivity
     /**
      * 壁紙の取得元にジャンプ（Intent）する関数
      * @param id historiesテーブルの_idの値
+     * @return 取得元にジャンプできたかどうが
      */
     @SuppressWarnings("UnusedReturnValue")
     private boolean jumpToSource(long id) {
@@ -390,7 +393,10 @@ public class HistoryActivity
         int menuItemId = item.getItemId();
         switch (menuItemId) { // コンテキストメニューの選択した項目によって処理を分ける
             case R.id.histories_contextMenu_item_jump:
-                jumpToSource(info.id);
+                boolean hasJumped = jumpToSource(info.id);
+                if (!hasJumped) {
+                    Toast.makeText(this, R.string.histories_cant_jump, Toast.LENGTH_SHORT).show();
+                }
 
                 break;
 
