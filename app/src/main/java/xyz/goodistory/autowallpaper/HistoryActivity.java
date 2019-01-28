@@ -252,15 +252,14 @@ public class HistoryActivity
             //// intent先のURI
             intentUriStr = cursor.getString(
                     cursor.getColumnIndexOrThrow("intent_action_uri"));
+            cursor.close();
 
             // ----------------------------------
-            //
+            // intent_action_uri がnullのとき
             // ----------------------------------
             if (intentUriStr == null) {
-                intentUriStr = cursor.getString(
-                        cursor.getColumnIndexOrThrow("img_uri"));
+                return false;
             }
-            cursor.close();
         } catch (Exception e) {
             return false;
         }
@@ -282,8 +281,13 @@ public class HistoryActivity
 
         // resolveActivity() インテントで動作するアクティビティを取得、
         // 戻り値はコンポーネント（アクティビティとかサービスとか）名オブジェクト
+        // https://developer.android.com/guide/components/intents-common?hl=ja
         if (intent.resolveActivity(this.getPackageManager()) != null) {
-            this.startActivity(intent);
+            try {
+                this.startActivity(intent);
+            } catch (Exception e) {
+                return false;
+            }
         } else {
             return false;
         }

@@ -63,7 +63,7 @@ public class ShareImageFragment extends DialogFragment {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     WpManagerService.changeWpSpecified(
-                            activity, uriStr.toString(), HistoryModel.SOURCE_SHARE, uriStr.toString());
+                            activity, uriStr.toString(), HistoryModel.SOURCE_SHARE, null);
 
                     Intent i = new Intent(activity, MainActivity.class);
                     startActivity(i);
