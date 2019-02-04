@@ -207,6 +207,7 @@ public class SelectDirPreference extends DialogPreference {
         // ----------------------------------
         //// ディレクトリパスを正規化する
         String normalizedDirPath;  // 正規化されたディレクトリパス
+        //noinspection SpellCheckingInspection
         try {
             // 正規パス名を取得
             // 現在のディレクトリが"/"の場合は"/"、"aaaa/.."などでルートのときは""空文字列が返る）

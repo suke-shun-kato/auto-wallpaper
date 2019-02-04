@@ -308,14 +308,19 @@ public class HistoryModel {
     }
 
     /**
-     * 日時を yyyy-mm-dd hh:mm:ss 形式からUnixTimeに変換（UTC）
+     * To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates.
+     * 日時を yyyy-mm-dd hh:mm:ss 形式からUnixTimeに変換
+     * UTCのまま変換、 DBにはUTCが保存されているのでLocale は考慮しない
      * @param yyyymmddhhmmss 変換したい日時
      * @return UnixTime(millisecond)
      * @throws ParseException 変換失敗時例外を投げる
      */
     public static long sqliteToUnixTimeMillis(String yyyymmddhhmmss) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        SimpleDateFormat sdf = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
+        sdf.applyPattern("yyyy-MM-dd hh:mm:ss");
         sdf.setTimeZone( TimeZone.getTimeZone("UTC") );
+
         Date date = sdf.parse(yyyymmddhhmmss);
         return date.getTime();
     }
