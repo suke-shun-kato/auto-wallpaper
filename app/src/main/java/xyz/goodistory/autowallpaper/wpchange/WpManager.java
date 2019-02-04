@@ -10,9 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Build;
@@ -22,6 +20,7 @@ import android.support.v4.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import xyz.goodistory.autowallpaper.HistoryActivity;
@@ -148,7 +147,10 @@ public class WpManager {
         // ----------------------------------
         // 画像取得
         // ----------------------------------
-        Bitmap wallpaperBitmap = imgGetter.getImgBitmap(mContext); //データ本体取得
+        Bitmap wallpaperBitmap = imgGetter.getImgBitmapWhenErrorFromDevice(mContext); //データ本体取得
+        if (wallpaperBitmap == null) {
+            throw new RuntimeException("画像を取得できませんでした。");
+        }
 
         // ----------------------------------
         // 画像加工
@@ -182,16 +184,30 @@ public class WpManager {
         }
 
         // ----------------------------------
-        // 履歴に書き込み
+        // 履歴に書き込み & 画像に保存
         // ----------------------------------
+        //// 変数の準備
+        Map<String, String> paramsHistoryMap = imgGetter.getAll();
+
         HistoryModel historyMdl = new HistoryModel(mContext);
+        SQLiteDatabase db = MySQLiteOpenHelper.getInstance(mContext).getWritableDatabase();
+
+        //// DBに書き込み
+        db.beginTransaction();
+        String deviceImgFileName = imgGetter.generateDeviceImgName();
         try {
-            historyMdl.insertHistories(imgGetter);
+            // histories に保存 & 画像も保存
+            historyMdl.insertAndSaveBitmap(
+                    paramsHistoryMap, wallpaperBitmap, deviceImgFileName);
 
             // 記憶件数溢れたものを削除
             historyMdl.deleteHistoriesOverflowMax(HistoryActivity.MAX_RECORD_STORE);
-        // catch がない場合はfinallyが実行されて（db.close() されて）エラーがthrowされる
+            db.setTransactionSuccessful();
+        } catch (Exception e) {
+            historyMdl.deleteImg( deviceImgFileName );
+            throw e; // ここでthrow してもfinallyは実行される
         } finally {
+            db.endTransaction();
             historyMdl.close();
         }
 

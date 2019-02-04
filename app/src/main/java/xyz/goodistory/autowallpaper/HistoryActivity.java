@@ -14,6 +14,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -29,9 +30,6 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import xyz.goodistory.autowallpaper.util.DisplaySizeCheck;
 import xyz.goodistory.autowallpaper.util.ProgressBcastReceiver;
@@ -133,29 +131,6 @@ public class HistoryActivity
         }
 
         // ----------------------------------
-        // 画像ローダーの初期設定
-        // ----------------------------------
-        //// displayImage() 関数の設定
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-            // ダウンロード中の表示画像
-            .showImageOnLoading(R.drawable.anim_refresh)
-            // URLが空だったときの表示画像
-            .showImageForEmptyUri(R.drawable.ic_history_remove)
-            // ネット未接続やURLが間違っていて失敗したときの表示画像
-            .showImageOnFail(R.drawable.ic_history_error)
-            // メモリにキャッシュを有効
-            .cacheInMemory(true)
-//           .cacheOnDisk(true)
-            .build();
-
-        //// imageLoader自体の設定
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this.getApplicationContext())
-            .defaultDisplayImageOptions(defaultOptions)
-            .memoryCacheSizePercentage(25)
-            .build();
-        ImageLoader.getInstance().init(config);
-
-        // ----------------------------------
         // 履歴リストの読み込み設定
         // ----------------------------------
         //// 変数セット
@@ -248,14 +223,40 @@ public class HistoryActivity
          */
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            jumpToSource(id);
+            if (canJumpToSource(id)) {
+                boolean hasJumped = jumpToSource(id);
+                if (!hasJumped) {
+                    Toast.makeText(HistoryActivity.this, R.string.histories_cant_jump, Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(HistoryActivity.this, R.string.histories_cant_jump, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
+    /**
+     * 指定のhistory_idの履歴がソースにジャンプ可能化どうが
+     * @param history_id histories.id
+     * @return jump可能かどうか
+     */
+    private boolean canJumpToSource(long history_id) {
+        HistoryModel history_mdl = new HistoryModel(this);
+        Cursor cursor = history_mdl.getHistoryById(history_id);
 
+        boolean hasGotCursor = cursor.moveToFirst();
+        if (!hasGotCursor) {
+            throw new IllegalStateException("history_id: " + history_id + " のレコードは存在しません");
+        }
+
+        String intentActionUri = cursor.getString(
+                cursor.getColumnIndexOrThrow("intent_action_uri"));
+
+        return intentActionUri != null;
+    }
     /**
      * 壁紙の取得元にジャンプ（Intent）する関数
      * @param id historiesテーブルの_idの値
+     * @return 取得元にジャンプできたかどうが
      */
     @SuppressWarnings("UnusedReturnValue")
     private boolean jumpToSource(long id) {
@@ -274,15 +275,14 @@ public class HistoryActivity
             //// intent先のURI
             intentUriStr = cursor.getString(
                     cursor.getColumnIndexOrThrow("intent_action_uri"));
+            cursor.close();
 
             // ----------------------------------
-            //
+            // intent_action_uri がnullのとき
             // ----------------------------------
             if (intentUriStr == null) {
-                intentUriStr = cursor.getString(
-                        cursor.getColumnIndexOrThrow("img_uri"));
+                return false;
             }
-            cursor.close();
         } catch (Exception e) {
             return false;
         }
@@ -304,8 +304,13 @@ public class HistoryActivity
 
         // resolveActivity() インテントで動作するアクティビティを取得、
         // 戻り値はコンポーネント（アクティビティとかサービスとか）名オブジェクト
+        // https://developer.android.com/guide/components/intents-common?hl=ja
         if (intent.resolveActivity(this.getPackageManager()) != null) {
-            this.startActivity(intent);
+            try {
+                this.startActivity(intent);
+            } catch (Exception e) {
+                return false;
+            }
         } else {
             return false;
         }
@@ -340,11 +345,26 @@ public class HistoryActivity
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
 
-        //// メニューをセット（タイトル除く）
+        // ----------------------------------
+        // メニューをセット（タイトル除く）
+        // ----------------------------------
+        //// inflate
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_history, menu);
 
-        //// タイトルをセット
+        //// intent_action_uri がnullのときはjumpボタンは色を変える
+        // クエリ実行して Cursor取得
+        long history_id = ((AdapterView.AdapterContextMenuInfo)menuInfo).id;
+        if (!canJumpToSource(history_id)) {
+            MenuItem menuItem = menu.findItem(R.id.histories_contextMenu_item_jump);
+            if (menuItem != null) {
+                menuItem.setEnabled(false);
+            }
+        }
+
+        // ----------------------------------
+        // タイトルをセット
+        // ----------------------------------
         menu.setHeaderTitle(R.string.histories_contextMenu_title);
     }
 
@@ -372,7 +392,10 @@ public class HistoryActivity
         int menuItemId = item.getItemId();
         switch (menuItemId) { // コンテキストメニューの選択した項目によって処理を分ける
             case R.id.histories_contextMenu_item_jump:
-                jumpToSource(info.id);
+                boolean hasJumped = jumpToSource(info.id);
+                if (!hasJumped) {
+                    Toast.makeText(this, R.string.histories_cant_jump, Toast.LENGTH_SHORT).show();
+                }
 
                 break;
 
@@ -390,9 +413,10 @@ public class HistoryActivity
                         cursor.getColumnIndexOrThrow("img_uri"));
                 String intentActionUri = cursor.getString(
                         cursor.getColumnIndexOrThrow("intent_action_uri"));
+                String deviceImgUri = cursor.getString(
+                        cursor.getColumnIndexOrThrow("device_img_uri"));
 
-
-                WpManagerService.changeWpSpecified(this, imgUri, sourceKind, intentActionUri);
+                WpManagerService.changeWpSpecified(this, imgUri, sourceKind, intentActionUri, deviceImgUri);
                 break;
 
             case R.id.histories_contextMenu_item_delete:

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">G.I.S 自動壁紙チェンジャー</string>
     <string name="util_ok">はい</string>
+    <string name="util_cancel">キャンセル</string>
     <string name="main_power">ON/OFF</string>
     <string name="main_next_wallpaper_set_screenOff">画面OFF時</string>
     <string name="main_next_wallpaper_set_no">壁紙変更のタイミングがの設定されていません</string>
@@ -9,6 +10,10 @@
     <string name="main_to_history">履歴へ</string>
     <string name="main_set_wallpaper">直ぐに壁紙変更</string>
     <string name="main_toast_no_image">取得可能な画像がありません</string>
+    <string name="share_dialog_title">壁紙設定</string>
+    <string name="share_dialog_message">この画像を壁紙にセットしますか？</string>
+    <string name="share_error_message">壁紙に設定できませんでした</string>
+    <string name="share_image">壁紙に設定する画像</string>
     <string name="mainService_notification_ch_name">自動壁紙チェンジャー起動中</string>
     <string name="mainService_notification_title">起動中</string>
     <string name="mainService_notification_text">壁紙が自動で変更されます</string>
@@ -66,6 +71,7 @@
     <string name="histories_contextMenu_item_wpSet">壁紙に設定する</string>
     <string name="histories_contextMenu_item_delete">履歴から削除する</string>
     <string name="histories_contextMenu_item_delete_errorMessage">削除に失敗しました</string>
+    <string name="histories_cant_jump">取得元にジャンプできません</string>
     <string name="histories_notification_ch_name">壁紙変更通知</string>
     <string name="histories_notification_title">壁紙が変更されました</string>
     <string name="histories_notification_body">タップすると履歴ページにとびます</string>

@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import xyz.goodistory.autowallpaper.HistoryModel;
 import xyz.goodistory.autowallpaper.SelectDirPreference;
 import xyz.goodistory.autowallpaper.SettingsFragment;
 import xyz.goodistory.autowallpaper.util.FileExtended;
@@ -25,22 +26,11 @@ import xyz.goodistory.autowallpaper.util.FileExtended;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class ImgGetterDir extends ImgGetter {
+public class ImgGetterDir {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
     private static final String[] EXTENSIONS = {"jpg", "jpeg", "png"};
-
-    // --------------------------------------------------------------------
-    // コンストラクタ
-    // --------------------------------------------------------------------
-    public ImgGetterDir(String imgUri) {
-        super(imgUri, imgUri);  //imgUri と actionUriは同じ
-    }
-    @SuppressWarnings("WeakerAccess")
-    public ImgGetterDir(String imgUri, @SuppressWarnings("SameParameterValue") String actionUri) {
-        super(imgUri, actionUri);
-    }
 
     // --------------------------------------------------------------------
     // メソッド
@@ -49,8 +39,8 @@ public class ImgGetterDir extends ImgGetter {
      * 画像一覧から画像のURIを抽選する
      * @return boolean true:成功したとき、false:失敗したとき（ファイルが0のときなど）
      */
-    public static List<ImgGetterDir> getImgGetterList(Context context) {
-        List<ImgGetterDir> getImgGetterList = new ArrayList<>();
+    public static List<ImgGetter> getImgGetterList(Context context) {
+        List<ImgGetter> getImgGetterList = new ArrayList<>();
 
         // ----------------------------------
         // 取得対象の画像のパスリストを取得
@@ -58,7 +48,6 @@ public class ImgGetterDir extends ImgGetter {
         //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-Log.d("○ImgGetterDir", "ストレージアクセス権限がない！！！");
             return getImgGetterList;
         }
 
@@ -80,14 +69,12 @@ Log.d("○ImgGetterDir", "ストレージアクセス権限がない！！！");
             Uri contentUri = FileProvider.getUriForFile(context, "xyz.goodistory.autowallpaper.fileprovider", new File(imgPath));
 
             //// Listに追加
-            getImgGetterList.add(
-                    new ImgGetterDir(contentUri.toString())
-            );
+            getImgGetterList.add( new ImgGetter(
+                    contentUri.toString(),
+                    contentUri.toString(),
+                    HistoryModel.SOURCE_DIR) );
         }
 
         return getImgGetterList;
     }
-
-
-
 }

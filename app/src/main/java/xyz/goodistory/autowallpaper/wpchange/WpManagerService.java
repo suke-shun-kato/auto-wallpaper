@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -49,7 +50,7 @@ public class WpManagerService extends IntentService {
 
 
     // --------------------------------------------------------------------
-    //
+    // static メソッド、この IntentService を実行するメソッド
     // --------------------------------------------------------------------
 
     /**
@@ -63,19 +64,23 @@ public class WpManagerService extends IntentService {
     }
 
     /**
-     * 指定の画像に壁紙を変更するIntentServiceを実行
+     * 指定の画像に壁紙を変更する    IntentServiceを実行
      * @param context コンテキスト
      * @param imgUri 画像の取得元のURI
      * @param sourceKind ディレクトリからかツイッターからか
      * @param intentActionUri クリックしたときの飛ばし先へのIntent
      */
-    public static void changeWpSpecified(Context context, String imgUri, String sourceKind, String intentActionUri) {
+    public static void changeWpSpecified(
+            Context context, String imgUri, String sourceKind, @Nullable String intentActionUri,
+            @Nullable String deviceImgUri)
+    {
         Intent i = new Intent(context, WpManagerService.class);
         i.setAction(ACTION_CHANGE_SPECIFIED);
 
         i.setData(Uri.parse(imgUri));
         i.putExtra("sourceKind", sourceKind);
         i.putExtra("intentActionUri", intentActionUri);
+        i.putExtra("deviceImgUri", deviceImgUri);
 
         context.startService(i);
     }
@@ -123,8 +128,6 @@ public class WpManagerService extends IntentService {
         final String action = intent.getAction();
         WpManager wpManager = new WpManager(this);
         try {
-
-
             if ( ACTION_CHANGE_RANDOM.equals(action) ) {
             // ----------------------------------
             // ランダムで壁紙変更
@@ -136,31 +139,34 @@ public class WpManagerService extends IntentService {
             // 指定の壁紙に変更
             // ----------------------------------
                 //// intent からデータを取得
+                Uri uri = intent.getData();
                 String dataUri;
-                try {
-                    dataUri = intent.getData().toString();
-                } catch (Exception e) {
-                    throw new RuntimeException("uriの値が不正です。");
+                if (uri == null) {
+                    IllegalStateException e = new IllegalStateException("intentのuriが存在しません。");
+                    Log.e(e.getClass().getSimpleName(), e.getMessage(), e);
+                    throw e;
+                } else {
+                    dataUri = uri.toString();
                 }
                 String sourceKind = intent.getStringExtra("sourceKind");
                 String intentActionUri = intent.getStringExtra("intentActionUri");
+                String deviceImgUri = intent.getStringExtra("deviceImgUri");
 
                 //// 壁紙変更
                 ImgGetter imgGetter;
-                switch (sourceKind) {
-                    case HistoryModel.SOURCE_DIR:
-                        imgGetter = new ImgGetterDir(dataUri, intentActionUri);
-                        break;
-                    case HistoryModel.SOURCE_TW:
-                        imgGetter = new ImgGetterTw(dataUri, intentActionUri);
-                        break;
-                    default:
-                        throw new RuntimeException("histories.source_kindの値が不正です。");
-
+                if ( HistoryModel.SOURCE_KINDS.contains(sourceKind) ) {
+                    imgGetter = new ImgGetter(dataUri, intentActionUri, sourceKind, deviceImgUri);
+                } else {
+                    IllegalStateException e = new IllegalStateException(
+                            "intentのsourceKindの値が不正です。");
+                    Log.e(e.getClass().getSimpleName(), e.getMessage(), e);
+                    throw e;
                 }
                 wpManager.executeWpSetTransaction(imgGetter);
             } else {
-                throw new RuntimeException("intentのactionの値が不正です。");
+                IllegalStateException e = new IllegalStateException("intentのactionの値が不正です。");
+                Log.e(e.getClass().getSimpleName(), e.getMessage(), e);
+                throw e;
             }
         } catch (Exception e) {
             Intent i = new Intent(ACTION_WPCHANGE_STATE);

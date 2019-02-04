@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
+import xyz.goodistory.autowallpaper.HistoryModel;
 import xyz.goodistory.autowallpaper.util.Token;
 
 /**
@@ -29,12 +30,7 @@ import xyz.goodistory.autowallpaper.util.Token;
  */
 
 @SuppressWarnings("WeakerAccess")
-public class ImgGetterTw extends ImgGetter {
-    @SuppressWarnings("WeakerAccess")
-    public ImgGetterTw(String imgUri, String actionUri) {
-        super(imgUri, actionUri);
-    }
-
+public class ImgGetterTw  {
     /************************************
      * APIでTwitterのお気に入りのJSONを取得
      * @param context sharedPreferenceからトークン取得時に必要なコンテキスト
@@ -145,32 +141,9 @@ public class ImgGetterTw extends ImgGetter {
 
         return jsonObj;
     }
-////////////////////////////////////////////////////////////////
 
-//    public boolean drawImg() {
-//        // ----------------------------------
-//        // お気に入りから画像のURLを取得
-//        // ----------------------------------
-//        JSONArray favListJsonAry = this.getFavList();
-//
-//        List<JSONObject> flattenJson = editJson(favListJsonAry);
-//
-//        // ----------------------------------
-//        // 抽選
-//        // ----------------------------------
-//        if ( flattenJson.size() == 0) {
-//            return false;
-//        }
-//
-//        int drawnIndex = new Random().nextInt(flattenJson.size());
-//        this.imgUri = flattenJson.get(drawnIndex).optString("media_url_https");
-//        this.actionUri = flattenJson.get(drawnIndex).optString("url");
-//
-//        return true;
-//    }
-
-    public static List<ImgGetterTw> getImgGetterList(Context context) {
-        List<ImgGetterTw> imgGetterTwList = new ArrayList<>();
+    public static List<ImgGetter> getImgGetterList(Context context) {
+        List<ImgGetter> imgGetterTwList = new ArrayList<>();
 
         // ----------------------------------
         // お気に入りから画像のURLを取得
@@ -179,13 +152,14 @@ public class ImgGetterTw extends ImgGetter {
         List<JSONObject> flattenJsonList = editJson(favListJsonAry);//「entities > media」「extended_entities > media」の部分
 
         // ----------------------------------
-        // 抽選
+        // リストに入れる
         // ----------------------------------
         for (JSONObject flattenJson : flattenJsonList) {
             imgGetterTwList.add(
-                new ImgGetterTw(
+                new ImgGetter(
                         flattenJson.optString("media_url_https"),
-                        flattenJson.optString("expanded_url")
+                        flattenJson.optString("expanded_url"),
+                        HistoryModel.SOURCE_TW
                 )
             );
         }

@@ -12,6 +12,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.FailReason;
+import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 /**
  * 履歴ページのListViewを作成するためのアダプター
@@ -61,17 +63,30 @@ public class HistoryListAdapter extends CursorAdapter {
      * @param cursor  The cursor from which to get the data. The cursor is already
      */
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, Context context, final Cursor cursor) {
         // ----------------------------------
         // 画像
         // ----------------------------------
         //// 画像読み込み処理
         ImageView wpImageView = view.findViewById(R.id.history_item_image);
-        String imgUri = cursor.getString(cursor.getColumnIndexOrThrow("img_uri"));
+        final String imgUri = cursor.getString(cursor.getColumnIndexOrThrow("img_uri"));
+        final String deviceImgUri = cursor.getString(
+                cursor.getColumnIndexOrThrow("device_img_uri") );
 
-        ImageLoader imgLoader = ImageLoader.getInstance();
-        imgLoader.displayImage(imgUri, wpImageView);
-
+        final ImageLoader imgLoader = ImageLoader.getInstance();
+        imgLoader.displayImage(imgUri, wpImageView, null, new SimpleImageLoadingListener() {
+            /**
+             * 画像の読み込みが失敗したときのリスナー
+             * @param imageUri
+             * @param view
+             * @param failReason
+             */
+            @Override
+            public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+                // img_uri（リモート）の読み込みが失敗したときはdevice_img_uri（ローカル）の方を読み込む
+                imgLoader.displayImage(deviceImgUri, (ImageView)view );
+            }
+        });
 
         // ----------------------------------
         // 取得元のアイコン（Twitterから、ディレクトリから）
@@ -80,8 +95,10 @@ public class HistoryListAdapter extends CursorAdapter {
         String sourceKind = cursor.getString(cursor.getColumnIndexOrThrow("source_kind"));
 
 
-        int rId = HistoryModel.ICON_R_IDS.get(sourceKind);
-        sourceKindImageView.setImageResource(rId);
+        Integer rId = HistoryModel.ICON_R_IDS.get(sourceKind);
+        if (rId != null) {
+            sourceKindImageView.setImageResource(rId);
+        }
 
         // ----------------------------------
         // 更新時間

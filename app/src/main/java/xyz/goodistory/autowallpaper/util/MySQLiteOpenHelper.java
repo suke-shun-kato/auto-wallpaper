@@ -15,7 +15,7 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     // If you change the database schema, you must increment the database version.
     @SuppressWarnings("WeakerAccess")
-    private static final int DATABASE_VERSION = 27;
+    private static final int DATABASE_VERSION = 28;
     private static final Integer DEBUG_SET_VERSION = null;
 
     @SuppressWarnings("WeakerAccess")
@@ -80,7 +80,10 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
                 "`source_kind` TEXT NOT NULL, " +
                 "`img_uri` TEXT NOT NULL, " +
                 "`intent_action_uri` TEXT, " +
-                "`created_at` TEXT NOT NULL )");
+                "`created_at` TEXT NOT NULL, " +
+                "`device_img_uri` TEXT NOT NULL " +
+
+                ")");
         // インデックス作成
         db.execSQL("CREATE INDEX created_at ON histories(created_at)");
     }
@@ -119,6 +122,12 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         //// 14～26 → 27
         if (oldVersion <= 26 && newVersion >= 27) {
             db.execSQL("UPDATE histories SET intent_action_uri = img_uri WHERE source_kind = 'ImgGetterDir' AND intent_action_uri IS NULL");
+        }
+
+        //// 14～27 → 28
+        if (oldVersion <= 27 && newVersion >= 28) {
+            // device_img_uri カラムを作成
+            db.execSQL("ALTER TABLE histories ADD COLUMN device_img_uri TEXT;");
         }
     }
 

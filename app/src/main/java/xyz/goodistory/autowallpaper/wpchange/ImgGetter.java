@@ -7,72 +7,118 @@ import android.net.Uri;
 import android.support.annotation.Nullable;
 
 import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 画像取得インターフェイス
  * Created by k-shunsuke on 2017/12/14.
  */
 @SuppressWarnings("WeakerAccess")
-public abstract class ImgGetter {
+public class ImgGetter {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
     /** 画像の自体のURI、Twitterだと「https://.....png」、ディレクトリだと「content://.....」 */
-    @SuppressWarnings("CanBeFinal")
-    String imgUri;
-    /** 画像が掲載されているページのURL、履歴の画像をクリックしたら飛ぶ場所、ディレクトリは「null」 */
-    @SuppressWarnings("CanBeFinal")
-    String actionUri;
+    protected final String mImgUri;
+
+    /** 画像が掲載されているページのURL、履歴の画像をクリックしたら飛ぶ場所 */
+    @Nullable
+    protected final String mActionUri;
+
+    /** 画像の取得元の種類、HistoryModel.SOURCE_XXXの値 */
+    protected final String mSourceKind;
+
+    @Nullable
+    protected String mDeviceImgUri = null;
 
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
-    protected ImgGetter(String imgUri, String actionUri) {
-        this.imgUri = imgUri;
-        this.actionUri = actionUri;
+    protected ImgGetter(String imgUri, @Nullable String actionUri, String sourceKind) {
+        this.mImgUri = imgUri;
+        this.mActionUri = actionUri;
+        this.mSourceKind = sourceKind;
     }
-    // --------------------------------------------------------------------
-    // 抽象メソッド
-    // --------------------------------------------------------------------
-//    public abstract List<ImgGetter> getImgGetterList();
+
+    protected ImgGetter(String imgUri, @Nullable String actionUri, String sourceKind, @Nullable String deviceImgUri) {
+        this.mImgUri = imgUri;
+        this.mActionUri = actionUri;
+        this.mSourceKind = sourceKind;
+        this.mDeviceImgUri = deviceImgUri;
+    }
 
     // --------------------------------------------------------------------
     // メソッド（アクセサ）
     // --------------------------------------------------------------------
+    public String getSourceKind() {
+        return mSourceKind;
+    }
     public String getImgUri() {
-        return this.imgUri;
+        return mImgUri;
     }
     public String getActionUri() {
-        return this.actionUri;
+        return mActionUri;
+    }
+    public String getDeviceImgUri() {
+        return mDeviceImgUri;
+    }
+    public Map<String, String> getAll() {
+        Map<String, String> fMap = new HashMap<>();
+        fMap.put("source_kind", getSourceKind());
+        fMap.put("img_uri", getImgUri());
+        fMap.put("intent_action_uri", getActionUri());
+        fMap.put("device_img_uri", getDeviceImgUri());
+        return fMap;
+    }
+
+    /**
+     * 名前
+     * @return 名前
+     */
+    public String generateDeviceImgName() {
+        long nowMillis = System.currentTimeMillis();
+        String filename = Uri.parse(this.getImgUri()).getLastPathSegment();
+
+        return nowMillis + filename + ".png";
     }
     // --------------------------------------------------------------------
     // メソッド（通常）
     // --------------------------------------------------------------------
-    public Bitmap getImgBitmap(Context context) {
-        return getImgBitmapStatic(this.imgUri, context);
-    }
 
-    // --------------------------------------------------------------------
-    //
-    // --------------------------------------------------------------------
-    /************************************
-     * Bitmapオブジェクトを取得する
-     * サブクラスに実装しなかったのは別々のサブクラスでもUriのスキームが同じ場合があるから
+    /**
+     * imgUriから画像を取得、できない場合はdeviceImgUriから画像を取得
+     * @param context
+     * @return 取得したBitmap,取得できなかったらnull
      */
     @Nullable
-    public static Bitmap getImgBitmapStatic(String imgUri, Context context) {
+    public Bitmap getImgBitmapWhenErrorFromDevice(Context context) {
+        Bitmap bitmap = getImgBitmapFromSource(context, mImgUri);
+        if (bitmap != null) {
+            return bitmap;
+        }
+        return getImgBitmapFromSource(context, mDeviceImgUri);
+    }
+
+
+    /**
+     * this.mImgUri から Bitmapオブジェクトを取得する
+     * @param context コンテクスト
+     * @return 取得したBitmap、失敗時にはnullを返す、エラーは投げない
+     */
+    @Nullable
+    public Bitmap getImgBitmapFromSource(Context context, String uriStr) {
         // ----------
         // WEB上の画像のとき
         // ----------
-        if (imgUri.startsWith("https:") || imgUri.startsWith("http:")) {
+        if (uriStr.startsWith("https:") || uriStr.startsWith("http:")) {
 
             try {
-                URL url = new URL(imgUri);
+                URL url = new URL(uriStr);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
 
@@ -85,17 +131,18 @@ public abstract class ImgGetter {
         // ----------
         //
         // ----------    
-        } else if(imgUri.startsWith("file:") ) {    //file:スキームは実際には使われていない、現在はcontent:が使われている
-            return BitmapFactory.decodeFile(imgUri.replace("file://", ""));
-        } else if(imgUri.startsWith("content:") ) {
+        } else if(uriStr.startsWith("file:") ) {    //file:スキームは実際には使われていない、現在はcontent:が使われている
+            return BitmapFactory.decodeFile(uriStr.replace("file://", ""));
+
+        } else if(uriStr.startsWith("content:") ) {
             try {
-                InputStream is = context.getContentResolver().openInputStream(Uri.parse(imgUri));
+                InputStream is = context.getContentResolver().openInputStream(Uri.parse(uriStr));
                 if (is == null) {
                     return null;
                 } else {
                     return BitmapFactory.decodeStream(new BufferedInputStream(is));
                 }
-            } catch (FileNotFoundException e){
+            } catch (Exception e){
                 e.printStackTrace();
                 return null;
             }

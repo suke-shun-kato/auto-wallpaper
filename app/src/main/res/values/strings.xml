@@ -1,6 +1,7 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">G.I.S Auto Wallpaper Changer</string>
     <string name="util_ok">OK</string>
+    <string name="util_cancel">Cancel</string>
     <string name="main_power">ON/OFF</string>
     <string name="main_next_wallpaper_set_screenOff">Next screen off</string>
     <string name="main_next_wallpaper_set_no">No next wallpaper change</string>
@@ -9,6 +10,10 @@
     <string name="main_to_history">To History</string>
     <string name="main_set_wallpaper">Sets wallpaper now</string>
     <string name="main_toast_no_image">No image</string>
+    <string name="share_dialog_title">Setting of wallpaper</string>
+    <string name="share_dialog_message">Set this image to wallpaper?</string>
+    <string name="share_error_message">Couldn\'t set to wallpaper.</string>
+    <string name="share_image">The image which will be set to wallpaper.</string>
     <string name="mainService_notification_ch_name">Running Auto Wallpaper Changer</string>
     <string name="mainService_notification_title">Running</string>
     <string name="mainService_notification_text">Running</string>
@@ -73,11 +78,12 @@
     <string name="histories_toolbar">History</string>
     <string name="histories_image">A wallpaper image</string>
     <string name="histories_icon">Please choose</string>
-    <string name="histories_contextMenu_title">icon</string>
+    <string name="histories_contextMenu_title">select</string>
     <string name="histories_contextMenu_item_jump">Jump to the source of this wallpaper</string>
     <string name="histories_contextMenu_item_wpSet">Set this wallpaper</string>
     <string name="histories_contextMenu_item_delete">Delete from the list.</string>
     <string name="histories_contextMenu_item_delete_errorMessage">Failed to delete.</string>
+    <string name="histories_cant_jump">Can\'t jump to the a source;</string>
     <string name="histories_notification_ch_name">Wallpaper Changed</string>
     <string name="histories_notification_title">The wallpaper has changed.</string>
     <string name="histories_notification_body">After you tap it, you jump the histories page.</string>
