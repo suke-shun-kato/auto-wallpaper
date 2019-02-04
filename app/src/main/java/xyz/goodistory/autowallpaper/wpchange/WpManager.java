@@ -147,7 +147,7 @@ public class WpManager {
         // ----------------------------------
         // 画像取得
         // ----------------------------------
-        Bitmap wallpaperBitmap = imgGetter.getImgBitmap(mContext); //データ本体取得
+        Bitmap wallpaperBitmap = imgGetter.getImgBitmapWhenErrorFromDevice(mContext); //データ本体取得
         if (wallpaperBitmap == null) {
             throw new RuntimeException("画像を取得できませんでした。");
         }

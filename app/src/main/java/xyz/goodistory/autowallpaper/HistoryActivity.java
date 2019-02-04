@@ -414,9 +414,10 @@ public class HistoryActivity
                         cursor.getColumnIndexOrThrow("img_uri"));
                 String intentActionUri = cursor.getString(
                         cursor.getColumnIndexOrThrow("intent_action_uri"));
+                String deviceImgUri = cursor.getString(
+                        cursor.getColumnIndexOrThrow("device_img_uri"));
 
-
-                WpManagerService.changeWpSpecified(this, imgUri, sourceKind, intentActionUri);
+                WpManagerService.changeWpSpecified(this, imgUri, sourceKind, intentActionUri, deviceImgUri);
                 break;
 
             case R.id.histories_contextMenu_item_delete:

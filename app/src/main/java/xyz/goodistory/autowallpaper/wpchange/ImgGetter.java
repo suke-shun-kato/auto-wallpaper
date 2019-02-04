@@ -5,17 +5,14 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.Nullable;
-import android.util.ArrayMap;
 
 import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * 画像取得インターフェイス
@@ -28,8 +25,6 @@ public class ImgGetter {
     // --------------------------------------------------------------------
     /** 画像の自体のURI、Twitterだと「https://.....png」、ディレクトリだと「content://.....」 */
     protected final String mImgUri;
-    @Nullable
-    protected String mDeviceImgUri = null;
 
     /** 画像が掲載されているページのURL、履歴の画像をクリックしたら飛ぶ場所 */
     @Nullable
@@ -37,6 +32,9 @@ public class ImgGetter {
 
     /** 画像の取得元の種類、HistoryModel.SOURCE_XXXの値 */
     protected final String mSourceKind;
+
+    @Nullable
+    protected String mDeviceImgUri = null;
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -93,19 +91,34 @@ public class ImgGetter {
     // --------------------------------------------------------------------
 
     /**
-     * this.mImgUri から Bitmapオブジェクトを取得する
-     * @param context コンテクスト
-     * @return 取得したBitmap
+     * imgUriから画像を取得、できない場合はdeviceImgUriから画像を取得
+     * @param context
+     * @return 取得したBitmap,取得できなかったらnull
      */
     @Nullable
-    public Bitmap getImgBitmap(Context context) {
+    public Bitmap getImgBitmapWhenErrorFromDevice(Context context) {
+        Bitmap bitmap = getImgBitmapFromSource(context, mImgUri);
+        if (bitmap != null) {
+            return bitmap;
+        }
+        return getImgBitmapFromSource(context, mDeviceImgUri);
+    }
+
+
+    /**
+     * this.mImgUri から Bitmapオブジェクトを取得する
+     * @param context コンテクスト
+     * @return 取得したBitmap、失敗時にはnullを返す、エラーは投げない
+     */
+    @Nullable
+    public Bitmap getImgBitmapFromSource(Context context, String uriStr) {
         // ----------
         // WEB上の画像のとき
         // ----------
-        if (mImgUri.startsWith("https:") || mImgUri.startsWith("http:")) {
+        if (uriStr.startsWith("https:") || uriStr.startsWith("http:")) {
 
             try {
-                URL url = new URL(mImgUri);
+                URL url = new URL(uriStr);
                 HttpURLConnection con = (HttpURLConnection) url.openConnection();
                 con.setRequestMethod("GET");
 
@@ -118,17 +131,18 @@ public class ImgGetter {
         // ----------
         //
         // ----------    
-        } else if(mImgUri.startsWith("file:") ) {    //file:スキームは実際には使われていない、現在はcontent:が使われている
-            return BitmapFactory.decodeFile(mImgUri.replace("file://", ""));
-        } else if(mImgUri.startsWith("content:") ) {
+        } else if(uriStr.startsWith("file:") ) {    //file:スキームは実際には使われていない、現在はcontent:が使われている
+            return BitmapFactory.decodeFile(uriStr.replace("file://", ""));
+
+        } else if(uriStr.startsWith("content:") ) {
             try {
-                InputStream is = context.getContentResolver().openInputStream(Uri.parse(mImgUri));
+                InputStream is = context.getContentResolver().openInputStream(Uri.parse(uriStr));
                 if (is == null) {
                     return null;
                 } else {
                     return BitmapFactory.decodeStream(new BufferedInputStream(is));
                 }
-            } catch (FileNotFoundException e){
+            } catch (Exception e){
                 e.printStackTrace();
                 return null;
             }

@@ -64,19 +64,23 @@ public class WpManagerService extends IntentService {
     }
 
     /**
-     * 指定の画像に壁紙を変更するIntentServiceを実行
+     * 指定の画像に壁紙を変更する    IntentServiceを実行
      * @param context コンテキスト
      * @param imgUri 画像の取得元のURI
      * @param sourceKind ディレクトリからかツイッターからか
      * @param intentActionUri クリックしたときの飛ばし先へのIntent
      */
-    public static void changeWpSpecified(Context context, String imgUri, String sourceKind, String intentActionUri) {
+    public static void changeWpSpecified(
+            Context context, String imgUri, String sourceKind, @Nullable String intentActionUri,
+            @Nullable String deviceImgUri)
+    {
         Intent i = new Intent(context, WpManagerService.class);
         i.setAction(ACTION_CHANGE_SPECIFIED);
 
         i.setData(Uri.parse(imgUri));
         i.putExtra("sourceKind", sourceKind);
         i.putExtra("intentActionUri", intentActionUri);
+        i.putExtra("deviceImgUri", deviceImgUri);
 
         context.startService(i);
     }
@@ -146,11 +150,12 @@ public class WpManagerService extends IntentService {
                 }
                 String sourceKind = intent.getStringExtra("sourceKind");
                 String intentActionUri = intent.getStringExtra("intentActionUri");
+                String deviceImgUri = intent.getStringExtra("deviceImgUri");
 
                 //// 壁紙変更
                 ImgGetter imgGetter;
                 if ( HistoryModel.SOURCE_KINDS.contains(sourceKind) ) {
-                    imgGetter = new ImgGetter(dataUri, intentActionUri, sourceKind);
+                    imgGetter = new ImgGetter(dataUri, intentActionUri, sourceKind, deviceImgUri);
                 } else {
                     IllegalStateException e = new IllegalStateException(
                             "intentのsourceKindの値が不正です。");
