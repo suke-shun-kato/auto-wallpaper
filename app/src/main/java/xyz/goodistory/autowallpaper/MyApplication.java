@@ -6,6 +6,7 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+@SuppressWarnings("WeakerAccess")
 public class MyApplication extends Application {
     /**
      * Called when the application is starting, before any activity, service,
