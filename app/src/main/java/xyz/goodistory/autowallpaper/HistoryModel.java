@@ -143,6 +143,7 @@ public class HistoryModel {
      * @param fileNames 削除したいファイルの名前、複数
      * @return 削除が成功したかどうか
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Map<String, Boolean> deleteImgs(String[] fileNames) {
         Map<String, Boolean> areDeleted = new HashMap<>();
 
@@ -213,6 +214,7 @@ public class HistoryModel {
      * 古いものを削除
      * @param maxNum 残しておく最大値
      */
+    @SuppressWarnings("UnusedReturnValue")
     @Nullable
     public Cursor deleteHistoriesOverflowMax(int maxNum) {
         // ----------------------------------
@@ -275,6 +277,7 @@ public class HistoryModel {
      * @param historyIds 削除対象の history_id 複数
      * @return 削除数
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int deleteByIds(int[] historyIds) {
         //// string 型に変換
         String[] historyIdsStr = new String[historyIds.length];

@@ -11,6 +11,7 @@ import java.util.Locale;
  * 拡張Fileクラス、ファイル＆ディレクトリ一覧取得部分を改造
  * Created by k-shunsuke on 2017/12/09.
  */
+@SuppressWarnings("unused")
 public class FileExtended extends File {
     // --------------------------------------------------------------------
     // コンストラクタ

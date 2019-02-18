@@ -1,20 +1,13 @@
 package xyz.goodistory.autowallpaper;
 
-import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
-import xyz.goodistory.autowallpaper.wpchange.WpManagerService;
-
 
 public class ShareActivity extends AppCompatActivity {
     /************************************
