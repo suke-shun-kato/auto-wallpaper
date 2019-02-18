@@ -92,7 +92,7 @@ public class ImgGetter {
 
     /**
      * imgUriから画像を取得、できない場合はdeviceImgUriから画像を取得
-     * @param context
+     * @param context context
      * @return 取得したBitmap,取得できなかったらnull
      */
     @Nullable

@@ -127,8 +127,8 @@ public class HistoryModel {
 
     /**
      * 指定ファイル名の画像（アプリ内部）を削除
-     * @param fileName
-     * @return
+     * @param fileName 削除対象のファイル名
+     * @return 削除成功か失敗か
      */
     public boolean deleteImg(String fileName) {
         try {
