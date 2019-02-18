@@ -127,8 +127,8 @@ public class HistoryModel {
 
     /**
      * 指定ファイル名の画像（アプリ内部）を削除
-     * @param fileName
-     * @return
+     * @param fileName 削除対象のファイル名
+     * @return 削除成功か失敗か
      */
     public boolean deleteImg(String fileName) {
         try {
@@ -143,6 +143,7 @@ public class HistoryModel {
      * @param fileNames 削除したいファイルの名前、複数
      * @return 削除が成功したかどうか
      */
+    @SuppressWarnings("UnusedReturnValue")
     public Map<String, Boolean> deleteImgs(String[] fileNames) {
         Map<String, Boolean> areDeleted = new HashMap<>();
 
@@ -213,6 +214,7 @@ public class HistoryModel {
      * 古いものを削除
      * @param maxNum 残しておく最大値
      */
+    @SuppressWarnings("UnusedReturnValue")
     @Nullable
     public Cursor deleteHistoriesOverflowMax(int maxNum) {
         // ----------------------------------
@@ -275,6 +277,7 @@ public class HistoryModel {
      * @param historyIds 削除対象の history_id 複数
      * @return 削除数
      */
+    @SuppressWarnings("UnusedReturnValue")
     public int deleteByIds(int[] historyIds) {
         //// string 型に変換
         String[] historyIdsStr = new String[historyIds.length];
@@ -308,14 +311,19 @@ public class HistoryModel {
     }
 
     /**
-     * 日時を yyyy-mm-dd hh:mm:ss 形式からUnixTimeに変換（UTC）
+     * To get local formatting use `getDateInstance()`, `getDateTimeInstance()`, or `getTimeInstance()`, or use `new SimpleDateFormat(String template, Locale locale)` with for example `Locale.US` for ASCII dates.
+     * 日時を yyyy-mm-dd hh:mm:ss 形式からUnixTimeに変換
+     * UTCのまま変換、 DBにはUTCが保存されているのでLocale は考慮しない
      * @param yyyymmddhhmmss 変換したい日時
      * @return UnixTime(millisecond)
      * @throws ParseException 変換失敗時例外を投げる
      */
     public static long sqliteToUnixTimeMillis(String yyyymmddhhmmss) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        SimpleDateFormat sdf = (SimpleDateFormat) SimpleDateFormat.getDateTimeInstance();
+        sdf.applyPattern("yyyy-MM-dd hh:mm:ss");
         sdf.setTimeZone( TimeZone.getTimeZone("UTC") );
+
         Date date = sdf.parse(yyyymmddhhmmss);
         return date.getTime();
     }

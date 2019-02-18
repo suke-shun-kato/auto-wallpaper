@@ -7,7 +7,6 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -16,7 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -27,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.goodistory.autowallpaper.service.MainService;
-import xyz.goodistory.autowallpaper.util.DisplaySizeCheck;
 import xyz.goodistory.autowallpaper.util.ProgressBcastReceiver;
 import xyz.goodistory.autowallpaper.wpchange.WpManagerService;
 
@@ -51,8 +48,9 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
     private ProgressBcastReceiver mProgressBcastReceiver;
 
     /** メインサービスのオブジェクト */
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private MainService mainService;
+
     /** メインサービスがこのアクティビティにバインドされているか */
     private boolean mIsBound;
 

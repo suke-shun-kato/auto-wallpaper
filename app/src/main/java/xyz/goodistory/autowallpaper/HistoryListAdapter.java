@@ -77,9 +77,9 @@ public class HistoryListAdapter extends CursorAdapter {
         imgLoader.displayImage(imgUri, wpImageView, null, new SimpleImageLoadingListener() {
             /**
              * 画像の読み込みが失敗したときのリスナー
-             * @param imageUri
-             * @param view
-             * @param failReason
+             * @param imageUri uir
+             * @param view 読み込み対象のview
+             * @param failReason 失敗した理由
              */
             @Override
             public void onLoadingFailed(String imageUri, View view, FailReason failReason) {

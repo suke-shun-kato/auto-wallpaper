@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="main_activity_horizontal_margin">16dp</dimen>
+    <!-- layout-sw360dp/activity_main.xml では使用だがlayout/activity_main,xmlでは未使用なため空 -->
+    <dimen name="main_activity_vertical_margin" />
+    <dimen name="main_activity_usual_btn_width" />
+    <dimen name="main_activity_usual_btn_margin" />
+
     <dimen name="main_activity_top_margin">0dp</dimen>
     <dimen name="main_activity_bottom_margin">16dp</dimen>
 
@@ -10,9 +15,16 @@
     <dimen name="main_activity_topBottom_margin2">24dp</dimen>
 
     <dimen name="main_activity_power_btn_size">280dp</dimen>
+    <!-- layout-sw360dp/activity_main.xml では使用だがlayout/activity_main,xmlでは未使用なため空 -->
+    <dimen name="main_activity_power_btn_text" />
+    <dimen name="main_activity_power_between_btn_text" />
+    <dimen name="main_activity_setWallpaper_btn_size" />
+    <dimen name="main_activity_setWallpaper_btn_padding" />
+    <dimen name="main_activity_setWallpaper_margin_rightBottom" />
+    <dimen name="main_activity_setWallpaper_btn_text" />
+    <dimen name="main_activity_setWallpaper_between_bnt_text" />
 
     <dimen name="history_advertisement_container_padding">4dp</dimen>
-    <dimen name="history_actionbar_elevation">0dp</dimen>
     <dimen name="history_activity_item_margin">8dp</dimen>
     <dimen name="history_activity_item_text_padding_h">4dp</dimen>
     <dimen name="history_activity_item_text_padding_v">0dp</dimen>
