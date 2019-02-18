@@ -106,8 +106,8 @@ Log.d("○BitmapProcessor", "画像サイズ（回転後）: "
         }
 
         toRectF = new RectF(
-                toWidth/2 - newFromWidth/2, toHeight/2 - newFromHeight/2,
-                toWidth/2 + newFromWidth/2, toHeight/2 + newFromHeight/2
+                (float)toWidth/2 - newFromWidth/2, (float)toHeight/2 - newFromHeight/2,
+                (float)toWidth/2 + newFromWidth/2, (float)toHeight/2 + newFromHeight/2
         );
 
         // ---------------------------------
