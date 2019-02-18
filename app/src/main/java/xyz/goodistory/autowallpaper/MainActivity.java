@@ -48,8 +48,9 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
     private ProgressBcastReceiver mProgressBcastReceiver;
 
     /** メインサービスのオブジェクト */
-    @SuppressWarnings("FieldCanBeLocal")
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private MainService mainService;
+
     /** メインサービスがこのアクティビティにバインドされているか */
     private boolean mIsBound;
 
