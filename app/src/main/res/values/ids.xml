@@ -13,8 +13,6 @@
     <string name="twitter_callback_url" tools:ignore="MissingTranslation">xyzgisautowallpaper://</string>
 
     <string name="id_adMob_appId" tools:ignore="MissingTranslation">ca-app-pub-7787731222816296~9468202549</string>
-    <!-- ↓本番用 -->
+    <!-- ↓本番用、デバッグ用は別ファイルにある -->
     <string name="id_adMob_addUnitId" tools:ignore="MissingTranslation">ca-app-pub-7787731222816296/6682257105</string>
-    <!-- ↓テスト用 -->
-    <!--<string name="id_adMob_addUnitId" tools:ignore="MissingTranslation">ca-app-pub-3940256099942544/6300978111</string>-->
 </resources>
