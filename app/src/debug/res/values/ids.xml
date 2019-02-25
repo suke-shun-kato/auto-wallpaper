@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- ↓テスト用 -->
+    <string name="id_adMob_addUnitId" tools:ignore="MissingTranslation">ca-app-pub-3940256099942544/6300978111</string>
+</resources>
