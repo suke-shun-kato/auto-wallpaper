@@ -23,6 +23,8 @@ import twitter4j.auth.RequestToken;
 /**
  * Twitter認証のためのPreference
  * Created by k-shunsuke on 2017/12/23.
+ * TODO .preference パッケージに移動
+ * TODO Twitter4Jを廃止
  */
 
 @SuppressWarnings("ALL")
