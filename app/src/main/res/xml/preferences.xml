@@ -2,7 +2,6 @@
 <PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto">
-
     <PreferenceCategory
         android:key="from"
         android:title="@string/setting_from">
@@ -27,7 +26,14 @@
             custom:textOauthSuccess="@string/setting_from_twitter_oauth_text_oauthSuccess"
             custom:textOauthFailed="@string/setting_from_twitter_oauth_text_oauthFailed"
             custom:callbackUrl="@string/twitter_callback_url" />
-
+        <xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference
+            android:key="from_instagram_oauth"
+            android:title="Instagram 認証"
+            custom:callbackUrl="Instagram 認証 callback"
+            custom:consumerKey="@string/instagram_consumer_key"
+            custom:consumerSecret="@string/instagram_consumer_secret"
+            />
+        <!--TODO callbackUri と titleをちゃんとする-->
 
     </PreferenceCategory>
     <PreferenceCategory
