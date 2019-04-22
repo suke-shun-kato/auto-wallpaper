@@ -13,8 +13,8 @@
     </declare-styleable>
     <declare-styleable name="InstagramOAuthPreference">
         <attr name="callbackUrl" />
-        <attr name="consumerKey" format="string"/>
-        <attr name="consumerSecret" format="string"/>
+        <attr name="clientID" format="string"/>
+        <attr name="clientSecret" format="string"/>
     </declare-styleable>
     <declare-styleable name="ResetBtnPreference">
         <attr name="textDialogMsg" format="string" />

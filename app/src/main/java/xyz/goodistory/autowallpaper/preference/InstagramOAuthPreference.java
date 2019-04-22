@@ -38,9 +38,9 @@ public class InstagramOAuthPreference extends Preference {
             super.onCreate(savedInstanceState);
             this.setContentView(R.layout.activity_oauth_authorization);
 
-
+            //// 前処理
             Intent intent = getIntent();
-            String authorizationUrl = intent.getStringExtra(InstagramOAuthPreference.NAME_URL);
+            String authorizationUrl = intent.getStringExtra(InstagramOAuthPreference.INTENT_NAME_CALLBACK);
 
             //// webViewで認証画面を表示する
             WebView webView = findViewById(R.id.oauth_authorization_web);
@@ -101,14 +101,15 @@ public class InstagramOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     /** 認証ボタンを押した後のコールバックURL、アクセストークン取得 */
     private final String mCallbackUrl;
+    private String mAuthorizationUrl;
     private final String mClientID;
-    private final String mClientSecret;
+    private final String mClientSecret; // TODO ちゃんと設定する
 
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
     // NAME にパッケージ名を入れるべきと書いていた
-    public static final String NAME_URL = "xyz.goodistory.autowallpaper.uri";
+    private static final String INTENT_NAME_CALLBACK = "xyz.goodistory.autowallpaper.uri";
     private static final String KEY_ACCESS_TOKEN = "access_token";
 
     // --------------------------------------------------------------------
@@ -128,9 +129,19 @@ public class InstagramOAuthPreference extends Preference {
         TypedArray typedAry = context.obtainStyledAttributes(attrs, R.styleable.InstagramOAuthPreference);
 
         try {
+            //// XMLから読み込む
              mCallbackUrl= typedAry.getString(R.styleable.InstagramOAuthPreference_callbackUrl);
              mClientID = typedAry.getString(R.styleable.InstagramOAuthPreference_clientID);
              mClientSecret = typedAry.getString(R.styleable.InstagramOAuthPreference_clientSecret);
+
+
+            //// 認証ページのURLを取得
+            final OAuth20Service service = new ServiceBuilder(mClientID)
+                    .callback(mCallbackUrl)
+                    .responseType("code")
+                    .build(InstagramApi.instance());
+
+            mAuthorizationUrl = service.getAuthorizationUrl();
         } finally {
             typedAry.recycle();
         }
@@ -145,17 +156,11 @@ public class InstagramOAuthPreference extends Preference {
      */
     @Override
     protected void onClick() {
-        //// 認証ページのURLを取得
-        final OAuth20Service service = new ServiceBuilder(mClientID)
-                .callback("http://autowallpaper.goodistory.xyz/instagram/authorization") // TODO ちゃんとする、XMLから
-                .responseType("code")
-                .build(InstagramApi.instance());
-
-        final String authorizationUrl = service.getAuthorizationUrl();
-
         //// 認証ページをブラウザで開く
         Intent intent = new Intent(getContext(), AuthorizationActivity.class);
-        intent.putExtra(NAME_URL, authorizationUrl);
+        // 認証ページをput
+        intent.putExtra(INTENT_NAME_CALLBACK, mAuthorizationUrl);
+        // WEBビューのアクティビティを表示
         getContext().startActivity(intent);
     }
 }

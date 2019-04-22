@@ -29,9 +29,9 @@
         <xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference
             android:key="from_instagram_oauth"
             android:title="Instagram 認証"
-            custom:callbackUrl="Instagram 認証 callback"
-            custom:consumerKey="@string/instagram_consumer_key"
-            custom:consumerSecret="@string/instagram_consumer_secret"
+            custom:callbackUrl="@string/instagram_callback_url"
+            custom:clientID="@string/instagram_client_id"
+            custom:clientSecret="@string/instagram_client_secret"
             />
         <!--TODO callbackUri と titleをちゃんとする-->
 
