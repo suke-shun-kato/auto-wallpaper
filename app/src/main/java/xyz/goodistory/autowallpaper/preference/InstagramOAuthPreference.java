@@ -1,14 +1,20 @@
 package xyz.goodistory.autowallpaper.preference;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.PatternMatcher;
 import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -28,7 +34,7 @@ public class InstagramOAuthPreference extends Preference {
     // --------------------------------------------------------------------
 
     /**
-     * TODO なぜstaticだとエラーでないか調べる
+     * アクティビティはstaticでないと作れなかった
      */
     public static class AuthorizationActivity extends AppCompatActivity {
         @SuppressLint("SetJavaScriptEnabled")
@@ -39,8 +45,11 @@ public class InstagramOAuthPreference extends Preference {
             this.setContentView(R.layout.activity_oauth_authorization);
 
             //// 前処理
-            Intent intent = getIntent();
-            String authorizationUrl = intent.getStringExtra(InstagramOAuthPreference.INTENT_NAME_CALLBACK);
+            final Intent intent = getIntent();
+            final String authorizationUrl = intent.getStringExtra(
+                    InstagramOAuthPreference.INTENT_NAME_AUTHORIZATION);
+            final String callbackUrl = intent.getStringExtra(
+                    InstagramOAuthPreference.INTENT_NAME_CALLBACK);
 
             //// webViewで認証画面を表示する
             WebView webView = findViewById(R.id.oauth_authorization_web);
@@ -49,44 +58,83 @@ public class InstagramOAuthPreference extends Preference {
 
             // リダイレクトを取得
             webView.setWebViewClient(new WebViewClient() {
-//            private boolean aaaa(Uri uri) {
-//                if (!"ssss".equals(uri.getHost())) {
-//                    return false;
-//                }
-//
-//                return true;
-//            }
+                private final String mCallbackUrl = callbackUrl;
 
                 /**
-                 * API 24 (Android 7.0) ～
-                 * @param view WebView
-                 * @param request WebResourceRequest
-                 * @return true を返すとページ読み込みをしなくなる
+                 * 指定のUri がcallbackUrlかどうか
+                 * @param targetUri チェックするUri
+                 * @return true: callbackUrlと等しい
                  */
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                    boolean isParent = super.shouldOverrideUrlLoading(view, request);
+                @SuppressWarnings("RedundantIfStatement")
+                private boolean isCallbackUrl(Uri targetUri) {
+                    Uri expectedUri = Uri.parse(mCallbackUrl);
 
+                    String eScheme = expectedUri.getScheme();
+                    String tScheme = targetUri.getScheme();
+                    String eHost = expectedUri.getHost();
+                    String tHost = targetUri.getHost();
+                    String ePath = expectedUri.getPath();
+                    String tPath = targetUri.getPath();
 
-//                Uri uri = request.getUrl();
-                    return false;
+                    if (eScheme == null || !eScheme.equals(tScheme)) {
+                        return false;
+                    }
+                    if (eHost == null || !eHost.equals(tHost)) {
+                        return false;
+                    }
+                    if (ePath == null || !ePath.equals(tPath)) {
+                        return false;
+                    }
 
-//                return isParent;
-
+                    return true;
                 }
 
                 /**
-                 * API 23まで
-                 * @param view
-                 * @param url
-                 * @return
+                 * API 24 (Android 7.0, Nougat) ～
+                 *
+                 * @param view    The WebView that is initiating the callback.
+                 * @param request Object containing the details of the request.
+                 * @return True if the host application wants to leave the current WebView
+                 * and handle the url itself, otherwise return false.
+                 */
+                @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+                @Override
+                public boolean shouldOverrideUrlLoading(
+                        WebView view, WebResourceRequest request) {
+Log.d("aaaa", "shouldOverrideUrlLoading: API24");// TODO 消す
+                    Uri uri = request.getUrl();
+                    boolean isCallbackUrl = isCallbackUrl(uri);
+
+
+                    if (isCallbackUrl) {
+                        Intent sendIntent = new Intent(Intent.ACTION_VIEW, uri);
+                        sendBroadcast(sendIntent);
+                        finish();
+                    }
+
+                    return isCallbackUrl;
+                }
+
+                /**
+                 * @param view The WebView that is initiating the callback.
+                 * @param url  The url to be loaded.
+                 * @return True if the host application wants to leave the current WebView
+                 * and handle the url itself, otherwise return false.
+                 * @deprecated Use {@link #shouldOverrideUrlLoading(WebView, WebResourceRequest)
+                 * shouldOverrideUrlLoading(WebView, WebResourceRequest)} instead.
                  */
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
+Log.d("aaaa", "shouldOverrideUrlLoading: Normal"); // TODO 消す
 
-                    Uri uri = Uri.parse(url);
+                    boolean isCallbackUrl = isCallbackUrl(Uri.parse(url));
 
-                    return super.shouldOverrideUrlLoading(view, url);
+                    if (isCallbackUrl) {
+                        Intent sendIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                        sendBroadcast(sendIntent);
+                        finish();
+                    }
+                    return isCallbackUrl;
                 }
             });
 
@@ -94,23 +142,22 @@ public class InstagramOAuthPreference extends Preference {
             webView.loadUrl(authorizationUrl);
         }
     }
-
-
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
     /** 認証ボタンを押した後のコールバックURL、アクセストークン取得 */
     private final String mCallbackUrl;
     private String mAuthorizationUrl;
+    private CallbackBroadcastReceiver mCallbackBroadcastReceiver;
     private final String mClientID;
-    private final String mClientSecret; // TODO ちゃんと設定する
+    private final String mClientSecret;
 
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
     // NAME にパッケージ名を入れるべきと書いていた
-    private static final String INTENT_NAME_CALLBACK = "xyz.goodistory.autowallpaper.uri";
-    private static final String KEY_ACCESS_TOKEN = "access_token";
+    private static final String INTENT_NAME_AUTHORIZATION = "xyz.goodistory.autowallpaper.authorization";
+    private static final String INTENT_NAME_CALLBACK = "xyz.goodistory.autowallpaper.callback";
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -135,7 +182,7 @@ public class InstagramOAuthPreference extends Preference {
              mClientSecret = typedAry.getString(R.styleable.InstagramOAuthPreference_clientSecret);
 
 
-            //// 認証ページのURLを取得
+            //// 認証ページのURLを取得、instagramでは認可コード取得時にんはClientSecretは使わない
             final OAuth20Service service = new ServiceBuilder(mClientID)
                     .callback(mCallbackUrl)
                     .responseType("code")
@@ -147,20 +194,74 @@ public class InstagramOAuthPreference extends Preference {
         }
     }
 
-
-
+    // --------------------------------------------------------------------
+    // メソッド
+    // --------------------------------------------------------------------
     /************************************
+     * TODO Preference専用のあるかも
+     * ブロードキャストレシーバーのセット
      * クリックしたら認証ページをWEBプラウザで開く
      * （アプリ内のWebViewで開くことも考えたけど、
      * WEBプラウザなどではクッキーが使えるので敢えてWEBプラウザにした）
      */
     @Override
     protected void onClick() {
-        //// 認証ページをブラウザで開く
+        // ----------------------------------
+        // BroadcastReceiver をセット
+        // ----------------------------------
+        //// broadcastReceiver
+        mCallbackBroadcastReceiver = new CallbackBroadcastReceiver();
+
+        //// intentFilterの設定
+        IntentFilter intentFilter = new IntentFilter();
+
+        // action
+        intentFilter.addAction(Intent.ACTION_VIEW);
+
+        // category
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+
+        // data(uri)
+        Uri callbackUri = Uri.parse(mCallbackUrl);
+        intentFilter.addDataScheme( callbackUri.getScheme() );
+        intentFilter.addDataAuthority(callbackUri.getHost(), String.valueOf(callbackUri.getPort()));
+        intentFilter.addDataPath(callbackUri.getPath(), PatternMatcher.PATTERN_LITERAL);
+
+        //// 登録
+        getContext().registerReceiver(mCallbackBroadcastReceiver, intentFilter);
+
+
+        // ----------------------------------
+        // 認証ページをブラウザで開く
+        // ----------------------------------
         Intent intent = new Intent(getContext(), AuthorizationActivity.class);
         // 認証ページをput
-        intent.putExtra(INTENT_NAME_CALLBACK, mAuthorizationUrl);
+        intent.putExtra(INTENT_NAME_AUTHORIZATION, mAuthorizationUrl);
+        intent.putExtra(INTENT_NAME_CALLBACK, mCallbackUrl);
+
         // WEBビューのアクティビティを表示
         getContext().startActivity(intent);
     }
+
+    /**
+     * Instagramからのコールバックをブロードキャストしたものを受け取る
+     */
+    public class CallbackBroadcastReceiver extends BroadcastReceiver {
+        /**
+         *
+         * @param context The Context in which the receiver is running.
+         * @param intent  The Intent being received.
+         */
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // BroadcastReceiver解除
+            getContext().unregisterReceiver(mCallbackBroadcastReceiver);
+
+            // 認可コード
+            Uri uri = intent.getData();
+            String mCode = uri.getQueryParameter("code");
+            Log.d("aaaa", uri == null ? "null" : uri.toString() ); // TODO 消す
+        }
+    }
+
 }
