@@ -15,7 +15,6 @@ import android.os.PatternMatcher;
 import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -194,7 +193,6 @@ public class InstagramOAuthPreference extends Preference {
     // メソッド
     // --------------------------------------------------------------------
     /************************************
-     * TODO Preference専用のあるかも
      * ブロードキャストレシーバーのセット
      * クリックしたら認証ページをWEBプラウザで開く
      * （アプリ内のWebViewで開くことも考えたけど、
@@ -259,9 +257,10 @@ public class InstagramOAuthPreference extends Preference {
             //// 認可コード取得、ブロードキャストで受信したデータから取得
             Uri uri = intent.getData();
             if (uri == null ) {
-                // TODO エラーメッセージをリソース化
                 Toast.makeText(
-                        getContext(), "認可コードの取得に失敗しました", Toast.LENGTH_LONG
+                        getContext(),
+                        R.string.preference_error_msg_instagram_failed_get_code,
+                        Toast.LENGTH_LONG
                 ).show();
                 return;
             }
@@ -294,9 +293,10 @@ public class InstagramOAuthPreference extends Preference {
                     OAuth2AccessToken resOAuth2AccessToken = mOAuth20Service.getAccessToken(code);
                     accessToken = resOAuth2AccessToken.getAccessToken();
                 } catch (Exception e) {
-                    // TODO リソース化
                     Toast.makeText(
-                            getContext(), "アクセストークンの取得に失敗しました", Toast.LENGTH_LONG
+                            getContext(),
+                            R.string.preference_error_msg_instagram_failed_get_code,
+                            Toast.LENGTH_LONG
                     ).show();
                 }
 
@@ -314,7 +314,9 @@ public class InstagramOAuthPreference extends Preference {
             @Override
             protected void onPostExecute(Void aVoid) {
                 Toast.makeText(
-                        getContext(), "認証に成功しました", Toast.LENGTH_LONG
+                        getContext(),
+                        R.string.preference_error_msg_instagram_succeeded_auth,
+                        Toast.LENGTH_LONG
                 ).show();
             }
 
@@ -324,7 +326,9 @@ public class InstagramOAuthPreference extends Preference {
             @Override
             protected void onCancelled() {
                 Toast.makeText(
-                        getContext(), "アクセストークンの取得に失敗しました", Toast.LENGTH_LONG
+                        getContext(),
+                        R.string.preference_error_msg_instagram_failed_get_token,
+                        Toast.LENGTH_LONG
                 ).show();
             }
         }
