@@ -145,9 +145,9 @@ public class InstagramOAuthPreference extends Preference {
     /** 認証ボタンを押した後のコールバックURL、アクセストークン取得 */
     private final String mCallbackUrl;
     private CallbackBroadcastReceiver mCallbackBroadcastReceiver;
-    private final String mClientID;
-    private final String mClientSecret;
     private final OAuth20Service mOAuth20Service;
+    private final String mSummaryDone;
+    private final String mSummaryNotYet;
 
     // --------------------------------------------------------------------
     // 定数
@@ -155,6 +155,9 @@ public class InstagramOAuthPreference extends Preference {
     // NAME にパッケージ名を入れるべきと書いていた
     private static final String INTENT_NAME_AUTHORIZATION = "xyz.goodistory.autowallpaper.authorization";
     private static final String INTENT_NAME_CALLBACK = "xyz.goodistory.autowallpaper.callback";
+
+    private static final int SUMMARY_DONE = 1;
+    private static final int SUMMARY_NOT_YET = 2;
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -174,13 +177,18 @@ public class InstagramOAuthPreference extends Preference {
 
         try {
             //// XMLから読み込む
+            final String clientID
+                    = typedAry.getString( R.styleable.InstagramOAuthPreference_clientID );
+            final String clientSecret
+                    = typedAry.getString( R.styleable.InstagramOAuthPreference_clientSecret );
+
             mCallbackUrl= typedAry.getString(R.styleable.InstagramOAuthPreference_callbackUrl);
-            mClientID = typedAry.getString(R.styleable.InstagramOAuthPreference_clientID);
-            mClientSecret = typedAry.getString(R.styleable.InstagramOAuthPreference_clientSecret);
+            mSummaryDone = typedAry.getString(R.styleable.InstagramOAuthPreference_summaryDone);
+            mSummaryNotYet = typedAry.getString(R.styleable.InstagramOAuthPreference_summaryNotYet);
 
             // OAuth20Service を作成
-            mOAuth20Service = new ServiceBuilder(mClientID)
-                    .apiSecret(mClientSecret)
+            mOAuth20Service = new ServiceBuilder(clientID)
+                    .apiSecret(clientSecret)
                     .callback(mCallbackUrl)
                     .responseType("code")
                     .build(InstagramApi.instance());
@@ -192,6 +200,54 @@ public class InstagramOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
+
+    /**
+     * プリファレンスにトークンが保存
+     */
+    public void updateSummary() {
+        if ( isDoneAuthorization() ) {
+            setInstagramSummary(SUMMARY_DONE);
+        } else {
+            setInstagramSummary(SUMMARY_NOT_YET);
+        }
+    }
+
+    /**
+     * アクセストークン取得済か
+     * @return 取得済のときtrue
+     */
+    private boolean isDoneAuthorization() {
+        String accessToken = getPersistedString("");
+
+        return !accessToken.equals("");
+    }
+
+
+    /**
+     * サマリーをセットする
+     * @param kindSummary セットするサマリーの種類
+     */
+    private void setInstagramSummary(int kindSummary) {
+        String summaryText;
+        switch (kindSummary) {
+            case SUMMARY_DONE:
+                summaryText = mSummaryDone;
+                break;
+            case SUMMARY_NOT_YET:
+                summaryText = mSummaryNotYet;
+                break;
+            default:
+                throw new IllegalArgumentException(
+                        "第1引数には、SUMMARY_DONE か SUMMARY_NOT_YET をセットしてください");
+        }
+
+        setSummary(summaryText);
+    }
+
+    // --------------------------------------------------------------------
+    // メソッド、オーバーライド
+    // --------------------------------------------------------------------
+
     /************************************
      * ブロードキャストレシーバーのセット
      * クリックしたら認証ページをWEBプラウザで開く

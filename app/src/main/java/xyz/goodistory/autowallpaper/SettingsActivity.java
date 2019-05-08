@@ -56,7 +56,7 @@ public class SettingsActivity extends AppCompatActivity {
         // ----------------------------------
         // アクションバーの設定
         // ----------------------------------
-        ////　ツールバーをアクションバーとして表示
+        //// ツールバーをアクションバーとして表示
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
         this.setSupportActionBar(myToolbar);
 
