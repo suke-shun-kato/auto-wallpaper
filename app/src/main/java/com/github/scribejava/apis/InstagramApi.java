@@ -1,6 +1,7 @@
-package xyz.goodistory.autowallpaper.preference;
+package com.github.scribejava.apis;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
+import com.github.scribejava.core.builder.api.OAuth2SignatureType;
 
 public class InstagramApi extends DefaultApi20 {
     @SuppressWarnings("WeakerAccess")
@@ -23,5 +24,10 @@ public class InstagramApi extends DefaultApi20 {
     @Override
     protected String getAuthorizationBaseUrl() {
         return "https://api.instagram.com/oauth/authorize";
+    }
+
+    @Override
+    public OAuth2SignatureType getSignatureType() {
+        return OAuth2SignatureType.BEARER_URI_QUERY_PARAMETER;
     }
 }
