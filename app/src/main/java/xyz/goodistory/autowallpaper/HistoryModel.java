@@ -56,7 +56,7 @@ public class HistoryModel {
     static {
         ICON_R_IDS.put(SOURCE_DIR, R.drawable.ic_dir);
         ICON_R_IDS.put(SOURCE_TW, R.drawable.ic_twitter);
-        ICON_R_IDS.put(SOURCE_IS, R.drawable.ic_dir);   // TODO ちゃんとする
+        ICON_R_IDS.put(SOURCE_IS, R.drawable.ic_instagram);
         ICON_R_IDS.put(SOURCE_SHARE, R.drawable.ic_share);
     }
 
