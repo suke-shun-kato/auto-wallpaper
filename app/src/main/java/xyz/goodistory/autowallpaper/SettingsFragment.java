@@ -3,6 +3,7 @@ package xyz.goodistory.autowallpaper;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -97,7 +98,7 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_OTHER_ABOUT = "other_about";
-
+    // TODO key はリソースから取得するようにする
     private static final String PREF_KEY_FROM_INSTAGRAM_FAV = "from_instagram_fav";
     private static final String PREF_KEY_AUTHENTICATE_INSTAGRAM = "authenticate_instagram";
 
@@ -274,6 +275,11 @@ public class SettingsFragment extends PreferenceFragment
         });
 
         // ----------
+        // Instagramの最近の投稿をクリックからしたとき
+        // ----------
+        // TODO 実装する
+
+        // ----------
         // 「ディレクトリを設定」 のパーミッションダイアログ表示設定
         // ----------
         this.findPreference(KEY_FROM_DIR_PATH).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
@@ -422,8 +428,27 @@ public class SettingsFragment extends PreferenceFragment
 
     }
 
-}
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+    /**
+     * SharedPreferenceに保存したキー
+     * @param context コンテキスト
+     * @return アクセストークン
+     */
+    @Nullable
+    public static String getInstagramAccessToken(Context context) {
+        String prefKey = context.getString(R.string.preference_key_authenticate_instagram);
 
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(prefKey, null);
+    }
+
+    public static String getInstagramClientID(Context context) {
+        return context.getString(R.string.instagram_client_id);
+    }
+
+}
 
 
 

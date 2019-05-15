@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.webkit.WebResourceRequest;
@@ -26,6 +27,7 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 
 import xyz.goodistory.autowallpaper.R;
+import xyz.goodistory.autowallpaper.SettingsFragment;
 
 /**
  * Instagram のOAuth認証を行う Preference

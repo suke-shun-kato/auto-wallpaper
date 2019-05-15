@@ -133,7 +133,7 @@ public class WpManagerService extends IntentService {
             // ランダムで壁紙変更
             // ----------------------------------
                 // 別スレッドで実行されているからそのまま壁紙変更&履歴に残す
-                wpManager.executeWpSetRandomTransaction();
+                wpManager.executeWpRandomSetProcess();
             } else if ( ACTION_CHANGE_SPECIFIED.equals(action) ) {
             // ----------------------------------
             // 指定の壁紙に変更
@@ -162,7 +162,7 @@ public class WpManagerService extends IntentService {
                     Log.e(e.getClass().getSimpleName(), e.getMessage(), e);
                     throw e;
                 }
-                wpManager.executeWpSetTransaction(imgGetter);
+                wpManager.executeWpSetProcess(imgGetter);
             } else {
                 IllegalStateException e = new IllegalStateException("intentのactionの値が不正です。");
                 Log.e(e.getClass().getSimpleName(), e.getMessage(), e);

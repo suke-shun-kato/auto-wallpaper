@@ -28,7 +28,7 @@
             custom:callbackUrl="@string/twitter_callback_url" />
         <SwitchPreference
             android:defaultValue="false"
-            android:key="@string/preference_key_from_instagram_fav"
+            android:key="@string/preference_key_from_instagram_user_recent"
             android:title="@string/preference_name_from_instagram_fav" />
         <!-- TODO 未認証と認証完了のリソース名と文字列を変更したい -->
         <xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference
