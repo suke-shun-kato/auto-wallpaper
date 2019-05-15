@@ -99,7 +99,6 @@ public class SettingsFragment extends PreferenceFragment
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_OTHER_ABOUT = "other_about";
     // TODO key はリソースから取得するようにする
-    private static final String PREF_KEY_AUTHENTICATE_INSTAGRAM = "authenticate_instagram";
 
     private static final int RQ_CODE_FROM_DIR = 1;
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
