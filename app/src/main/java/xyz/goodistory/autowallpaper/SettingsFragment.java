@@ -99,7 +99,6 @@ public class SettingsFragment extends PreferenceFragment
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_OTHER_ABOUT = "other_about";
     // TODO key はリソースから取得するようにする
-    private static final String PREF_KEY_FROM_INSTAGRAM_FAV = "from_instagram_fav";
     private static final String PREF_KEY_AUTHENTICATE_INSTAGRAM = "authenticate_instagram";
 
     private static final int RQ_CODE_FROM_DIR = 1;
@@ -205,8 +204,9 @@ public class SettingsFragment extends PreferenceFragment
         }
 
         //// Instagram認証
+        String key_auth_insta = getString(R.string.preference_key_authenticate_instagram);
         InstagramOAuthPreference instagramOAuthPreference
-                = (InstagramOAuthPreference)findPreference(PREF_KEY_AUTHENTICATE_INSTAGRAM);
+                = (InstagramOAuthPreference)findPreference(key_auth_insta);
         // サマリーを更新
         instagramOAuthPreference.updateSummary();
 
@@ -413,38 +413,35 @@ public class SettingsFragment extends PreferenceFragment
      *
      * 設定変更したときのイベントハンドラ、OnSharedPreferenceChangeListenerのメソッド
      * @param sp SharedPreferences、保存された設定のオブジェクト
-     * @param key 設定の値を取り出すためのkey, このkeyの設定が変更された
+     * @param preferenceKey 設定の値を取り出すためのkey, このkeyの設定が変更された
      */
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sp, String preferenceKey) {
 
         // ----------------------------------
         // 設定値をSummaryに反映
         // ----------------------------------
-        switch (key) {
-            //// ディレクトリ選択
-            case KEY_FROM_DIR_PATH:
-                Preference fromDirPathPreference = this.findPreference(key);
-                fromDirPathPreference.setSummary(sp.getString(key, ""));
-                break;
+        //// 変数の準備
+        String key_auth_instagram = getString(R.string.preference_key_authenticate_instagram);
 
-            //// Twitter認証
-            case KEY_FROM_TWITTER_OAUTH:    //Twitter認証完了後にサマリーが認証完了になるようにする
-                Preference fromTwitterOauthPreference = this.findPreference(key);
-                fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
-                break;
+        //// 反映
+        if ( preferenceKey.equals(KEY_FROM_DIR_PATH) ) {  //// ディレクトリ選択
+            Preference fromDirPathPreference = this.findPreference(preferenceKey);
+            fromDirPathPreference.setSummary(sp.getString(preferenceKey, ""));
 
-            //// インスタグラム認証
-            case PREF_KEY_AUTHENTICATE_INSTAGRAM:
-                ((InstagramOAuthPreference)findPreference(key)).updateSummary();
-                break;
+        } else if ( preferenceKey.equals(KEY_FROM_TWITTER_OAUTH) ) {  //// Twitter認証
+            Preference fromTwitterOauthPreference = this.findPreference(preferenceKey);
+            fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
+
+        } else if ( preferenceKey.equals(key_auth_instagram) ) {              //// インスタグラム認証
+            ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
         }
 
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える
         // ----------------------------------
         if (this.isServiceRunning) {
-            this.mainService.onSPChanged(key);
+            this.mainService.onSPChanged(preferenceKey);
         }
 
     }

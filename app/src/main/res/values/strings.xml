@@ -45,13 +45,13 @@
         Please authorize on Instagram
     </string>
     <string name="preference_error_msg_instagram_failed_get_code"><!-- TODO 英語にする-->
-        認可コードの取得に失敗しました
+        Failed to get authorization code
     </string>
     <string name="preference_error_msg_instagram_failed_get_token">
-        アクセストークンの取得に失敗しました
+        Failed to get access token
     </string>
     <string name="preference_error_msg_instagram_succeeded_auth">
-        認証に成功しました
+        Success authorization
     </string>
     <string name="setting_when">WHEN</string>
     <string name="setting_when_turnOn_title">Screen turns on</string>
