@@ -34,7 +34,6 @@
     <string name="setting_from_twitter_oauth_text_oauthSuccess">Auth Success</string>
     <string name="setting_from_twitter_oauth_text_oauthFailed">Auth failed</string>
     <!-- TODO setting にするかpreference にするか決める、リファクタリングする -->
-
     <string name="preference_name_from_instagram_fav">
         Instagram Likes
     </string>
