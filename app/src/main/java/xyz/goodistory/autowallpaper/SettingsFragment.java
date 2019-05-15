@@ -42,7 +42,7 @@ public class SettingsFragment extends PreferenceFragment
     private boolean isBound = false;
     private boolean isServiceRunning = false;
 
-    private SharedPreferences sp;
+    private SharedPreferences mSp;
 
     /** ServiceConnectionを継承したクラスのインスタンス */
     private final ServiceConnection myConnection = new ServiceConnection() {
@@ -188,11 +188,11 @@ public class SettingsFragment extends PreferenceFragment
         // ----------------------------------
         // サマリーの表示の設定
         // ----------------------------------
-        this.sp = PreferenceManager.getDefaultSharedPreferences( this.getActivity() );
+        this.mSp = PreferenceManager.getDefaultSharedPreferences( this.getActivity() );
 
         //// 選択ディレクトリ
         Preference fromDirPathPref = this.findPreference(KEY_FROM_DIR_PATH);
-        String str = this.sp.getString(KEY_FROM_DIR_PATH, this.getString(R.string.setting_from_dir_which_default_summary) );
+        String str = this.mSp.getString(KEY_FROM_DIR_PATH, this.getString(R.string.setting_from_dir_which_default_summary) );
 
         fromDirPathPref.setSummary( str );
 
@@ -264,8 +264,8 @@ public class SettingsFragment extends PreferenceFragment
              */
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if ( sp.getString(KEY_FROM_TWITTER_OAUTH, null) == null ) {
-                    // Twitterの認証が未だのとき
+                if ( mSp.getString(KEY_FROM_TWITTER_OAUTH, null) == null ) {
+                    // Twitterの認証がまだのとき
                     Toast.makeText(getActivity(), R.string.setting_form_twitter_fav_error, Toast.LENGTH_SHORT).show();
                     return false;
                 } else {
@@ -277,7 +277,28 @@ public class SettingsFragment extends PreferenceFragment
         // ----------
         // Instagramの最近の投稿をクリックからしたとき
         // ----------
-        // TODO 実装する
+        String keyFromInstagram = getString(R.string.preference_key_from_instagram_user_recent);
+        findPreference(keyFromInstagram).setOnPreferenceChangeListener(
+                new Preference.OnPreferenceChangeListener() {
+            /************************************
+             * @param preference クリックされたPreference
+             * @param newValue Preferenceの新しい値
+             * @return true:値変更を反映、false:反映しない
+             */
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String keyAuthInstagram = getString(R.string.preference_key_authenticate_instagram);
+                if ( mSp.getString(keyAuthInstagram, null) == null ) {
+                    Toast.makeText(getActivity(),
+                            R.string.preference_error_msg_no_authorize,
+                            Toast.LENGTH_LONG)
+                            .show();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        });
 
         // ----------
         // 「ディレクトリを設定」 のパーミッションダイアログ表示設定
@@ -375,7 +396,7 @@ public class SettingsFragment extends PreferenceFragment
                     // ディレクトリから の設定をONにする
                     ((SwitchPreference)this.findPreference(KEY_FROM_DIR)).setChecked(true);
                     // SharedPreferenceが変更したときのイベントを発火
-                    this.onSharedPreferenceChanged(this.sp, KEY_FROM_DIR);
+                    this.onSharedPreferenceChanged(this.mSp, KEY_FROM_DIR);
                 }
                 break;
             case RQ_CODE_FROM_DIR_PATH:

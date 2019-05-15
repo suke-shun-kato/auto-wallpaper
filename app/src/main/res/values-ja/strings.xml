@@ -40,6 +40,9 @@
     <string name="preference_name_authenticate_instagram">
         Instagramの認証を行う
     </string>
+    <string name="preference_error_msg_no_authorize">
+        Instagramでの認証を行ってください
+    </string>
     <string name="preference_error_msg_instagram_failed_get_code">
         認可コードの取得に失敗しました
     </string>
