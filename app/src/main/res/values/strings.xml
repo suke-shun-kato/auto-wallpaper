@@ -43,7 +43,7 @@
     <string name="preference_error_msg_no_authorize">
         Please authorize on Instagram
     </string>
-    <string name="preference_error_msg_instagram_failed_get_code"><!-- TODO 英語にする-->
+    <string name="preference_error_msg_instagram_failed_get_code">
         Failed to get authorization code
     </string>
     <string name="preference_error_msg_instagram_failed_get_token">
