@@ -30,12 +30,12 @@
             android:defaultValue="false"
             android:key="@string/preference_key_from_instagram_user_recent"
             android:title="@string/preference_name_from_instagram_fav" />
-        <!-- TODO 未認証と認証完了のリソース名と文字列を変更したい -->
+
         <xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference
             android:key="@string/preference_key_authenticate_instagram"
             android:title="@string/preference_name_authenticate_instagram"
-            custom:summaryDone="@string/setting_from_twitter_oauth_summary_done"
-            custom:summaryNotYet="@string/setting_from_twitter_oauth_summary_notYet"
+            custom:summaryDone="@string/setting_summary_oauth_done"
+            custom:summaryNotYet="@string/setting_summary_oauth_notYet"
             custom:callbackUrl="@string/instagram_callback_url"
             custom:clientID="@string/instagram_client_id"
             custom:clientSecret="@string/instagram_client_secret"

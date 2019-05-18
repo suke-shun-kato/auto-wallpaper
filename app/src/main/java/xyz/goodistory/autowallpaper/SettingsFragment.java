@@ -197,9 +197,9 @@ public class SettingsFragment extends PreferenceFragment
         //// Twitter認証
         TwitterOAuthPreference twitterPref = (TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH);
         if ( twitterPref.hasAccessToken() ) {
-            twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_done);
+            twitterPref.setSummary(R.string.setting_summary_oauth_done);
         } else {
-            twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
+            twitterPref.setSummary(R.string.setting_summary_oauth_notYet);
         }
 
         //// Instagram認証
@@ -430,7 +430,7 @@ public class SettingsFragment extends PreferenceFragment
 
         } else if ( preferenceKey.equals(KEY_FROM_TWITTER_OAUTH) ) {  //// Twitter認証
             Preference fromTwitterOauthPreference = this.findPreference(preferenceKey);
-            fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
+            fromTwitterOauthPreference.setSummary(R.string.setting_summary_oauth_done);
 
         } else if ( preferenceKey.equals(key_auth_instagram) ) {              //// インスタグラム認証
             ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
