@@ -13,6 +13,7 @@ import xyz.goodistory.autowallpaper.SettingsFragment;
 import xyz.goodistory.autowallpaper.TwitterOAuthPreference;
 
 /**
+ * TODO SettingFragment に統合したい
  * API認証のためのトークンを取得するクラス
  * Created by k-shunsuke on 2017/12/27.
  */

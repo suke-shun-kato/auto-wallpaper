@@ -42,11 +42,13 @@ public class HistoryModel {
 
     public static final String SOURCE_TW = "ImgGetterTw";
     public static final String SOURCE_DIR = "ImgGetterDir";
+    public static final String SOURCE_IS = "ImgGetterInstagram";
     public static final String SOURCE_SHARE = "share";
     public static final Set<String> SOURCE_KINDS = new HashSet<>();
     static {
         SOURCE_KINDS.add(SOURCE_TW);
         SOURCE_KINDS.add(SOURCE_DIR);
+        SOURCE_KINDS.add(SOURCE_IS);
         SOURCE_KINDS.add(SOURCE_SHARE);
     }
 
@@ -54,6 +56,7 @@ public class HistoryModel {
     static {
         ICON_R_IDS.put(SOURCE_DIR, R.drawable.ic_dir);
         ICON_R_IDS.put(SOURCE_TW, R.drawable.ic_twitter);
+        ICON_R_IDS.put(SOURCE_IS, R.drawable.ic_instagram);
         ICON_R_IDS.put(SOURCE_SHARE, R.drawable.ic_share);
     }
 

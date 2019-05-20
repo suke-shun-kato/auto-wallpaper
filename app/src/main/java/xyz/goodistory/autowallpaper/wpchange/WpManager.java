@@ -143,7 +143,7 @@ public class WpManager {
      * 壁紙を取得→加工→壁紙セット→履歴に書き込み→通知作成
      * @param imgGetter 変更対象の画像のImgGetterクラス
      */
-    public void executeWpSetTransaction(ImgGetter imgGetter) throws Exception {
+    public void executeWpSetProcess(ImgGetter imgGetter) throws Exception {
         // ----------------------------------
         // 画像取得
         // ----------------------------------
@@ -222,7 +222,7 @@ public class WpManager {
      * 壁紙を取得→加工→セット する一連の流れを行う関数
      * 処理の都合上、別スレッドで壁紙をセットしないといけいないので直接使用は不可
      */
-    public void executeWpSetRandomTransaction() throws Exception {
+    public void executeWpRandomSetProcess() throws Exception {
         // ----------------------------------
         // 画像取得
         // 取得元の選択が複数あるときは等確率で抽選を行う
@@ -232,16 +232,30 @@ public class WpManager {
         // ----------
         //// 抽選先の取得リストをListに入れる
         List<ImgGetter> imgGetterList = new ArrayList<>();
+
+        // ディレクトリ
         if (mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
                 && ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
             imgGetterList.addAll( ImgGetterDir.getImgGetterList(mContext) );
         }
+
+        // twitter
         if (mSp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
                 && mSp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
             imgGetterList.addAll( ImgGetterTw.getImgGetterList(mContext) );
         }
 
+        // Instagram
+        String keyFromInstagramUserRecent
+                = mContext.getString(R.string.preference_key_from_instagram_user_recent);
+        String keyAuthenticateInstagram
+                =  mContext.getString(R.string.preference_key_authenticate_instagram);
+        if ( mSp.getBoolean(keyFromInstagramUserRecent, false)
+                && mSp.getString(keyAuthenticateInstagram, null) != null)  {
+            List<ImgGetter> imgGetters = (new WpUrisGetterInstagram(mContext)).getImgGetterList();
+            imgGetterList.addAll(imgGetters);
+        }
 
         // ----------
         // 抽選
@@ -256,6 +270,6 @@ public class WpManager {
         // ----------
         // 実行
         // ----------
-        executeWpSetTransaction(imgGetter);
+        executeWpSetProcess(imgGetter);
     }
 }

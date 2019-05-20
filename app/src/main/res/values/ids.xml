@@ -12,7 +12,25 @@
     <string name="twitter_consumer_secret" tools:ignore="MissingTranslation">dCQFHUUD6jS8zt1xEF4DBdTKiTFgfRBdFUjCxUdq1jMTBJpi1p</string>
     <string name="twitter_callback_url" tools:ignore="MissingTranslation">xyzgisautowallpaper://</string>
 
+    <string name="instagram_client_id" tools:ignore="MissingTranslation">ab75e33d627c433eb067274b73624f82</string>
+    <string name="instagram_client_secret" tools:ignore="MissingTranslation">5c842572552644778e1215d41ba69db3</string>
+    <string name="instagram_callback_url" tools:ignore="MissingTranslation">
+        http://autowallpaper.goodistory.xyz/instagram/authorization
+    </string>
+
+
+
     <string name="id_adMob_appId" tools:ignore="MissingTranslation">ca-app-pub-3825411425825554~7421942600</string>
     <!-- ↓本番用、デバッグ用は別ファイルにある -->
     <string name="id_adMob_addUnitId" tools:ignore="MissingTranslation">ca-app-pub-3825411425825554/7968737514</string>
+
+
+
+    <!-- ここからkey -->
+    <string name="preference_key_from_instagram_user_recent" tools:ignore="MissingTranslation">
+        from_user_recent
+    </string>
+    <string name="preference_key_authenticate_instagram" tools:ignore="MissingTranslation">
+        authenticate_instagram
+    </string>
 </resources>

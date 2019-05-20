@@ -52,6 +52,8 @@
             android:name=".AboutActivity"
             android:parentActivityName=".SettingsActivity"
             />
+        <activity android:name=".preference.InstagramOAuthPreference$AuthorizationActivity"
+            android:parentActivityName=".SettingsActivity" />
         <activity android:name=".ShareActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

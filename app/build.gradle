@@ -67,7 +67,7 @@ dependencies {
     // OAuth1.0&2.0ライブラリ
     // -------------------------------------
     // バージョン5.0.0はAPIレベル26（Android 8.0 Oreo）以上でしか対応していないので敢えて4.2.0使用
-    //noinspection GradleDependency
+    // noinspection GradleDependency
     implementation 'com.github.scribejava:scribejava-apis:4.2.0'
 
     // -------------------------------------

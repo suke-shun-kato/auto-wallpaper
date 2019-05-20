@@ -3,6 +3,7 @@ package xyz.goodistory.autowallpaper;
 import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
@@ -22,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
 
 /**
@@ -40,7 +42,7 @@ public class SettingsFragment extends PreferenceFragment
     private boolean isBound = false;
     private boolean isServiceRunning = false;
 
-    private SharedPreferences sp;
+    private SharedPreferences mSp;
 
     /** ServiceConnectionを継承したクラスのインスタンス */
     private final ServiceConnection myConnection = new ServiceConnection() {
@@ -96,6 +98,7 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_OTHER_ABOUT = "other_about";
+    // TODO key はリソースから取得するようにする
 
     private static final int RQ_CODE_FROM_DIR = 1;
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
@@ -183,21 +186,28 @@ public class SettingsFragment extends PreferenceFragment
         // ----------------------------------
         // サマリーの表示の設定
         // ----------------------------------
-        this.sp = PreferenceManager.getDefaultSharedPreferences( this.getActivity() );
+        this.mSp = PreferenceManager.getDefaultSharedPreferences( this.getActivity() );
 
         //// 選択ディレクトリ
         Preference fromDirPathPref = this.findPreference(KEY_FROM_DIR_PATH);
-        String str = this.sp.getString(KEY_FROM_DIR_PATH, this.getString(R.string.setting_from_dir_which_default_summary) );
+        String str = this.mSp.getString(KEY_FROM_DIR_PATH, this.getString(R.string.setting_from_dir_which_default_summary) );
 
         fromDirPathPref.setSummary( str );
 
         //// Twitter認証
         TwitterOAuthPreference twitterPref = (TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH);
         if ( twitterPref.hasAccessToken() ) {
-            twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_done);
+            twitterPref.setSummary(R.string.setting_summary_oauth_done);
         } else {
-            twitterPref.setSummary(R.string.setting_from_twitter_oauth_summary_notYet);
+            twitterPref.setSummary(R.string.setting_summary_oauth_notYet);
         }
+
+        //// Instagram認証
+        String key_auth_insta = getString(R.string.preference_key_authenticate_instagram);
+        InstagramOAuthPreference instagramOAuthPreference
+                = (InstagramOAuthPreference)findPreference(key_auth_insta);
+        // サマリーを更新
+        instagramOAuthPreference.updateSummary();
 
 
         // ----------------------------------
@@ -253,9 +263,35 @@ public class SettingsFragment extends PreferenceFragment
              */
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if ( sp.getString(KEY_FROM_TWITTER_OAUTH, null) == null ) {
-                    // Twitterの認証が未だのとき
+                if ( mSp.getString(KEY_FROM_TWITTER_OAUTH, null) == null ) {
+                    // Twitterの認証がまだのとき
                     Toast.makeText(getActivity(), R.string.setting_form_twitter_fav_error, Toast.LENGTH_SHORT).show();
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        });
+
+        // ----------
+        // Instagramの最近の投稿をクリックからしたとき
+        // ----------
+        String keyFromInstagram = getString(R.string.preference_key_from_instagram_user_recent);
+        findPreference(keyFromInstagram).setOnPreferenceChangeListener(
+                new Preference.OnPreferenceChangeListener() {
+            /************************************
+             * @param preference クリックされたPreference
+             * @param newValue Preferenceの新しい値
+             * @return true:値変更を反映、false:反映しない
+             */
+            @Override
+            public boolean onPreferenceChange(Preference preference, Object newValue) {
+                String keyAuthInstagram = getString(R.string.preference_key_authenticate_instagram);
+                if ( mSp.getString(keyAuthInstagram, null) == null ) {
+                    Toast.makeText(getActivity(),
+                            R.string.preference_error_msg_no_authorize,
+                            Toast.LENGTH_LONG)
+                            .show();
                     return false;
                 } else {
                     return true;
@@ -311,19 +347,6 @@ public class SettingsFragment extends PreferenceFragment
         // ----------------------------------
         return super.onCreateView(inflater, container, savedInstanceState);
     }
-//    /************************************
-//     * パーミッションがいる説明をトーストで表示する（表示しないといけない場合）
-//     */
-//    private void toastIfShould(SettingsFragment myThis) {
-//        if (ActivityCompat.shouldShowRequestPermissionRationale(
-//                myThis.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-//                ){
-//            Toast.makeText(myThis.getActivity(),
-//                    myThis.getString(R.string.permission_toast),
-//                    Toast.LENGTH_LONG)
-//                    .show();
-//        }
-//    }
 
     // --------------------------------------------------------------------
     // メソッド、設定の変更感知用
@@ -372,7 +395,7 @@ public class SettingsFragment extends PreferenceFragment
                     // ディレクトリから の設定をONにする
                     ((SwitchPreference)this.findPreference(KEY_FROM_DIR)).setChecked(true);
                     // SharedPreferenceが変更したときのイベントを発火
-                    this.onSharedPreferenceChanged(this.sp, KEY_FROM_DIR);
+                    this.onSharedPreferenceChanged(this.mSp, KEY_FROM_DIR);
                 }
                 break;
             case RQ_CODE_FROM_DIR_PATH:
@@ -389,38 +412,60 @@ public class SettingsFragment extends PreferenceFragment
      *
      * 設定変更したときのイベントハンドラ、OnSharedPreferenceChangeListenerのメソッド
      * @param sp SharedPreferences、保存された設定のオブジェクト
-     * @param key 設定の値を取り出すためのkey, このkeyの設定が変更された
+     * @param preferenceKey 設定の値を取り出すためのkey, このkeyの設定が変更された
      */
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
+    public void onSharedPreferenceChanged(SharedPreferences sp, String preferenceKey) {
+
         // ----------------------------------
         // 設定値をSummaryに反映
         // ----------------------------------
-        switch (key) {
-            //// ディレクトリ選択
-            case KEY_FROM_DIR_PATH:
-                Preference fromDirPathPreference = this.findPreference(key);
-                fromDirPathPreference.setSummary(sp.getString(key, ""));
-                break;
-            //// Twitter認証
-            case KEY_FROM_TWITTER_OAUTH:    //Twitter認証完了後にサマリーが認証完了になるようにする
-                Preference fromTwitterOauthPreference = this.findPreference(key);
-                fromTwitterOauthPreference.setSummary(R.string.setting_from_twitter_oauth_summary_done);
-                break;
+        //// 変数の準備
+        String key_auth_instagram = getString(R.string.preference_key_authenticate_instagram);
 
+        //// 反映
+        if ( preferenceKey.equals(KEY_FROM_DIR_PATH) ) {  //// ディレクトリ選択
+            Preference fromDirPathPreference = this.findPreference(preferenceKey);
+            fromDirPathPreference.setSummary(sp.getString(preferenceKey, ""));
+
+        } else if ( preferenceKey.equals(KEY_FROM_TWITTER_OAUTH) ) {  //// Twitter認証
+            Preference fromTwitterOauthPreference = this.findPreference(preferenceKey);
+            fromTwitterOauthPreference.setSummary(R.string.setting_summary_oauth_done);
+
+        } else if ( preferenceKey.equals(key_auth_instagram) ) {              //// インスタグラム認証
+            ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
         }
 
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える
         // ----------------------------------
         if (this.isServiceRunning) {
-            this.mainService.onSPChanged(key);
+            this.mainService.onSPChanged(preferenceKey);
         }
 
     }
 
-}
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+    /**
+     * SharedPreferenceに保存したキー
+     * @param context コンテキスト
+     * @return アクセストークン
+     */
+    @Nullable
+    public static String getInstagramAccessToken(Context context) {
+        String prefKey = context.getString(R.string.preference_key_authenticate_instagram);
 
+        return PreferenceManager.getDefaultSharedPreferences(context)
+                .getString(prefKey, null);
+    }
+
+    public static String getInstagramClientID(Context context) {
+        return context.getString(R.string.instagram_client_id);
+    }
+
+}
 
 
 
