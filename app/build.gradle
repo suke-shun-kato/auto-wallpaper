@@ -10,8 +10,8 @@ android {
         applicationId "xyz.goodistory.autowallpaper"
         minSdkVersion 16    //Android 4.1
         targetSdkVersion 26 // Android 8.0 Oreo
-        versionCode 15
-        versionName "0.1.14" //ここはversionCodeとは1ずれる
+        versionCode 16
+        versionName "0.1.15" //ここはversionCodeとは1ずれる
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
