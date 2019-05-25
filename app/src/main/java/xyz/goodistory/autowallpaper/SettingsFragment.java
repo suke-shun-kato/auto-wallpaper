@@ -203,11 +203,12 @@ public class SettingsFragment extends PreferenceFragment
         }
 
         //// Instagram認証
-        String key_auth_insta = getString(R.string.preference_key_authenticate_instagram);
+        // TODO api使用許可出たら復活
+/*        String key_auth_insta = getString(R.string.preference_key_authenticate_instagram);
         InstagramOAuthPreference instagramOAuthPreference
                 = (InstagramOAuthPreference)findPreference(key_auth_insta);
         // サマリーを更新
-        instagramOAuthPreference.updateSummary();
+        instagramOAuthPreference.updateSummary();*/
 
 
         // ----------------------------------
@@ -276,14 +277,15 @@ public class SettingsFragment extends PreferenceFragment
         // ----------
         // Instagramの最近の投稿をクリックからしたとき
         // ----------
-        String keyFromInstagram = getString(R.string.preference_key_from_instagram_user_recent);
+        // TODO apiの使用許可出たら復活
+/*        String keyFromInstagram = getString(R.string.preference_key_from_instagram_user_recent);
         findPreference(keyFromInstagram).setOnPreferenceChangeListener(
                 new Preference.OnPreferenceChangeListener() {
-            /************************************
+            *//************************************
              * @param preference クリックされたPreference
              * @param newValue Preferenceの新しい値
              * @return true:値変更を反映、false:反映しない
-             */
+             *//*
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
                 String keyAuthInstagram = getString(R.string.preference_key_authenticate_instagram);
@@ -297,7 +299,7 @@ public class SettingsFragment extends PreferenceFragment
                     return true;
                 }
             }
-        });
+        });*/
 
         // ----------
         // 「ディレクトリを設定」 のパーミッションダイアログ表示設定

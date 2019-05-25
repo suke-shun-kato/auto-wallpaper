@@ -247,7 +247,8 @@ public class WpManager {
         }
 
         // Instagram
-        String keyFromInstagramUserRecent
+        // TODO apiの使用許可が出たら復活
+/*        String keyFromInstagramUserRecent
                 = mContext.getString(R.string.preference_key_from_instagram_user_recent);
         String keyAuthenticateInstagram
                 =  mContext.getString(R.string.preference_key_authenticate_instagram);
@@ -255,7 +256,7 @@ public class WpManager {
                 && mSp.getString(keyAuthenticateInstagram, null) != null)  {
             List<ImgGetter> imgGetters = (new WpUrisGetterInstagram(mContext)).getImgGetterList();
             imgGetterList.addAll(imgGetters);
-        }
+        }*/
 
         // ----------
         // 抽選
