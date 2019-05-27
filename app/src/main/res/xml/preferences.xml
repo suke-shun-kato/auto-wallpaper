@@ -26,20 +26,20 @@
             custom:textOauthSuccess="@string/setting_from_twitter_oauth_text_oauthSuccess"
             custom:textOauthFailed="@string/setting_from_twitter_oauth_text_oauthFailed"
             custom:callbackUrl="@string/twitter_callback_url" />
-        <!-- TODO api使用許可出たら復活 -->
-        <!--<SwitchPreference-->
-            <!--android:defaultValue="false"-->
-            <!--android:key="@string/preference_key_from_instagram_user_recent"-->
-            <!--android:title="@string/preference_name_from_instagram_fav" />-->
-        <!--<xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference-->
-            <!--android:key="@string/preference_key_authenticate_instagram"-->
-            <!--android:title="@string/preference_name_authenticate_instagram"-->
-            <!--custom:summaryDone="@string/setting_summary_oauth_done"-->
-            <!--custom:summaryNotYet="@string/setting_summary_oauth_notYet"-->
-            <!--custom:callbackUrl="@string/instagram_callback_url"-->
-            <!--custom:clientID="@string/instagram_client_id"-->
-            <!--custom:clientSecret="@string/instagram_client_secret"-->
-            <!--/>-->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="@string/preference_key_from_instagram_user_recent"
+            android:title="@string/preference_name_from_instagram_fav" />
+
+        <xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference
+            android:key="@string/preference_key_authenticate_instagram"
+            android:title="@string/preference_name_authenticate_instagram"
+            custom:summaryDone="@string/setting_summary_oauth_done"
+            custom:summaryNotYet="@string/setting_summary_oauth_notYet"
+            custom:callbackUrl="@string/instagram_callback_url"
+            custom:clientID="@string/instagram_client_id"
+            custom:clientSecret="@string/instagram_client_secret"
+            />
 
     </PreferenceCategory>
     <PreferenceCategory
