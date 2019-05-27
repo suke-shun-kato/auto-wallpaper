@@ -15,6 +15,8 @@ import android.os.PatternMatcher;
 import android.preference.Preference;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -55,9 +57,29 @@ public class InstagramOAuthPreference extends Preference {
 
             //// webViewで認証画面を表示する
             WebView webView = findViewById(R.id.oauth_authorization_web);
+
+            // javascriptを有効にする、instagram の認証画面はJSを有効しないと動かない
             webView.getSettings().setJavaScriptEnabled(true);
 
-            // リダイレクトを取得
+            // クッキーを全て削除する（セッション削除目的）
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // API 21, Android 5.0以上
+                CookieManager cookieManager = CookieManager.getInstance();
+
+                cookieManager.removeAllCookies(null);
+                cookieManager.flush();
+            } else {
+                CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(this);
+                cookieSyncManager.startSync();
+
+                CookieManager cookieManager = CookieManager.getInstance();
+                cookieManager.removeAllCookie();
+                cookieManager.removeSessionCookie();
+
+                cookieSyncManager.stopSync();
+                cookieSyncManager.sync();
+            }
+
+            // コールバックのリダイレクトを取得
             webView.setWebViewClient(new WebViewClient() {
                 private final String macCallbackUrl = callbackUrl;
 
