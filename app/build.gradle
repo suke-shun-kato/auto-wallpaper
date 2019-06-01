@@ -8,7 +8,7 @@ android {
     // 設定、ここの記述はマニュフェストに埋め込まれる
     defaultConfig {
         applicationId "xyz.goodistory.autowallpaper"
-        minSdkVersion 16    //Android 4.1
+        minSdkVersion 19    //Android 4.4
         targetSdkVersion 26 // Android 8.0 Oreo
         versionCode 17
         versionName "0.1.16" //ここはversionCodeとは1ずれる
