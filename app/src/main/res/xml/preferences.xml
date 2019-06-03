@@ -29,7 +29,7 @@
         <SwitchPreference
             android:defaultValue="false"
             android:key="@string/preference_key_from_instagram_user_recent"
-            android:title="@string/preference_name_from_instagram_fav" />
+            android:title="@string/preference_name_from_instagram_self" />
 
         <xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference
             android:key="@string/preference_key_authenticate_instagram"
