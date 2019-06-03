@@ -203,12 +203,13 @@ public class SettingsFragment extends PreferenceFragment
             twitterPref.setSummary(R.string.setting_summary_oauth_notYet);
         }
 
-        //// Instagram認証
-        String key_auth_instagram = getString(R.string.preference_key_authenticate_instagram);
-        InstagramOAuthPreference instagramOAuthPreference
-                = (InstagramOAuthPreference)findPreference(key_auth_instagram);
-        // サマリーを更新
-        instagramOAuthPreference.updateSummary();
+        //// Instagram認
+        // TODO api使用許可出たら復活
+//        String key_auth_instagram = getString(R.string.preference_key_authenticate_instagram);
+//        InstagramOAuthPreference instagramOAuthPreference
+//                = (InstagramOAuthPreference)findPreference(key_auth_instagram);
+//        // サマリーを更新
+//        instagramOAuthPreference.updateSummary();
 
 
         // ----------------------------------
@@ -277,28 +278,29 @@ public class SettingsFragment extends PreferenceFragment
         // ----------
         // Instagramの最近の投稿をクリックからしたとき
         // ----------
-        String keyFromInstagram = getString(R.string.preference_key_from_instagram_user_recent);
-        findPreference(keyFromInstagram).setOnPreferenceChangeListener(
-                new Preference.OnPreferenceChangeListener() {
-            /************************************
-             * @param preference クリックされたPreference
-             * @param newValue Preferenceの新しい値
-             * @return true:値変更を反映、false:反映しない
-             */
-            @Override
-            public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String keyAuthInstagram = getString(R.string.preference_key_authenticate_instagram);
-                if ( mSp.getString(keyAuthInstagram, null) == null ) {
-                    Toast.makeText(getActivity(),
-                            R.string.preference_error_msg_no_authorize,
-                            Toast.LENGTH_LONG)
-                            .show();
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        });
+        // TODO api使用許可出たら復活
+//        String keyFromInstagram = getString(R.string.preference_key_from_instagram_user_recent);
+//        findPreference(keyFromInstagram).setOnPreferenceChangeListener(
+//                new Preference.OnPreferenceChangeListener() {
+//            /************************************
+//             * @param preference クリックされたPreference
+//             * @param newValue Preferenceの新しい値
+//             * @return true:値変更を反映、false:反映しない
+//             */
+//            @Override
+//            public boolean onPreferenceChange(Preference preference, Object newValue) {
+//                String keyAuthInstagram = getString(R.string.preference_key_authenticate_instagram);
+//                if ( mSp.getString(keyAuthInstagram, null) == null ) {
+//                    Toast.makeText(getActivity(),
+//                            R.string.preference_error_msg_no_authorize,
+//                            Toast.LENGTH_LONG)
+//                            .show();
+//                    return false;
+//                } else {
+//                    return true;
+//                }
+//            }
+//        });
 
         // ----------
         // 「ディレクトリを設定」 のパーミッションダイアログ表示設定
@@ -344,9 +346,10 @@ public class SettingsFragment extends PreferenceFragment
         // ----------------------------------
         // その他の設定
         // ----------------------------------
-        if (Build.VERSION.SDK_INT < InstagramOAuthPreference.SUPPORTED_API_LEVEL) {
-            findPreference(keyFromInstagram).setEnabled(false);
-        }
+//        TODO api使用許可出たら復活
+//        if (Build.VERSION.SDK_INT < InstagramOAuthPreference.SUPPORTED_API_LEVEL) {
+//            findPreference(keyFromInstagram).setEnabled(false);
+//        }
 
         // ----------------------------------
         //
