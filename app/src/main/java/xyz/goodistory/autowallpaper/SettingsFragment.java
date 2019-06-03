@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.Preference;
@@ -203,9 +204,9 @@ public class SettingsFragment extends PreferenceFragment
         }
 
         //// Instagram認証
-        String key_auth_insta = getString(R.string.preference_key_authenticate_instagram);
+        String key_auth_instagram = getString(R.string.preference_key_authenticate_instagram);
         InstagramOAuthPreference instagramOAuthPreference
-                = (InstagramOAuthPreference)findPreference(key_auth_insta);
+                = (InstagramOAuthPreference)findPreference(key_auth_instagram);
         // サマリーを更新
         instagramOAuthPreference.updateSummary();
 
@@ -340,7 +341,12 @@ public class SettingsFragment extends PreferenceFragment
                 }
         );
 
-
+        // ----------------------------------
+        // その他の設定
+        // ----------------------------------
+        if (Build.VERSION.SDK_INT < InstagramOAuthPreference.SUPPORTED_API_LEVEL) {
+            findPreference(keyFromInstagram).setEnabled(false);
+        }
 
         // ----------------------------------
         //
