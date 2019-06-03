@@ -19,7 +19,7 @@
             android:defaultValue="false"
             android:key="from_twitter_fav"
             android:title="@string/setting_form_twitter_fav_title" />
-        <xyz.goodistory.autowallpaper.TwitterOAuthPreference
+        <xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference
             android:key="from_twitter_oauth"
             android:title="@string/setting_from_twitter_oauth"
             custom:textCantAccessAuthPage="@string/setting_from_twitter_oauth_text_cantAccessAuthPage"

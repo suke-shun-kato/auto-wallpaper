@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.Preference;
@@ -25,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
+import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
 
 /**

@@ -1,4 +1,4 @@
-package xyz.goodistory.autowallpaper;
+package xyz.goodistory.autowallpaper.preference;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +19,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
+import xyz.goodistory.autowallpaper.R;
 
 /**
  * Twitter認証のためのPreference

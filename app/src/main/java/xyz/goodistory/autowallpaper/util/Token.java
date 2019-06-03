@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import xyz.goodistory.autowallpaper.R;
 import xyz.goodistory.autowallpaper.SettingsFragment;
-import xyz.goodistory.autowallpaper.TwitterOAuthPreference;
+import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 
 /**
  * TODO SettingFragment に統合したい
