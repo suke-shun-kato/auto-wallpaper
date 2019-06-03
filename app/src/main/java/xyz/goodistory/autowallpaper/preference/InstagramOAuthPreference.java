@@ -13,9 +13,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PatternMatcher;
 import android.preference.Preference;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -27,7 +28,6 @@ import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.oauth.OAuth20Service;
 
 import xyz.goodistory.autowallpaper.R;
-import xyz.goodistory.autowallpaper.SettingsFragment;
 
 /**
  * Instagram のOAuth認証を行う Preference
@@ -57,10 +57,29 @@ public class InstagramOAuthPreference extends Preference {
 
             //// webViewで認証画面を表示する
             WebView webView = findViewById(R.id.oauth_authorization_web);
-            webView.setWebViewClient(new WebViewClient());
+
+            // javascriptを有効にする、instagram の認証画面はJSを有効しないと動かない
             webView.getSettings().setJavaScriptEnabled(true);
 
-            // リダイレクトを取得
+            // クッキーを全て削除する（セッション削除目的）
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) { // API 21, Android 5.0以上
+                CookieManager cookieManager = CookieManager.getInstance();
+
+                cookieManager.removeAllCookies(null);
+                cookieManager.flush();
+            } else {
+                CookieSyncManager cookieSyncManager = CookieSyncManager.createInstance(this);
+                cookieSyncManager.startSync();
+
+                CookieManager cookieManager = CookieManager.getInstance();
+                cookieManager.removeAllCookie();
+                cookieManager.removeSessionCookie();
+
+                cookieSyncManager.stopSync();
+                cookieSyncManager.sync();
+            }
+
+            // コールバックのリダイレクトを取得
             webView.setWebViewClient(new WebViewClient() {
                 private final String macCallbackUrl = callbackUrl;
 
@@ -155,12 +174,19 @@ public class InstagramOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
+    /** 対応バージョンコード */
+    @SuppressWarnings("WeakerAccess")
+    public static final int SUPPORTED_API_LEVEL = Build.VERSION_CODES.LOLLIPOP;
+
     // NAME にパッケージ名を入れるべきと書いていた
     private static final String INTENT_NAME_AUTHORIZATION = "xyz.goodistory.autowallpaper.authorization";
     private static final String INTENT_NAME_CALLBACK = "xyz.goodistory.autowallpaper.callback";
 
     private static final int SUMMARY_DONE = 1;
     private static final int SUMMARY_NOT_YET = 2;
+    private static final int SUMMARY_NOT_SUPPORTED = 3;
+
+    private static final String TEXT_NOT_SUPPORTED = "This android version is not supported";
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -198,6 +224,14 @@ public class InstagramOAuthPreference extends Preference {
         } finally {
             typedAry.recycle();
         }
+
+        // ----------------------------------
+        // API level による使用制限
+        // ----------------------------------
+        if (Build.VERSION.SDK_INT < SUPPORTED_API_LEVEL) {
+            setEnabled(false);
+        }
+
     }
 
     // --------------------------------------------------------------------
@@ -208,6 +242,11 @@ public class InstagramOAuthPreference extends Preference {
      * プリファレンスにトークンが保存
      */
     public void updateSummary() {
+        if (Build.VERSION.SDK_INT < SUPPORTED_API_LEVEL) {
+            setInstagramSummary(SUMMARY_NOT_SUPPORTED);
+            return;
+        }
+
         if ( isDoneAuthorization() ) {
             setInstagramSummary(SUMMARY_DONE);
         } else {
@@ -239,9 +278,12 @@ public class InstagramOAuthPreference extends Preference {
             case SUMMARY_NOT_YET:
                 summaryText = mSummaryNotYet;
                 break;
+            case SUMMARY_NOT_SUPPORTED:
+                summaryText = TEXT_NOT_SUPPORTED;
+                break;
             default:
                 throw new IllegalArgumentException(
-                        "第1引数には、SUMMARY_DONE か SUMMARY_NOT_YET をセットしてください");
+                        "第1引数の値が不正です");
         }
 
         setSummary(summaryText);

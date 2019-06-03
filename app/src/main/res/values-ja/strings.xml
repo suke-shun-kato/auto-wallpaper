@@ -38,9 +38,7 @@
     <string name="setting_from_twitter_oauth_text_cantAccessAuthPage">認証ページにアクセスできません</string>
     <string name="setting_from_twitter_oauth_text_oauthSuccess">認証成功</string>
     <string name="setting_from_twitter_oauth_text_oauthFailed">認証失敗</string>
-    <string name="preference_name_from_instagram_fav">
-        Instagramのお気に入りから
-    </string>
+    <string name="preference_name_from_instagram_self">Instagramの自分の投稿から</string>
     <string name="preference_name_authenticate_instagram">
         Instagramの認証を行う
     </string>
