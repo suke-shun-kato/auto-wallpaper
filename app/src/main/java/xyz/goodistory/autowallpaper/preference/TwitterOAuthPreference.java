@@ -10,11 +10,11 @@ import android.os.AsyncTask;
 import android.preference.Preference;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.github.scribejava.apis.TwitterApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.model.OAuth1AccessToken;
 import com.github.scribejava.core.model.OAuth1RequestToken;
 import com.github.scribejava.core.oauth.OAuth10aService;
 
@@ -34,6 +34,8 @@ public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     /** 認証用のライブラリ */
     private final OAuth10aService mOAuth10aService;
+    private OAuth1RequestToken mOAuth1RequestToken;
+
     /** 認証後のコールバックURL、アクセストークン取得場所 */
     private String mCallbackUrl;
 
@@ -46,7 +48,7 @@ public class TwitterOAuthPreference extends Preference {
 
 
     /** Toastの文字の設定 TODO finalとか変数名をちゃんとする*/
-    private String textOauthSuccess;
+    private String mTextOauthSuccess;
 
     private final String mSummaryDone;
     private final String mSummaryNotYet;
@@ -83,7 +85,7 @@ public class TwitterOAuthPreference extends Preference {
             //// UIの文章
             mTextCantAccessAuthPage
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textCantAccessAuthPage);
-            this.textOauthSuccess
+            this.mTextOauthSuccess
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthSuccess);
             mTextOauthFailed
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthFailed);
@@ -116,20 +118,19 @@ public class TwitterOAuthPreference extends Preference {
      *
      * 非同期処理中に画面回転などが起こると途中で中断される
      */
-    private static class GetRequestTokenAsyncTask extends  AsyncTask<Void, Void, OAuth1RequestToken> {
+    private class GetRequestTokenAsyncTask extends  AsyncTask<Void, Void, OAuth1RequestToken> {
         private final OAuth10aService mOAuth10aService;
-        private final Context mContext;
         private final String mTextCantGetRequestToken;
 
         /**
          * @param oAuth10aService
-         * @param context
          * @param textCantGetRequestToken
          */
-        GetRequestTokenAsyncTask(OAuth10aService oAuth10aService, Context context, String textCantGetRequestToken) {
+        GetRequestTokenAsyncTask(
+                OAuth10aService oAuth10aService, String textCantGetRequestToken) {
+
             super();
             mOAuth10aService = oAuth10aService;
-            mContext = context;
             mTextCantGetRequestToken = textCantGetRequestToken;
         }
 
@@ -155,9 +156,14 @@ public class TwitterOAuthPreference extends Preference {
          */
         @Override
         protected void onPostExecute(@Nullable OAuth1RequestToken oAuth1RequestToken) {
+            // フィールドに保存
+            mOAuth1RequestToken = oAuth1RequestToken;
+
             if (oAuth1RequestToken == null) {
             // リクエストトークン取得できなかったとき（ネットつながってないとき）
-                Toast.makeText(mContext,  mTextCantGetRequestToken, Toast.LENGTH_SHORT)
+                Toast.makeText(
+                        getContext(),
+                        mTextCantGetRequestToken, Toast.LENGTH_SHORT)
                         .show();
             } else {
             // リクエストトークン取得できたとき
@@ -166,86 +172,66 @@ public class TwitterOAuthPreference extends Preference {
                 String urlAuthorizationPage = mOAuth10aService.getAuthorizationUrl(oAuth1RequestToken);
 
                 // TODO ここでWEBにアクセスできなかったときどうするか？
-                // TODO ここ、コールバックURLの設定は？
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAuthorizationPage));
-
-
-                mContext.startActivity(intent);
+                getContext().startActivity(intent);
             }
 
         }
 
     }
 
-//    /************************************
-//     * アクセストークンを取得するクラス
-//     */
-//    private static class GetAccessTokenAsyncTask extends  AsyncTask<Void, Void, AccessToken> {
-//        private final TwitterOAuthPreference twPreference;
-//        private final RequestToken requestToken;
-//        private final String verifierStr;
-//
-//        /************************************
-//         * コンストラクタ
-//         */
-//        public GetAccessTokenAsyncTask(
-//                TwitterOAuthPreference twPreference, RequestToken requestToken, String verifierStr) {
-//
-//            super();
-//            this.twPreference = twPreference;
-//            this.requestToken = requestToken;
-//            this.verifierStr = verifierStr;
-//        }
-//
-//        /************************************
-//         * verifierとRequestTokenでAccessTokenをTwitterから取得
-//         * @param params [0]:verifier
-//         * @return AccessTokenオブジェクト、twitter4J
-//         */
-//        @Override
-//        protected AccessToken doInBackground(Void... params) {
-//            try {
-//                // アクセストークンを取得
-//                return this.twPreference.twitter.getOAuthAccessToken(this.requestToken, this.verifierStr);
-//            } catch (TwitterException e) {
-//                e.printStackTrace();
-//                Log.d("○○○",e.getMessage());
-//            }
-//            return null;
-//        }
-//
-//        /************************************
-//         *
-//         */
-//        @Override
-//        protected void onPostExecute(AccessToken accessToken) {
-//            if (accessToken != null) {
-//                // 認証成功！
-//                Toast.makeText(this.twPreference.getContext(),
-//                        this.twPreference.textOauthSuccess,
-//                        Toast.LENGTH_SHORT
-//                ).show();
-//
-//                //アクセストークンを保存
-//                try {
-//                    JSONObject aTokenJson = new JSONObject()
-//                            .put(KEY_TOKEN, accessToken.getToken())
-//                            .put(KEY_TOKEN_SECRET, accessToken.getTokenSecret());
-//                    this.twPreference.persistString(aTokenJson.toString());
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//            } else {
-//                // 認証失敗。。。
-//                Toast.makeText(
-//                        this.twPreference.getContext(),
-//                        this.twPreference.mTextOauthFailed,
-//                        Toast.LENGTH_SHORT
-//                ).show();
-//            }
-//        }
-//    }
+    private class GetAccessTokenAsyncTask extends AsyncTask<Void, Void, OAuth1AccessToken> {
+        private final OAuth10aService mOAuth10aService;
+        private final OAuth1RequestToken mOAuth1RequestToken;
+        private final String mVerifier;
+
+        GetAccessTokenAsyncTask(
+                OAuth10aService oAuth10aService, OAuth1RequestToken oauth1RequestToken,
+                String verifier) {
+
+            mOAuth10aService = oAuth10aService;
+            mOAuth1RequestToken = oauth1RequestToken;
+            mVerifier = verifier;
+        }
+
+        @Override
+        @Nullable
+        protected OAuth1AccessToken doInBackground(Void... params) {
+            try {
+                return mOAuth10aService.getAccessToken(mOAuth1RequestToken, mVerifier);
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        /**
+         * @param oAuth1AccessToken 取得したAccess token
+         */
+        @Override
+        protected void onPostExecute(@Nullable OAuth1AccessToken oAuth1AccessToken) {
+            //// エラー処理
+            if (oAuth1AccessToken == null) {
+                // アクセストークンが取得できなかったとき
+                Toast.makeText(getContext(),mTextOauthFailed, Toast.LENGTH_SHORT)
+                        .show();
+                return;
+            }
+
+            //// JSON文字列にして保存
+            try {
+                JSONObject aTokenJson = new JSONObject()
+                        .put(KEY_TOKEN, oAuth1AccessToken.getToken())
+                        .put(KEY_TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
+                persistString(aTokenJson.toString());
+            } catch (JSONException e) {
+                Toast.makeText(getContext(), mTextOauthFailed, Toast.LENGTH_SHORT)
+                        .show();
+            }
+
+            //// Toastで表示
+            Toast.makeText(getContext(), mTextOauthSuccess, Toast.LENGTH_LONG).show();
+        }
+    }
 
     public static void sendToAccessTokenBroadcast(Intent intent, Context context) {
         //// 引数を処理
@@ -269,11 +255,16 @@ public class TwitterOAuthPreference extends Preference {
         context.sendBroadcast(sendIntent);
     }
 
-    private static class ToAccessTokenBroadcastReceiver extends BroadcastReceiver {
+    private class ToAccessTokenBroadcastReceiver extends BroadcastReceiver {
 
+        private final OAuth10aService mOAuth10aService;
         private final String mTextOauthFailed;
 
-        public ToAccessTokenBroadcastReceiver(String textOauthFailed) {
+        public ToAccessTokenBroadcastReceiver(
+                OAuth10aService oAuth10aService,
+                String textOauthFailed ) {
+
+            mOAuth10aService = oAuth10aService;
             mTextOauthFailed = textOauthFailed;
         }
 
@@ -289,6 +280,8 @@ public class TwitterOAuthPreference extends Preference {
             //// request token と verifier を取得
             String oauthToken = intent.getStringExtra(BUNDLE_KEY_TOKEN);
             String oauthVerifier = intent.getStringExtra(BUNDLE_KEY_VERIFIER);
+
+            // エラー処理
             if (oauthToken.equals("") || oauthVerifier.equals("")) {
                 Toast.makeText(context, mTextOauthFailed, Toast.LENGTH_LONG)
                         .show();
@@ -296,10 +289,8 @@ public class TwitterOAuthPreference extends Preference {
             }
 
             //// 非同期でaccess token を取得
-
-Log.d("-----------------", oauthToken);// TODO 消す
-Log.d("-----------------", oauthVerifier);
-
+            (new GetAccessTokenAsyncTask(mOAuth10aService, mOAuth1RequestToken, oauthVerifier))
+                    .execute();
         }
     }
 
@@ -317,7 +308,7 @@ Log.d("-----------------", oauthVerifier);
         // BroadcastReceiver をセット
         // ----------------------------------
         //// BroadcastReceiver
-        mCallbackBroadcastReceiver = new ToAccessTokenBroadcastReceiver(mTextOauthFailed);
+        mCallbackBroadcastReceiver = new ToAccessTokenBroadcastReceiver(mOAuth10aService, mTextOauthFailed);
 
         //// intentFilter の設定
         IntentFilter intentFilter = new IntentFilter();
@@ -330,55 +321,34 @@ Log.d("-----------------", oauthVerifier);
         // 非同期でアクセストークン取得する
         // ----------------------------------
         GetRequestTokenAsyncTask getRequestTokenAsyncTask = new GetRequestTokenAsyncTask(
-                mOAuth10aService, getContext(), mTextCantAccessAuthPage);
+                mOAuth10aService, mTextCantAccessAuthPage);
 
         // requestTokenを取得 → それで認可ページを開く
         getRequestTokenAsyncTask.execute();
     }
 
-//
-//    /************************************
-//     * getIntent()はこのPreferenceでsetIntent()したものを取り出すのでここでは違う
-//     */
-//    public void onNewIntent(Intent intent) {
-//        // ----------------------------------
-//        // 例外処理、途中で切り上げ
-//        // ----------------------------------
-//        if (intent == null
-//                || intent.getData() == null // intend.getData() は Uriオブジェクトが返ってくる
-//                || !intent.getData().toString().startsWith(this.mCallbackUrl)
-//                || intent.getData().getQueryParameter("oauth_verifier") == null //キャンセルボタンを押したとき
-//                ) {
-//            return;
-//        }
-//
-//        // ----------------------------------
-//        // メイン処理、アクセストークンを取得→SharedPreferenceに保存
-//        // ----------------------------------
-//        // https://developer.yahoo.co.jp/other/oauth/flow.html
-//        new GetAccessTokenAsyncTask(
-//                this,
-//                this.getRequestTokenAsyncTask.getRequestToken(),
-//                intent.getData().getQueryParameter("oauth_verifier")
-//        ).execute();
-//    }
 
     /************************************
      * 既にアクセストークンを取得すみか
      * @return true:取得済
      */
     public boolean hasAccessToken() {
-        try {
-            String accessToken = this.getPersistedString(null);
-            if (accessToken != null) {
-                JSONObject acTokenJson = new JSONObject(accessToken);
-                if (acTokenJson.get(KEY_TOKEN) != null && acTokenJson.get(KEY_TOKEN_SECRET) != null) {
-                    return true;
-                }
-            }
+        //// 値を保存していないとき
+        String accessTokenJsonStr = getPersistedString(null);
+        if (accessTokenJsonStr == null) {
             return false;
+        }
+
+        //// 値を保存しているとき
+        try {
+            JSONObject accessTokenJson = new JSONObject(accessTokenJsonStr);
+            if ( accessTokenJson.get(KEY_TOKEN) == null
+                    || accessTokenJson.get(KEY_TOKEN_SECRET) == null) {
+                throw new JSONException("保存したJSONの値がおかしいです。");
+            }
+
+            return true;
         } catch (JSONException e) {
-            e.printStackTrace();
             return false;
         }
     }
