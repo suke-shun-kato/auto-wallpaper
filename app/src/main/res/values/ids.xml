@@ -8,8 +8,8 @@
     <string  name="id_notificationChannel_runningMainService" tools:ignore="MissingTranslation">running_main_service</string>
     <string  name="id_notificationChannel_wallpaperChanged" tools:ignore="MissingTranslation">wallpaper_changed</string>
 
-    <string name="twitter_consumer_key" tools:ignore="MissingTranslation">i27LkK5rUNoXKxNXTjrvqhnbx</string>
-    <string name="twitter_consumer_secret" tools:ignore="MissingTranslation">dCQFHUUD6jS8zt1xEF4DBdTKiTFgfRBdFUjCxUdq1jMTBJpi1p</string>
+    <string name="twitter_consumer_key" tools:ignore="MissingTranslation">HdQuB3nqjm7zd1HLuWBkTNvG3</string>
+    <string name="twitter_consumer_secret" tools:ignore="MissingTranslation">skdss5Khh2WoJgEvPK1sbaCZcoJCOnWU6T6eq2DnxVorbbWcjy</string>
     <string name="twitter_callback_url" tools:ignore="MissingTranslation">xyzgisautowallpaper://</string>
 
     <string name="instagram_client_id" tools:ignore="MissingTranslation">ab75e33d627c433eb067274b73624f82</string>
