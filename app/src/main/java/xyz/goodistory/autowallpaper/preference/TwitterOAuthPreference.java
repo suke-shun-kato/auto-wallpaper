@@ -25,8 +25,8 @@ import xyz.goodistory.autowallpaper.R;
 
 /**
  * Twitter認証のためのPreference
- * Created by k-shunsuke on 2017/12/23.
  * TODO Twitter4Jを廃止
+ * TODO Tokenクラスをこっちに統合
  */
 public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
@@ -233,27 +233,7 @@ public class TwitterOAuthPreference extends Preference {
         }
     }
 
-    public static void sendToAccessTokenBroadcast(Intent intent, Context context) {
-        //// 引数を処理
-        String oauthToken;
-        String oauthVerifier;
-        Uri uri = intent.getData();
 
-        if (uri == null) {
-            oauthToken = "";
-            oauthVerifier = "";
-        } else {
-            oauthToken = uri.getQueryParameter("oauth_token");
-            oauthVerifier = uri.getQueryParameter("oauth_verifier");
-        }
-
-        //// broadcast を送信
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(ACTION_TO_ACCESS_TOKEN);
-        sendIntent.putExtra(BUNDLE_KEY_TOKEN, oauthToken);
-        sendIntent.putExtra(BUNDLE_KEY_VERIFIER, oauthVerifier);
-        context.sendBroadcast(sendIntent);
-    }
 
     private class ToAccessTokenBroadcastReceiver extends BroadcastReceiver {
 
@@ -351,6 +331,38 @@ public class TwitterOAuthPreference extends Preference {
         } catch (JSONException e) {
             return false;
         }
+    }
+
+    // --------------------------------------------------------------------
+    // メソッド, static
+    // --------------------------------------------------------------------
+    /**
+     * Activity で使うメソッド
+     * 認証ボタンを押したあとのcallbackで取得したintent(verifierとrequestToken)を
+     * このクラスへbroadcastでを送る
+     * @param intent
+     * @param context
+     */
+    public static void sendToAccessTokenBroadcast(Intent intent, Context context) {
+        //// 引数を処理
+        String oauthToken;
+        String oauthVerifier;
+        Uri uri = intent.getData();
+
+        if (uri == null) {
+            oauthToken = "";
+            oauthVerifier = "";
+        } else {
+            oauthToken = uri.getQueryParameter("oauth_token");
+            oauthVerifier = uri.getQueryParameter("oauth_verifier");
+        }
+
+        //// broadcast を送信
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(ACTION_TO_ACCESS_TOKEN);
+        sendIntent.putExtra(BUNDLE_KEY_TOKEN, oauthToken);
+        sendIntent.putExtra(BUNDLE_KEY_VERIFIER, oauthVerifier);
+        context.sendBroadcast(sendIntent);
     }
 
 }
