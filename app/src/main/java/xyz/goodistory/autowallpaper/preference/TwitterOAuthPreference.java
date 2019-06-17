@@ -1,7 +1,5 @@
 package xyz.goodistory.autowallpaper.preference;
 
-import android.app.job.JobScheduler;
-import android.app.job.JobService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -9,8 +7,6 @@ import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Handler;
-import android.os.PatternMatcher;
 import android.preference.Preference;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -21,7 +17,6 @@ import com.github.scribejava.apis.TwitterApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuth1RequestToken;
 import com.github.scribejava.core.oauth.OAuth10aService;
-import com.github.scribejava.core.oauth.OAuth20Service;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +26,6 @@ import xyz.goodistory.autowallpaper.R;
 /**
  * Twitter認証のためのPreference
  * Created by k-shunsuke on 2017/12/23.
- * TODO .preference パッケージに移動
  * TODO Twitter4Jを廃止
  */
 public class TwitterOAuthPreference extends Preference {
@@ -43,10 +37,17 @@ public class TwitterOAuthPreference extends Preference {
     /** 認証後のコールバックURL、アクセストークン取得場所 */
     private String mCallbackUrl;
 
+    private ToAccessTokenBroadcastReceiver mCallbackBroadcastReceiver;
+
+    /** 認証ボタンを押すページにアクセスできなかったとき */
     private final String mTextCantAccessAuthPage;
+    /** ページから戻ってきて access token を取得できなかったとき */
+    private final String mTextOauthFailed;
+
+
     /** Toastの文字の設定 TODO finalとか変数名をちゃんとする*/
     private String textOauthSuccess;
-    private String textOauthFailed;
+
     private final String mSummaryDone;
     private final String mSummaryNotYet;
 
@@ -54,7 +55,12 @@ public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
-//    public static final String CALLBACK_URL = "xyzgisautowallpaper://";
+    /** オリジナルのbroadcast receiver のアクション */
+    private static final String ACTION_TO_ACCESS_TOKEN
+            = "xyz.goodistory.autowallpaper.ACTION_TO_ACCESS_TOKEN";
+    private static final String BUNDLE_KEY_TOKEN = "oauth_token";
+    private static final String BUNDLE_KEY_VERIFIER = "oauth_verifier";
+
     // TODO リソースに移動する
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_TOKEN = "token";
@@ -79,7 +85,7 @@ public class TwitterOAuthPreference extends Preference {
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textCantAccessAuthPage);
             this.textOauthSuccess
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthSuccess);
-            this.textOauthFailed
+            mTextOauthFailed
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthFailed);
             mSummaryDone = typedAry.getString(R.styleable.TwitterOAuthPreference_summaryDone);
             mSummaryNotYet = typedAry.getString(R.styleable.TwitterOAuthPreference_summaryNotYet);
@@ -234,25 +240,66 @@ public class TwitterOAuthPreference extends Preference {
 //                // 認証失敗。。。
 //                Toast.makeText(
 //                        this.twPreference.getContext(),
-//                        this.twPreference.textOauthFailed,
+//                        this.twPreference.mTextOauthFailed,
 //                        Toast.LENGTH_SHORT
 //                ).show();
 //            }
 //        }
 //    }
 
+    public static void sendToAccessTokenBroadcast(Intent intent, Context context) {
+        //// 引数を処理
+        String oauthToken;
+        String oauthVerifier;
+        Uri uri = intent.getData();
 
-    // TODO 認可ページからのコールバックのアクセストークンを取得する
-    private class CallbackBroadcastReceiver extends BroadcastReceiver {
+        if (uri == null) {
+            oauthToken = "";
+            oauthVerifier = "";
+        } else {
+            oauthToken = uri.getQueryParameter("oauth_token");
+            oauthVerifier = uri.getQueryParameter("oauth_verifier");
+        }
+
+        //// broadcast を送信
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(ACTION_TO_ACCESS_TOKEN);
+        sendIntent.putExtra(BUNDLE_KEY_TOKEN, oauthToken);
+        sendIntent.putExtra(BUNDLE_KEY_VERIFIER, oauthVerifier);
+        context.sendBroadcast(sendIntent);
+    }
+
+    private static class ToAccessTokenBroadcastReceiver extends BroadcastReceiver {
+
+        private final String mTextOauthFailed;
+
+        public ToAccessTokenBroadcastReceiver(String textOauthFailed) {
+            mTextOauthFailed = textOauthFailed;
+        }
+
         /**
          * @param context The Context in which the receiver is running.
          * @param intent  The Intent being received.
          */
         @Override
         public void onReceive(Context context, Intent intent) {
-            intent.getData();
-
+            //// Receiver を解除
             context.unregisterReceiver(this);
+
+            //// request token と verifier を取得
+            String oauthToken = intent.getStringExtra(BUNDLE_KEY_TOKEN);
+            String oauthVerifier = intent.getStringExtra(BUNDLE_KEY_VERIFIER);
+            if (oauthToken.equals("") || oauthVerifier.equals("")) {
+                Toast.makeText(context, mTextOauthFailed, Toast.LENGTH_LONG)
+                        .show();
+                return;
+            }
+
+            //// 非同期でaccess token を取得
+
+Log.d("-----------------", oauthToken);// TODO 消す
+Log.d("-----------------", oauthVerifier);
+
         }
     }
 
@@ -270,13 +317,14 @@ public class TwitterOAuthPreference extends Preference {
         // BroadcastReceiver をセット
         // ----------------------------------
         //// BroadcastReceiver
-        CallbackBroadcastReceiver callbackBroadcastReceiver = new CallbackBroadcastReceiver();
+        mCallbackBroadcastReceiver = new ToAccessTokenBroadcastReceiver(mTextOauthFailed);
 
         //// intentFilter の設定
-        IntentFilter intentFilter = getCallbackIntentFilter(mCallbackUrl);
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_TO_ACCESS_TOKEN);
 
         //// 登録
-        getContext().registerReceiver(callbackBroadcastReceiver, intentFilter);
+        getContext().registerReceiver(mCallbackBroadcastReceiver, intentFilter);
 
         // ----------------------------------
         // 非同期でアクセストークン取得する
@@ -286,30 +334,6 @@ public class TwitterOAuthPreference extends Preference {
 
         // requestTokenを取得 → それで認可ページを開く
         getRequestTokenAsyncTask.execute();
-    }
-
-    /**
-     * コールバックを受信する用の IntentFilter を取得
-     * @param callbackUrl
-     * @return
-     */
-    private static IntentFilter getCallbackIntentFilter(String callbackUrl) {
-        IntentFilter intentFilter = new IntentFilter();
-
-        // action
-        intentFilter.addAction(Intent.ACTION_VIEW);
-
-        // category
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-        intentFilter.addCategory(Intent.CATEGORY_BROWSABLE);
-
-        // data(uri)
-        Uri callbackUri = Uri.parse(callbackUrl);
-        intentFilter.addDataScheme(callbackUri.getScheme());
-        intentFilter.addDataAuthority(callbackUri.getHost(), String.valueOf(callbackUri.getPort()));
-        intentFilter.addDataPath(callbackUri.getPath(), PatternMatcher.PATTERN_LITERAL);
-
-        return intentFilter;
     }
 
 //
