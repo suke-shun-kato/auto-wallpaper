@@ -36,19 +36,12 @@ public class TwitterOAuthPreference extends Preference {
     private final OAuth10aService mOAuth10aService;
     private OAuth1RequestToken mOAuth1RequestToken;
 
-    private ToGetAccessTokenBroadcastReceiver mCallbackBroadcastReceiver;
-
     /** 認証ボタンを押すページにアクセスできなかったとき */
     private final String mTextCantAccessAuthPage;
     /** ページから戻ってきて access token を取得できなかったとき */
     private final String mTextOauthFailed;
-
-
-    /** Toastの文字の設定 TODO finalとか変数名をちゃんとする*/
+    /** Toastの文字の設定 */
     private final String mTextOauthSuccess;
-
-    private final String mSummaryDone;
-    private final String mSummaryNotYet;
 
 
     // --------------------------------------------------------------------
@@ -62,11 +55,8 @@ public class TwitterOAuthPreference extends Preference {
     private static final String BUNDLE_KEY_TOKEN = "oauth_token";
     private static final String BUNDLE_KEY_VERIFIER = "oauth_verifier";
 
-    // TODO リソースに移動する
-    @SuppressWarnings("WeakerAccess")
-    public static final String JSON_KEY_TOKEN = "token";
-    @SuppressWarnings("WeakerAccess")
-    public static final String JSON_KEY_TOKEN_SECRET = "token_secret";
+    private static final String JSON_KEY_TOKEN = "token";
+    private static final String JSON_KEY_TOKEN_SECRET = "token_secret";
 
 
     // --------------------------------------------------------------------
@@ -88,10 +78,6 @@ public class TwitterOAuthPreference extends Preference {
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthSuccess);
             mTextOauthFailed
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthFailed);
-
-            // TODO 下記は使ってないのでなんとか消す
-            mSummaryDone = typedAry.getString(R.styleable.TwitterOAuthPreference_summaryDone);
-            mSummaryNotYet = typedAry.getString(R.styleable.TwitterOAuthPreference_summaryNotYet);
 
             //// Oauth10aService
             final String apiKey= typedAry.getString(R.styleable.TwitterOAuthPreference_apiKey);
@@ -334,14 +320,15 @@ public class TwitterOAuthPreference extends Preference {
         // BroadcastReceiver をセット
         // ----------------------------------
         //// BroadcastReceiver
-        mCallbackBroadcastReceiver = new ToGetAccessTokenBroadcastReceiver(mOAuth10aService, mTextOauthFailed);
+        ToGetAccessTokenBroadcastReceiver broadcastReceiver
+                = new ToGetAccessTokenBroadcastReceiver(mOAuth10aService, mTextOauthFailed);
 
         //// intentFilter の設定
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ACTION_TO_ACCESS_TOKEN);
 
         //// 登録
-        getContext().registerReceiver(mCallbackBroadcastReceiver, intentFilter);
+        getContext().registerReceiver(broadcastReceiver, intentFilter);
 
         // ----------------------------------
         // 非同期でアクセストークン取得する

@@ -438,10 +438,10 @@ public class SettingsFragment extends PreferenceFragment
             fromDirPathPreference.setSummary(sp.getString(preferenceKey, ""));
 
         } else if ( preferenceKey.equals(KEY_FROM_TWITTER_OAUTH) ) {  //// Twitter認証
-            Preference fromTwitterOauthPreference = this.findPreference(preferenceKey);
+            Preference fromTwitterOauthPreference = findPreference(preferenceKey);
             fromTwitterOauthPreference.setSummary(R.string.setting_summary_oauth_done);
 
-        } else if ( preferenceKey.equals(key_auth_instagram) ) {              //// インスタグラム認証
+        } else if ( preferenceKey.equals(key_auth_instagram) ) {   //// インスタグラム認証
             ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
         }
 

@@ -1,8 +1,6 @@
 <resources>
     <!-- callbackUrlが2つのライブラリで使われているので、ここで宣言している -->
     <attr name="callbackUrl" format="string" />
-    <attr name="summaryDone" format="string" />
-    <attr name="summaryNotYet" format="string" />
 
     <declare-styleable name="SelectDirPreference">
         <attr name="dialogTitle" format="string" />
@@ -14,15 +12,13 @@
         <attr name="apiKey" format="string" />
         <attr name="apiSecretKey" format="string" />
         <attr name="callbackUrl" />
-        <attr name="summaryDone" />
-        <attr name="summaryNotYet" />
     </declare-styleable>
     <declare-styleable name="InstagramOAuthPreference">
         <attr name="clientID" format="string" />
         <attr name="clientSecret" format="string"/>
         <attr name="callbackUrl" />
-        <attr name="summaryDone" />
-        <attr name="summaryNotYet" />
+        <attr name="summaryDone" format="string" />
+        <attr name="summaryNotYet" format="string" />
     </declare-styleable>
     <declare-styleable name="ResetBtnPreference">
         <attr name="textDialogMsg" format="string" />
