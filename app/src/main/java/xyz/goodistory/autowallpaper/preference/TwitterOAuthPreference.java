@@ -4,10 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.Preference;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.Toast;
@@ -25,8 +27,6 @@ import xyz.goodistory.autowallpaper.R;
 
 /**
  * Twitter認証のためのPreference
- * TODO Twitter4Jを廃止
- * TODO Tokenクラスをこっちに統合
  */
 public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
@@ -36,10 +36,7 @@ public class TwitterOAuthPreference extends Preference {
     private final OAuth10aService mOAuth10aService;
     private OAuth1RequestToken mOAuth1RequestToken;
 
-    /** 認証後のコールバックURL、アクセストークン取得場所 */
-    private String mCallbackUrl;
-
-    private ToAccessTokenBroadcastReceiver mCallbackBroadcastReceiver;
+    private ToGetAccessTokenBroadcastReceiver mCallbackBroadcastReceiver;
 
     /** 認証ボタンを押すページにアクセスできなかったとき */
     private final String mTextCantAccessAuthPage;
@@ -48,7 +45,7 @@ public class TwitterOAuthPreference extends Preference {
 
 
     /** Toastの文字の設定 TODO finalとか変数名をちゃんとする*/
-    private String mTextOauthSuccess;
+    private final String mTextOauthSuccess;
 
     private final String mSummaryDone;
     private final String mSummaryNotYet;
@@ -60,14 +57,16 @@ public class TwitterOAuthPreference extends Preference {
     /** オリジナルのbroadcast receiver のアクション */
     private static final String ACTION_TO_ACCESS_TOKEN
             = "xyz.goodistory.autowallpaper.ACTION_TO_ACCESS_TOKEN";
+
+
     private static final String BUNDLE_KEY_TOKEN = "oauth_token";
     private static final String BUNDLE_KEY_VERIFIER = "oauth_verifier";
 
     // TODO リソースに移動する
     @SuppressWarnings("WeakerAccess")
-    public static final String KEY_TOKEN = "token";
+    public static final String JSON_KEY_TOKEN = "token";
     @SuppressWarnings("WeakerAccess")
-    public static final String KEY_TOKEN_SECRET = "token_secret";
+    public static final String JSON_KEY_TOKEN_SECRET = "token_secret";
 
 
     // --------------------------------------------------------------------
@@ -85,24 +84,23 @@ public class TwitterOAuthPreference extends Preference {
             //// UIの文章
             mTextCantAccessAuthPage
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textCantAccessAuthPage);
-            this.mTextOauthSuccess
+            mTextOauthSuccess
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthSuccess);
             mTextOauthFailed
                      = typedAry.getString(R.styleable.TwitterOAuthPreference_textOauthFailed);
+
+            // TODO 下記は使ってないのでなんとか消す
             mSummaryDone = typedAry.getString(R.styleable.TwitterOAuthPreference_summaryDone);
             mSummaryNotYet = typedAry.getString(R.styleable.TwitterOAuthPreference_summaryNotYet);
-
-            //// 認証に必要な値
-            mCallbackUrl= typedAry.getString(R.styleable.TwitterOAuthPreference_callbackUrl);
-
 
             //// Oauth10aService
             final String apiKey= typedAry.getString(R.styleable.TwitterOAuthPreference_apiKey);
             final String apiSecretKey
                     = typedAry.getString(R.styleable.TwitterOAuthPreference_apiSecretKey);
+            final String callbackUrl= typedAry.getString(R.styleable.TwitterOAuthPreference_callbackUrl);
             mOAuth10aService = new ServiceBuilder(apiKey)
                     .apiSecret(apiSecretKey)
-                    .callback(mCallbackUrl)
+                    .callback(callbackUrl)
                     .build(TwitterApi.instance());
         } finally {
             typedAry.recycle();
@@ -122,10 +120,6 @@ public class TwitterOAuthPreference extends Preference {
         private final OAuth10aService mOAuth10aService;
         private final String mTextCantGetRequestToken;
 
-        /**
-         * @param oAuth10aService
-         * @param textCantGetRequestToken
-         */
         GetRequestTokenAsyncTask(
                 OAuth10aService oAuth10aService, String textCantGetRequestToken) {
 
@@ -171,7 +165,6 @@ public class TwitterOAuthPreference extends Preference {
                 // 認可ページのURLを取得
                 String urlAuthorizationPage = mOAuth10aService.getAuthorizationUrl(oAuth1RequestToken);
 
-                // TODO ここでWEBにアクセスできなかったときどうするか？
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAuthorizationPage));
                 getContext().startActivity(intent);
             }
@@ -180,13 +173,17 @@ public class TwitterOAuthPreference extends Preference {
 
     }
 
+    /**
+     * AccessTokenを取得 → SharedPreference に保存
+     */
     private class GetAccessTokenAsyncTask extends AsyncTask<Void, Void, OAuth1AccessToken> {
         private final OAuth10aService mOAuth10aService;
         private final OAuth1RequestToken mOAuth1RequestToken;
         private final String mVerifier;
 
         GetAccessTokenAsyncTask(
-                OAuth10aService oAuth10aService, OAuth1RequestToken oauth1RequestToken,
+                OAuth10aService oAuth10aService,
+                OAuth1RequestToken oauth1RequestToken,
                 String verifier) {
 
             mOAuth10aService = oAuth10aService;
@@ -220,8 +217,8 @@ public class TwitterOAuthPreference extends Preference {
             //// JSON文字列にして保存
             try {
                 JSONObject aTokenJson = new JSONObject()
-                        .put(KEY_TOKEN, oAuth1AccessToken.getToken())
-                        .put(KEY_TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
+                        .put(JSON_KEY_TOKEN, oAuth1AccessToken.getToken())
+                        .put(JSON_KEY_TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
                 persistString(aTokenJson.toString());
             } catch (JSONException e) {
                 Toast.makeText(getContext(), mTextOauthFailed, Toast.LENGTH_SHORT)
@@ -233,14 +230,15 @@ public class TwitterOAuthPreference extends Preference {
         }
     }
 
-
-
-    private class ToAccessTokenBroadcastReceiver extends BroadcastReceiver {
+    /**
+     * ブロードキャストを受信したら Access Token を取得する
+     */
+    private class ToGetAccessTokenBroadcastReceiver extends BroadcastReceiver {
 
         private final OAuth10aService mOAuth10aService;
         private final String mTextOauthFailed;
 
-        public ToAccessTokenBroadcastReceiver(
+        public ToGetAccessTokenBroadcastReceiver(
                 OAuth10aService oAuth10aService,
                 String textOauthFailed ) {
 
@@ -249,6 +247,7 @@ public class TwitterOAuthPreference extends Preference {
         }
 
         /**
+         * verifier を intent から取得してそれで access token を取得する
          * @param context The Context in which the receiver is running.
          * @param intent  The Intent being received.
          */
@@ -274,6 +273,53 @@ public class TwitterOAuthPreference extends Preference {
         }
     }
 
+    /**
+     * SharedPreference から Access token と token secret を取得するクラス
+     */
+    public static class SharedPreference {
+        private JSONObject mTokensJson;
+
+
+        /**
+         * アクセストークンを取得
+         * @param preferenceKey preferenceのkey
+         * @param context context
+         */
+        public SharedPreference(String preferenceKey, Context context) {
+            SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+            try {
+                mTokensJson = new JSONObject( sp.getString(preferenceKey, null) );
+            } catch (JSONException e) {
+                mTokensJson = new JSONObject();
+            }
+        }
+
+        /**
+         * Preferenceに保存したAccessTokenを取得
+         * @return AccessToken
+         */
+        public String getToken() {
+            try {
+                return mTokensJson.getString(TwitterOAuthPreference.JSON_KEY_TOKEN);
+            } catch (JSONException e) {
+                return "";
+            }
+        }
+
+        /**
+         * Preferenceに保存したAccessTokenSecretを取得
+         * @return AccessTokenSecret
+         */
+        public String getTokenSecret() {
+            try {
+                return mTokensJson.getString(TwitterOAuthPreference.JSON_KEY_TOKEN_SECRET);
+            } catch (JSONException e) {
+                return "";
+            }
+        }
+    }
+
+
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
@@ -288,7 +334,7 @@ public class TwitterOAuthPreference extends Preference {
         // BroadcastReceiver をセット
         // ----------------------------------
         //// BroadcastReceiver
-        mCallbackBroadcastReceiver = new ToAccessTokenBroadcastReceiver(mOAuth10aService, mTextOauthFailed);
+        mCallbackBroadcastReceiver = new ToGetAccessTokenBroadcastReceiver(mOAuth10aService, mTextOauthFailed);
 
         //// intentFilter の設定
         IntentFilter intentFilter = new IntentFilter();
@@ -322,8 +368,8 @@ public class TwitterOAuthPreference extends Preference {
         //// 値を保存しているとき
         try {
             JSONObject accessTokenJson = new JSONObject(accessTokenJsonStr);
-            if ( accessTokenJson.get(KEY_TOKEN) == null
-                    || accessTokenJson.get(KEY_TOKEN_SECRET) == null) {
+            if ( accessTokenJson.get(JSON_KEY_TOKEN) == null
+                    || accessTokenJson.get(JSON_KEY_TOKEN_SECRET) == null) {
                 throw new JSONException("保存したJSONの値がおかしいです。");
             }
 
@@ -340,8 +386,8 @@ public class TwitterOAuthPreference extends Preference {
      * Activity で使うメソッド
      * 認証ボタンを押したあとのcallbackで取得したintent(verifierとrequestToken)を
      * このクラスへbroadcastでを送る
-     * @param intent
-     * @param context
+     * @param intent callbackで取得したintetn
+     * @param context context
      */
     public static void sendToAccessTokenBroadcast(Intent intent, Context context) {
         //// 引数を処理

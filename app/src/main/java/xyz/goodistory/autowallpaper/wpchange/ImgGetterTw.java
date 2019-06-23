@@ -2,7 +2,6 @@ package xyz.goodistory.autowallpaper.wpchange;
 
 import android.content.Context;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.github.scribejava.apis.TwitterApi;
 import com.github.scribejava.core.builder.ServiceBuilder;
@@ -22,15 +21,18 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import xyz.goodistory.autowallpaper.HistoryModel;
-import xyz.goodistory.autowallpaper.util.Token;
+import xyz.goodistory.autowallpaper.R;
+import xyz.goodistory.autowallpaper.SettingsFragment;
+import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 
 /**
  * Twitterのお気に入りからランダムに画像を取得するクラス
  * Created by k-shunsuke on 2017/12/27.
  */
 
-@SuppressWarnings("WeakerAccess")
-public class ImgGetterTw  {
+class ImgGetterTw  {
+    private static final String API_URL = "https://api.twitter.com/1.1/favorites/list.json?count=200";
+
     /************************************
      * APIでTwitterのお気に入りのJSONを取得
      * @param context sharedPreferenceからトークン取得時に必要なコンテキスト
@@ -39,18 +41,19 @@ public class ImgGetterTw  {
     @Nullable
     private static JSONArray getFavList(Context context) {
         try {
-            String apiUrl =  "https://api.twitter.com/1.1/favorites/list.json?count=200";
             final OAuth10aService service
-                    = new ServiceBuilder(Token.getTwitterConsumerKey(context))
-                         .apiSecret(Token.getTwitterConsumerSecret(context))
-                         .build(TwitterApi.instance());
+                    = new ServiceBuilder( context.getString(R.string.twitter_consumer_key) )
+                         .apiSecret( context.getString(R.string.twitter_consumer_secret) )
+                         .build( TwitterApi.instance() );
 
-            final OAuthRequest request = new OAuthRequest(Verb.GET, apiUrl);
+            final OAuthRequest request = new OAuthRequest(Verb.GET, API_URL);
+            final TwitterOAuthPreference.SharedPreference getAccessToken
+                    = new TwitterOAuthPreference.SharedPreference(
+                            SettingsFragment.KEY_FROM_TWITTER_OAUTH, context);
+
             service.signRequest(
                     new OAuth1AccessToken(
-                            Token.getTwitterAccessToken(context),
-                            Token.getTwitterAccessTokenSecret(context)
-                    ),
+                            getAccessToken.getToken(), getAccessToken.getTokenSecret() ),
                     request
             );
             final Response response = service.execute(request);
@@ -59,20 +62,12 @@ public class ImgGetterTw  {
             return new JSONArray(responseStr);
 
         } catch (IOException e) {
-            Log.d("○",e.getMessage());
-            e.printStackTrace();
             return null;
         } catch (InterruptedException e) {
-            Log.d("○",e.getMessage());
-            e.printStackTrace();
             return null;
         } catch (ExecutionException e) {
-            Log.d("○",e.getMessage());
-            e.printStackTrace();
             return null;
         } catch (JSONException e) {
-            Log.d("○",e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }
@@ -142,14 +137,16 @@ public class ImgGetterTw  {
         return jsonObj;
     }
 
-    public static List<ImgGetter> getImgGetterList(Context context) {
+    static List<ImgGetter> getImgGetterList(Context context) {
         List<ImgGetter> imgGetterTwList = new ArrayList<>();
 
         // ----------------------------------
         // お気に入りから画像のURLを取得
         // ----------------------------------
         JSONArray favListJsonAry = getFavList(context);
-        List<JSONObject> flattenJsonList = editJson(favListJsonAry);//「entities > media」「extended_entities > media」の部分
+
+        //「entities > media」「extended_entities > media」の部分
+        List<JSONObject> flattenJsonList = editJson(favListJsonAry);
 
         // ----------------------------------
         // リストに入れる
