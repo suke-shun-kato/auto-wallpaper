@@ -84,7 +84,6 @@ public class SettingsFragment extends PreferenceFragment
     // --------------------------------------------------------------------
     // TODO key はリソースから取得するようにする
     /** ディレクトリ選択<Preference>のkey名 */
-    public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_OTHER_ABOUT = "other_about";
 

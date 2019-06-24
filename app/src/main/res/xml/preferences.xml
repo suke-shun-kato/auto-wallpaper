@@ -79,7 +79,7 @@
         android:title="@string/setting_image_title">
         <SwitchPreference
             android:defaultValue="true"
-            android:key="other_autoRotation"
+            android:key="@string/preference_key_auto_rotation"
             android:title="@string/setting_image_autoRotation_title" />
     </PreferenceCategory>
     <PreferenceCategory

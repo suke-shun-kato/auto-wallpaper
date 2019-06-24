@@ -157,11 +157,12 @@ public class WpManager {
         // ----------------------------------
         // スクリーン（画面）サイズ取得
         Point point = DisplaySizeCheck.getRealSize(mContext);
+
         // 画像加工
+        Boolean isAutoRotationOn = mSp.getBoolean(
+                mContext.getString(R.string.preference_key_auto_rotation), true);
         Bitmap processedWallpaperBitmap = BitmapProcessor.process(
-                wallpaperBitmap, point.x, point.y,
-                mSp.getBoolean(SettingsFragment.KEY_OTHER_AUTO_ROTATION, true)
-        );
+                wallpaperBitmap, point.x, point.y, isAutoRotationOn);
 
         // ----------------------------------
         // 画像を壁紙にセット

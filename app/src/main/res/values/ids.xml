@@ -60,4 +60,8 @@
     <string name="preference_key_timer_interval" tools:ignore="MissingTranslation">
         timer_interval
     </string>
+
+    <string name="preference_key_auto_rotation" tools:ignore="MissingTranslation">
+        auto_rotation
+    </string>
 </resources>
