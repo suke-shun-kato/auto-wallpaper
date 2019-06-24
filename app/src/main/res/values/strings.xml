@@ -14,9 +14,8 @@
     <string name="share_dialog_message">Set this image to wallpaper?</string>
     <string name="share_error_message">Couldn\'t set to wallpaper.</string>
     <string name="share_image">The image which will be set to wallpaper.</string>
-    <string name="mainService_notification_ch_name">Running Auto Wallpaper Changer</string>
-    <string name="mainService_notification_title">Running</string>
-    <string name="mainService_notification_text">Running</string>
+    <string name="mainService_notification_ch_name">Auto Wallpaper Change</string>
+    <string name="mainService_notification_title">Auto Wallpaper Change</string>
     <string name="permission_toast">wants a storage permission to display a wall paper of file.</string>
 
     <string name="setting_toolbar">Setting</string>
@@ -157,4 +156,5 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
         </item>
     </string-array>
+    <string name="mainService_notification_text">Running</string>
 </resources>

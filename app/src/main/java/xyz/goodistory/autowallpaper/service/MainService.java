@@ -156,11 +156,11 @@ public class MainService extends Service {
 
             NotificationChannel ntfChannel = new NotificationChannel(
                     notificationChannelId,
-                    getString(R.string.mainService_notification_ch_name),  //TODO 文言をちゃんとする
+                    getString(R.string.mainService_notification_ch_name),
                     NotificationManager.IMPORTANCE_LOW
             );
 
-            NotificationManager ntfManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationManager ntfManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (ntfManager != null) {
                 ntfManager.createNotificationChannel(ntfChannel);
             }
