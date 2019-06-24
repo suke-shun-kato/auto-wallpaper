@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.goodistory.autowallpaper.HistoryModel;
+import xyz.goodistory.autowallpaper.R;
 import xyz.goodistory.autowallpaper.SelectDirPreference;
-import xyz.goodistory.autowallpaper.SettingsFragment;
 import xyz.goodistory.autowallpaper.util.FileExtended;
 
 
@@ -23,13 +23,20 @@ import xyz.goodistory.autowallpaper.util.FileExtended;
  * 指定ディレクトリからランダムに画像データを取得するクラス
  * Created by k-shunsuke on 2017/12/14.
  */
-
-@SuppressWarnings("WeakerAccess")
-public class ImgGetterDir {
+class WpUrisGetterDirectory extends WpUrisGetter {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
     private static final String[] EXTENSIONS = {"jpg", "jpeg", "png"};
+
+    private final Context mContext;
+
+    // --------------------------------------------------------------------
+    // コンストラクタ
+    // --------------------------------------------------------------------
+    WpUrisGetterDirectory(Context context) {
+        mContext = context;
+    }
 
     // --------------------------------------------------------------------
     // メソッド
@@ -38,25 +45,24 @@ public class ImgGetterDir {
      * 画像一覧から画像のURIを抽選する
      * @return boolean true:成功したとき、false:失敗したとき（ファイルが0のときなど）
      */
-    public static List<ImgGetter> getImgGetterList(Context context) {
+    public List<ImgGetter> getImgGetterList() {
         List<ImgGetter> getImgGetterList = new ArrayList<>();
 
         // ----------------------------------
         // 取得対象の画像のパスリストを取得
         // ----------------------------------
         //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             return getImgGetterList;
         }
 
         //// 通常処理
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String keySelectDirectory = mContext.getString(R.string.preference_key_select_directory);
         FileExtended imgDirFileEx = new FileExtended(
-                sp.getString(
-                        SettingsFragment.KEY_FROM_DIR_PATH,
-                        SelectDirPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
-                )
+                sp.getString(keySelectDirectory,
+                        SelectDirPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT )
         );
         List<String> imgPathList = imgDirFileEx.getAllFilePathList(EXTENSIONS);
 
@@ -65,7 +71,7 @@ public class ImgGetterDir {
         // ----------------------------------
         for (String imgPath : imgPathList) {
             //// ここで「file://」→「content://」へ変換する
-            Uri contentUri = FileProvider.getUriForFile(context, "xyz.goodistory.autowallpaper.fileprovider", new File(imgPath));
+            Uri contentUri = FileProvider.getUriForFile(mContext, "xyz.goodistory.autowallpaper.fileprovider", new File(imgPath));
 
             //// Listに追加
             getImgGetterList.add( new ImgGetter(

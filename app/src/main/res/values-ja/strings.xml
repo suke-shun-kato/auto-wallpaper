@@ -14,9 +14,8 @@
     <string name="share_dialog_message">この画像を壁紙にセットしますか？</string>
     <string name="share_error_message">壁紙に設定できませんでした</string>
     <string name="share_image">壁紙に設定する画像</string>
-    <string name="mainService_notification_ch_name">自動壁紙チェンジャー起動中</string>
-    <string name="mainService_notification_title">起動中</string>
-    <string name="mainService_notification_text">壁紙が自動で変更されます</string>
+    <string name="mainService_notification_ch_name">自動壁紙切り替え</string>
+    <string name="mainService_notification_title">自動壁紙切り替え</string>
     <string name="permission_toast">壁紙のデータをファイルから取得するために許可が必要です</string>
 
 
@@ -75,7 +74,7 @@
     <string name="setting_image_title">画像</string>
     <string name="setting_image_autoRotation_title">画像を自動で回転させる</string>
 
-    <string name="setting_other_title">初期化</string>
+    <string name="setting_other_title">その他</string>
     <string name="setting_other_resetBtn_title">値を初期化する</string>
     <string name="setting_other_resetBtn_resultText">初期化しました</string>
     <string name="setting_other_resetBtn_dialogText">設定値を初期化しますか？</string>
@@ -99,4 +98,5 @@
     <string name="about_toolbar">%sについて</string>
     <string name="about_version">バージョン %s</string>
     <string name="about_license_title">オープンソースライセンス</string>
+    <string name="mainService_notification_text">起動中</string>
 </resources>

@@ -253,7 +253,9 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
             // (参考)https://developer.android.com/training/permissions/requesting.html?hl=ja
             // ----------------------------------
             // ディレクトリから壁紙取得がONのとき、かつディレクトリアクセスパーミッションがOFFのとき
-            if ( this.mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+            final String keyFromDirectory = getString(R.string.preference_key_from_directory);
+
+            if ( mSp.getBoolean(keyFromDirectory, false)
                     && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED
                             ) {
@@ -325,7 +327,8 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
      * @param view 押されたボタンのビュー
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
-        if ( this.mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+        final String keyFromDirectory = getString(R.string.preference_key_from_directory);
+        if ( mSp.getBoolean(keyFromDirectory, false)
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
                 ) {
@@ -351,21 +354,23 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
         // ----------------------------------
         // 電源OFF時に変更
         // ----------------------------------
-        if ( this.mSp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+        final String preferenceKeyWhenScreenOn = getString(R.string.preference_key_when_screen_on);
+        if ( mSp.getBoolean(preferenceKeyWhenScreenOn, false) ) {
             list.add(this.getString(R.string.main_next_wallpaper_set_screenOff));
         }
 
         // ----------------------------------
         // 設定時間で変更
         // ----------------------------------
-        if ( this.mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+        final String keyWhenTimerCalls = getString(R.string.preference_key_when_timer_calls);
+        if ( mSp.getBoolean(keyWhenTimerCalls, false) ) {
             //// 遅延時間を計算
-            long intervalMsec = Long.parseLong(this.mSp.getString(
-                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
-                    this.getString(R.string.setting_when_timer_interval_values_default)
+            long intervalMsec = Long.parseLong(mSp.getString(
+                    getString(R.string.preference_key_timer_interval),
+                    getString(R.string.setting_when_timer_interval_values_default)
             ));
-            long settingUnixTimeMsec = this.mSp.getLong(
-                    SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis());
+            long settingUnixTimeMsec = mSp.getLong(
+                    getString(R.string.preference_key_start_time), System.currentTimeMillis());
             long delayMsec = MainService.calcDelayMsec(
                     settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
 

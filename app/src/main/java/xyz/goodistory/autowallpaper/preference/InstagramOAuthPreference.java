@@ -356,6 +356,7 @@ public class InstagramOAuthPreference extends Preference {
             context.unregisterReceiver(mCallbackBroadcastReceiver);
 
             //// 認可コード取得、ブロードキャストで受信したデータから取得
+            // TODO 属性から取得する
             Uri uri = intent.getData();
             if (uri == null ) {
                 Toast.makeText(

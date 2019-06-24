@@ -3,29 +3,32 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
-        android:key="from"
+        android:key="@string/preference_key_category_from"
         android:title="@string/setting_from">
         <SwitchPreference
             android:defaultValue="true"
-            android:key="from_dir"
+            android:key="@string/preference_key_from_directory"
             android:summary="@string/setting_form_dir_onoff_summary"
             android:title="@string/setting_from_dir_onoff_title" />
         <xyz.goodistory.autowallpaper.SelectDirPreference
             android:defaultValue="PICTURES"
-            android:key="from_dir_path"
+            android:key="@string/preference_key_select_directory"
             android:title="@string/setting_form_dir_which_title"
             custom:dialogTitle="@string/select_dir_pref_dialog_title" />
         <SwitchPreference
             android:defaultValue="false"
-            android:key="from_twitter_fav"
+            android:key="@string/preference_key_from_twitter_favorites"
             android:title="@string/setting_form_twitter_fav_title" />
-        <xyz.goodistory.autowallpaper.TwitterOAuthPreference
-            android:key="from_twitter_oauth"
+        <xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference
+            android:key="@string/preference_key_authenticate_twitter"
             android:title="@string/setting_from_twitter_oauth"
+            custom:apiKey="@string/twitter_consumer_key"
+            custom:apiSecretKey="@string/twitter_consumer_secret"
             custom:textCantAccessAuthPage="@string/setting_from_twitter_oauth_text_cantAccessAuthPage"
             custom:textOauthSuccess="@string/setting_from_twitter_oauth_text_oauthSuccess"
             custom:textOauthFailed="@string/setting_from_twitter_oauth_text_oauthFailed"
-            custom:callbackUrl="@string/twitter_callback_url" />
+            custom:callbackUrl="@string/twitter_callback_url"
+            />
         <!-- TODO API使用許可出たら復活させる  -->
         <!--<SwitchPreference-->
             <!--android:defaultValue="false"-->
@@ -45,25 +48,25 @@
 
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="when"
+        android:key="@string/preference_key_category_when"
         android:title="@string/setting_when">
         <SwitchPreference
-            android:key="when_turnOn"
+            android:key="@string/preference_key_when_screen_on"
             android:defaultValue="true"
             android:title="@string/setting_when_turnOn_title"
             android:summary="@string/setting_when_turnOn_summary" />
         <SwitchPreference
-            android:key="when_timer"
+            android:key="@string/preference_key_when_timer_calls"
             android:defaultValue="false"
             android:title="@string/setting_when_timer_title"
             android:summary="@string/setting_when_timer_summary" />
         <xyz.goodistory.autowallpaper.TimePreference
-            android:key="when_timer_startTiming_1"
+            android:key="@string/preference_key_start_time"
             android:title="@string/setting_when_timer_start_time"
             android:defaultValue="00:00"
             />
         <ListPreference
-            android:key="when_timer_interval"
+            android:key="@string/preference_key_timer_interval"
             android:entries="@array/setting_when_timer_interval_entries"
             android:entryValues="@array/setting_when_timer_interval_values"
             android:defaultValue="@string/setting_when_timer_interval_values_default"
@@ -72,25 +75,25 @@
             />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="image"
+        android:key="@string/preference_key_category_image"
         android:title="@string/setting_image_title">
         <SwitchPreference
             android:defaultValue="true"
-            android:key="other_autoRotation"
+            android:key="@string/preference_key_auto_rotation"
             android:title="@string/setting_image_autoRotation_title" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="other"
+        android:key="@string/preference_key_category_other"
         android:title="@string/setting_other_title">
         <xyz.goodistory.autowallpaper.ResetBtnPreference
-            android:key="other_resetBtn"
+            android:key="@string/preference_key_reset"
             android:title="@string/setting_other_resetBtn_title"
             custom:textDialogMsg="@string/setting_other_resetBtn_dialogText"
             custom:textResult="@string/setting_other_resetBtn_resultText"
             />
         <!-- ↓タイトルは動的に@string/setting_other_about_titleから設定しています。 -->
         <Preference
-            android:key="other_about"
+            android:key="@string/preference_key_about"
             />
     </PreferenceCategory>
 

@@ -182,13 +182,12 @@ public class WpUrisGetterInstagram extends WpUrisGetter {
         return new JSONObject(response.getBody());
     }
 
-
     public List<ImgGetter> getImgGetterList() throws Exception {
 
         // APIにアクセスしてJSONを取得
         JSONObject responseJson = getSelfMediaJson(mContext);
 
-        // 画像のURLだけだけ抜き出す
+        // 画像のURLだけ抜き出す
         List<Map<String, String>> urisList = pullImgUrls(responseJson);
 
         // imgGetter生成 に変換

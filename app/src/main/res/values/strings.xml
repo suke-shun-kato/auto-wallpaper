@@ -14,9 +14,8 @@
     <string name="share_dialog_message">Set this image to wallpaper?</string>
     <string name="share_error_message">Couldn\'t set to wallpaper.</string>
     <string name="share_image">The image which will be set to wallpaper.</string>
-    <string name="mainService_notification_ch_name">Running Auto Wallpaper Changer</string>
-    <string name="mainService_notification_title">Running</string>
-    <string name="mainService_notification_text">Running</string>
+    <string name="mainService_notification_ch_name">Auto Wallpaper Change</string>
+    <string name="mainService_notification_title">Auto Wallpaper Change</string>
     <string name="permission_toast">wants a storage permission to display a wall paper of file.</string>
 
     <string name="setting_toolbar">Setting</string>
@@ -87,7 +86,7 @@
     <string name="setting_image_title">Image</string>
     <string name="setting_image_autoRotation_title">Auto Rotation ON/OFF</string>
 
-    <string name="setting_other_title">Reset</string>
+    <string name="setting_other_title">Other</string>
     <string name="setting_other_resetBtn_title">Resets to default values.</string>
     <string name="setting_other_resetBtn_resultText">Resets to default values.</string>
     <string name="setting_other_resetBtn_dialogText">Are you sure that you want to reset setting values?</string>
@@ -156,22 +155,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
         </item>
-        <item>
-Twitter4J\n
-\n
-Copyright 2007 Yusuke Yamamoto\n
-\n
-Licensed under the Apache License, Version 2.0 (the "License");\n
-you may not use this file except in compliance with the License.\n
-You may obtain a copy of the License at\n
-\n
-      http://www.apache.org/licenses/LICENSE-2.0\n
-\n
-Unless required by applicable law or agreed to in writing, software
-Distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-        </item>
     </string-array>
+    <string name="mainService_notification_text">Running</string>
 </resources>

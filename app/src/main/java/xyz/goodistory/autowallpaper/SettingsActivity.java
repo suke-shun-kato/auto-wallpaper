@@ -8,6 +8,8 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
+
 
 /**
  * 設定画面のアクティビティ
@@ -75,14 +77,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     /**
-     * Handle onNewIntent() to inform the fragment manager that the
-     * state is not saved.  If you are handling new intents and may be
-     * making changes to the fragment state, you want to be sure to call
-     * through to the super-class here first.  Otherwise, if your state
-     * is saved but the activity is not stopped, you could get an
-     * onNewIntent() call which happens before onResume() and trying to
-     * perform fragment operations at that point will throw IllegalStateException
-     * because the fragment manager thinks the state is still saved.
      *
      * Twitterの認証ボタン押下後のコールバック用として作成した
      * @param intent インテント
@@ -91,7 +85,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        this.settingFragment.onNewIntent(intent);
+        TwitterOAuthPreference.sendToAccessTokenBroadcast(intent, this);
     }
 
     /************************************

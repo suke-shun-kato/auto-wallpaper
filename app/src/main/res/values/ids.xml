@@ -8,8 +8,8 @@
     <string  name="id_notificationChannel_runningMainService" tools:ignore="MissingTranslation">running_main_service</string>
     <string  name="id_notificationChannel_wallpaperChanged" tools:ignore="MissingTranslation">wallpaper_changed</string>
 
-    <string name="twitter_consumer_key" tools:ignore="MissingTranslation">i27LkK5rUNoXKxNXTjrvqhnbx</string>
-    <string name="twitter_consumer_secret" tools:ignore="MissingTranslation">dCQFHUUD6jS8zt1xEF4DBdTKiTFgfRBdFUjCxUdq1jMTBJpi1p</string>
+    <string name="twitter_consumer_key" tools:ignore="MissingTranslation">HdQuB3nqjm7zd1HLuWBkTNvG3</string>
+    <string name="twitter_consumer_secret" tools:ignore="MissingTranslation">skdss5Khh2WoJgEvPK1sbaCZcoJCOnWU6T6eq2DnxVorbbWcjy</string>
     <string name="twitter_callback_url" tools:ignore="MissingTranslation">xyzgisautowallpaper://</string>
 
     <string name="instagram_client_id" tools:ignore="MissingTranslation">ab75e33d627c433eb067274b73624f82</string>
@@ -27,10 +27,61 @@
 
 
     <!-- ここからkey -->
+    <string name="preference_key_category_from" tools:ignore="MissingTranslation">
+        category_from
+    </string>
+    <string name="preference_key_category_when" tools:ignore="MissingTranslation">
+        category_when
+    </string>
+    <string name="preference_key_category_image" tools:ignore="MissingTranslation">
+        category_image
+    </string>
+    <string name="preference_key_category_other" tools:ignore="MissingTranslation">
+        category_other
+    </string>
+
+
+    <string name="preference_key_from_directory" tools:ignore="MissingTranslation">
+        from_directory
+    </string>
+    <string name="preference_key_select_directory" tools:ignore="MissingTranslation">
+        select_directory
+    </string>
+
+    <string name="preference_key_from_twitter_favorites" tools:ignore="MissingTranslation">
+        from_twitter_favorites
+    </string>
+    <string name="preference_key_authenticate_twitter" tools:ignore="MissingTranslation">
+        authenticate_twitter
+    </string>
+
     <string name="preference_key_from_instagram_user_recent" tools:ignore="MissingTranslation">
         from_user_recent
     </string>
     <string name="preference_key_authenticate_instagram" tools:ignore="MissingTranslation">
         authenticate_instagram
+    </string>
+
+    <string name="preference_key_when_screen_on" tools:ignore="MissingTranslation">
+        when_turn_on
+    </string>
+    <string name="preference_key_when_timer_calls" tools:ignore="MissingTranslation">
+        when_timer_calls
+    </string>
+    <string name="preference_key_start_time" tools:ignore="MissingTranslation">
+        start_time
+    </string>
+    <string name="preference_key_timer_interval" tools:ignore="MissingTranslation">
+        timer_interval
+    </string>
+
+    <string name="preference_key_auto_rotation" tools:ignore="MissingTranslation">
+        auto_rotation
+    </string>
+    <string name="preference_key_reset" tools:ignore="MissingTranslation">
+        reset
+    </string>
+    <string name="preference_key_about" tools:ignore="MissingTranslation">
+        about
     </string>
 </resources>

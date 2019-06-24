@@ -9,14 +9,16 @@
         <attr name="textCantAccessAuthPage" format="string" />
         <attr name="textOauthSuccess" format="string" />
         <attr name="textOauthFailed" format="string" />
+        <attr name="apiKey" format="string" />
+        <attr name="apiSecretKey" format="string" />
         <attr name="callbackUrl" />
     </declare-styleable>
     <declare-styleable name="InstagramOAuthPreference">
-        <attr name="callbackUrl" />
-        <attr name="clientID" format="string"/>
+        <attr name="clientID" format="string" />
         <attr name="clientSecret" format="string"/>
-        <attr name="summaryDone" format="string"/>
-        <attr name="summaryNotYet" format="string"/>
+        <attr name="callbackUrl" />
+        <attr name="summaryDone" format="string" />
+        <attr name="summaryNotYet" format="string" />
     </declare-styleable>
     <declare-styleable name="ResetBtnPreference">
         <attr name="textDialogMsg" format="string" />

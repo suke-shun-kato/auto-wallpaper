@@ -157,11 +157,12 @@ public class WpManager {
         // ----------------------------------
         // スクリーン（画面）サイズ取得
         Point point = DisplaySizeCheck.getRealSize(mContext);
+
         // 画像加工
+        Boolean isAutoRotationOn = mSp.getBoolean(
+                mContext.getString(R.string.preference_key_auto_rotation), true);
         Bitmap processedWallpaperBitmap = BitmapProcessor.process(
-                wallpaperBitmap, point.x, point.y,
-                mSp.getBoolean(SettingsFragment.KEY_OTHER_AUTO_ROTATION, true)
-        );
+                wallpaperBitmap, point.x, point.y, isAutoRotationOn);
 
         // ----------------------------------
         // 画像を壁紙にセット
@@ -234,16 +235,23 @@ public class WpManager {
         List<ImgGetter> imgGetterList = new ArrayList<>();
 
         // ディレクトリ
-        if (mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+        final String keyFromDirectory = mContext.getString(R.string.preference_key_from_directory);
+        if (mSp.getBoolean(keyFromDirectory, false)
                 && ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
-            imgGetterList.addAll( ImgGetterDir.getImgGetterList(mContext) );
+
+            List<ImgGetter> imgGetters = (new WpUrisGetterDirectory(mContext)).getImgGetterList();
+            imgGetterList.addAll( imgGetters );
         }
 
         // twitter
-        if (mSp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
-                && mSp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
-            imgGetterList.addAll( ImgGetterTw.getImgGetterList(mContext) );
+        String keyAuthTwitter = mContext.getString(R.string.preference_key_authenticate_twitter);
+        String keyRomTwitterFav = mContext.getString(R.string.preference_key_from_twitter_favorites);
+        if (mSp.getBoolean(keyRomTwitterFav, false)
+                && mSp.getString(keyAuthTwitter, null) != null) {
+
+            List<ImgGetter> imgGetters = (new WpUrisGetterTwitter(mContext)).getImgGetterList();
+            imgGetterList.addAll( imgGetters );
         }
 
         // Instagram
