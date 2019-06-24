@@ -21,7 +21,6 @@ import xyz.goodistory.autowallpaper.TimerWpChangeReceiver;
 import xyz.goodistory.autowallpaper.MainActivity;
 import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
-import xyz.goodistory.autowallpaper.SettingsFragment;
 
 /**
  * Created by k-shunsuke on 2017/12/12.
