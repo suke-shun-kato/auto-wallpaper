@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:custom="http://schemas.android.com/apk/res-auto">
     <PreferenceCategory
-        android:key="from"
+        android:key="@string/preference_key_category_from"
         android:title="@string/setting_from">
         <SwitchPreference
             android:defaultValue="true"
@@ -48,7 +48,7 @@
 
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="when"
+        android:key="@string/preference_key_category_when"
         android:title="@string/setting_when">
         <SwitchPreference
             android:key="@string/preference_key_when_screen_on"
@@ -75,7 +75,7 @@
             />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="image"
+        android:key="@string/preference_key_category_image"
         android:title="@string/setting_image_title">
         <SwitchPreference
             android:defaultValue="true"
@@ -83,7 +83,7 @@
             android:title="@string/setting_image_autoRotation_title" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="other"
+        android:key="@string/preference_key_category_other"
         android:title="@string/setting_other_title">
         <xyz.goodistory.autowallpaper.ResetBtnPreference
             android:key="@string/preference_key_reset"

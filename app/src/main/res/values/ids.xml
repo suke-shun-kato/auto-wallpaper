@@ -27,6 +27,20 @@
 
 
     <!-- ここからkey -->
+    <string name="preference_key_category_from" tools:ignore="MissingTranslation">
+        category_from
+    </string>
+    <string name="preference_key_category_when" tools:ignore="MissingTranslation">
+        category_when
+    </string>
+    <string name="preference_key_category_image" tools:ignore="MissingTranslation">
+        category_image
+    </string>
+    <string name="preference_key_category_other" tools:ignore="MissingTranslation">
+        category_other
+    </string>
+
+
     <string name="preference_key_from_directory" tools:ignore="MissingTranslation">
         from_directory
     </string>
