@@ -234,7 +234,8 @@ public class WpManager {
         List<ImgGetter> imgGetterList = new ArrayList<>();
 
         // ディレクトリ
-        if (mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+        final String keyFromDirectory = mContext.getString(R.string.preference_key_from_directory);
+        if (mSp.getBoolean(keyFromDirectory, false)
                 && ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
 

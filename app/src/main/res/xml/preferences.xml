@@ -7,7 +7,7 @@
         android:title="@string/setting_from">
         <SwitchPreference
             android:defaultValue="true"
-            android:key="from_dir"
+            android:key="@string/preference_key_from_directory"
             android:summary="@string/setting_form_dir_onoff_summary"
             android:title="@string/setting_from_dir_onoff_title" />
         <xyz.goodistory.autowallpaper.SelectDirPreference

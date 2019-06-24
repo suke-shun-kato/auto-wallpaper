@@ -27,6 +27,9 @@
 
 
     <!-- ここからkey -->
+    <string name="preference_key_from_directory" tools:ignore="MissingTranslation">
+        from_directory
+    </string>
     <string name="preference_key_select_directory" tools:ignore="MissingTranslation">
         select_directory
     </string>

@@ -84,9 +84,6 @@ public class SettingsFragment extends PreferenceFragment
     // --------------------------------------------------------------------
     // TODO key はリソースから取得するようにする
     /** ディレクトリ選択<Preference>のkey名 */
-    @SuppressWarnings("unused")
-    public static final String KEY_FROM_DIR = "from_dir";
-
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
     public static final String KEY_WHEN_TIMER = "when_timer";
     public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
@@ -101,15 +98,8 @@ public class SettingsFragment extends PreferenceFragment
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
 
     //// preference key
-    private  String PREFERENCE_KEY_SELECT_DIRECTORY;
-
-    // --------------------------------------------------------------------
-    // コンストラクタ
-    // --------------------------------------------------------------------
-    public SettingsFragment() {
-        super();
-
-    }
+    private String PREFERENCE_KEY_SELECT_DIRECTORY;
+    private String PREFERENCE_KEY_FROM_DIR;
 
     // --------------------------------------------------------------------
     // メソッド
@@ -121,8 +111,10 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         //// preference key の読み込み
         PREFERENCE_KEY_SELECT_DIRECTORY = getString(R.string.preference_key_select_directory);
+        PREFERENCE_KEY_FROM_DIR = getString(R.string.preference_key_from_directory);
 
         //// 設定xmlを読み込む
         addPreferencesFromResource(R.xml.preferences);
@@ -231,7 +223,7 @@ public class SettingsFragment extends PreferenceFragment
         // 「ディレクトリから」 のパーミッションダイアログ表示設定
         // ----------
         // ここは setOnPreferenceClickListener() ではない
-        this.findPreference(KEY_FROM_DIR).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+        findPreference(PREFERENCE_KEY_FROM_DIR).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             /************************************
              * @param preference クリックされたPreference
              * @param newValue Preferenceの新しい値
@@ -425,9 +417,9 @@ public class SettingsFragment extends PreferenceFragment
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
 
                     // ディレクトリから の設定をONにする
-                    ((SwitchPreference)this.findPreference(KEY_FROM_DIR)).setChecked(true);
+                    ((SwitchPreference)findPreference(PREFERENCE_KEY_FROM_DIR)).setChecked(true);
                     // SharedPreferenceが変更したときのイベントを発火
-                    this.onSharedPreferenceChanged(this.mSp, KEY_FROM_DIR);
+                    this.onSharedPreferenceChanged(mSp, PREFERENCE_KEY_FROM_DIR);
                 }
                 break;
 

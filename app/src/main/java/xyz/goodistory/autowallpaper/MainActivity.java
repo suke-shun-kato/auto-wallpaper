@@ -253,7 +253,9 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
             // (参考)https://developer.android.com/training/permissions/requesting.html?hl=ja
             // ----------------------------------
             // ディレクトリから壁紙取得がONのとき、かつディレクトリアクセスパーミッションがOFFのとき
-            if ( this.mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+            final String keyFromDirectory = getString(R.string.preference_key_from_directory);
+
+            if ( mSp.getBoolean(keyFromDirectory, false)
                     && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                         != PackageManager.PERMISSION_GRANTED
                             ) {
@@ -325,7 +327,8 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
      * @param view 押されたボタンのビュー
      */
     public void setWallpaper_onClick(@SuppressWarnings("unused") View view) {
-        if ( this.mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
+        final String keyFromDirectory = getString(R.string.preference_key_from_directory);
+        if ( mSp.getBoolean(keyFromDirectory, false)
                 && ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED
                 ) {
