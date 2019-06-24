@@ -23,6 +23,8 @@ import com.github.scribejava.core.oauth.OAuth10aService;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
+
 import xyz.goodistory.autowallpaper.R;
 
 /**
@@ -93,7 +95,6 @@ public class TwitterOAuthPreference extends Preference {
         }
     }
 
-
     // --------------------------------------------------------------------
     // 内部クラス
     // --------------------------------------------------------------------
@@ -102,14 +103,17 @@ public class TwitterOAuthPreference extends Preference {
      *
      * 非同期処理中に画面回転などが起こると途中で中断される
      */
-    private class GetRequestTokenAsyncTask extends  AsyncTask<Void, Void, OAuth1RequestToken> {
+    private static class GetRequestTokenAsyncTask extends  AsyncTask<Void, Void, OAuth1RequestToken> {
         private final OAuth10aService mOAuth10aService;
         private final String mTextCantGetRequestToken;
+        private final WeakReference<TwitterOAuthPreference> mTwitterOAuthPreferenceWeakReference;
 
-        GetRequestTokenAsyncTask(
+        GetRequestTokenAsyncTask( TwitterOAuthPreference twitterOAuthPreference,
                 OAuth10aService oAuth10aService, String textCantGetRequestToken) {
 
             super();
+
+            mTwitterOAuthPreferenceWeakReference = new WeakReference<>(twitterOAuthPreference);
             mOAuth10aService = oAuth10aService;
             mTextCantGetRequestToken = textCantGetRequestToken;
         }
@@ -136,13 +140,16 @@ public class TwitterOAuthPreference extends Preference {
          */
         @Override
         protected void onPostExecute(@Nullable OAuth1RequestToken oAuth1RequestToken) {
+            TwitterOAuthPreference twitterOAuthPreference
+                    = mTwitterOAuthPreferenceWeakReference.get();
+
             // フィールドに保存
-            mOAuth1RequestToken = oAuth1RequestToken;
+            twitterOAuthPreference.setOAuth1RequestToken(oAuth1RequestToken);
 
             if (oAuth1RequestToken == null) {
             // リクエストトークン取得できなかったとき（ネットつながってないとき）
                 Toast.makeText(
-                        getContext(),
+                        twitterOAuthPreference.getContext(),
                         mTextCantGetRequestToken, Toast.LENGTH_SHORT)
                         .show();
             } else {
@@ -152,7 +159,7 @@ public class TwitterOAuthPreference extends Preference {
                 String urlAuthorizationPage = mOAuth10aService.getAuthorizationUrl(oAuth1RequestToken);
 
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(urlAuthorizationPage));
-                getContext().startActivity(intent);
+                twitterOAuthPreference.getContext().startActivity(intent);
             }
 
         }
@@ -162,19 +169,27 @@ public class TwitterOAuthPreference extends Preference {
     /**
      * AccessTokenを取得 → SharedPreference に保存
      */
-    private class GetAccessTokenAsyncTask extends AsyncTask<Void, Void, OAuth1AccessToken> {
+    private static class GetAccessTokenAsyncTask extends AsyncTask<Void, Void, OAuth1AccessToken> {
         private final OAuth10aService mOAuth10aService;
         private final OAuth1RequestToken mOAuth1RequestToken;
         private final String mVerifier;
+        private final String mTextOauthSuccess;
+        private final String mTextOauthFailed;
+        private final WeakReference<TwitterOAuthPreference> mTwitterOAuthPreferenceWeakReference;
 
         GetAccessTokenAsyncTask(
-                OAuth10aService oAuth10aService,
-                OAuth1RequestToken oauth1RequestToken,
-                String verifier) {
+                TwitterOAuthPreference twitterOAuthPreference,
+                OAuth10aService oAuth10aService, OAuth1RequestToken oauth1RequestToken,
+                String verifier,  String textOauthSuccess, String textOauthFailed) {
+
+            super();
 
             mOAuth10aService = oAuth10aService;
             mOAuth1RequestToken = oauth1RequestToken;
             mVerifier = verifier;
+            mTextOauthSuccess = textOauthSuccess;
+            mTextOauthFailed = textOauthFailed;
+            mTwitterOAuthPreferenceWeakReference = new WeakReference<>(twitterOAuthPreference);
         }
 
         @Override
@@ -195,7 +210,8 @@ public class TwitterOAuthPreference extends Preference {
             //// エラー処理
             if (oAuth1AccessToken == null) {
                 // アクセストークンが取得できなかったとき
-                Toast.makeText(getContext(),mTextOauthFailed, Toast.LENGTH_SHORT)
+                Toast.makeText( mTwitterOAuthPreferenceWeakReference.get().getContext(),
+                        mTextOauthFailed, Toast.LENGTH_SHORT)
                         .show();
                 return;
             }
@@ -205,35 +221,44 @@ public class TwitterOAuthPreference extends Preference {
                 JSONObject aTokenJson = new JSONObject()
                         .put(JSON_KEY_TOKEN, oAuth1AccessToken.getToken())
                         .put(JSON_KEY_TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
-                persistString(aTokenJson.toString());
+                mTwitterOAuthPreferenceWeakReference.get().persistString(aTokenJson.toString());
             } catch (JSONException e) {
-                Toast.makeText(getContext(), mTextOauthFailed, Toast.LENGTH_SHORT)
+                Toast.makeText(mTwitterOAuthPreferenceWeakReference.get().getContext(),
+                        mTextOauthFailed, Toast.LENGTH_SHORT)
                         .show();
             }
 
             //// Toastで表示
-            Toast.makeText(getContext(), mTextOauthSuccess, Toast.LENGTH_LONG).show();
+            Toast.makeText(mTwitterOAuthPreferenceWeakReference.get().getContext(),
+                    mTextOauthSuccess, Toast.LENGTH_LONG)
+                    .show();
         }
     }
 
     /**
      * ブロードキャストを受信したら Access Token を取得する
      */
-    private class ToGetAccessTokenBroadcastReceiver extends BroadcastReceiver {
+    private static class ToGetAccessTokenBroadcastReceiver extends BroadcastReceiver {
 
         private final OAuth10aService mOAuth10aService;
+        private final String mTextOauthSuccess;
         private final String mTextOauthFailed;
+        private final WeakReference<TwitterOAuthPreference> mTwitterOAuthPreferenceWeakReference;
+
 
         public ToGetAccessTokenBroadcastReceiver(
+                TwitterOAuthPreference twitterOAuthPreference,
                 OAuth10aService oAuth10aService,
-                String textOauthFailed ) {
+                String textOauthSuccess, String textOauthFailed ) {
 
+            mTwitterOAuthPreferenceWeakReference = new WeakReference<>(twitterOAuthPreference);
             mOAuth10aService = oAuth10aService;
+            mTextOauthSuccess = textOauthSuccess;
             mTextOauthFailed = textOauthFailed;
         }
 
         /**
-         * verifier を intent から取得してそれで access token を取得する
+         * verifier(intentから取得)で access token を取得する
          * @param context The Context in which the receiver is running.
          * @param intent  The Intent being received.
          */
@@ -254,7 +279,10 @@ public class TwitterOAuthPreference extends Preference {
             }
 
             //// 非同期でaccess token を取得
-            (new GetAccessTokenAsyncTask(mOAuth10aService, mOAuth1RequestToken, oauthVerifier))
+            TwitterOAuthPreference twitterOAuthPreference = mTwitterOAuthPreferenceWeakReference.get();
+            ( new GetAccessTokenAsyncTask(twitterOAuthPreference, mOAuth10aService,
+                    twitterOAuthPreference.getOAuth1RequestToken(), oauthVerifier,
+                    mTextOauthSuccess, mTextOauthFailed) )
                     .execute();
         }
     }
@@ -321,7 +349,8 @@ public class TwitterOAuthPreference extends Preference {
         // ----------------------------------
         //// BroadcastReceiver
         ToGetAccessTokenBroadcastReceiver broadcastReceiver
-                = new ToGetAccessTokenBroadcastReceiver(mOAuth10aService, mTextOauthFailed);
+                = new ToGetAccessTokenBroadcastReceiver(this, mOAuth10aService,
+                mTextOauthSuccess, mTextOauthFailed);
 
         //// intentFilter の設定
         IntentFilter intentFilter = new IntentFilter();
@@ -334,10 +363,26 @@ public class TwitterOAuthPreference extends Preference {
         // 非同期でアクセストークン取得する
         // ----------------------------------
         GetRequestTokenAsyncTask getRequestTokenAsyncTask = new GetRequestTokenAsyncTask(
-                mOAuth10aService, mTextCantAccessAuthPage);
+                this, mOAuth10aService, mTextCantAccessAuthPage);
 
         // requestTokenを取得 → それで認可ページを開く
         getRequestTokenAsyncTask.execute();
+    }
+
+    /**
+     * AsyncTask内で使う用
+     * @return mOAuth1RequestToken
+     */
+    private OAuth1RequestToken getOAuth1RequestToken() {
+        return mOAuth1RequestToken;
+    }
+
+    /**
+     * * AsyncTask内で使う用
+     * @param oAuth1RequestToken oAuth1RequestToken
+     */
+    private void setOAuth1RequestToken(OAuth1RequestToken oAuth1RequestToken) {
+        mOAuth1RequestToken = oAuth1RequestToken;
     }
 
 
@@ -373,7 +418,7 @@ public class TwitterOAuthPreference extends Preference {
      * Activity で使うメソッド
      * 認証ボタンを押したあとのcallbackで取得したintent(verifierとrequestToken)を
      * このクラスへbroadcastでを送る
-     * @param intent callbackで取得したintetn
+     * @param intent callbackで取得したintent
      * @param context context
      */
     public static void sendToAccessTokenBroadcast(Intent intent, Context context) {
