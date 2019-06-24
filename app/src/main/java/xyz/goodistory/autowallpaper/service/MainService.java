@@ -44,7 +44,9 @@ public class MainService extends Service {
     /** 指定時間に壁紙がランダムチェンジする */
     PendingIntent mWpChangePdIntent;
 
+    //// preference key
     private String PREFERENCE_KEY_WHEN_SCREEN_ON;
+    private String PREFERENCE_KEY_WHEN_TIMER_CALLS;
 
     // --------------------------------------------------------------------
     // フィールド（バインド用）
@@ -82,7 +84,9 @@ public class MainService extends Service {
 
         mSp = PreferenceManager.getDefaultSharedPreferences(this);
 
+        //// preference key
         PREFERENCE_KEY_WHEN_SCREEN_ON = getString(R.string.preference_key_when_screen_on);
+        PREFERENCE_KEY_WHEN_TIMER_CALLS =  getString(R.string.preference_key_when_timer_calls);
 
         mWpChangePdIntent = PendingIntent.getBroadcast(
                 this, TimerWpChangeReceiver.REQUEST_CODE_MAIN_SERVICE,
@@ -110,7 +114,7 @@ public class MainService extends Service {
         if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_ON, false) ) {
             this.unsetScreenOnListener();
         }
-        if (mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false)) {
+        if (mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false)) {
             this.unsetTimerListener();
         }
 
@@ -200,7 +204,7 @@ public class MainService extends Service {
         if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_ON, false) ) {
             this.setScreenOnListener();
         }
-        if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+        if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false) ) {
             this.setTimerListener();
         }
 
@@ -246,9 +250,9 @@ public class MainService extends Service {
                 unsetScreenOnListener();
             }
 
-        } else if ( preferenceKey.equals(SettingsFragment.KEY_WHEN_TIMER) ) {
+        } else if ( preferenceKey.equals(PREFERENCE_KEY_WHEN_TIMER_CALLS) ) {
             // 時間設定
-            if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+            if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false) ) {
                 setTimerListener();
             } else {
                 unsetTimerListener();
@@ -256,7 +260,7 @@ public class MainService extends Service {
 
         } else if ( preferenceKey.equals(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1)
                 || preferenceKey.equals(SettingsFragment.KEY_WHEN_TIMER_INTERVAL) ) {
-            if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+            if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false) ) {
                 unsetTimerListener();
                 setTimerListener();
             }

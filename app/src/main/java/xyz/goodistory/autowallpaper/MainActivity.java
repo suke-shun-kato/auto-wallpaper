@@ -362,13 +362,14 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
         // ----------------------------------
         // 設定時間で変更
         // ----------------------------------
-        if ( this.mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+        final String keyWhenTimerCalls = getString(R.string.preference_key_when_timer_calls);
+        if ( mSp.getBoolean(keyWhenTimerCalls, false) ) {
             //// 遅延時間を計算
-            long intervalMsec = Long.parseLong(this.mSp.getString(
+            long intervalMsec = Long.parseLong(mSp.getString(
                     SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
-                    this.getString(R.string.setting_when_timer_interval_values_default)
+                    getString(R.string.setting_when_timer_interval_values_default)
             ));
-            long settingUnixTimeMsec = this.mSp.getLong(
+            long settingUnixTimeMsec = mSp.getLong(
                     SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis());
             long delayMsec = MainService.calcDelayMsec(
                     settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());

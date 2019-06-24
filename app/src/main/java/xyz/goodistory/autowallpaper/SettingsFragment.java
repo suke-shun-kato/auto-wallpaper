@@ -84,7 +84,6 @@ public class SettingsFragment extends PreferenceFragment
     // --------------------------------------------------------------------
     // TODO key はリソースから取得するようにする
     /** ディレクトリ選択<Preference>のkey名 */
-    public static final String KEY_WHEN_TIMER = "when_timer";
     public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
 
     public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";

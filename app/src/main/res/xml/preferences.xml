@@ -56,7 +56,7 @@
             android:title="@string/setting_when_turnOn_title"
             android:summary="@string/setting_when_turnOn_summary" />
         <SwitchPreference
-            android:key="when_timer"
+            android:key="@string/preference_key_when_timer_calls"
             android:defaultValue="false"
             android:title="@string/setting_when_timer_title"
             android:summary="@string/setting_when_timer_summary" />

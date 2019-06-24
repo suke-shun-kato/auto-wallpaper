@@ -51,4 +51,7 @@
     <string name="preference_key_when_screen_on" tools:ignore="MissingTranslation">
         when_turn_on
     </string>
+    <string name="preference_key_when_timer_calls" tools:ignore="MissingTranslation">
+        when_timer_calls
+    </string>
 </resources>
