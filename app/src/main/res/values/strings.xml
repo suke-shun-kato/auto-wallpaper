@@ -87,7 +87,7 @@
     <string name="setting_image_title">Image</string>
     <string name="setting_image_autoRotation_title">Auto Rotation ON/OFF</string>
 
-    <string name="setting_other_title">Reset</string>
+    <string name="setting_other_title">Other</string>
     <string name="setting_other_resetBtn_title">Resets to default values.</string>
     <string name="setting_other_resetBtn_resultText">Resets to default values.</string>
     <string name="setting_other_resetBtn_dialogText">Are you sure that you want to reset setting values?</string>

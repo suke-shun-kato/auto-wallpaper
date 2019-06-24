@@ -75,7 +75,7 @@
     <string name="setting_image_title">画像</string>
     <string name="setting_image_autoRotation_title">画像を自動で回転させる</string>
 
-    <string name="setting_other_title">初期化</string>
+    <string name="setting_other_title">その他</string>
     <string name="setting_other_resetBtn_title">値を初期化する</string>
     <string name="setting_other_resetBtn_resultText">初期化しました</string>
     <string name="setting_other_resetBtn_dialogText">設定値を初期化しますか？</string>
