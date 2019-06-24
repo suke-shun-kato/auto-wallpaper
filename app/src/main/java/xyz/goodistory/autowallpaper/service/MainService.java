@@ -47,6 +47,8 @@ public class MainService extends Service {
     //// preference key
     private String PREFERENCE_KEY_WHEN_SCREEN_ON;
     private String PREFERENCE_KEY_WHEN_TIMER_CALLS;
+    private String PREFERENCE_KEY_START_TIME;
+    private String PREFERENCE_KEY_TIMER_INTERVAL;
 
     // --------------------------------------------------------------------
     // フィールド（バインド用）
@@ -87,6 +89,8 @@ public class MainService extends Service {
         //// preference key
         PREFERENCE_KEY_WHEN_SCREEN_ON = getString(R.string.preference_key_when_screen_on);
         PREFERENCE_KEY_WHEN_TIMER_CALLS =  getString(R.string.preference_key_when_timer_calls);
+        PREFERENCE_KEY_START_TIME =  getString(R.string.preference_key_start_time);
+        PREFERENCE_KEY_TIMER_INTERVAL =  getString(R.string.preference_key_timer_interval);
 
         mWpChangePdIntent = PendingIntent.getBroadcast(
                 this, TimerWpChangeReceiver.REQUEST_CODE_MAIN_SERVICE,
@@ -258,8 +262,8 @@ public class MainService extends Service {
                 unsetTimerListener();
             }
 
-        } else if ( preferenceKey.equals(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1)
-                || preferenceKey.equals(SettingsFragment.KEY_WHEN_TIMER_INTERVAL) ) {
+        } else if ( preferenceKey.equals(PREFERENCE_KEY_START_TIME)
+                || preferenceKey.equals(PREFERENCE_KEY_TIMER_INTERVAL) ) {
             if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false) ) {
                 unsetTimerListener();
                 setTimerListener();
@@ -297,11 +301,10 @@ public class MainService extends Service {
         // 設定値取得
         // ----------------------------------
         final long intervalMillis = Long.parseLong(mSp.getString(
-                SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
-                this.getString(R.string.setting_when_timer_interval_values_default)) );
+                PREFERENCE_KEY_TIMER_INTERVAL,
+                getString(R.string.setting_when_timer_interval_values_default)) );
         final long startTimeUnixTime = mSp.getLong(
-                SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1,
-                System.currentTimeMillis() );
+                PREFERENCE_KEY_START_TIME, System.currentTimeMillis() );
 
         final long wpChangeUnixTimeMsec = calcNextWpChangeUnixTimeMsec(
                 startTimeUnixTime, intervalMillis, System.currentTimeMillis());

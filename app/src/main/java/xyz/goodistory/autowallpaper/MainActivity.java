@@ -366,11 +366,11 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
         if ( mSp.getBoolean(keyWhenTimerCalls, false) ) {
             //// 遅延時間を計算
             long intervalMsec = Long.parseLong(mSp.getString(
-                    SettingsFragment.KEY_WHEN_TIMER_INTERVAL,
+                    getString(R.string.preference_key_timer_interval),
                     getString(R.string.setting_when_timer_interval_values_default)
             ));
             long settingUnixTimeMsec = mSp.getLong(
-                    SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1, System.currentTimeMillis());
+                    getString(R.string.preference_key_start_time), System.currentTimeMillis());
             long delayMsec = MainService.calcDelayMsec(
                     settingUnixTimeMsec, intervalMsec, System.currentTimeMillis());
 

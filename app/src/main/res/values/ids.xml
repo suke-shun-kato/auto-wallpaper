@@ -54,4 +54,10 @@
     <string name="preference_key_when_timer_calls" tools:ignore="MissingTranslation">
         when_timer_calls
     </string>
+    <string name="preference_key_start_time" tools:ignore="MissingTranslation">
+        start_time
+    </string>
+    <string name="preference_key_timer_interval" tools:ignore="MissingTranslation">
+        timer_interval
+    </string>
 </resources>

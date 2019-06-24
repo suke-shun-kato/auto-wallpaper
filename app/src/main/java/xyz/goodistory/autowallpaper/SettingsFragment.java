@@ -84,10 +84,6 @@ public class SettingsFragment extends PreferenceFragment
     // --------------------------------------------------------------------
     // TODO key はリソースから取得するようにする
     /** ディレクトリ選択<Preference>のkey名 */
-    public static final String KEY_WHEN_TIMER_START_TIMING_1 = "when_timer_startTiming_1";
-
-    public static final String KEY_WHEN_TIMER_INTERVAL = "when_timer_interval";
-
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_OTHER_ABOUT = "other_about";
@@ -101,9 +97,8 @@ public class SettingsFragment extends PreferenceFragment
     private String PREFERENCE_KEY_FROM_DIR;
     private String PREFERENCE_KEY_FROM_TWITTER_FAVORITES;
     private String PREFERENCE_KEY_AUTHENTICATE_TWITTER;
-    private String PREFERENCE_KEY_FROM_INSTAGRAM_USER_RECENT;
+    private String PREFERENCE_KEY_FROM_INSTAGRAM_USER_RECENT;// TODO インスタ復活したら使う
     private String PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM;
-//    private String PREFERENCE_KEY_WHEN_SCREEN_ON; // このクラスでは未使用
 
     // --------------------------------------------------------------------
     // メソッド
