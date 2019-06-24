@@ -354,7 +354,8 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
         // ----------------------------------
         // 電源OFF時に変更
         // ----------------------------------
-        if ( this.mSp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+        final String preferenceKeyWhenScreenOn = getString(R.string.preference_key_when_screen_on);
+        if ( mSp.getBoolean(preferenceKeyWhenScreenOn, false) ) {
             list.add(this.getString(R.string.main_next_wallpaper_set_screenOff));
         }
 

@@ -44,6 +44,8 @@ public class MainService extends Service {
     /** 指定時間に壁紙がランダムチェンジする */
     PendingIntent mWpChangePdIntent;
 
+    private String PREFERENCE_KEY_WHEN_SCREEN_ON;
+
     // --------------------------------------------------------------------
     // フィールド（バインド用）
     // --------------------------------------------------------------------
@@ -77,7 +79,10 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+
         mSp = PreferenceManager.getDefaultSharedPreferences(this);
+
+        PREFERENCE_KEY_WHEN_SCREEN_ON = getString(R.string.preference_key_when_screen_on);
 
         mWpChangePdIntent = PendingIntent.getBroadcast(
                 this, TimerWpChangeReceiver.REQUEST_CODE_MAIN_SERVICE,
@@ -102,7 +107,7 @@ public class MainService extends Service {
         // ----------------------------------
         //
         // ----------------------------------
-        if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+        if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_ON, false) ) {
             this.unsetScreenOnListener();
         }
         if (mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false)) {
@@ -192,7 +197,7 @@ public class MainService extends Service {
         //
         // ----------------------------------
         //// 通常の場合
-        if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
+        if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_ON, false) ) {
             this.setScreenOnListener();
         }
         if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
@@ -219,13 +224,13 @@ public class MainService extends Service {
 
     /************************************
      * 設定画面の値が変更されたときに呼ばれるコールバック（自作）
-     * @param key SharedPreferenceのキー名
+     * @param preferenceKey SharedPreferenceのキー名
      */
-    public void onSPChanged(String key) {
+    public void onSPChanged(String preferenceKey) {
         // ----------------------------------
         // 例外処理
         // ----------------------------------
-        if (!this.mIsStarted) {
+        if ( !mIsStarted ) {
             //開始されたサービス（通常サービス）が起動中でないときは途中で切り上げ
             return;
         }
@@ -233,39 +238,31 @@ public class MainService extends Service {
         // ----------------------------------
         // 通常処理
         // ----------------------------------
-        switch (key) {
-            // ----------------------------------
-            // from
-            // ----------------------------------
-            //// fromは壁紙セット時に判定するのでここの記述は不要
+        if (preferenceKey.equals(PREFERENCE_KEY_WHEN_SCREEN_ON)) {
+            // 電源ON設定がONのとき設定
+            if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_ON, false) ) {
+                setScreenOnListener();
+            } else {
+                unsetScreenOnListener();
+            }
 
-            // ----------------------------------
-            // When
-            // ----------------------------------
-            case SettingsFragment.KEY_WHEN_SCREEN_ON:
-                // 電源ON設定がONのとき設定
-                if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_SCREEN_ON, false) ) {
-                    this.setScreenOnListener();
-                } else {
-                    this.unsetScreenOnListener();
-                }
-                break;
-            case SettingsFragment.KEY_WHEN_TIMER:
-                // 時間設定
-                if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-                    this.setTimerListener();
-                } else {
-                    this.unsetTimerListener();
-                }
-                break;
-            case SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1:
-            case SettingsFragment.KEY_WHEN_TIMER_INTERVAL:
-                if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
-                    this.unsetTimerListener();
-                    this.setTimerListener();
-                }
-                break;
+        } else if ( preferenceKey.equals(SettingsFragment.KEY_WHEN_TIMER) ) {
+            // 時間設定
+            if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+                setTimerListener();
+            } else {
+                unsetTimerListener();
+            }
+
+        } else if ( preferenceKey.equals(SettingsFragment.KEY_WHEN_TIMER_START_TIMING_1)
+                || preferenceKey.equals(SettingsFragment.KEY_WHEN_TIMER_INTERVAL) ) {
+            if ( mSp.getBoolean(SettingsFragment.KEY_WHEN_TIMER, false) ) {
+                unsetTimerListener();
+                setTimerListener();
+            }
         }
+
+
     }
 
     // --------------------------------------------------------------------

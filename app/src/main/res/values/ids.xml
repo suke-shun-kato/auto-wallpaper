@@ -47,4 +47,8 @@
     <string name="preference_key_authenticate_instagram" tools:ignore="MissingTranslation">
         authenticate_instagram
     </string>
+
+    <string name="preference_key_when_screen_on" tools:ignore="MissingTranslation">
+        when_turn_on
+    </string>
 </resources>

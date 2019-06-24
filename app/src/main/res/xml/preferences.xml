@@ -51,7 +51,7 @@
         android:key="when"
         android:title="@string/setting_when">
         <SwitchPreference
-            android:key="when_turnOn"
+            android:key="@string/preference_key_when_screen_on"
             android:defaultValue="true"
             android:title="@string/setting_when_turnOn_title"
             android:summary="@string/setting_when_turnOn_summary" />
