@@ -14,8 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import xyz.goodistory.autowallpaper.HistoryModel;
+import xyz.goodistory.autowallpaper.R;
 import xyz.goodistory.autowallpaper.SelectDirPreference;
-import xyz.goodistory.autowallpaper.SettingsFragment;
 import xyz.goodistory.autowallpaper.util.FileExtended;
 
 
@@ -59,11 +59,10 @@ class WpUrisGetterDirectory extends WpUrisGetter {
 
         //// 通常処理
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+        String keySelectDirectory = mContext.getString(R.string.preference_key_select_directory);
         FileExtended imgDirFileEx = new FileExtended(
-                sp.getString(
-                        SettingsFragment.KEY_FROM_DIR_PATH,
-                        SelectDirPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT
-                )
+                sp.getString(keySelectDirectory,
+                        SelectDirPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT )
         );
         List<String> imgPathList = imgDirFileEx.getAllFilePathList(EXTENSIONS);
 

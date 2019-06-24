@@ -27,6 +27,10 @@
 
 
     <!-- ここからkey -->
+    <string name="preference_key_select_directory" tools:ignore="MissingTranslation">
+        select_directory
+    </string>
+
     <string name="preference_key_from_twitter_favorites" tools:ignore="MissingTranslation">
         from_twitter_favorites
     </string>

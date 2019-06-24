@@ -34,11 +34,13 @@ import xyz.goodistory.autowallpaper.service.MainService;
  */
 public class SettingsFragment extends PreferenceFragment
         implements SharedPreferences.OnSharedPreferenceChangeListener {
+
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
     /** バインド先のサービスのインスタンス */
     private MainService mainService;
+
     /** バインドされた状態か */
     private boolean isBound = false;
     private boolean isServiceRunning = false;
@@ -84,8 +86,6 @@ public class SettingsFragment extends PreferenceFragment
     /** ディレクトリ選択<Preference>のkey名 */
     @SuppressWarnings("unused")
     public static final String KEY_FROM_DIR = "from_dir";
-    @SuppressWarnings("WeakerAccess")
-    public static final String KEY_FROM_DIR_PATH = "from_dir_path";
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
     public static final String KEY_WHEN_TIMER = "when_timer";
@@ -100,6 +100,17 @@ public class SettingsFragment extends PreferenceFragment
     private static final int RQ_CODE_FROM_DIR = 1;
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
 
+    //// preference key
+    private  String PREFERENCE_KEY_SELECT_DIRECTORY;
+
+    // --------------------------------------------------------------------
+    // コンストラクタ
+    // --------------------------------------------------------------------
+    public SettingsFragment() {
+        super();
+
+    }
+
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
@@ -110,9 +121,11 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //// preference key の読み込み
+        PREFERENCE_KEY_SELECT_DIRECTORY = getString(R.string.preference_key_select_directory);
 
-        // 設定xmlを読み込む
-        this.addPreferencesFromResource(R.xml.preferences);
+        //// 設定xmlを読み込む
+        addPreferencesFromResource(R.xml.preferences);
     }
 //
 //    public void onNewIntent(Intent intent) {
@@ -183,13 +196,14 @@ public class SettingsFragment extends PreferenceFragment
         // ----------------------------------
         // サマリーの表示の設定
         // ----------------------------------
-        this.mSp = PreferenceManager.getDefaultSharedPreferences( this.getActivity() );
+        mSp = PreferenceManager.getDefaultSharedPreferences( getActivity() );
 
         //// 選択ディレクトリ
-        Preference fromDirPathPref = this.findPreference(KEY_FROM_DIR_PATH);
-        String str = this.mSp.getString(KEY_FROM_DIR_PATH, this.getString(R.string.setting_from_dir_which_default_summary) );
+        String summaryText = mSp.getString(PREFERENCE_KEY_SELECT_DIRECTORY,
+                getString(R.string.setting_from_dir_which_default_summary) );
 
-        fromDirPathPref.setSummary( str );
+        Preference fromDirPathPref = findPreference(PREFERENCE_KEY_SELECT_DIRECTORY);
+        fromDirPathPref.setSummary( summaryText );
 
         //// Twitter認証
         String keyAuthTwitter = getString(R.string.preference_key_authenticate_twitter);
@@ -306,7 +320,9 @@ public class SettingsFragment extends PreferenceFragment
         // ----------
         // 「ディレクトリを設定」 のパーミッションダイアログ表示設定
         // ----------
-        this.findPreference(KEY_FROM_DIR_PATH).setOnPreferenceClickListener(new Preference.OnPreferenceClickListener(){
+        findPreference(PREFERENCE_KEY_SELECT_DIRECTORY)
+                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+
             /************************************
              * Preferenceがクリックされたときのコールバック
              * @param preference クリックされたプリファレンス
@@ -396,23 +412,33 @@ public class SettingsFragment extends PreferenceFragment
      * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
      */
     public void onRequestPermissionsResultFragment(
-            int requestCode, @SuppressWarnings("unused") @NonNull String[] permissions, @NonNull int[] grantResults
+            int requestCode,
+            @SuppressWarnings("unused") @NonNull String[] permissions,
+            @NonNull int[] grantResults
     ) {
+
         switch (requestCode) {
             case RQ_CODE_FROM_DIR:
                 // 許可をクリックしたとき
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
+
                     // ディレクトリから の設定をONにする
                     ((SwitchPreference)this.findPreference(KEY_FROM_DIR)).setChecked(true);
                     // SharedPreferenceが変更したときのイベントを発火
                     this.onSharedPreferenceChanged(this.mSp, KEY_FROM_DIR);
                 }
                 break;
+
             case RQ_CODE_FROM_DIR_PATH:
                 // 許可をクリックしたとき
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
+
                     // もう一度Preferenceをクリックする
-                    ((SelectDirPreference)this.findPreference(KEY_FROM_DIR_PATH)).click();
+                    ((SelectDirPreference)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY)).click();
                 }
                 break;
         }
@@ -435,8 +461,8 @@ public class SettingsFragment extends PreferenceFragment
         String keyAuthTwitter = getString(R.string.preference_key_authenticate_twitter);
 
         //// 反映
-        if ( preferenceKey.equals(KEY_FROM_DIR_PATH) ) {  //// ディレクトリ選択
-            Preference fromDirPathPreference = this.findPreference(preferenceKey);
+        if ( preferenceKey.equals(PREFERENCE_KEY_SELECT_DIRECTORY) ) {  //// ディレクトリ選択
+            Preference fromDirPathPreference = findPreference(preferenceKey);
             fromDirPathPreference.setSummary(sp.getString(preferenceKey, ""));
 
         } else if ( preferenceKey.equals(keyAuthTwitter) ) {  //// Twitter認証
