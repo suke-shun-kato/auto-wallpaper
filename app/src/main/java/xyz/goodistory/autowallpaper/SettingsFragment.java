@@ -125,19 +125,6 @@ public class SettingsFragment extends PreferenceFragment
         //// 設定xmlを読み込む
         addPreferencesFromResource(R.xml.preferences);
     }
-//
-//    public void onNewIntent(Intent intent) {
-//        // ----------------------------------
-//        // Twitter認証のコールバックのとき TwitterOAuthPreference にIntentでURLの情報を渡す
-//        // コールバックではonActivityCreated()は呼ばれないのでこの場所
-//        // ----------------------------------
-//        // Twitter認証のコールバックのとき
-//        if ( intent != null
-//                && intent.getData() != null
-//                && intent.getData().toString().startsWith(this.getString(R.string.twitter_callback_url))) {
-//            ((TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH)).onNewIntent(intent);
-//        }
-//    }
 
     /************************************
      * フラグメントが表示される直前

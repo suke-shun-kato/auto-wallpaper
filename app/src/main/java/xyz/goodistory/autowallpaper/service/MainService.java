@@ -23,7 +23,6 @@ import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
 
 /**
- * Created by k-shunsuke on 2017/12/12.
  * 裏で壁紙を変更するサービス
  */
 @SuppressWarnings("unused")
