@@ -64,4 +64,10 @@
     <string name="preference_key_auto_rotation" tools:ignore="MissingTranslation">
         auto_rotation
     </string>
+    <string name="preference_key_reset" tools:ignore="MissingTranslation">
+        reset
+    </string>
+    <string name="preference_key_about" tools:ignore="MissingTranslation">
+        about
+    </string>
 </resources>

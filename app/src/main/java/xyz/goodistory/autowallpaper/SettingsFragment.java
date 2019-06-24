@@ -82,11 +82,6 @@ public class SettingsFragment extends PreferenceFragment
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
-    // TODO key はリソースから取得するようにする
-    /** ディレクトリ選択<Preference>のkey名 */
-    @SuppressWarnings("WeakerAccess")
-    public static final String KEY_OTHER_ABOUT = "other_about";
-
     //// request code
     private static final int RQ_CODE_FROM_DIR = 1;
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
@@ -98,6 +93,7 @@ public class SettingsFragment extends PreferenceFragment
     private String PREFERENCE_KEY_AUTHENTICATE_TWITTER;
     private String PREFERENCE_KEY_FROM_INSTAGRAM_USER_RECENT;// TODO インスタ復活したら使う
     private String PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM;
+    private String PREFERENCE_KEY_ABOUT;
 
     // --------------------------------------------------------------------
     // メソッド
@@ -123,6 +119,8 @@ public class SettingsFragment extends PreferenceFragment
                 = getString(R.string.preference_key_from_instagram_user_recent);
         PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM
                 = getString(R.string.preference_key_authenticate_instagram);
+
+        PREFERENCE_KEY_ABOUT = getString(R.string.preference_key_about);
 
         //// 設定xmlを読み込む
         addPreferencesFromResource(R.xml.preferences);
@@ -188,7 +186,7 @@ public class SettingsFragment extends PreferenceFragment
         // タイトル表示の設定
         // ----------------------------------
         //// About
-        this.findPreference(KEY_OTHER_ABOUT).setTitle(
+        findPreference(PREFERENCE_KEY_ABOUT).setTitle(
                 String.format( getString(R.string.setting_other_about_title), getString(R.string.app_name) )
         );
 
@@ -345,7 +343,7 @@ public class SettingsFragment extends PreferenceFragment
         // ----------
         //
         // ----------
-        this.findPreference(KEY_OTHER_ABOUT).setOnPreferenceClickListener(
+        findPreference(PREFERENCE_KEY_ABOUT).setOnPreferenceClickListener(
                 new Preference.OnPreferenceClickListener(){
                     @Override
                     public boolean onPreferenceClick(Preference preference) {
