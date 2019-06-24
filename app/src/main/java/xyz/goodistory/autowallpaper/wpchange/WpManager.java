@@ -237,14 +237,16 @@ public class WpManager {
         if (mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false)
                 && ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
                 == PackageManager.PERMISSION_GRANTED) {
-            imgGetterList.addAll( ImgGetterDir.getImgGetterList(mContext) );
+
+            List<ImgGetter> imgGetters = (new WpUrisGetterDirectory(mContext)).getImgGetterList();
+            imgGetterList.addAll( imgGetters );
         }
 
         // twitter
         if (mSp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
                 && mSp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
 
-            List<ImgGetter> imgGetters = (new WpUriGetterTwitter(mContext)).getImgGetterList();
+            List<ImgGetter> imgGetters = (new WpUrisGetterTwitter(mContext)).getImgGetterList();
             imgGetterList.addAll( imgGetters );
         }
 
