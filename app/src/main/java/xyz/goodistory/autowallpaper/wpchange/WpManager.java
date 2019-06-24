@@ -244,7 +244,8 @@ public class WpManager {
 
         // twitter
         String keyAuthTwitter = mContext.getString(R.string.preference_key_authenticate_twitter);
-        if (mSp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
+        String keyRomTwitterFav = mContext.getString(R.string.preference_key_from_twitter_favorites);
+        if (mSp.getBoolean(keyRomTwitterFav, false)
                 && mSp.getString(keyAuthTwitter, null) != null) {
 
             List<ImgGetter> imgGetters = (new WpUrisGetterTwitter(mContext)).getImgGetterList();

@@ -80,13 +80,12 @@ public class SettingsFragment extends PreferenceFragment
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
+    // TODO key はリソースから取得するようにする
     /** ディレクトリ選択<Preference>のkey名 */
     @SuppressWarnings("unused")
     public static final String KEY_FROM_DIR = "from_dir";
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_FROM_DIR_PATH = "from_dir_path";
-
-    public static final String KEY_FROM_TWITTER_FAV = "from_twitter_fav";
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
     public static final String KEY_WHEN_TIMER = "when_timer";
@@ -97,7 +96,6 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_OTHER_AUTO_ROTATION = "other_autoRotation";
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_OTHER_ABOUT = "other_about";
-    // TODO key はリソースから取得するようにする
 
     private static final int RQ_CODE_FROM_DIR = 1;
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
@@ -257,7 +255,8 @@ public class SettingsFragment extends PreferenceFragment
         // ----------
         // Twitterのお気に入りからをクリックしたとき
         // ----------
-        this.findPreference(KEY_FROM_TWITTER_FAV).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener(){
+        String keyFromTwitterFav = getString(R.string.preference_key_from_twitter_favorites);
+        findPreference(keyFromTwitterFav).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener(){
             /************************************
              * @param preference クリックされたPreference
              * @param newValue Preferenceの新しい値

@@ -17,7 +17,7 @@
             custom:dialogTitle="@string/select_dir_pref_dialog_title" />
         <SwitchPreference
             android:defaultValue="false"
-            android:key="from_twitter_fav"
+            android:key="@string/preference_key_from_twitter_favorites"
             android:title="@string/setting_form_twitter_fav_title" />
         <xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference
             android:key="@string/preference_key_authenticate_twitter"
