@@ -30,8 +30,14 @@ import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
  * Created by k-shunsuke on 2017/12/27.
  */
 
-class ImgGetterTw  {
+class WpUrisGetterTwitter extends WpUrisGetter {
     private static final String API_URL = "https://api.twitter.com/1.1/favorites/list.json?count=200";
+    private final Context mContext;
+
+
+    WpUrisGetterTwitter(Context context) {
+        mContext = context;
+    }
 
     /************************************
      * APIでTwitterのお気に入りのJSONを取得
@@ -137,13 +143,13 @@ class ImgGetterTw  {
         return jsonObj;
     }
 
-    static List<ImgGetter> getImgGetterList(Context context) {
+    public List<ImgGetter> getImgGetterList() {
         List<ImgGetter> imgGetterTwList = new ArrayList<>();
 
         // ----------------------------------
         // お気に入りから画像のURLを取得
         // ----------------------------------
-        JSONArray favListJsonAry = getFavList(context);
+        JSONArray favListJsonAry = getFavList(mContext);
 
         //「entities > media」「extended_entities > media」の部分
         List<JSONObject> flattenJsonList = editJson(favListJsonAry);

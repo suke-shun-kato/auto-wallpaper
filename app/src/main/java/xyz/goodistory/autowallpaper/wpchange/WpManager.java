@@ -243,7 +243,9 @@ public class WpManager {
         // twitter
         if (mSp.getBoolean(SettingsFragment.KEY_FROM_TWITTER_FAV, false)
                 && mSp.getString(SettingsFragment.KEY_FROM_TWITTER_OAUTH, null) != null) {
-            imgGetterList.addAll( ImgGetterTw.getImgGetterList(mContext) );
+
+            List<ImgGetter> imgGetters = (new WpUriGetterTwitter(mContext)).getImgGetterList();
+            imgGetterList.addAll( imgGetters );
         }
 
         // Instagram
