@@ -94,12 +94,17 @@ public class SettingsFragment extends PreferenceFragment
     @SuppressWarnings("WeakerAccess")
     public static final String KEY_OTHER_ABOUT = "other_about";
 
+    //// request code
     private static final int RQ_CODE_FROM_DIR = 1;
     private static final int RQ_CODE_FROM_DIR_PATH = 2;
 
     //// preference key
     private String PREFERENCE_KEY_SELECT_DIRECTORY;
     private String PREFERENCE_KEY_FROM_DIR;
+    private String PREFERENCE_KEY_FROM_TWITTER_FAVORITES;
+    private String PREFERENCE_KEY_AUTHENTICATE_TWITTER;
+    private String PREFERENCE_KEY_FROM_INSTAGRAM_USER_RECENT;
+    private String PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM;
 
     // --------------------------------------------------------------------
     // メソッド
@@ -113,8 +118,18 @@ public class SettingsFragment extends PreferenceFragment
         super.onCreate(savedInstanceState);
 
         //// preference key の読み込み
-        PREFERENCE_KEY_SELECT_DIRECTORY = getString(R.string.preference_key_select_directory);
         PREFERENCE_KEY_FROM_DIR = getString(R.string.preference_key_from_directory);
+        PREFERENCE_KEY_SELECT_DIRECTORY = getString(R.string.preference_key_select_directory);
+
+        PREFERENCE_KEY_FROM_TWITTER_FAVORITES
+                = getString(R.string.preference_key_from_twitter_favorites);
+        PREFERENCE_KEY_AUTHENTICATE_TWITTER
+                = getString(R.string.preference_key_authenticate_twitter);
+
+        PREFERENCE_KEY_FROM_INSTAGRAM_USER_RECENT
+                = getString(R.string.preference_key_from_instagram_user_recent);
+        PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM
+                = getString(R.string.preference_key_authenticate_instagram);
 
         //// 設定xmlを読み込む
         addPreferencesFromResource(R.xml.preferences);
@@ -198,8 +213,8 @@ public class SettingsFragment extends PreferenceFragment
         fromDirPathPref.setSummary( summaryText );
 
         //// Twitter認証
-        String keyAuthTwitter = getString(R.string.preference_key_authenticate_twitter);
-        TwitterOAuthPreference twitterPref = (TwitterOAuthPreference)findPreference(keyAuthTwitter);
+        TwitterOAuthPreference twitterPref
+                = (TwitterOAuthPreference)findPreference(PREFERENCE_KEY_AUTHENTICATE_TWITTER);
 
         if ( twitterPref.hasAccessToken() ) {
             twitterPref.setSummary(R.string.setting_summary_oauth_done);
@@ -209,9 +224,8 @@ public class SettingsFragment extends PreferenceFragment
 
         //// Instagram認
         // TODO api使用許可出たら復活
-//        String key_auth_instagram = getString(R.string.preference_key_authenticate_instagram);
 //        InstagramOAuthPreference instagramOAuthPreference
-//                = (InstagramOAuthPreference)findPreference(key_auth_instagram);
+//                = (InstagramOAuthPreference)findPreference(PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM);
 //        // サマリーを更新
 //        instagramOAuthPreference.updateSummary();
 
@@ -261,8 +275,9 @@ public class SettingsFragment extends PreferenceFragment
         // ----------
         // Twitterのお気に入りからをクリックしたとき
         // ----------
-        String keyFromTwitterFav = getString(R.string.preference_key_from_twitter_favorites);
-        findPreference(keyFromTwitterFav).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener(){
+        findPreference(PREFERENCE_KEY_FROM_TWITTER_FAVORITES)
+                .setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
+
             /************************************
              * @param preference クリックされたPreference
              * @param newValue Preferenceの新しい値
@@ -270,9 +285,7 @@ public class SettingsFragment extends PreferenceFragment
              */
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                String KeyAuthTwitter = getString(R.string.preference_key_authenticate_twitter);
-
-                if ( mSp.getString(KeyAuthTwitter, null) == null ) {
+                if ( mSp.getString(PREFERENCE_KEY_AUTHENTICATE_TWITTER, null) == null ) {
                     // Twitterの認証がまだのとき
                     Toast.makeText(getActivity(), R.string.setting_form_twitter_fav_error, Toast.LENGTH_SHORT).show();
                     return false;
@@ -286,8 +299,7 @@ public class SettingsFragment extends PreferenceFragment
         // Instagramの最近の投稿をクリックからしたとき
         // ----------
         // TODO api使用許可出たら復活
-//        String keyFromInstagram = getString(R.string.preference_key_from_instagram_user_recent);
-//        findPreference(keyFromInstagram).setOnPreferenceChangeListener(
+//        findPreference(PREFERENCE_KEY_FROM_INSTAGRAM_USER_RECENT).setOnPreferenceChangeListener(
 //                new Preference.OnPreferenceChangeListener() {
 //            /************************************
 //             * @param preference クリックされたPreference
@@ -296,8 +308,7 @@ public class SettingsFragment extends PreferenceFragment
 //             */
 //            @Override
 //            public boolean onPreferenceChange(Preference preference, Object newValue) {
-//                String keyAuthInstagram = getString(R.string.preference_key_authenticate_instagram);
-//                if ( mSp.getString(keyAuthInstagram, null) == null ) {
+//                if ( mSp.getString(PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM, null) == null ) {
 //                    Toast.makeText(getActivity(),
 //                            R.string.preference_error_msg_no_authorize,
 //                            Toast.LENGTH_LONG)
@@ -448,20 +459,17 @@ public class SettingsFragment extends PreferenceFragment
         // ----------------------------------
         // 設定値をSummaryに反映
         // ----------------------------------
-        //// 変数の準備
-        String key_auth_instagram = getString(R.string.preference_key_authenticate_instagram);
-        String keyAuthTwitter = getString(R.string.preference_key_authenticate_twitter);
-
         //// 反映
         if ( preferenceKey.equals(PREFERENCE_KEY_SELECT_DIRECTORY) ) {  //// ディレクトリ選択
             Preference fromDirPathPreference = findPreference(preferenceKey);
             fromDirPathPreference.setSummary(sp.getString(preferenceKey, ""));
 
-        } else if ( preferenceKey.equals(keyAuthTwitter) ) {  //// Twitter認証
+        } else if ( preferenceKey.equals(PREFERENCE_KEY_AUTHENTICATE_TWITTER) ) {  //// Twitter認証
             Preference fromTwitterOauthPreference = findPreference(preferenceKey);
             fromTwitterOauthPreference.setSummary(R.string.setting_summary_oauth_done);
 
-        } else if ( preferenceKey.equals(key_auth_instagram) ) {   //// インスタグラム認証
+        } else if ( preferenceKey.equals(PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM) ) {
+        //// インスタグラム認証
             ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
         }
 

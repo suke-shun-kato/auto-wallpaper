@@ -28,6 +28,7 @@ import java.lang.ref.WeakReference;
 import xyz.goodistory.autowallpaper.R;
 
 /**
+ * TODO 認証キャンセルのときの処理をちゃんとする
  * Twitter認証のためのPreference
  */
 public class TwitterOAuthPreference extends Preference {
