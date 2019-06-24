@@ -28,7 +28,6 @@ import java.lang.ref.WeakReference;
 import xyz.goodistory.autowallpaper.R;
 
 /**
- * TODO 認証キャンセルのときの処理をちゃんとする
  * Twitter認証のためのPreference
  */
 public class TwitterOAuthPreference extends Preference {
@@ -57,6 +56,7 @@ public class TwitterOAuthPreference extends Preference {
 
     private static final String BUNDLE_KEY_TOKEN = "oauth_token";
     private static final String BUNDLE_KEY_VERIFIER = "oauth_verifier";
+    private static final String BUNDLE_KEY_DENIED = "denied";
 
     private static final String JSON_KEY_TOKEN = "token";
     private static final String JSON_KEY_TOKEN_SECRET = "token_secret";
@@ -273,7 +273,7 @@ public class TwitterOAuthPreference extends Preference {
             String oauthVerifier = intent.getStringExtra(BUNDLE_KEY_VERIFIER);
 
             // エラー処理
-            if (oauthToken.equals("") || oauthVerifier.equals("")) {
+            if (oauthToken == null || oauthVerifier == null) {
                 Toast.makeText(context, mTextOauthFailed, Toast.LENGTH_LONG)
                         .show();
                 return;
@@ -426,14 +426,17 @@ public class TwitterOAuthPreference extends Preference {
         //// 引数を処理
         String oauthToken;
         String oauthVerifier;
+        String denied;
         Uri uri = intent.getData();
 
         if (uri == null) {
-            oauthToken = "";
-            oauthVerifier = "";
+            oauthToken = null;
+            oauthVerifier = null;
+            denied = null;
         } else {
             oauthToken = uri.getQueryParameter("oauth_token");
             oauthVerifier = uri.getQueryParameter("oauth_verifier");
+            denied = uri.getQueryParameter("denied");
         }
 
         //// broadcast を送信
@@ -441,6 +444,7 @@ public class TwitterOAuthPreference extends Preference {
         sendIntent.setAction(ACTION_TO_ACCESS_TOKEN);
         sendIntent.putExtra(BUNDLE_KEY_TOKEN, oauthToken);
         sendIntent.putExtra(BUNDLE_KEY_VERIFIER, oauthVerifier);
+        sendIntent.putExtra(BUNDLE_KEY_DENIED, denied);
         context.sendBroadcast(sendIntent);
     }
 
