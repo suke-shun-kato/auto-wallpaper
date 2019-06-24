@@ -87,8 +87,6 @@ public class SettingsFragment extends PreferenceFragment
     public static final String KEY_FROM_DIR_PATH = "from_dir_path";
 
     public static final String KEY_FROM_TWITTER_FAV = "from_twitter_fav";
-    @SuppressWarnings("WeakerAccess")
-    public static final String KEY_FROM_TWITTER_OAUTH = "from_twitter_oauth";
 
     public static final String KEY_WHEN_SCREEN_ON = "when_turnOn";
     public static final String KEY_WHEN_TIMER = "when_timer";
@@ -196,7 +194,9 @@ public class SettingsFragment extends PreferenceFragment
         fromDirPathPref.setSummary( str );
 
         //// Twitter認証
-        TwitterOAuthPreference twitterPref = (TwitterOAuthPreference)this.findPreference(KEY_FROM_TWITTER_OAUTH);
+        String keyAuthTwitter = getString(R.string.preference_key_authenticate_twitter);
+        TwitterOAuthPreference twitterPref = (TwitterOAuthPreference)findPreference(keyAuthTwitter);
+
         if ( twitterPref.hasAccessToken() ) {
             twitterPref.setSummary(R.string.setting_summary_oauth_done);
         } else {
@@ -219,7 +219,7 @@ public class SettingsFragment extends PreferenceFragment
         // 「ディレクトリから」 のパーミッションダイアログ表示設定
         // ----------
         // ここは setOnPreferenceClickListener() ではない
-        this.findPreference(KEY_FROM_DIR).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener(){
+        this.findPreference(KEY_FROM_DIR).setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             /************************************
              * @param preference クリックされたPreference
              * @param newValue Preferenceの新しい値
@@ -265,7 +265,9 @@ public class SettingsFragment extends PreferenceFragment
              */
             @Override
             public boolean onPreferenceChange(Preference preference, Object newValue) {
-                if ( mSp.getString(KEY_FROM_TWITTER_OAUTH, null) == null ) {
+                String KeyAuthTwitter = getString(R.string.preference_key_authenticate_twitter);
+
+                if ( mSp.getString(KeyAuthTwitter, null) == null ) {
                     // Twitterの認証がまだのとき
                     Toast.makeText(getActivity(), R.string.setting_form_twitter_fav_error, Toast.LENGTH_SHORT).show();
                     return false;
@@ -431,13 +433,14 @@ public class SettingsFragment extends PreferenceFragment
         // ----------------------------------
         //// 変数の準備
         String key_auth_instagram = getString(R.string.preference_key_authenticate_instagram);
+        String keyAuthTwitter = getString(R.string.preference_key_authenticate_twitter);
 
         //// 反映
         if ( preferenceKey.equals(KEY_FROM_DIR_PATH) ) {  //// ディレクトリ選択
             Preference fromDirPathPreference = this.findPreference(preferenceKey);
             fromDirPathPreference.setSummary(sp.getString(preferenceKey, ""));
 
-        } else if ( preferenceKey.equals(KEY_FROM_TWITTER_OAUTH) ) {  //// Twitter認証
+        } else if ( preferenceKey.equals(keyAuthTwitter) ) {  //// Twitter認証
             Preference fromTwitterOauthPreference = findPreference(preferenceKey);
             fromTwitterOauthPreference.setSummary(R.string.setting_summary_oauth_done);
 

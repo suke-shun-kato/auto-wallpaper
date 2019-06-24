@@ -20,7 +20,7 @@
             android:key="from_twitter_fav"
             android:title="@string/setting_form_twitter_fav_title" />
         <xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference
-            android:key="from_twitter_oauth"
+            android:key="@string/preference_key_authenticate_twitter"
             android:title="@string/setting_from_twitter_oauth"
             custom:apiKey="@string/twitter_consumer_key"
             custom:apiSecretKey="@string/twitter_consumer_secret"

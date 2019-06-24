@@ -22,7 +22,6 @@ import java.util.concurrent.ExecutionException;
 
 import xyz.goodistory.autowallpaper.HistoryModel;
 import xyz.goodistory.autowallpaper.R;
-import xyz.goodistory.autowallpaper.SettingsFragment;
 import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 
 /**
@@ -53,9 +52,10 @@ class WpUrisGetterTwitter extends WpUrisGetter {
                          .build( TwitterApi.instance() );
 
             final OAuthRequest request = new OAuthRequest(Verb.GET, API_URL);
+            final String keyAuthTwitter
+                    = context.getString(R.string.preference_key_authenticate_twitter);
             final TwitterOAuthPreference.SharedPreference getAccessToken
-                    = new TwitterOAuthPreference.SharedPreference(
-                            SettingsFragment.KEY_FROM_TWITTER_OAUTH, context);
+                    = new TwitterOAuthPreference.SharedPreference( keyAuthTwitter, context);
 
             service.signRequest(
                     new OAuth1AccessToken(
