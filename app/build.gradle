@@ -19,6 +19,8 @@ android {
     buildTypes {
         debug { //デバッグ用のビルドタイプの設定
             debuggable true
+            applicationIdSuffix ".debug"
+            versionNameSuffix "debug"
         }
         release {   //リリース用のビルドタイプの設定
             minifyEnabled false
