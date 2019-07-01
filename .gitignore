@@ -133,4 +133,7 @@ fabric.properties
 
 !/gradle/wrapper/gradle-wrapper.jar
 
+### my_setting ##
+/working_directory/
+
 # End of https://www.gitignore.io/api/androidstudio
