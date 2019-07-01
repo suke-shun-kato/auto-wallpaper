@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId "xyz.goodistory.autowallpaper"
         minSdkVersion 19    //Android 4.4
-        targetSdkVersion 26 // Android 8.0 Oreo
+        targetSdkVersion 28 // Android 9.0 Pie
         versionCode 18
         versionName "0.1.17" //ここはversionCodeとは1ずれる
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
