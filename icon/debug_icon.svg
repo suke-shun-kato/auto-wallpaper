@@ -30,7 +30,7 @@
     </clipPath>
   </defs>
   <g transform="matrix(1.3333333,0,0,-1.3333333,0,1046.6773)" id="g10">
-    <path id="path12" style="fill: rgb(0, 90, 238); fill-opacity: 1; fill-rule: nonzero; stroke: rgb(35, 24, 21); stroke-width: 1.231; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; stroke-dasharray: none; stroke-opacity: 1;" d="M 875.033 -93.453 L -83.168 -93.453 L -83.168 859.606 L 875.033 859.606 Z">
+    <path id="path12" style="fill-opacity: 1; fill-rule: nonzero; stroke: rgb(35, 24, 21); stroke-width: 1.231; stroke-linecap: butt; stroke-linejoin: miter; stroke-miterlimit: 10; stroke-dasharray: none; stroke-opacity: 1; fill: rgb(2, 227, 148);" d="M 875.033 -93.453 L -83.168 -93.453 L -83.168 859.606 L 875.033 859.606 Z">
       <title>background</title>
     </path>
     <path id="path14" style="fill: rgb(255, 255, 255); fill-opacity: 1; fill-rule: nonzero; stroke: none;" d="m 482.504,302.504 h -180 v 180 h 180 z">
@@ -43,7 +43,7 @@
           <g id="g26"/>
           <g id="g36">
             <g style="opacity:0.69999701" id="g34" clip-path="url(#clipPath30)">
-              <path id="path32" style="fill:#4285f4;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 436.504,452.505 h -88 v 88 h 88 z"/>
+              <path id="path32" style="fill-opacity: 1; fill-rule: nonzero; stroke: none; fill: rgb(219, 254, 200);" d="m 436.504,452.505 h -88 v 88 h 88 z"/>
             </g>
           </g>
         </g>
@@ -51,7 +51,7 @@
           <g id="g40"/>
           <g id="g50">
             <g style="opacity:0.39999402" id="g48" clip-path="url(#clipPath44)">
-              <path id="path46" style="fill:#4285f4;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 332.502,452.505 h -88 v 88 h 88 z"/>
+              <path id="path46" style="fill-opacity: 1; fill-rule: nonzero; stroke: none; fill: rgb(219, 254, 200);" d="m 332.502,452.505 h -88 v 88 h 88 z"/>
             </g>
           </g>
         </g>
@@ -59,7 +59,7 @@
           <g id="g54"/>
           <g id="g64">
             <g style="opacity:0.69999701" id="g62" clip-path="url(#clipPath58)">
-              <path id="path60" style="fill:#4285f4;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 333.392,348.504 h -88 v 88 h 88 z"/>
+              <path id="path60" style="fill-opacity: 1; fill-rule: nonzero; stroke: none; fill: rgb(219, 254, 200);" d="m 333.392,348.504 h -88 v 88 h 88 z"/>
             </g>
           </g>
         </g>
@@ -67,7 +67,7 @@
           <g id="g68"/>
           <g id="g78">
             <g style="opacity:0.39999402" id="g76" clip-path="url(#clipPath72)">
-              <path id="path74" style="fill:#4285f4;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 332.503,244.503 h -88 v 88 h 88 z"/>
+              <path id="path74" style="fill-opacity: 1; fill-rule: nonzero; stroke: none; fill: rgb(219, 254, 200);" d="m 332.503,244.503 h -88 v 88 h 88 z"/>
             </g>
           </g>
         </g>
@@ -75,7 +75,7 @@
           <g id="g82"/>
           <g id="g92">
             <g style="opacity:0.69999701" id="g90" clip-path="url(#clipPath86)">
-              <path id="path88" style="fill:#4285f4;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 437.394,244.503 h -88 v 88 h 88 z"/>
+              <path id="path88" style="fill-opacity: 1; fill-rule: nonzero; stroke: none; fill: rgb(219, 254, 200);" d="m 437.394,244.503 h -88 v 88 h 88 z"/>
             </g>
           </g>
         </g>
@@ -83,7 +83,7 @@
           <g id="g96"/>
           <g id="g106">
             <g style="opacity:0.39999402" id="g104" clip-path="url(#clipPath100)">
-              <path id="path102" style="fill:#4285f4;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 540.506,244.503 h -88 v 88 h 88 z"/>
+              <path id="path102" style="fill-opacity: 1; fill-rule: nonzero; stroke: none; fill: rgb(219, 254, 200);" d="m 540.506,244.503 h -88 v 88 h 88 z"/>
             </g>
           </g>
         </g>
@@ -91,7 +91,7 @@
           <g id="g110"/>
           <g id="g120">
             <g style="opacity:0.69999701" id="g118" clip-path="url(#clipPath114)">
-              <path id="path116" style="fill:#4285f4;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 540.505,348.504 h -88 v 88 h 88 z"/>
+              <path id="path116" style="fill-opacity: 1; fill-rule: nonzero; stroke: none; fill: rgb(219, 254, 200);" d="m 540.505,348.504 h -88 v 88 h 88 z"/>
             </g>
           </g>
         </g>
@@ -99,13 +99,13 @@
           <g id="g124"/>
           <g id="g134">
             <g style="opacity:0.39999402" id="g132" clip-path="url(#clipPath128)">
-              <path id="path130" style="fill:#4285f4;fill-opacity:1;fill-rule:nonzero;stroke:none" d="m 540.505,452.505 h -88 v 88 h 88 z"/>
+              <path id="path130" style="fill-opacity: 1; fill-rule: nonzero; stroke: none; fill: rgb(219, 254, 200);" d="m 540.505,452.505 h -88 v 88 h 88 z"/>
             </g>
           </g>
         </g>
       </g>
     </g>
-    <path id="path136" style="fill: rgb(66, 133, 244); fill-opacity: 1; fill-rule: nonzero; stroke: none;" d="m 436.504,348.504 h -88 v 88 h 88 z">
+    <path id="path136" style="fill-opacity: 1; fill-rule: nonzero; stroke: none; fill: rgb(219, 254, 200);" d="m 436.504,348.504 h -88 v 88 h 88 z">
       <title>9 square center</title>
     </path>
   </g>
