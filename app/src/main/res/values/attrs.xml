@@ -20,7 +20,7 @@
         <attr name="summaryDone" format="string" />
         <attr name="summaryNotYet" format="string" />
     </declare-styleable>
-    <declare-styleable name="ResetBtnPreference">
+    <declare-styleable name="ResetPreference">
         <attr name="textDialogMsg" format="string" />
         <attr name="textDialogTitle" format="string" />
         <attr name="textResult" format="string" />
