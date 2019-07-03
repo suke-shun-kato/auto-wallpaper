@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
+import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreference;
 import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
 
@@ -419,7 +420,7 @@ public class SettingsFragment extends PreferenceFragment
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
 
                     // もう一度Preferenceをクリックする
-                    ((SelectDirPreference)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY)).click();
+                    ((SelectDirectoryPreference)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY)).click();
                 }
                 break;
         }

@@ -1,4 +1,4 @@
-package xyz.goodistory.autowallpaper;
+package xyz.goodistory.autowallpaper.preference;
 
 import android.Manifest;
 import android.content.Context;
@@ -21,13 +21,14 @@ import android.widget.TextView;
 import java.io.File;
 import java.io.IOException;
 
+import xyz.goodistory.autowallpaper.R;
 import xyz.goodistory.autowallpaper.util.FileExtended;
 
 /**
  * ディレクトリを選択するPreference
  * Created by k-shunsuke on 2017/12/08.
  */
-public class SelectDirPreference extends DialogPreference {
+public class SelectDirectoryPreference extends DialogPreference {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
@@ -65,7 +66,7 @@ public class SelectDirPreference extends DialogPreference {
      * @param context このPreferenceのコンテキスト
      * @param attrs XMLの属性のセット
      */
-    public SelectDirPreference(Context context, AttributeSet attrs) {
+    public SelectDirectoryPreference(Context context, AttributeSet attrs) {
         super(context, attrs);  //XMLにデフォルト値があるなら、onGetDefaultValue() がここで呼ばれる
 
         // ----------------------------------
@@ -82,10 +83,10 @@ public class SelectDirPreference extends DialogPreference {
         // ダイアログのタイトルを設定
         TypedArray typedAry = context.getTheme().obtainStyledAttributes(
                 attrs,
-                R.styleable.SelectDirPreference,
+                R.styleable.SelectDirectoryPreference,
                 0, 0);
         try {
-            this.setDialogTitle( typedAry.getString(R.styleable.SelectDirPreference_dialogTitle) );
+            this.setDialogTitle( typedAry.getString(R.styleable.SelectDirectoryPreference_dialogTitle) );
         } finally {
             typedAry.recycle();
         }
@@ -161,9 +162,9 @@ public class SelectDirPreference extends DialogPreference {
                         // ディレクトリをクリックしたときの処理
                         // ----------------------------------
                         //// ダイアログの表示を更新する
-                        SelectDirPreference.this.updateDialogDisplay(
-                                SelectDirPreference.this.dirPath + ((TextView)view).getText(),
-                                SelectDirPreference.this
+                        SelectDirectoryPreference.this.updateDialogDisplay(
+                                SelectDirectoryPreference.this.dirPath + ((TextView)view).getText(),
+                                SelectDirectoryPreference.this
                         );
 
                     }
@@ -181,7 +182,7 @@ public class SelectDirPreference extends DialogPreference {
      * @param dirPath このディレクトリに画面を更新, 正規化されていなくても正規化されるのでOK
      * @param context このオブジェクトを更新する
      */
-    private void updateDialogDisplay(String dirPath, SelectDirPreference context) {
+    private void updateDialogDisplay(String dirPath, SelectDirectoryPreference context) {
         File newDirFile = new File(dirPath);
 
         // ----------------------------------
