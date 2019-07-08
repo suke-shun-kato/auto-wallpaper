@@ -4,6 +4,7 @@
 
     <declare-styleable name="SelectDirectoryPreference">
         <attr name="dialogTitle" format="string" />
+        <attr name="showsPermissionDialog" format="boolean" />
         <attr name="permissionDialogRequestCode" format="integer" />
         <attr name="permissionRationaleDialogText" format="string" />
     </declare-styleable>

@@ -49,9 +49,13 @@ public class SelectDirectoryPreference extends DialogPreference {
     /** ダイアログのビューのルート */
     private View mDialogDirView = null;
 
+    /** パーミッション許可ダイアログを表示するかどうか */
+    private final boolean mShowsPermissionDialog;
+
     /** onRequestPermissionsResult() でどのパーミッション許可Dialogから呼んだか判別するためのもの */
     private final int mPermissionDialogRequestCode;
     private final String mPermissionRationaleDialogText;
+
 
 
     // --------------------------------------------------------------------
@@ -98,21 +102,26 @@ public class SelectDirectoryPreference extends DialogPreference {
         final TypedArray typedAry = context.obtainStyledAttributes(
                 attrs, R.styleable.SelectDirectoryPreference);
         try {
+            // ダイアログのタイトル
             final String dialogTitle
                     = typedAry.getString(R.styleable.SelectDirectoryPreference_dialogTitle);
             setDialogTitle(dialogTitle);
 
+            // パーミッション許可ダイアログを表示するか
+            mShowsPermissionDialog = typedAry.getBoolean(
+                    R.styleable.SelectDirectoryPreference_showsPermissionDialog, false);
+
             // パーミッション許可ダイアログのリクエストコード
             mPermissionDialogRequestCode = typedAry.getInt(
                     R.styleable.SelectDirectoryPreference_permissionDialogRequestCode, 0);
-            if (mPermissionDialogRequestCode == 0) {
+
+            if (mShowsPermissionDialog && mPermissionDialogRequestCode == 0) {
                 throw new NullPointerException("No permissionDialogRequestCode attribute");
             }
 
             // パーミッション許可必要説明ダイアログの本文
             mPermissionRationaleDialogText = typedAry.getString(
                     R.styleable.SelectDirectoryPreference_permissionRationaleDialogText);
-
         } finally {
             typedAry.recycle();
         }
@@ -139,8 +148,9 @@ public class SelectDirectoryPreference extends DialogPreference {
         // android 5.1 以前だと常にtrueになる、アプリインストール時にパーミッション許可を得るので
         final int permissionStatus = ContextCompat.checkSelfPermission(
                 getContext(), permissionReadExternalStorage);
-        if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
-        // パーミッション許可されている場合
+        if ( !mShowsPermissionDialog || permissionStatus == PackageManager.PERMISSION_GRANTED) {
+        // パーミッション許可ダイアログ表示しない場合、
+        // もしくは表示するときでパーミッション許可されている場合
             super.onClick();    //ここでonCreateDialogView()が呼ばれる
 
         } else {
@@ -161,7 +171,8 @@ public class SelectDirectoryPreference extends DialogPreference {
                 // パーミッション必要理由の説明ダイアログを表示
                 RationaleDialogFragment dialog = new RationaleDialogFragment();
                 dialog.setArguments(bundle);
-                dialog.show(activity.getSupportFragmentManager(), RationaleDialogFragment.TAG_NAME);
+                dialog.show(activity.getSupportFragmentManager(),
+                        RationaleDialogFragment.FRAGMENT_TAG_NAME);
 
             } else {
             // 説明理由の表示が必要でない場合、初回など
@@ -182,11 +193,11 @@ public class SelectDirectoryPreference extends DialogPreference {
      */
     public static class RationaleDialogFragment extends android.support.v4.app.DialogFragment {
         /** 表示するテキスト */
-        public static final String TAG_NAME = RationaleDialogFragment.class.getSimpleName();
+        static final String FRAGMENT_TAG_NAME = RationaleDialogFragment.class.getSimpleName();
 
         /** 本文をBundleから取得するためのkey */
-        public static final String BUNDLE_KEY_TEXT = "text";
-        public static final String BUNDLE_KEY_PERMISSION_DIALOG_REQUEST_CODE = "permission_code";
+        static final String BUNDLE_KEY_TEXT = "text";
+        static final String BUNDLE_KEY_PERMISSION_DIALOG_REQUEST_CODE = "permission_code";
 
         @NonNull
         @Override
@@ -260,7 +271,7 @@ public class SelectDirectoryPreference extends DialogPreference {
         }
     }
 
-    /************************************
+    /**
      * ダイアログのViewが生成されるとき
      * @return このViewがダイアログに表示される
      */
@@ -353,7 +364,7 @@ public class SelectDirectoryPreference extends DialogPreference {
 
         try {
             // 正規パス名を取得
-            // 現在のディレクトリが"/"の場合は"/"、"aaaa/.."などでルートのときは""空文字列が返る）
+            // 現在のディレクトリが"/"の場合は"/"、"dir1/.."などでルートのときは""空文字列が返る）
             String normalizedPath = newDirFile.getCanonicalPath();
             if (normalizedPath.length() != 0 && normalizedPath.charAt(normalizedPath.length()-1) == '/') {
             // 末尾が"/"の場合はそのまま
