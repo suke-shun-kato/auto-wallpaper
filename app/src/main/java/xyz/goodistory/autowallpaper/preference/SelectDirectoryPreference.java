@@ -1,15 +1,23 @@
 package xyz.goodistory.autowallpaper.preference;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.content.res.TypedArray;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.preference.Preference;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,13 +41,17 @@ public class SelectDirectoryPreference extends DialogPreference {
     // フィールド
     // --------------------------------------------------------------------
     /** 設定値のディレクトリパス */
-    private String dirPath = null;
+    private String mDirectoryPath = null;
 
     /** デフォルトのディレクトリパス,ここはnullで初期化しないこと */
-    private String dDirPath;
+    private String mDefaultDirectoryPath;
 
     /** ダイアログのビューのルート */
-    private View dialogDirView = null;
+    private View mDialogDirView = null;
+
+    /** onRequestPermissionsResult() でどのパーミッション許可Dialogから呼んだか判別するためのもの */
+    private final int mPermissionDialogRequestCode;
+    private final String mPermissionRationaleDialogText;
 
 
     // --------------------------------------------------------------------
@@ -50,6 +62,7 @@ public class SelectDirectoryPreference extends DialogPreference {
 
     /** ダイアログのレイアウトXML内の現在のディレクトリのパスを表示する要素のID */
     private static final int R_ID_DIALOG_CURRENT_PATH = R.id.dirDialog_current_path;
+
     /** ダイアログのレイアウトXML内の現在のディレクトリ一覧を表示する要素のID */
     private static final int R_ID_DIALOG_FILE_LIST = R.id.dirDialog_file_list;
 
@@ -67,51 +80,183 @@ public class SelectDirectoryPreference extends DialogPreference {
      * @param attrs XMLの属性のセット
      */
     public SelectDirectoryPreference(Context context, AttributeSet attrs) {
-        super(context, attrs);  //XMLにデフォルト値があるなら、onGetDefaultValue() がここで呼ばれる
+        // XMLにデフォルト値があるなら、onGetDefaultValue() がここで呼ばれる
+        super(context, attrs);
 
         // ----------------------------------
         // XMLでデフォルト値が設定されていない場合のデフォルト値の設定
         // --------------------------------
         // このクラスのデフォルト値の設定
-        if (this.dDirPath == null) {
-            this.dDirPath = DEFAULT_DIR_PATH_WHEN_NO_DEFAULT;
-            this.setDefaultValue(DEFAULT_DIR_PATH_WHEN_NO_DEFAULT);
+        if (mDefaultDirectoryPath == null) {
+            mDefaultDirectoryPath = DEFAULT_DIR_PATH_WHEN_NO_DEFAULT;
+            setDefaultValue(DEFAULT_DIR_PATH_WHEN_NO_DEFAULT);
         }
         // ----------------------------------
         // ダイアログの設定
         // ----------------------------------
         // ダイアログのタイトルを設定
-        TypedArray typedAry = context.getTheme().obtainStyledAttributes(
-                attrs,
-                R.styleable.SelectDirectoryPreference,
-                0, 0);
+        final TypedArray typedAry = context.obtainStyledAttributes(
+                attrs, R.styleable.SelectDirectoryPreference);
         try {
-            this.setDialogTitle( typedAry.getString(R.styleable.SelectDirectoryPreference_dialogTitle) );
+            final String dialogTitle
+                    = typedAry.getString(R.styleable.SelectDirectoryPreference_dialogTitle);
+            setDialogTitle(dialogTitle);
+
+            // パーミッション許可ダイアログのリクエストコード
+            mPermissionDialogRequestCode = typedAry.getInt(
+                    R.styleable.SelectDirectoryPreference_permissionDialogRequestCode, 0);
+            if (mPermissionDialogRequestCode == 0) {
+                throw new NullPointerException("No permissionDialogRequestCode attribute");
+            }
+
+            // パーミッション許可必要説明ダイアログの本文
+            mPermissionRationaleDialogText = typedAry.getString(
+                    R.styleable.SelectDirectoryPreference_permissionRationaleDialogText);
+
         } finally {
             typedAry.recycle();
         }
 
         // OKボタンとCancelボタンの「文字列（テキスト）」を設置
-        this.setPositiveButtonText(android.R.string.ok);
-        this.setNegativeButtonText(android.R.string.cancel);
+        setPositiveButtonText(android.R.string.ok);
+        setNegativeButtonText(android.R.string.cancel);
 
         // ダイアログのアイコンを設定、アイコンなし
-        this.setDialogIcon(null);
+        setDialogIcon(null);
     }
 
     // --------------------------------------------------------------------
     // メソッド、ダイアログ関係
     // --------------------------------------------------------------------
-    @SuppressWarnings("WeakerAccess")
     @Override
     protected void onClick() {
-        // ----------------------------------
-        // パーミッションの要求
-        // ----------------------------------
-        if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                == PackageManager.PERMISSION_GRANTED) {
-            // パーミッションがあるときだけディレクトリ選択ダイアログが開く
+        final AppCompatActivity activity = (AppCompatActivity)getContext();
+        if (activity == null) {
+            throw new IllegalStateException("activity is null");
+        }
+        final String permissionReadExternalStorage = Manifest.permission.READ_EXTERNAL_STORAGE;
+
+        // android 5.1 以前だと常にtrueになる、アプリインストール時にパーミッション許可を得るので
+        final int permissionStatus = ContextCompat.checkSelfPermission(
+                getContext(), permissionReadExternalStorage);
+        if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+        // パーミッション許可されている場合
             super.onClick();    //ここでonCreateDialogView()が呼ばれる
+
+        } else {
+        // 許可されていない場合
+            // Rationale: 根拠
+            boolean shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+                    activity, permissionReadExternalStorage);
+            if (shouldShowRationale) {
+            // 説明理由の表示が必要な場合
+                // 説明ダイアログに渡すための値をセット
+                Bundle bundle = new Bundle();
+                bundle.putString(
+                        RationaleDialogFragment.BUNDLE_KEY_TEXT, mPermissionRationaleDialogText);
+                bundle.putInt(
+                        RationaleDialogFragment.BUNDLE_KEY_PERMISSION_DIALOG_REQUEST_CODE,
+                        mPermissionDialogRequestCode);
+
+                // パーミッション必要理由の説明ダイアログを表示
+                RationaleDialogFragment dialog = new RationaleDialogFragment();
+                dialog.setArguments(bundle);
+                dialog.show(activity.getSupportFragmentManager(), RationaleDialogFragment.TAG_NAME);
+
+            } else {
+            // 説明理由の表示が必要でない場合、初回など
+
+                // パーミッション許可ダイアログを表示
+                final String[] permissions = new String[] {
+                        permissionReadExternalStorage,
+                };
+                ActivityCompat.requestPermissions(
+                        activity, permissions, mPermissionDialogRequestCode);
+            }
+        }
+    }
+
+
+    /**
+     * パーミッションの許可が必要な理由を説明するダイアログ
+     */
+    public static class RationaleDialogFragment extends android.support.v4.app.DialogFragment {
+        /** 表示するテキスト */
+        public static final String TAG_NAME = RationaleDialogFragment.class.getSimpleName();
+
+        /** 本文をBundleから取得するためのkey */
+        public static final String BUNDLE_KEY_TEXT = "text";
+        public static final String BUNDLE_KEY_PERMISSION_DIALOG_REQUEST_CODE = "permission_code";
+
+        @NonNull
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            //// activity を取得
+            Activity activity = getActivity();
+            if (activity == null) {
+                throw new IllegalStateException("activity is null");
+            }
+
+            //// bundle
+            Bundle bundle = getArguments();
+
+            // 本文を取得
+            if ( !bundle.containsKey(BUNDLE_KEY_TEXT) ) {
+                throw new IllegalStateException("Not contains key BUNDLE_KEY_TEXT. Set bundle key.");
+            }
+            final String text = bundle.getString(BUNDLE_KEY_TEXT);
+
+            // リクエストコード
+            if ( !bundle.containsKey(BUNDLE_KEY_PERMISSION_DIALOG_REQUEST_CODE) ) {
+                throw new IllegalStateException(
+                        "Not contains key BUNDLE_KEY_PERMISSION_DIALOG_REQUEST_CODE. Set bundle key.");
+            }
+            final int permissionDialogRequestCode = bundle.getInt(BUNDLE_KEY_PERMISSION_DIALOG_REQUEST_CODE);
+
+            //// ダイアログ作成
+            return new AlertDialog.Builder(activity)
+                    .setMessage(text)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            Activity activity = getActivity();
+                            if (activity == null) {
+                                throw new IllegalStateException("Activity is null");
+                            }
+
+                            String[] permissions = new String[] {
+                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                            };
+
+                            ActivityCompat.requestPermissions(
+                                    activity, permissions, permissionDialogRequestCode);
+                        }
+                    })
+                    .create();
+        }
+
+
+    }
+
+    /**
+     * Activityでの onRequestPermissionsResult() の中で実行するメソッド
+     * パーミッション許可ダイアログが閉じられたときに実行するコールバック
+     *
+     * @param requestCode どの許可ダイアログからのコールバックか判別するためのコード
+     * @param permissions どのパーミッションを許可したかの配列
+     * @param grantResults パーミッション許可ダイアログ
+     */
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        if (requestCode == mPermissionDialogRequestCode
+                && permissions.length == 1
+                && permissions[0].equals(Manifest.permission.READ_EXTERNAL_STORAGE)
+                && grantResults.length == 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        {  // パーミッション許可ダイアログでOKを押されたとき
+            onClick();
         }
     }
 
@@ -124,22 +269,19 @@ public class SelectDirectoryPreference extends DialogPreference {
         // ----------------------------------
         // 初期化
         // ----------------------------------
-        this.dirPath = this.getPersistedString(this.dDirPath);
-        this.dialogDirView = LayoutInflater.from(this.getContext())
+        mDirectoryPath = getPersistedString(mDefaultDirectoryPath);
+        mDialogDirView = LayoutInflater.from(getContext())
                 .inflate(R_LAYOUT_DIR_PREF, null);
 
         // ----------------------------------
         // ダイアログの表示を更新（初期化）する
         // ----------------------------------
-        this.updateDialogDisplay(
-                this.dirPath,
-                this
-        );
+        updateDialogDisplay(mDirectoryPath, this);
 
         // ----------------------------------
         // ダイアログ表示に対するイベントリスナーの設置
         // ----------------------------------
-        ListView dirListLv = this.dialogDirView.findViewById(R_ID_DIALOG_FILE_LIST);
+        ListView dirListLv = mDialogDirView.findViewById(R_ID_DIALOG_FILE_LIST);
         dirListLv.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
                     /************************************
@@ -162,8 +304,7 @@ public class SelectDirectoryPreference extends DialogPreference {
                         // ディレクトリをクリックしたときの処理
                         // ----------------------------------
                         //// ダイアログの表示を更新する
-                        SelectDirectoryPreference.this.updateDialogDisplay(
-                                SelectDirectoryPreference.this.dirPath + ((TextView)view).getText(),
+                        updateDialogDisplay(mDirectoryPath + ((TextView)view).getText(),
                                 SelectDirectoryPreference.this
                         );
 
@@ -174,7 +315,7 @@ public class SelectDirectoryPreference extends DialogPreference {
         // ----------------------------------
         // このViewが表示にセットされる
         // ----------------------------------
-        return this.dialogDirView;
+        return mDialogDirView;
     }
 
     /************************************
@@ -208,7 +349,8 @@ public class SelectDirectoryPreference extends DialogPreference {
         // ----------------------------------
         //// ディレクトリパスを正規化する
         String normalizedDirPath;  // 正規化されたディレクトリパス
-        //noinspection SpellCheckingInspection
+
+
         try {
             // 正規パス名を取得
             // 現在のディレクトリが"/"の場合は"/"、"aaaa/.."などでルートのときは""空文字列が返る）
@@ -221,31 +363,31 @@ public class SelectDirectoryPreference extends DialogPreference {
                 normalizedDirPath = normalizedPath + System.getProperty("file.separator");
             }
         } catch (IOException e) {
-            normalizedDirPath = this.dDirPath;
+            normalizedDirPath = this.mDefaultDirectoryPath;
         }
 
         //// 初期化
-        context.dirPath = normalizedDirPath;
-        TextView dirPathTextView = context.dialogDirView.findViewById(R_ID_DIALOG_CURRENT_PATH);
-        ListView dirListLv = context.dialogDirView.findViewById(R_ID_DIALOG_FILE_LIST);
+        context.mDirectoryPath = normalizedDirPath;
+        TextView dirPathTextView = context.mDialogDirView.findViewById(R_ID_DIALOG_CURRENT_PATH);
+        ListView dirListLv = context.mDialogDirView.findViewById(R_ID_DIALOG_FILE_LIST);
 
         // ----------------------------------
         // メイン処理
         // ----------------------------------
         //// 現在のディレクトリのパスをViewにセット
-        dirPathTextView.setText(context.dirPath);
+        dirPathTextView.setText(context.mDirectoryPath);
 
         //// ディレクトリ一覧をViewにセット
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 context.getContext(),
                 android.R.layout.simple_list_item_1,
-                new FileExtended(context.dirPath).listDirFile(true)   //Sting[]、ファイル一覧
+                new FileExtended(context.mDirectoryPath).listDirFile(true)   //Sting[]、ファイル一覧
         );
         dirListLv.setAdapter(adapter);
     }
 
-    /************************************
+    /**
      * 設定の値を保存する、ダイアログが閉じたとき
      * @param positiveResult true:ユーザーがポジティブボタン（OKボタン）を押したとき,
      *                      false:ネガティブボタン、またはキャンセルボタンを押したとき
@@ -255,16 +397,8 @@ public class SelectDirectoryPreference extends DialogPreference {
         // OKボタンを押してダイアログを閉じたとき選択ディレクトリパスを保存する
         if (positiveResult) {
             // 設定値を保存
-            this.persistString(this.dirPath);
+            persistString(mDirectoryPath);
         }
-    }
-
-    /************************************
-     * プリファレンスをクリックしたときの動作を実行
-     * （onClick()を外から実行できないのでそれを実行するための関数、Fragmentからの実行用）
-     */
-    public void click() {
-        this.onClick();
     }
 
 
@@ -281,10 +415,10 @@ public class SelectDirectoryPreference extends DialogPreference {
     @Override
     protected void onSetInitialValue(boolean restorePersistedValue, Object defaultValue) {
         if ( restorePersistedValue ) {
-            this.dirPath = this.getPersistedString(null);
+            mDirectoryPath = getPersistedString(null);
         } else {
-            this.persistString( (String)defaultValue );
-            this.dirPath = (String) defaultValue;
+            persistString( (String)defaultValue );
+            mDirectoryPath = (String) defaultValue;
         }
     }
 
@@ -303,22 +437,22 @@ public class SelectDirectoryPreference extends DialogPreference {
         //noinspection ConstantConditions
         switch (defaultStr) {
             case "DCIM":
-                this.dDirPath = Environment
+                this.mDefaultDirectoryPath = Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM)
                         .getAbsolutePath()
                         + System.getProperty("file.separator");
                 break;
             case "PICTURES":
-                this.dDirPath = Environment
+                this.mDefaultDirectoryPath = Environment
                         .getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
                         .getAbsolutePath()
                         + System.getProperty("file.separator");
                 break;
             default:
-                this.dDirPath = defaultStr;
+                this.mDefaultDirectoryPath = defaultStr;
                 break;
         }
-        return this.dDirPath;
+        return this.mDefaultDirectoryPath;
     }
 
     // --------------------------------------------------------------------
@@ -351,7 +485,7 @@ public class SelectDirectoryPreference extends DialogPreference {
         final MySavedState myState = new MySavedState(superStatParcelable);
 
         // Parcelableの設定を行う
-        myState.value = this.dirPath;
+        myState.value = this.mDirectoryPath;
 
         // 返す
         return myState;
@@ -382,8 +516,8 @@ public class SelectDirectoryPreference extends DialogPreference {
         super.onRestoreInstanceState(myState.getSuperState());
 
         // この時点でダイアログは表示されているので、あとは値を設定して表示するだけ
-        this.dirPath = myState.value;
-        this.updateDialogDisplay(this.dirPath,this);    // 表示を更新
+        this.mDirectoryPath = myState.value;
+        this.updateDialogDisplay(this.mDirectoryPath,this);    // 表示を更新
     }
 
     // ------------------------------

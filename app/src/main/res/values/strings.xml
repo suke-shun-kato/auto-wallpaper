@@ -16,7 +16,7 @@
     <string name="share_image">The image which will be set to wallpaper.</string>
     <string name="mainService_notification_ch_name">Auto Wallpaper Change</string>
     <string name="mainService_notification_title">Auto Wallpaper Change</string>
-    <string name="permission_toast">wants a storage permission to display a wall paper of file.</string>
+    <string name="reason_read_external_storage_permission_need">wants a storage permission to display a wall paper of file.</string>
 
     <string name="setting_toolbar">Setting</string>
     <string name="setting_from">FROM</string>

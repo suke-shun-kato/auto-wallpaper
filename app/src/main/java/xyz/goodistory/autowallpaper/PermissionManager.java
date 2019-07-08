@@ -28,7 +28,7 @@ public class PermissionManager {
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState) {
             return new AlertDialog.Builder(this.getActivity())
-                    .setMessage(R.string.permission_toast)
+                    .setMessage(R.string.reason_read_external_storage_permission_need)
                     .setPositiveButton(R.string.util_ok, null)
                     .create();
         }

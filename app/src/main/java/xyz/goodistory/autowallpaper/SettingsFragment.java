@@ -84,10 +84,11 @@ public class SettingsFragment extends PreferenceFragment
     // 定数
     // --------------------------------------------------------------------
     //// request code
+    // TODO R.integer.permission_request_code_from_directory を使うようにする
     private static final int RQ_CODE_FROM_DIR = 1;
-    private static final int RQ_CODE_FROM_DIR_PATH = 2;
 
     //// preference key
+    // TODO リソースから取得するようにする
     private String PREFERENCE_KEY_SELECT_DIRECTORY;
     private String PREFERENCE_KEY_FROM_DIR;
     private String PREFERENCE_KEY_FROM_TWITTER_FAVORITES;
@@ -299,34 +300,7 @@ public class SettingsFragment extends PreferenceFragment
 //            }
 //        });
 
-        // ----------
-        // 「ディレクトリを設定」 のパーミッションダイアログ表示設定
-        // ----------
-        findPreference(PREFERENCE_KEY_SELECT_DIRECTORY)
-                .setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
-            /************************************
-             * Preferenceがクリックされたときのコールバック
-             * @param preference クリックされたプリファレンス
-             * @return true:正常にクリックされた動作が実行されるとき、false: されないとき
-             */
-            @Override
-            public boolean onPreferenceClick(Preference preference) {
-                if ( ContextCompat.checkSelfPermission(SettingsFragment.this.getActivity(), Manifest.permission.READ_EXTERNAL_STORAGE)
-                       != PackageManager.PERMISSION_GRANTED
-                  ||
-                     ContextCompat.checkSelfPermission(SettingsFragment.this.getActivity(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        != PackageManager.PERMISSION_GRANTED
-
-                ) {
-                    PermissionManager.showRequestDialog(getActivity(), RQ_CODE_FROM_DIR_PATH);
-
-                    return false;
-                } else {
-                    return true;
-                }
-            }
-        });
 
         // ----------
         //
@@ -393,34 +367,25 @@ public class SettingsFragment extends PreferenceFragment
      * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
      * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
      */
-    public void onRequestPermissionsResultFragment(
-            int requestCode,
-            @SuppressWarnings("unused") @NonNull String[] permissions,
-            @NonNull int[] grantResults
-    ) {
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions,  @NonNull int[] grantResults) {
 
+        // SelectDirectoryPreference での onRequestPermissionsResult() を実行
+        ((SelectDirectoryPreference)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY))
+                .onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // TODO ↑のようにする
         switch (requestCode) {
             case RQ_CODE_FROM_DIR:
                 // 許可をクリックしたとき
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
                     // ディレクトリから の設定をONにする
-                    ((SwitchPreference)findPreference(PREFERENCE_KEY_FROM_DIR)).setChecked(true);
+                    ((SwitchPreference) findPreference(PREFERENCE_KEY_FROM_DIR)).setChecked(true);
                     // SharedPreferenceが変更したときのイベントを発火
                     this.onSharedPreferenceChanged(mSp, PREFERENCE_KEY_FROM_DIR);
-                }
-                break;
-
-            case RQ_CODE_FROM_DIR_PATH:
-                // 許可をクリックしたとき
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                        && grantResults[1] == PackageManager.PERMISSION_GRANTED ) {
-
-                    // もう一度Preferenceをクリックする
-                    ((SelectDirectoryPreference)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY)).click();
                 }
                 break;
         }

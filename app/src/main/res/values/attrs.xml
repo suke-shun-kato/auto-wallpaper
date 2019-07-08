@@ -4,6 +4,8 @@
 
     <declare-styleable name="SelectDirectoryPreference">
         <attr name="dialogTitle" format="string" />
+        <attr name="permissionDialogRequestCode" format="integer" />
+        <attr name="permissionRationaleDialogText" format="string" />
     </declare-styleable>
     <declare-styleable name="TwitterOAuthPreference">
         <attr name="textCantAccessAuthPage" format="string" />
