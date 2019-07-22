@@ -4,7 +4,7 @@ apply plugin: 'com.android.application'
 
 //// Androidアプリのビルドのための設定をここに記述する
 android {
-    compileSdkVersion 26
+    compileSdkVersion 28
     // 設定、ここの記述はマニュフェストに埋め込まれる
     defaultConfig {
         applicationId "xyz.goodistory.autowallpaper"
@@ -54,7 +54,7 @@ dependencies {
 
     // com.android.support の appcompat-v7 の 26.1.0 のライブラリを読み込む
     // （リポジトリの設定はルートの方のbuild.gradleのallprojectsで設定されている）
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support:appcompat-v7:28.1.0'
 //    implementation 'com.android.support:support-core-utils:26.0.0'
 
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
