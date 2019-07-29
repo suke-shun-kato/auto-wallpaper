@@ -70,7 +70,7 @@
         <receiver android:name=".TimerWpChangeReceiver" />
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="APPLICATION_ID.fileprovider"
+            android:authorities="${applicationId}.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false"
             >

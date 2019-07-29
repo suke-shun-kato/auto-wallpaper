@@ -71,7 +71,8 @@ class WpUrisGetterDirectory extends WpUrisGetter {
         // ----------------------------------
         for (String imgPath : imgPathList) {
             //// ここで「file://」→「content://」へ変換する
-            Uri contentUri = FileProvider.getUriForFile(mContext, "xyz.goodistory.autowallpaper.fileprovider", new File(imgPath));
+            Uri contentUri = FileProvider.getUriForFile(mContext,
+                    mContext.getPackageName() + ".fileprovider", new File(imgPath));
 
             //// Listに追加
             getImgGetterList.add( new ImgGetter(
