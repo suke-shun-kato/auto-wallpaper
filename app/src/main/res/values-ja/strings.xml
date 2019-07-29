@@ -16,7 +16,7 @@
     <string name="share_image">壁紙に設定する画像</string>
     <string name="mainService_notification_ch_name">自動壁紙切り替え</string>
     <string name="mainService_notification_title">自動壁紙切り替え</string>
-    <string name="permission_toast">壁紙のデータをファイルから取得するために許可が必要です</string>
+    <string name="reason_read_external_storage_permission_need">壁紙のデータをファイルから取得するために許可が必要です</string>
 
 
     <string name="setting_toolbar">設定</string>

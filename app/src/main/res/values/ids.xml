@@ -26,7 +26,7 @@
 
 
 
-    <!-- ここからkey -->
+    <!-- preference_key -->
     <string name="preference_key_category_from" tools:ignore="MissingTranslation">
         category_from
     </string>
@@ -84,4 +84,13 @@
     <string name="preference_key_about" tools:ignore="MissingTranslation">
         about
     </string>
+
+    <!-- パーミッション許可ダイアログのリクエストコード -->
+    <integer name="permission_request_code_from_directory"  tools:ignore="MissingTranslation">
+        1
+    </integer>
+    <integer name="permission_request_code_select_directory"  tools:ignore="MissingTranslation">
+        2
+    </integer>
+
 </resources>

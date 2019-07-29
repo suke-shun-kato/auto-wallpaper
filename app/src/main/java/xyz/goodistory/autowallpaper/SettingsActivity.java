@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -15,7 +16,10 @@ import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
  * 設定画面のアクティビティ
  * Created by k-shunsuke on 2017/12/08.
  */
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity
+        extends AppCompatActivity
+        implements ActivityCompat.OnRequestPermissionsResultCallback {
+
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
@@ -35,7 +39,7 @@ public class SettingsActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults
     ) {
-        this.settingFragment.onRequestPermissionsResultFragment(requestCode, permissions, grantResults);
+        settingFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
     }
 
