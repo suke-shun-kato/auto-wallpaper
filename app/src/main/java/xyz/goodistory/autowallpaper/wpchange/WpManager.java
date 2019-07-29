@@ -15,8 +15,8 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Build;
 import android.preference.PreferenceManager;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.ContextCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,6 @@ import xyz.goodistory.autowallpaper.HistoryModel;
 import xyz.goodistory.autowallpaper.MainActivity;
 import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
-import xyz.goodistory.autowallpaper.SettingsFragment;
 import xyz.goodistory.autowallpaper.util.DisplaySizeCheck;
 import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper;
 
