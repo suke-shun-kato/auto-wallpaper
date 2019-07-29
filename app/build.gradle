@@ -54,8 +54,7 @@ dependencies {
 
     // com.android.support の appcompat-v7 の 26.1.0 のライブラリを読み込む
     // （リポジトリの設定はルートの方のbuild.gradleのallprojectsで設定されている）
-    implementation 'androidx.appcompat:appcompat:1.0.0'
-//    implementation 'com.android.support:support-core-utils:26.0.0'
+    implementation 'androidx.appcompat:appcompat:1.0.2'
 
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
 
@@ -90,6 +89,6 @@ dependencies {
     // ---------------------------------------------------------------------------
     // AndroidTest用のコードでの依存関係の記述
     // ---------------------------------------------------------------------------
-    androidTestImplementation 'androidx.test:runner:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 }
