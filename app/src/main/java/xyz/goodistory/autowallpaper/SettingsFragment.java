@@ -24,7 +24,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
-import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreference;
+import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreferenceOld;
 import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
 
@@ -370,8 +370,8 @@ public class SettingsFragment extends PreferenceFragment
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions,  @NonNull int[] grantResults) {
 
-        // SelectDirectoryPreference での onRequestPermissionsResult() を実行
-        ((SelectDirectoryPreference)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY))
+        // SelectDirectoryPreferenceOld での onRequestPermissionsResult() を実行
+        ((SelectDirectoryPreferenceOld)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY))
                 .onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         // TODO ↑のようにする

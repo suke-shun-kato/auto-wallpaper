@@ -38,7 +38,7 @@ import xyz.goodistory.autowallpaper.util.FileExtended;
  * ディレクトリを選択するPreference
  * Created by k-shunsuke on 2017/12/08.
  */
-public class SelectDirectoryPreference extends DialogPreference {
+public class SelectDirectoryPreferenceOld extends DialogPreference {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
@@ -85,7 +85,7 @@ public class SelectDirectoryPreference extends DialogPreference {
      * @param context このPreferenceのコンテキスト
      * @param attrs XMLの属性のセット
      */
-    public SelectDirectoryPreference(Context context, AttributeSet attrs) {
+    public SelectDirectoryPreferenceOld(Context context, AttributeSet attrs) {
         // XMLにデフォルト値があるなら、onGetDefaultValue() がここで呼ばれる
         super(context, attrs);
 
@@ -102,20 +102,20 @@ public class SelectDirectoryPreference extends DialogPreference {
         // ----------------------------------
         // ダイアログのタイトルを設定
         final TypedArray typedAry = context.obtainStyledAttributes(
-                attrs, R.styleable.SelectDirectoryPreference);
+                attrs, R.styleable.SelectDirectoryPreferenceOld);
         try {
             // ダイアログのタイトル
             final String dialogTitle
-                    = typedAry.getString(R.styleable.SelectDirectoryPreference_dialogTitle);
+                    = typedAry.getString(R.styleable.SelectDirectoryPreferenceOld_dialogTitle);
             setDialogTitle(dialogTitle);
 
             // パーミッション許可ダイアログを表示するか
             mShowsPermissionDialog = typedAry.getBoolean(
-                    R.styleable.SelectDirectoryPreference_showsPermissionDialog, false);
+                    R.styleable.SelectDirectoryPreferenceOld_showsPermissionDialog, false);
 
             // パーミッション許可ダイアログのリクエストコード
             mPermissionDialogRequestCode = typedAry.getInt(
-                    R.styleable.SelectDirectoryPreference_permissionDialogRequestCode, 0);
+                    R.styleable.SelectDirectoryPreferenceOld_permissionDialogRequestCode, 0);
 
             if (mShowsPermissionDialog && mPermissionDialogRequestCode == 0) {
                 throw new NullPointerException("No permissionDialogRequestCode attribute");
@@ -123,7 +123,7 @@ public class SelectDirectoryPreference extends DialogPreference {
 
             // パーミッション許可必要説明ダイアログの本文
             mPermissionRationaleDialogText = typedAry.getString(
-                    R.styleable.SelectDirectoryPreference_permissionRationaleDialogText);
+                    R.styleable.SelectDirectoryPreferenceOld_permissionRationaleDialogText);
         } finally {
             typedAry.recycle();
         }
@@ -318,7 +318,7 @@ public class SelectDirectoryPreference extends DialogPreference {
                         // ----------------------------------
                         //// ダイアログの表示を更新する
                         updateDialogDisplay(mDirectoryPath + ((TextView)view).getText(),
-                                SelectDirectoryPreference.this
+                                SelectDirectoryPreferenceOld.this
                         );
 
                     }
@@ -336,7 +336,7 @@ public class SelectDirectoryPreference extends DialogPreference {
      * @param dirPath このディレクトリに画面を更新, 正規化されていなくても正規化されるのでOK
      * @param context このオブジェクトを更新する
      */
-    private void updateDialogDisplay(String dirPath, SelectDirectoryPreference context) {
+    private void updateDialogDisplay(String dirPath, SelectDirectoryPreferenceOld context) {
         File newDirFile = new File(dirPath);
 
         // ----------------------------------
