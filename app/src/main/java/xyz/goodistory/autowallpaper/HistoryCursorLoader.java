@@ -2,7 +2,7 @@ package xyz.goodistory.autowallpaper;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.support.v4.content.AsyncTaskLoader;
+import androidx.loader.content.AsyncTaskLoader;
 
 
 @SuppressWarnings("WeakerAccess")

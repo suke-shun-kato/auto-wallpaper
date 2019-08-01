@@ -14,10 +14,10 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.preference.DialogPreference;
 import android.preference.Preference;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,6 +25,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.fragment.app.DialogFragment;
 
 import java.io.File;
 import java.io.IOException;
@@ -191,7 +193,7 @@ public class SelectDirectoryPreference extends DialogPreference {
     /**
      * パーミッションの許可が必要な理由を説明するダイアログ
      */
-    public static class RationaleDialogFragment extends android.support.v4.app.DialogFragment {
+    public static class RationaleDialogFragment extends DialogFragment {
         /** 表示するテキスト */
         static final String FRAGMENT_TAG_NAME = RationaleDialogFragment.class.getSimpleName();
 

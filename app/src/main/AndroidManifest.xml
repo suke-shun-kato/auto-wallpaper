@@ -69,8 +69,8 @@
         <service android:name=".wpchange.WpManagerService" />
         <receiver android:name=".TimerWpChangeReceiver" />
         <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="APPLICATION_ID.fileprovider"
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
             android:grantUriPermissions="true"
             android:exported="false"
             >

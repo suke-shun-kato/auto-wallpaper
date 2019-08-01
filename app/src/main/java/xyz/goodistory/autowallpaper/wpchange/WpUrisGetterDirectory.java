@@ -6,8 +6,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.content.FileProvider;
+import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -71,7 +71,8 @@ class WpUrisGetterDirectory extends WpUrisGetter {
         // ----------------------------------
         for (String imgPath : imgPathList) {
             //// ここで「file://」→「content://」へ変換する
-            Uri contentUri = FileProvider.getUriForFile(mContext, "xyz.goodistory.autowallpaper.fileprovider", new File(imgPath));
+            Uri contentUri = FileProvider.getUriForFile(mContext,
+                    mContext.getPackageName() + ".fileprovider", new File(imgPath));
 
             //// Listに追加
             getImgGetterList.add( new ImgGetter(
