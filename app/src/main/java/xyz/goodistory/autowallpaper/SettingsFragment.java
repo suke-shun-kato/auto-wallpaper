@@ -10,21 +10,23 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreferenceCompat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
+
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
-import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreferenceOld;
+//import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
+//import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreferenceOld;
 import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
 
@@ -33,7 +35,7 @@ import xyz.goodistory.autowallpaper.service.MainService;
  * サービスへのバインドはフラグメントで行う方が良い（違うアクティビティにアタッチされるかもしれないので）
  * Created by k-shunsuke on 2017/12/08.
  */
-public class SettingsFragment extends PreferenceFragment
+public class SettingsFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     // --------------------------------------------------------------------
@@ -123,9 +125,6 @@ public class SettingsFragment extends PreferenceFragment
                 = getString(R.string.preference_key_authenticate_instagram);
 
         PREFERENCE_KEY_ABOUT = getString(R.string.preference_key_about);
-
-        //// 設定xmlを読み込む
-        addPreferencesFromResource(R.xml.preferences);
     }
 
     /************************************
@@ -164,6 +163,22 @@ public class SettingsFragment extends PreferenceFragment
         }
     }
 
+
+    /**
+     * Called during {@link #onCreate(Bundle)} to supply the preferences for this fragment.
+     * Subclasses are expected to call {@link #setPreferenceScreen(PreferenceScreen)} either
+     * directly or via helper methods such as {@link #addPreferencesFromResource(int)}.
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     *                           a previous saved state, this is the state.
+     * @param rootKey            If non-null, this preference fragment should be rooted at the
+     *                           {@link PreferenceScreen} with this key.
+     */
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.preferences, rootKey);
+    }
+
     /************************************
      * Preference.setOnPreferenceClickListener
      * フラグメントに関連づいたView層を生成する直前
@@ -179,18 +194,18 @@ public class SettingsFragment extends PreferenceFragment
                 String.format( getString(R.string.setting_other_about_title), getString(R.string.app_name) )
         );
 
-
         // ----------------------------------
         // サマリーの表示の設定
         // ----------------------------------
         mSp = PreferenceManager.getDefaultSharedPreferences( getActivity() );
 
+        // TODO 復活させる
         //// 選択ディレクトリ
-        String summaryText = mSp.getString(PREFERENCE_KEY_SELECT_DIRECTORY,
-                getString(R.string.setting_from_dir_which_default_summary) );
-
-        Preference fromDirPathPref = findPreference(PREFERENCE_KEY_SELECT_DIRECTORY);
-        fromDirPathPref.setSummary( summaryText );
+//        String summaryText = mSp.getString(PREFERENCE_KEY_SELECT_DIRECTORY,
+//                getString(R.string.setting_from_dir_which_default_summary) );
+//
+//        Preference fromDirPathPref = findPreference(PREFERENCE_KEY_SELECT_DIRECTORY);
+//        fromDirPathPref.setSummary( summaryText );
 
         //// Twitter認証
         TwitterOAuthPreference twitterPref
@@ -368,11 +383,14 @@ public class SettingsFragment extends PreferenceFragment
      * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
      */
     public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions,  @NonNull int[] grantResults) {
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        // SelectDirectoryPreferenceOld での onRequestPermissionsResult() を実行
-        ((SelectDirectoryPreferenceOld)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY))
-                .onRequestPermissionsResult(requestCode, permissions, grantResults);
+        findPreference(PREFERENCE_KEY_SELECT_DIRECTORY);
+
+        // TODO 復活させる
+//        // SelectDirectoryPreferenceOld での onRequestPermissionsResult() を実行
+//        ((SelectDirectoryPreferenceOld)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY))
+//                .onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         // TODO ↑のようにする
         switch (requestCode) {
@@ -383,7 +401,7 @@ public class SettingsFragment extends PreferenceFragment
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
                     // ディレクトリから の設定をONにする
-                    ((SwitchPreference) findPreference(PREFERENCE_KEY_FROM_DIR)).setChecked(true);
+                    ((SwitchPreferenceCompat) findPreference(PREFERENCE_KEY_FROM_DIR)).setChecked(true);
                     // SharedPreferenceが変更したときのイベントを発火
                     this.onSharedPreferenceChanged(mSp, PREFERENCE_KEY_FROM_DIR);
                 }
@@ -412,10 +430,11 @@ public class SettingsFragment extends PreferenceFragment
             Preference fromTwitterOauthPreference = findPreference(preferenceKey);
             fromTwitterOauthPreference.setSummary(R.string.setting_summary_oauth_done);
 
-        } else if ( preferenceKey.equals(PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM) ) {
-        //// インスタグラム認証
-            ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
         }
+//        else if ( preferenceKey.equals(PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM) ) {
+//        //// インスタグラム認証
+//            ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
+//        }
 
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える

@@ -76,7 +76,13 @@ public class SettingsActivity
         // ----------------------------------
         //
         // ----------------------------------
-        this.settingFragment = (SettingsFragment)this.getFragmentManager().findFragmentById(R.id.setting_fragment);
+        this.settingFragment = new SettingsFragment();
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.setting_fragment, this.settingFragment)
+                .commit();
+
+//        this.settingFragment = (SettingsFragment)this.getFragmentManager().findFragmentById(R.id.setting_fragment);
 
     }
 
