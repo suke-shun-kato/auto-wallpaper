@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
             // パーミッション許可ダイアログを表示
             // ----------
 //            if ( isServiceRunning //サービスが起動中
-//                    && mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
+//                    && mSp.getBoolean(SettingsPreferenceFragment.KEY_FROM_DIR, false) //ディレクトリからがON
 //                    && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
 //                    != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
 //                    ) {

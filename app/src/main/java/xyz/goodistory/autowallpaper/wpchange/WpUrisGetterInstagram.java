@@ -24,7 +24,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import xyz.goodistory.autowallpaper.HistoryModel;
-import xyz.goodistory.autowallpaper.SettingsFragment;
+import xyz.goodistory.autowallpaper.SettingsPreferenceFragment;
 
 /**
  * Instagram
@@ -160,8 +160,8 @@ public class WpUrisGetterInstagram extends WpUrisGetter {
             throws InterruptedException, ExecutionException, IOException, JSONException {
 
         //// 変数の準備
-        final String clientID = SettingsFragment.getInstagramClientID(context);
-        final String accessToken = SettingsFragment.getInstagramAccessToken(context);
+        final String clientID = SettingsPreferenceFragment.getInstagramClientID(context);
+        final String accessToken = SettingsPreferenceFragment.getInstagramAccessToken(context);
         final String resourceUrl = "https://api.instagram.com/v1/users/self/media/recent";
 
         //// リクエストの作成

@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 //import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
 //import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreferenceOld;
+import xyz.goodistory.autowallpaper.preference.TimeDialogPreference;
 import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
 
@@ -35,7 +36,7 @@ import xyz.goodistory.autowallpaper.service.MainService;
  * サービスへのバインドはフラグメントで行う方が良い（違うアクティビティにアタッチされるかもしれないので）
  * Created by k-shunsuke on 2017/12/08.
  */
-public class SettingsFragment extends PreferenceFragmentCompat
+public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     // --------------------------------------------------------------------
@@ -61,7 +62,7 @@ public class SettingsFragment extends PreferenceFragmentCompat
          */
         @Override
         public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
-            Log.d("○SettingsFragment" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
+            Log.d("○SettingsPreferenceFragment" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
 
             MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
             mainService = serviceBinder.getService();
@@ -88,6 +89,10 @@ public class SettingsFragment extends PreferenceFragmentCompat
     //// request code
     // TODO R.integer.permission_request_code_from_directory を使うようにする
     private static final int RQ_CODE_FROM_DIR = 1;
+
+    // preferenceのdialogのタグ
+    private static final String DIALOG_FRAGMENT_TAG
+            = SettingsPreferenceFragment.class.getName() + ".DIALOG";
 
     //// preference key
     // TODO リソースから取得するようにする
@@ -246,17 +251,17 @@ public class SettingsFragment extends PreferenceFragmentCompat
                 //// 設定がONになるとき、かつAndroid6.0のとき、かつストレージアクセスの許可を得ていないとき、
                 if ( (boolean)newValue  //設定がOFF→ONになるとき
                   &&  ContextCompat.checkSelfPermission(
-                                SettingsFragment.this.getActivity(),
+                                SettingsPreferenceFragment.this.getActivity(),
                                 Manifest.permission.READ_EXTERNAL_STORAGE
                        )
                         != PackageManager.PERMISSION_GRANTED
                 ) {
                     PermissionManager.showRequestDialog(getActivity(), RQ_CODE_FROM_DIR);
 //                    // パーミッション必要な理由を表示
-//                    toastIfShould(SettingsFragment.this);
+//                    toastIfShould(SettingsPreferenceFragment.this);
 //
 //                    // アクセス許可を要求（ダイアログを表示）
-//                    SettingsFragment.this.requestPermissions(
+//                    SettingsPreferenceFragment.this.requestPermissions(
 //                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
 //                            RQ_CODE_FROM_DIR
 //                    );
@@ -344,6 +349,30 @@ public class SettingsFragment extends PreferenceFragmentCompat
         // ----------------------------------
         return super.onCreateView(inflater, container, savedInstanceState);
     }
+
+    /**
+     * Called when a preference in the tree requests to display a dialog. Subclasses should
+     * override this method to display custom dialogs or to handle dialogs for custom preference
+     * classes.
+     *
+     * custom dialog preference をshowするために修正
+     *
+     * @param preference The Preference object requesting the dialog.
+     */
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+
+        if (preference instanceof TimeDialogPreference) {
+            // ダイアログを表示する、super.onDisplayPreferenceDialog() と同じように実装している
+            TimeDialogPreference.Dialog dialog
+                    = TimeDialogPreference.Dialog.newInstance(preference.getKey());
+            dialog.setTargetFragment(this, 0);
+            dialog.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
+        } else {
+            super.onDisplayPreferenceDialog(preference);
+        }
+    }
+
 
     // --------------------------------------------------------------------
     // メソッド、設定の変更感知用
