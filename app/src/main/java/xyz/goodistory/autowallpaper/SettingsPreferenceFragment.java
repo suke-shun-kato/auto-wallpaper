@@ -95,13 +95,14 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
             = SettingsPreferenceFragment.class.getName() + ".DIALOG";
 
     //// preference key
-    // TODO リソースから取得するようにする
     private String PREFERENCE_KEY_SELECT_DIRECTORY;
     private String PREFERENCE_KEY_FROM_DIR;
     private String PREFERENCE_KEY_FROM_TWITTER_FAVORITES;
     private String PREFERENCE_KEY_AUTHENTICATE_TWITTER;
     private String PREFERENCE_KEY_FROM_INSTAGRAM_USER_RECENT;// TODO インスタ復活したら使う
     private String PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM;
+
+    private String PREFERENCE_KEY_START_TIME;
     private String PREFERENCE_KEY_ABOUT;
 
     // --------------------------------------------------------------------
@@ -128,6 +129,9 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
                 = getString(R.string.preference_key_from_instagram_user_recent);
         PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM
                 = getString(R.string.preference_key_authenticate_instagram);
+
+
+        PREFERENCE_KEY_START_TIME = getString(R.string.preference_key_start_time);
 
         PREFERENCE_KEY_ABOUT = getString(R.string.preference_key_about);
     }
@@ -228,6 +232,11 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
 //                = (InstagramOAuthPreference)findPreference(PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM);
 //        // サマリーを更新
 //        instagramOAuthPreference.updateSummary();
+
+
+        TimeDialogPreference startTimePreference
+                = (TimeDialogPreference)findPreference(PREFERENCE_KEY_START_TIME);
+        startTimePreference.setSummaryFromSharedPreferenceValue();
 
 
         // ----------------------------------
@@ -465,11 +474,17 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
 //            ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
 //        }
 
+        else if ( preferenceKey.equals(PREFERENCE_KEY_START_TIME) ) {
+            TimeDialogPreference startTimePreference
+                    = (TimeDialogPreference) findPreference(preferenceKey);
+            startTimePreference.setSummaryFromSharedPreferenceValue();
+        }
+
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える
         // ----------------------------------
         if (this.isServiceRunning) {
-            this.mainService.onSPChanged(preferenceKey);
+            mainService.onSPChanged(preferenceKey);
         }
 
     }

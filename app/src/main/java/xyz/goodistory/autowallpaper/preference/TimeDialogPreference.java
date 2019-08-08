@@ -134,6 +134,32 @@ public class TimeDialogPreference extends DialogPreference {
         }
     }
 
+    /**
+     * SharedPreferenceの値からサマーリーをセット
+     */
+    public void setSummaryFromSharedPreferenceValue() {
+        long unixTime = getPersistedLong(0);
+        setSummary( unixTimeToHour(unixTime) + ":" + unixTimeToMinute(unixTime) );
+    }
+
+    // --------------------------------------------------------------------
+    //
+    // --------------------------------------------------------------------
+    private static int unixTimeToHour(long unixTimeMsec) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(unixTimeMsec);
+        return calendar.get(Calendar.HOUR_OF_DAY);
+    }
+    private static int unixTimeToMinute(long unixTimeMsec) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTimeInMillis(unixTimeMsec);
+        return calendar.get(Calendar.MINUTE);
+    }
+    private static long toUnixTime(int hourOfDay, int minute) {
+        Calendar calendar = new GregorianCalendar();
+        calendar.set(1970,1,1, hourOfDay, minute);
+        return calendar.getTimeInMillis();
+    }
     // --------------------------------------------------------------------
     // class
     // --------------------------------------------------------------------
@@ -254,21 +280,7 @@ public class TimeDialogPreference extends DialogPreference {
             return (TimeDialogPreference) getPreference();
         }
 
-        private static int unixTimeToHour(long unixTimeMsec) {
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTimeInMillis(unixTimeMsec);
-            return calendar.get(Calendar.HOUR_OF_DAY);
-        }
-        private static int unixTimeToMinute(long unixTimeMsec) {
-            Calendar calendar = new GregorianCalendar();
-            calendar.setTimeInMillis(unixTimeMsec);
-            return calendar.get(Calendar.MINUTE);
-        }
-        private static long toUnixTime(int hourOfDay, int minute) {
-            Calendar calendar = new GregorianCalendar();
-            calendar.set(1970,1,1, hourOfDay, minute);
-            return calendar.getTimeInMillis();
-        }
+
     }
 }
 
