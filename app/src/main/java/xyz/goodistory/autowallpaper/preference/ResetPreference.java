@@ -105,9 +105,8 @@ public class ResetPreference extends DialogPreference {
             }
 
             Context context = getContext();
-            // TODO 例外にするかこれでいいのか考える
             if (context == null) {
-                return;
+                throw new IllegalStateException("can't get context");
             }
 
             // ----------------------------------
