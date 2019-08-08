@@ -240,7 +240,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
 
         TimeDialogPreference startTimePreference
                 = (TimeDialogPreference)findPreference(PREFERENCE_KEY_START_TIME);
-        startTimePreference.setSummaryFromSharedPreferenceValue();
+        startTimePreference.setSummaryFromPersistedValue();
 
 
         // ----------------------------------
@@ -485,7 +485,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         else if ( preferenceKey.equals(PREFERENCE_KEY_START_TIME) ) {
             TimeDialogPreference startTimePreference
                     = (TimeDialogPreference) findPreference(preferenceKey);
-            startTimePreference.setSummaryFromSharedPreferenceValue();
+            startTimePreference.setSummaryFromPersistedValue();
         }
 
         // ----------------------------------

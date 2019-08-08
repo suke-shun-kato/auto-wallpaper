@@ -135,11 +135,20 @@ public class TimeDialogPreference extends DialogPreference {
     }
 
     /**
+     * SharedPreferenceから文字列として値を取得
+     * @return 時刻
+     */
+    public String getPersistedAsText() {
+        long unixTime = getPersistedLong(0);
+        return String.format( Locale.getDefault(),"%d:%02d",
+                unixTimeToHour(unixTime), unixTimeToMinute(unixTime));
+    }
+
+    /**
      * SharedPreferenceの値からサマーリーをセット
      */
-    public void setSummaryFromSharedPreferenceValue() {
-        long unixTime = getPersistedLong(0);
-        setSummary( unixTimeToHour(unixTime) + ":" + unixTimeToMinute(unixTime) );
+    public void setSummaryFromPersistedValue() {
+        setSummary( getPersistedAsText() );
     }
 
     // --------------------------------------------------------------------
