@@ -18,10 +18,8 @@ import xyz.goodistory.autowallpaper.R;
 
 /**
  * デフォルト値にリセットする用のボタン
- * Created by k-shunsuke on 2018/01/05.
  */
-
-public class ResetPreference extends DialogPreference {
+public class ResetDialogPreference extends DialogPreference {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
@@ -31,17 +29,17 @@ public class ResetPreference extends DialogPreference {
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
-    public ResetPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public ResetDialogPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         setAttributeSet(context, attrs);
     }
 
-    public ResetPreference(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ResetDialogPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         setAttributeSet(context, attrs);
     }
 
-    public ResetPreference(Context context, AttributeSet attrs) {
+    public ResetDialogPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setAttributeSet(context, attrs);
     }
@@ -53,10 +51,10 @@ public class ResetPreference extends DialogPreference {
      */
     private void setAttributeSet(Context context, AttributeSet attrs){
         TypedArray typedAry = context.getTheme().obtainStyledAttributes(
-                attrs, R.styleable.ResetPreference,
+                attrs, R.styleable.ResetDialogPreference,
                 0, 0);
         try {
-            mTextResult = typedAry.getString(R.styleable.ResetPreference_textResult);
+            mTextResult = typedAry.getString(R.styleable.ResetDialogPreference_textResult);
         } catch (RuntimeException e) {
             mTextResult = null;
         } finally {
@@ -133,8 +131,8 @@ public class ResetPreference extends DialogPreference {
             // ----------------------------------
             // トースト表示
             // ----------------------------------
-            ResetPreference resetPreference = (ResetPreference)getPreference();
-            String textResult = resetPreference.getTextResult();
+            ResetDialogPreference resetDialogPreference = (ResetDialogPreference)getPreference();
+            String textResult = resetDialogPreference.getTextResult();
             if (textResult != null) {
                 Toast.makeText(context, textResult, Toast.LENGTH_SHORT)
                         .show();

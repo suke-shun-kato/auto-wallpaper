@@ -24,7 +24,7 @@
         <attr name="summaryDone" format="string" />
         <attr name="summaryNotYet" format="string" />
     </declare-styleable>
-    <declare-styleable name="ResetPreference">
+    <declare-styleable name="ResetDialogPreference">
         <attr name="textResult" format="string" />
     </declare-styleable>
 </resources>

@@ -11,7 +11,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceDialogFragmentCompat;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
 import androidx.annotation.NonNull;
@@ -28,7 +27,7 @@ import android.widget.Toast;
 
 //import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
 //import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreferenceOld;
-import xyz.goodistory.autowallpaper.preference.ResetPreference;
+import xyz.goodistory.autowallpaper.preference.ResetDialogPreference;
 import xyz.goodistory.autowallpaper.preference.TimeDialogPreference;
 import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
@@ -382,8 +381,8 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
                     = TimeDialogPreference.Dialog.newInstance(preference.getKey());
             dialog.setTargetFragment(this, 0);
             dialog.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
-        } else if (preference instanceof ResetPreference) {
-            ResetPreference.Dialog dialog = ResetPreference.Dialog.newInstance(preference.getKey());
+        } else if (preference instanceof ResetDialogPreference) {
+            ResetDialogPreference.Dialog dialog = ResetDialogPreference.Dialog.newInstance(preference.getKey());
             dialog.setTargetFragment(this, 0);
             dialog.show(getFragmentManager(), DIALOG_FRAGMENT_TAG2);
         } else {

@@ -90,7 +90,7 @@
     <PreferenceCategory
         android:key="@string/preference_key_category_other"
         android:title="@string/setting_other_title">
-        <xyz.goodistory.autowallpaper.preference.ResetPreference
+        <xyz.goodistory.autowallpaper.preference.ResetDialogPreference
             android:key="@string/preference_key_reset"
             android:title="@string/setting_other_resetBtn_title"
             android:dialogTitle="@string/setting_other_resetBtn_title"
