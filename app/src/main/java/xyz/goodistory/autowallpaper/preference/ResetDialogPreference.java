@@ -24,42 +24,45 @@ public class ResetDialogPreference extends DialogPreference {
     // フィールド
     // --------------------------------------------------------------------
     /** 初期化した後に表示されるトーストの文字, nullの場合は表示しない */
-    @Nullable private String mTextResult;
+    @Nullable private final String mTextResult;
 
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
     public ResetDialogPreference(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        setAttributeSet(context, attrs);
+        mTextResult = getAttributeTextResult(context, attrs);
     }
 
     public ResetDialogPreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        setAttributeSet(context, attrs);
+        mTextResult = getAttributeTextResult(context, attrs);
     }
 
     public ResetDialogPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setAttributeSet(context, attrs);
+        mTextResult = getAttributeTextResult(context, attrs);
     }
 
     /**
-     * XMLのカスタム属性をフィールドに読み込む
+     * XMLのカスタム属性のtextResultを取得
      * @param context context
      * @param attrs attrs
      */
-    private void setAttributeSet(Context context, AttributeSet attrs){
+    @Nullable
+    private static String getAttributeTextResult(Context context, AttributeSet attrs) {
         TypedArray typedAry = context.getTheme().obtainStyledAttributes(
                 attrs, R.styleable.ResetDialogPreference,
                 0, 0);
+
+        String textResult;
         try {
-            mTextResult = typedAry.getString(R.styleable.ResetDialogPreference_textResult);
-        } catch (RuntimeException e) {
-            mTextResult = null;
+            textResult = typedAry.getString(R.styleable.ResetDialogPreference_textResult);
         } finally {
             typedAry.recycle();
         }
+
+        return textResult;
     }
 
 

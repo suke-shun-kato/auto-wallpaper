@@ -65,6 +65,7 @@ public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
+    // TODO 例外処理とか引数3,4個のコンストラクタの場合などを考慮すること
     public TwitterOAuthPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
