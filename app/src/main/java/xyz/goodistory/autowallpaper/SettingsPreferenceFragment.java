@@ -10,6 +10,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
+
+import androidx.fragment.app.FragmentManager;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreferenceCompat;
@@ -86,12 +88,13 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
     // TODO R.integer.permission_request_code_from_directory を使うようにする
     private static final int RQ_CODE_FROM_DIR = 1;
 
-    // preferenceのdialogのタグ
+    /** preferenceのdialogのfragmentタグ, 公式と同じ命名規則で揃えた */
     private static final String DIALOG_FRAGMENT_TAG
             = SettingsPreferenceFragment.class.getName() + ".DIALOG";
-    // TODO ちゃんとする
-    private static final String DIALOG_FRAGMENT_TAG2
-            = SettingsPreferenceFragment.class.getName() + ".DIALOGddd";
+
+    /** PreferenceのDialogを表示するときにfragmentManagerが取得できないときのエラーメッセージ */
+    @SuppressWarnings("FieldCanBeLocal")
+    private String ERROR_MESSAGE_CANT_GET_FRAGMENT_MANAGER = "can't get fragmentManager.";
 
     //// preference key
     private String PREFERENCE_KEY_SELECT_DIRECTORY;
@@ -358,27 +361,31 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
     }
 
     /**
-     * Called when a preference in the tree requests to display a dialog. Subclasses should
-     * override this method to display custom dialogs or to handle dialogs for custom preference
-     * classes.
-     *
-     * custom dialog preference をshowするために修正
-     *
+     * PreferenceのDialogを表示する直前に呼ばれる
+     * dialogPreference をshow()するためのメソッド
      * @param preference The Preference object requesting the dialog.
      */
     @Override
     public void onDisplayPreferenceDialog(Preference preference) {
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager == null) {
+        // おそらくここのif文には入らないが、lintで警告が出ていたので一応記述
+            Toast.makeText(getContext(), ERROR_MESSAGE_CANT_GET_FRAGMENT_MANAGER, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
 
         if (preference instanceof TimeDialogPreference) {
             // ダイアログを表示する、super.onDisplayPreferenceDialog() と同じように実装している
             TimeDialogPreference.Dialog dialog
                     = TimeDialogPreference.Dialog.newInstance(preference.getKey());
             dialog.setTargetFragment(this, 0);
-            dialog.show(getFragmentManager(), DIALOG_FRAGMENT_TAG);
+            dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
         } else if (preference instanceof ResetDialogPreference) {
             ResetDialogPreference.Dialog dialog = ResetDialogPreference.Dialog.newInstance(preference.getKey());
             dialog.setTargetFragment(this, 0);
-            dialog.show(getFragmentManager(), DIALOG_FRAGMENT_TAG2);
+            // ここのfragmentタグは↑と同じでOK、同じタイミングで表示されないから
+            dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
         } else {
             super.onDisplayPreferenceDialog(preference);
         }
