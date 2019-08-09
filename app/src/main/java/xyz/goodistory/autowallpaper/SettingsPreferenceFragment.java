@@ -19,7 +19,6 @@ import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceScreen;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +34,6 @@ import xyz.goodistory.autowallpaper.service.MainService;
 /**
  * 設定画面のフラグメント、
  * サービスへのバインドはフラグメントで行う方が良い（違うアクティビティにアタッチされるかもしれないので）
- * Created by k-shunsuke on 2017/12/08.
  */
 public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
@@ -47,7 +45,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
     private MainService mainService;
 
     /** バインドされた状態か */
-    private boolean isBound = false;
+    private boolean mIsBound = false;
     private boolean mIsServiceRunning = false;
 
     private SharedPreferences mSp;
@@ -63,8 +61,6 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
          */
         @Override
         public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
-            Log.d("○SettingsPreferenceFragment" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
-
             MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
             mainService = serviceBinder.getService();
             mIsServiceRunning = true;
@@ -78,8 +74,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
          */
         @Override
         public void onServiceDisconnected(ComponentName serviceClassName) {
-            Log.d("○" + this.getClass().getSimpleName(), "onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
-            isBound = false;
+            mIsBound = false;
             mIsServiceRunning = false;
         }
     };
@@ -151,11 +146,10 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         // ↓公式でonStart()のタイミングでバインドしている（Activityだけど）のでこの場所
         // https://developer.android.com/guide/components/bound-services.html?hl=ja
         // ----------------------------------
-        Activity attachedActivity = this.getActivity();
+        Activity attachedActivity = getActivity();
         Intent intent = new Intent(attachedActivity, MainService.class);
 
-//        attachedActivity.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
-        this.isBound  = attachedActivity.bindService(intent, this.myConnection, 0);
+        mIsBound = attachedActivity.bindService(intent, myConnection, 0);
     }
 
 
@@ -170,9 +164,9 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         // ----------------------------------
         // サービスへのバインドをやめる
         // ----------------------------------
-        if (this.isBound) {
-            this.getActivity().unbindService(this.myConnection);
-            this.isBound = false;
+        if (mIsBound) {
+            getActivity().unbindService(myConnection);
+            mIsBound = false;
         }
     }
 
@@ -403,7 +397,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         super.onResume();
 
         //// 設定変更リスナーを設置
-        this.getPreferenceScreen()
+        getPreferenceScreen()
                 .getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
     }
@@ -414,7 +408,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
     @Override
     public void onPause() {
         super.onPause();
-        this.getPreferenceScreen()
+        getPreferenceScreen()
                 .getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
@@ -449,7 +443,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
                     // ディレクトリから の設定をONにする
                     ((SwitchPreferenceCompat) findPreference(PREFERENCE_KEY_FROM_DIR)).setChecked(true);
                     // SharedPreferenceが変更したときのイベントを発火
-                    this.onSharedPreferenceChanged(mSp, PREFERENCE_KEY_FROM_DIR);
+                    onSharedPreferenceChanged(mSp, PREFERENCE_KEY_FROM_DIR);
                 }
                 break;
         }
