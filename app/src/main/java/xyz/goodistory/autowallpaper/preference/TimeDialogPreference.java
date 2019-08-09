@@ -92,7 +92,8 @@ public class TimeDialogPreference extends DialogPreference {
     }
 
    /**********************************
-    * preferences.xml から defaultValue を取得するときに呼ばれる（defaultValue がない場合は呼ばれない）
+    * preferences.xml から defaultValue を取得するときに呼ばれる
+    * defaultValue がない場合は呼ばれない
     * コンストラクタでsuper() したときに呼ばれる
     * defaultValue の値の加工
     *

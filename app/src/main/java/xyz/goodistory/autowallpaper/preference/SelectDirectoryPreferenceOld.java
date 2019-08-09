@@ -64,7 +64,7 @@
 //    // 定数
 //    // --------------------------------------------------------------------
 //    /** ダイアログのレイアウトファイルのID */
-//    private static final int R_LAYOUT_DIR_PREF = R.layout.dialog_select_dir_pref;
+//    private static final int R_LAYOUT_DIR_PREF = R.layout.dialog_fragment_select_directory_preference;
 //
 //    /** ダイアログのレイアウトXML内の現在のディレクトリのパスを表示する要素のID */
 //    private static final int R_ID_DIALOG_CURRENT_PATH = R.id.dirDialog_current_path;

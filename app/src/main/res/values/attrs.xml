@@ -9,6 +9,10 @@
         <!--<attr name="permissionDialogRequestCode" format="integer" />-->
         <!--<attr name="permissionRationaleDialogText" format="string" />-->
     <!--</declare-styleable>-->
+    <declare-styleable name="SelectDirectoryPreference">
+        <attr name="dialogCurrentPathId" format="integer" />
+        <attr name="dialogFileListId" format="integer" />
+    </declare-styleable>
     <declare-styleable name="TwitterOAuthPreference">
         <attr name="textCantAccessAuthPage" format="string" />
         <attr name="textOauthSuccess" format="string" />
@@ -27,4 +31,5 @@
     <declare-styleable name="ResetDialogPreference">
         <attr name="textResult" format="string" />
     </declare-styleable>
+
 </resources>

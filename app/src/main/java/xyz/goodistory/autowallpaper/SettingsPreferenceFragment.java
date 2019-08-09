@@ -29,6 +29,7 @@ import android.widget.Toast;
 //import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
 //import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreferenceOld;
 import xyz.goodistory.autowallpaper.preference.ResetDialogPreference;
+import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreference;
 import xyz.goodistory.autowallpaper.preference.TimeDialogPreference;
 import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
@@ -382,9 +383,15 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
             dialog.setTargetFragment(this, 0);
             dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
         } else if (preference instanceof ResetDialogPreference) {
-            ResetDialogPreference.Dialog dialog = ResetDialogPreference.Dialog.newInstance(preference.getKey());
+            ResetDialogPreference.Dialog dialog
+                    = ResetDialogPreference.Dialog.newInstance(preference.getKey());
             dialog.setTargetFragment(this, 0);
             // ここのfragmentタグは↑と同じでOK、同じタイミングで表示されないから
+            dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
+        } else if (preference instanceof SelectDirectoryPreference) {
+            SelectDirectoryPreference.Dialog dialog
+                    = SelectDirectoryPreference.Dialog.Companion.newInstance(preference.getKey());
+            dialog.setTargetFragment(this, 0);
             dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
         } else {
             super.onDisplayPreferenceDialog(preference);
