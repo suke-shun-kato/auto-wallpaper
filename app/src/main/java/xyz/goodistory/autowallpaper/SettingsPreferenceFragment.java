@@ -48,7 +48,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
 
     /** バインドされた状態か */
     private boolean isBound = false;
-    private boolean isServiceRunning = false;
+    private boolean mIsServiceRunning = false;
 
     private SharedPreferences mSp;
 
@@ -67,7 +67,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
 
             MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
             mainService = serviceBinder.getService();
-            isServiceRunning = true;
+            mIsServiceRunning = true;
 
         }
 
@@ -80,7 +80,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         public void onServiceDisconnected(ComponentName serviceClassName) {
             Log.d("○" + this.getClass().getSimpleName(), "onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
             isBound = false;
-            isServiceRunning = false;
+            mIsServiceRunning = false;
         }
     };
     
@@ -491,7 +491,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える
         // ----------------------------------
-        if (this.isServiceRunning) {
+        if (mIsServiceRunning) {
             mainService.onSPChanged(preferenceKey);
         }
 
