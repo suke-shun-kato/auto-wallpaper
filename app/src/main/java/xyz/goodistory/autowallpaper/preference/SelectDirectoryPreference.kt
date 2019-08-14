@@ -94,15 +94,29 @@ class SelectDirectoryPreference : DialogPreference {
         private const val DIRECTORY_NOTIFICATIONS = "NOTIFICATIONS"
         private const val DIRECTORY_PICTURES = "PICTURES"
         private const val DIRECTORY_MOVIES = "MOVIES"
+        private const val DIRECTORY_DOWNLOADS = "MOVIES"
+        private const val DIRECTORY_DCIM = "DCIM"
+        private const val DIRECTORY_DOCUMENTS = "DOCUMENTS"
         private const val DIRECTORY_ROOT = "ROOT"
+
+        /** Environment.getExternalStoragePublicDirectory()の引数へ変換表 */
         private val DIRECTORY_TYPES: Map<String, String?> = mapOf(
                 DIRECTORY_MUSIC to Environment.DIRECTORY_MUSIC,
+                DIRECTORY_MUSIC to Environment.DIRECTORY_PODCASTS,
+
                 DIRECTORY_RINGTONES to Environment.DIRECTORY_RINGTONES,
                 DIRECTORY_ALARMS to Environment.DIRECTORY_ALARMS,
+
                 DIRECTORY_NOTIFICATIONS to Environment.DIRECTORY_NOTIFICATIONS,
                 DIRECTORY_PICTURES to Environment.DIRECTORY_PICTURES,
+
                 DIRECTORY_MOVIES to Environment.DIRECTORY_MOVIES,
-                DIRECTORY_ROOT to null )
+                DIRECTORY_DOWNLOADS to Environment.DIRECTORY_DOWNLOADS,
+
+                DIRECTORY_DCIM to Environment.DIRECTORY_DCIM,
+                DIRECTORY_DOCUMENTS to Environment.DIRECTORY_DOCUMENTS,
+
+                DIRECTORY_ROOT to null)
     }
 
     // --------------------------------------------------------------------
@@ -176,8 +190,13 @@ class SelectDirectoryPreference : DialogPreference {
                     "XML defaultValue is only selected from " + DIRECTORY_TYPES.keys.toString())
         }
 
-        val directoryPathFile: File = context.getExternalFilesDir(DIRECTORY_TYPES[directoryType])
-                ?: throw IllegalArgumentException("directoryPathFile is null!") // ここにはこないはず
+        val directoryPathFile: File = if (directoryType == DIRECTORY_ROOT) {
+            // TODO API29(Q)から非推奨になるのでQがリリースされたらなんとかする
+            Environment.getExternalStorageDirectory()
+        } else {
+            // TODO API29(Q)から非推奨になるのでQがリリースされたらなんとかする
+            Environment.getExternalStoragePublicDirectory(DIRECTORY_TYPES[directoryType])
+        }
 
         return directoryPathFile.toString()
     }
