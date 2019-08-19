@@ -2,8 +2,9 @@ package xyz.goodistory.autowallpaper.preference
 
 import android.content.Context
 import android.content.res.TypedArray
+import android.database.Cursor
 import android.os.Bundle
-import android.os.Environment
+import android.provider.MediaStore
 import android.util.AttributeSet
 import android.util.Log
 import android.view.View
@@ -77,9 +78,9 @@ class SelectDirectoryPreference : DialogPreference {
     // フィールド
     // --------------------------------------------------------------------
     /** ディレクトリパス、XMLのdefaultValueがなくて永続化してる値がないときnull */
-    private var directoryPath: String? = null
+    private var bucketId: String? = null
 
-    /** XML属性の値*/
+    /** XML属性の値 */
     private val dialogCurrentPathId: Int?
     private val dialogFileListId: Int?
 
@@ -87,36 +88,29 @@ class SelectDirectoryPreference : DialogPreference {
     // 定数
     // --------------------------------------------------------------------
     companion object {
-        // TODO これ列挙型とかで別の書き方あるかも
-        private const val DIRECTORY_MUSIC = "MUSIC"
-        private const val DIRECTORY_RINGTONES = "RINGTONES"
-        private const val DIRECTORY_ALARMS = "ALARMS"
-        private const val DIRECTORY_NOTIFICATIONS = "NOTIFICATIONS"
-        private const val DIRECTORY_PICTURES = "PICTURES"
-        private const val DIRECTORY_MOVIES = "MOVIES"
-        private const val DIRECTORY_DOWNLOADS = "MOVIES"
-        private const val DIRECTORY_DCIM = "DCIM"
-        private const val DIRECTORY_DOCUMENTS = "DOCUMENTS"
-        private const val DIRECTORY_ROOT = "ROOT"
+        private const val ALL_BUCKET_DISPLAY_NAME: String = "ALL"
 
-        /** Environment.getExternalStoragePublicDirectory()の引数へ変換表 */
-        private val DIRECTORY_TYPES: Map<String, String?> = mapOf(
-                DIRECTORY_MUSIC to Environment.DIRECTORY_MUSIC,
-                DIRECTORY_MUSIC to Environment.DIRECTORY_PODCASTS,
+        /**
+         * bucket display name → bucket display ids
+         */
+        private fun toBucketIds(filterBucketDisplayName: String, buckets: Map<Int, String>): Set<Int> {
+            return mutableSetOf<Int>().apply {
+                for ( (bucketId, bucketDisplayName) in buckets ) {
+                    if (filterBucketDisplayName == bucketDisplayName) {
+                        add(bucketId)
+                    }
+                }
+            }
+        }
 
-                DIRECTORY_RINGTONES to Environment.DIRECTORY_RINGTONES,
-                DIRECTORY_ALARMS to Environment.DIRECTORY_ALARMS,
+        /**
+         * bucket display name → bucket display id
+         */
+        private fun toBucketId(bucketDisplayName: String, buckets: Map<Int, String>): Int {
+            val filteredBucketIds: Set<Int> = toBucketIds(bucketDisplayName, buckets)
+            return filteredBucketIds.first()
+        }
 
-                DIRECTORY_NOTIFICATIONS to Environment.DIRECTORY_NOTIFICATIONS,
-                DIRECTORY_PICTURES to Environment.DIRECTORY_PICTURES,
-
-                DIRECTORY_MOVIES to Environment.DIRECTORY_MOVIES,
-                DIRECTORY_DOWNLOADS to Environment.DIRECTORY_DOWNLOADS,
-
-                DIRECTORY_DCIM to Environment.DIRECTORY_DCIM,
-                DIRECTORY_DOCUMENTS to Environment.DIRECTORY_DOCUMENTS,
-
-                DIRECTORY_ROOT to null)
     }
 
     // --------------------------------------------------------------------
@@ -131,19 +125,20 @@ class SelectDirectoryPreference : DialogPreference {
 
     /**
      * コンストラクタの処理終了の後に呼ばれる、設定画面が表示された瞬間に呼ばれる
+     * 保存された値がなくて、mDefaultValue がnullの場合は呼ばれない
      *
      * @param defaultValue 保存された値がない場合: onGetDefaultValue()の戻り値,
-     *                                            XMLにdefaultValueがない場合は呼ばれない
      *                      保存された値がある場合: null
      */
     override fun onSetInitialValue(defaultValue: Any?) {
-        val defaultValueStr: String = if (defaultValue == null) {
-            getDirectoryPah(DIRECTORY_ROOT)
-        } else {
-            defaultValue as String
-        }
+        // 永続化用に値の型を加工
+        val defaultBucketId: String? = defaultValue as? String
 
-        setAndPersistDirectoryPath( getPersistedString(defaultValueStr) )
+        // 永続化した値を取得、ない場合はデフォルト値
+        val persistedBucketId: String = getPersistedString(defaultBucketId)
+
+        // 取得した値を保存したりプロパティにセットしたり
+        setAndPersist(persistedBucketId)
     }
 
     /**
@@ -153,15 +148,28 @@ class SelectDirectoryPreference : DialogPreference {
      *
      * @param a <Preference>の属性の全ての配列
      * @param index <Preference>の属性配列に対する「defaultValue」属性のインデックス
-     * @return mDefaultValue にセットされる値, onSetInitialValue() に提供される値
+     * @return mDefaultValue にセットされる値, onSetInitialValue() に提供される値, bucket_id
      */
     override fun onGetDefaultValue(a: TypedArray?, index: Int): Any? {
         //// 初期処理
         // XMLから値を取得
-        val xmlDefaultValue: String = a?.getString(index)
+        val defaultBucketDisplayName: String = a?.getString(index)
                 ?: throw IllegalStateException("TypedArray is null!")   // 通常ここには来ない
 
-        return getDirectoryPah(xmlDefaultValue)
+        //// 特殊処理
+        if (defaultBucketDisplayName == ALL_BUCKET_DISPLAY_NAME) {
+            return ALL_BUCKET_DISPLAY_NAME  // String
+        }
+
+        //// 通常処理
+        val displayNames: Map<Int, String> = getImageMediaAllBuckets()
+        if ( !displayNames.containsValue(defaultBucketDisplayName) ) {
+            throw IllegalArgumentException(
+                    "DefaultValue attribute of preferences XML is invalid. " +
+                    "Please chose from $displayNames")
+        }
+
+        return toBucketId(defaultBucketDisplayName, displayNames).toString()   // String型をreturn
     }
 
 
@@ -170,36 +178,76 @@ class SelectDirectoryPreference : DialogPreference {
     // --------------------------------------------------------------------
     /**
      * フィールドにセット、persist、変更を知らせるを一度にする
-     * @param setDirectoryPath setしたいディレクトリのPath
      */
-    fun setAndPersistDirectoryPath(setDirectoryPath: String) {
-        if ( directoryPath != setDirectoryPath ) {
-            directoryPath = setDirectoryPath
-            persistString(setDirectoryPath)
+    private fun setAndPersist(setBucketId: String) {
+        if (bucketId != setBucketId) {
+            bucketId = setBucketId
+            persistString(setBucketId)
             notifyChanged()
         }
     }
+
+    /**
+     * MediaStoreの画像にある、全てののbucket_idとbucket_display_nameの組み合わせを取得
+     *
+     * MediaStore.Images.ImageColumns.BUCKET_ID は bucket_idのカラム名
+     * MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME もカラム名
+     *
+     * @return bucketDisplayNames[ bucketId ] = bucketDisplayName の Map
+     */
+    private fun getImageMediaAllBuckets(): Map<Int, String> {
+        //// クエリを実行
+        // SELECT 句の値
+        val projection: Array<String>
+                = arrayOf("DISTINCT " + MediaStore.Images.ImageColumns.BUCKET_ID,
+                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME)
+        // クエリ実行
+        val cursor: Cursor? = context.contentResolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
+                null,null,null)
+
+        //// bucketNamesを取得してreturn, !! はnullのときにnullPointerExceptionを投げる
+        return cursor!!.run{
+            val bucketDisplayNames: MutableMap<Int, String> = mutableMapOf()
+
+            while( moveToNext() ) {
+                // bucket名を取得
+                val bucketId: Int = getInt(
+                        getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_ID))
+                val bucketDisplayName: String = getString(
+                        getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME))
+                // リストの最後尾にpush
+                bucketDisplayNames[bucketId] = bucketDisplayName
+            }
+            cursor.close()
+
+            bucketDisplayNames
+        }
+    }
+
 
 
     /**
      * ディレクトリタイプからディレクトリPathに変換
      */
-    private fun getDirectoryPah(directoryType: String): String {
-        if ( !DIRECTORY_TYPES.keys.contains(directoryType) ) {
-            throw IllegalArgumentException(
-                    "XML defaultValue is only selected from " + DIRECTORY_TYPES.keys.toString())
-        }
-
-        val directoryPathFile: File = if (directoryType == DIRECTORY_ROOT) {
-            // TODO API29(Q)から非推奨になるのでQがリリースされたらなんとかする
-            Environment.getExternalStorageDirectory()
-        } else {
-            // TODO API29(Q)から非推奨になるのでQがリリースされたらなんとかする
-            Environment.getExternalStoragePublicDirectory(DIRECTORY_TYPES[directoryType])
-        }
-
-        return directoryPathFile.toString()
-    }
+//    private fun getDirectoryPah(directoryType: String): String {
+//        if ( !DIRECTORY_TYPES.keys.contains(directoryType) ) {
+//            throw IllegalArgumentException(
+//                    "XML defaultValue is only selected from " + DIRECTORY_TYPES.keys.toString())
+//        }
+//
+//
+//
+//        val directoryPathFile: File = if (directoryType == DIRECTORY_ROOT) {
+//            // TODO API29(Q)から非推奨になるのでQがリリースされたらなんとかする
+//            Environment.getExternalStorageDirectory()
+//        } else {
+//            // TODO API29(Q)から非推奨になるのでQがリリースされたらなんとかする
+//            Environment.getExternalStoragePublicDirectory(DIRECTORY_TYPES[directoryType])
+//        }
+//
+//        return directoryPathFile.toString()
+//    }
 
     // --------------------------------------------------------------------
     // class
@@ -212,10 +260,10 @@ class SelectDirectoryPreference : DialogPreference {
         // --------------------------------------------------------------------
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-
-            val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
-            directoryPath = preference.directoryPath
-                    ?: preference.getDirectoryPah(DIRECTORY_ROOT)
+//
+//            val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
+//            directoryPath = preference.bucketIds
+//                    ?: preference.getDirectoryPah(DIRECTORY_ROOT)
         }
 
 
@@ -229,19 +277,18 @@ class SelectDirectoryPreference : DialogPreference {
             super.onBindDialogView(view)
 
             // --------------------------------------------------------------------
-            //
+            // 変数準備
             // --------------------------------------------------------------------
             val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
             if (view == null) {
-                throw RuntimeException("fff")
+                // ここにくることはない
+                throw RuntimeException("view of the dialog of directory list is null")
             }
 
-
-
-            val dialogCurrentPathId: Int = preference.dialogCurrentPathId
-                    ?: throw RuntimeException("sss")
-            val dialogFileListId: Int = preference.dialogFileListId
-                    ?: throw RuntimeException("sss")
+            val dialogCurrentPathId: Int = preference.dialogCurrentPathId ?: throw RuntimeException(
+                    "The id of current path in dialog is null. Please set id in preference.")
+            val dialogFileListId: Int = preference.dialogFileListId ?: throw RuntimeException(
+                    "The id of file list in dialog is null. Please set id in preference.")
 
 
             // TODO フィールド化?
@@ -259,8 +306,18 @@ class SelectDirectoryPreference : DialogPreference {
 
 
 
+            val file: File = File(directoryPath)
+            val childrenFiles = file.listFiles()
+
+
+            val paths: List<String> = directoryPath.run {
+
+                listOf("sss", "fff")
+            }
+
             directoryListView.apply {
-                val adapter: ArrayAdapter<String> = ArrayAdapter(context, android.R.layout.simple_list_item_1, listOf("ssss", "fffff", "iiiii"))
+                val adapter: ArrayAdapter<String>
+                        = ArrayAdapter(context, android.R.layout.simple_list_item_1, paths)
                 setAdapter(adapter)
             }
 
