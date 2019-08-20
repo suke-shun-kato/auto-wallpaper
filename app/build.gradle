@@ -54,7 +54,6 @@ dependencies {
     // ディレクトリ階層のlibsフォルダの中の.jarファイルを読み込む
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    // com.android.support の appcompat-v7 の 26.1.0 のライブラリを読み込む
     // （リポジトリの設定はルートの方のbuild.gradleのallprojectsで設定されている）
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'

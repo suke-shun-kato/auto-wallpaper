@@ -6,15 +6,20 @@ import android.database.Cursor
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.ListView
 import android.widget.TextView
 import androidx.preference.DialogPreference
 import androidx.preference.PreferenceDialogFragmentCompat
+import android.graphics.Bitmap
+import android.view.LayoutInflater
+import android.view.ViewGroup
 import xyz.goodistory.autowallpaper.R
-import java.io.File
+import android.widget.RadioButton
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+
 
 /**
  * ディレクトリ選択ダイアログのプリファレンス
@@ -27,26 +32,26 @@ class SelectDirectoryPreference : DialogPreference {
             : super(context, attrs, defStyleAttr, defStyleRes) {
 
         val attributes: Map<String, Int> = getCustomAttributes(context, attrs, defStyleAttr, defStyleRes)
-        dialogCurrentPathId = attributes["dialogCurrentPathId"]
+        dialogCurrentBucketId = attributes["dialogCurrentBucketId"]
         dialogFileListId = attributes["dialogFileListId"]
     }
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
             : super(context, attrs, defStyleAttr) {
         val attributes: Map<String, Int> = getCustomAttributes(context, attrs, defStyleAttr)
-        dialogCurrentPathId = attributes["dialogCurrentPathId"]
+        dialogCurrentBucketId = attributes["dialogCurrentBucketId"]
         dialogFileListId = attributes["dialogFileListId"]
 
     }
     constructor(context: Context, attrs: AttributeSet)
             : super(context, attrs) {
         val attributes: Map<String, Int> = getCustomAttributes(context, attrs)
-        dialogCurrentPathId = attributes["dialogCurrentPathId"]
+        dialogCurrentBucketId = attributes["dialogCurrentBucketId"]
         dialogFileListId = attributes["dialogFileListId"]
     }
 
     constructor(context: Context): super(context) {
         // TODO ここ例外を投げたほうがいいか考える
-        dialogCurrentPathId = null
+        dialogCurrentBucketId = null
         dialogFileListId = null
     }
 
@@ -60,8 +65,8 @@ class SelectDirectoryPreference : DialogPreference {
         val attributeValues: Map<String, Int>
         try {
             attributeValues = mapOf(
-                    "dialogCurrentPathId" to typedArray.getResourceId(
-                            R.styleable.SelectDirectoryPreference_dialogCurrentPathId, 0),
+                    "dialogCurrentBucketId" to typedArray.getResourceId(
+                            R.styleable.SelectDirectoryPreference_dialogCurrentBucketId, 0),
                     "dialogFileListId" to typedArray.getResourceId(
                             R.styleable.SelectDirectoryPreference_dialogFileListId, 0))
             // TODO 例外の投げ方
@@ -81,7 +86,7 @@ class SelectDirectoryPreference : DialogPreference {
     private var bucketId: String? = null
 
     /** XML属性の値 */
-    private val dialogCurrentPathId: Int?
+    private val dialogCurrentBucketId: Int?
     private val dialogFileListId: Int?
 
     // --------------------------------------------------------------------
@@ -109,6 +114,36 @@ class SelectDirectoryPreference : DialogPreference {
         private fun toBucketId(bucketDisplayName: String, buckets: Map<Int, String>): Int {
             val filteredBucketIds: Set<Int> = toBucketIds(bucketDisplayName, buckets)
             return filteredBucketIds.first()
+        }
+
+
+
+
+        private fun getThumbnails(context: Context): List<Bitmap> {
+            // cursor取得
+            val cursor: Cursor? = context.contentResolver.query(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    null, null, null, null)
+
+            // サムネイル取得
+            val bitmapThumbnails = cursor!!.run {
+                val bitmaps: MutableList<Bitmap> = mutableListOf()
+
+                while(moveToNext()) {
+
+                    val id: Long = getLong( getColumnIndex(MediaStore.Images.ImageColumns._ID) )
+                    val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail( context.contentResolver,
+                            id, MediaStore.Images.Thumbnails.MICRO_KIND, null)
+                    if (bitmap != null ) {
+                        bitmaps.add(bitmap)
+                    }
+                }
+
+                bitmaps
+            }
+
+            cursor.close()
+            return bitmapThumbnails
         }
 
     }
@@ -207,7 +242,7 @@ class SelectDirectoryPreference : DialogPreference {
                 null,null,null)
 
         //// bucketNamesを取得してreturn, !! はnullのときにnullPointerExceptionを投げる
-        return cursor!!.run{
+        val allBuckets = cursor!!.run{
             val bucketDisplayNames: MutableMap<Int, String> = mutableMapOf()
 
             while( moveToNext() ) {
@@ -219,122 +254,126 @@ class SelectDirectoryPreference : DialogPreference {
                 // リストの最後尾にpush
                 bucketDisplayNames[bucketId] = bucketDisplayName
             }
-            cursor.close()
 
             bucketDisplayNames
+        }
+
+        cursor.close()
+
+        return allBuckets
+    }
+
+
+    /**
+     * bucketIdからbucketDisplayNameを取得
+     * @return bucketDisplayName,ない場合はnull
+     */
+    private fun toBucketDisplayName(bucketId: Int): String? {
+        val cursor: Cursor? = context.contentResolver.query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                null,
+                MediaStore.Images.ImageColumns.BUCKET_ID + " = ?",
+                arrayOf(bucketId.toString()),
+                null, null)
+
+        val displayName = cursor!!.run {
+            // 先頭に移動
+            val canMove: Boolean = moveToFirst()
+            if (canMove) {
+                // コンテントプロバイダから値を取得
+                getString(getColumnIndexOrThrow(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME))
+            } else {
+                null
+            }
+        }
+
+        cursor.close()
+
+        return displayName
+    }
+
+    private fun toBucketDisplayName(bucketId: String): String? {
+        return if (bucketId == ALL_BUCKET_DISPLAY_NAME) {
+            ""
+        } else {
+            toBucketDisplayName(bucketId.toInt())
+        }
+    }
+
+    // --------------------------------------------------------------------
+    // class
+    // --------------------------------------------------------------------
+    class BucketModel(val bucketId: Int, val bucketDisplayName: String) {
+        companion object {
+            fun createList(buckets: Map<Int, String>): List<BucketModel> {
+                val list: MutableList<BucketModel> = mutableListOf()
+
+                buckets.forEach{ (bucketId, bucketDisplayName) ->
+                    list.add( BucketModel(bucketId, bucketDisplayName) )
+                }
+                return list
+            }
+        }
+    }
+
+    class Adapter : ListAdapter<BucketModel, Adapter.ViewHolder>(DiffCallback()) {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
+            val itemView = LayoutInflater.from(parent.context)
+                    // TODO Rをxmlから取得したい
+                    .inflate(R.layout.dialog_fragment_select_directory_preference_item,
+                            parent, false)
+
+            return ViewHolder(itemView )
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val itemModel: BucketModel = getItem(position)
+            holder.bind(itemModel)
+        }
+
+
+        // ------------------------------
+        // class
+        // ------------------------------
+        class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+            /**
+             * バインド時の処理、表示の設定をここに書く
+             */
+            fun bind(bucketModel: BucketModel) {
+                itemView.apply {
+                    // TODO Rをxmlから取得したい
+                    val radioButton: RadioButton =  findViewById(R.id.item_bucket_display_name)
+                    radioButton.text = bucketModel.bucketDisplayName
+                }
+            }
+        }
+
+        class DiffCallback: DiffUtil.ItemCallback<BucketModel>() {
+            override fun areItemsTheSame(oldItem: BucketModel, newItem:BucketModel): Boolean {
+                return oldItem.bucketId == newItem.bucketId
+            }
+
+            override fun areContentsTheSame(oldItem: BucketModel, newItem: BucketModel): Boolean {
+                return oldItem.bucketId == newItem.bucketId
+                        && oldItem.bucketDisplayName == newItem.bucketDisplayName
+            }
         }
     }
 
 
 
-    /**
-     * ディレクトリタイプからディレクトリPathに変換
-     */
-//    private fun getDirectoryPah(directoryType: String): String {
-//        if ( !DIRECTORY_TYPES.keys.contains(directoryType) ) {
-//            throw IllegalArgumentException(
-//                    "XML defaultValue is only selected from " + DIRECTORY_TYPES.keys.toString())
-//        }
-//
-//
-//
-//        val directoryPathFile: File = if (directoryType == DIRECTORY_ROOT) {
-//            // TODO API29(Q)から非推奨になるのでQがリリースされたらなんとかする
-//            Environment.getExternalStorageDirectory()
-//        } else {
-//            // TODO API29(Q)から非推奨になるのでQがリリースされたらなんとかする
-//            Environment.getExternalStoragePublicDirectory(DIRECTORY_TYPES[directoryType])
-//        }
-//
-//        return directoryPathFile.toString()
-//    }
-
     // --------------------------------------------------------------------
     // class
     // --------------------------------------------------------------------
     class Dialog: PreferenceDialogFragmentCompat() {
-        private lateinit var directoryPath: String
+        private lateinit var selectedBucketId: String
+        private lateinit var bucketModels: List<BucketModel>
 
-        // --------------------------------------------------------------------
-        // override
-        // --------------------------------------------------------------------
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-//
-//            val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
-//            directoryPath = preference.bucketIds
-//                    ?: preference.getDirectoryPah(DIRECTORY_ROOT)
-        }
-
-
-        /**
-         * Binds views in the content View of the dialog to data.
-         * Make sure to call through to the superclass implementation.
-         *
-         * @param view The content View of the dialog, if it is custom.
-         */
-        override fun onBindDialogView(view: View?) {
-            super.onBindDialogView(view)
-
-            // --------------------------------------------------------------------
-            // 変数準備
-            // --------------------------------------------------------------------
-            val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
-            if (view == null) {
-                // ここにくることはない
-                throw RuntimeException("view of the dialog of directory list is null")
-            }
-
-            val dialogCurrentPathId: Int = preference.dialogCurrentPathId ?: throw RuntimeException(
-                    "The id of current path in dialog is null. Please set id in preference.")
-            val dialogFileListId: Int = preference.dialogFileListId ?: throw RuntimeException(
-                    "The id of file list in dialog is null. Please set id in preference.")
-
-
-            // TODO フィールド化?
-            val currentDirectoryTextView = view.findViewById<TextView>(dialogCurrentPathId)
-            val directoryListView = view.findViewById<ListView>(dialogFileListId)
-
-
-            // --------------------------------------------------------------------
-            //
-            // --------------------------------------------------------------------
-            // ディレクトリをセット、リスナーをセット
-            currentDirectoryTextView.apply {
-                text = directoryPath
-            }
-
-
-
-            val file: File = File(directoryPath)
-            val childrenFiles = file.listFiles()
-
-
-            val paths: List<String> = directoryPath.run {
-
-                listOf("sss", "fff")
-            }
-
-            directoryListView.apply {
-                val adapter: ArrayAdapter<String>
-                        = ArrayAdapter(context, android.R.layout.simple_list_item_1, paths)
-                setAdapter(adapter)
-            }
-
-        }
-
-        override fun onDialogClosed(positiveResult: Boolean) {
-            Log.d("ssss", "fffff")
-//            TODO("not implemented")
-        }
-
-        // --------------------------------------------------------------------
-        //
-        // --------------------------------------------------------------------
-        private fun getSelectDirectoryPreference(): SelectDirectoryPreference {
-            return preference as SelectDirectoryPreference
-
-        }
+        private lateinit var recyclerView: RecyclerView
+        private lateinit var viewAdapter: Adapter
+        private lateinit var viewManager: RecyclerView.LayoutManager
 
         // --------------------------------------------------------------------
         //
@@ -348,7 +387,84 @@ class SelectDirectoryPreference : DialogPreference {
                     }
                 }
             }
+        }
+
+        // --------------------------------------------------------------------
+        // override
+        // --------------------------------------------------------------------
+        override fun onCreate(savedInstanceState: Bundle?) {
+            super.onCreate(savedInstanceState)
+            val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
+
+            //// フィールドにセット
+            bucketModels = BucketModel.createList(preference.getImageMediaAllBuckets())
+            selectedBucketId = preference.bucketId ?: ALL_BUCKET_DISPLAY_NAME
+        }
+
+
+        /**
+         * Binds views in the content View of the dialog to data.
+         * Make sure to call through to the superclass implementation.
+         *
+         * @param view The content View of the dialog, if it is custom.
+         */
+        override fun onBindDialogView(view: View?) {
+            super.onBindDialogView(view)
+
+            // ---------------------------------
+            // 変数準備
+            // ---------------------------------
+            if (view == null) {
+                // ここにくることはない
+                throw RuntimeException("view of the dialog of directory list is null")
+            }
+            if (context == null) {
+                throw RuntimeException("context is null")
+            }
+
+            val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
+
+            // ---------------------------------
+            //
+            // ---------------------------------
+            val dialogCurrentBucketId: Int = preference.dialogCurrentBucketId ?: throw RuntimeException(
+                    "The id of current path in dialog is null. Please set id in preference.")
+            val currentBucketTextView: TextView = view.findViewById(dialogCurrentBucketId)
+            currentBucketTextView.text = preference.toBucketDisplayName(selectedBucketId)
+
+            // ---------------------------------
+            //
+            // ---------------------------------
+            val dialogFileListId: Int = preference.dialogFileListId ?: throw RuntimeException(
+                    "The id of file list in dialog is null. Please set id in preference.")
+
+            recyclerView = view.findViewById(dialogFileListId)
+            viewManager = LinearLayoutManager(context)
+            viewAdapter = Adapter().apply {
+                submitList(bucketModels)
+            }
+
+            recyclerView.apply {
+                setHasFixedSize(true)
+                layoutManager = viewManager
+                adapter = viewAdapter
+            }
+        }
+
+        override fun onDialogClosed(positiveResult: Boolean) {
+            if (positiveResult) {
+                getSelectDirectoryPreference().setAndPersist(selectedBucketId)
+            }
+        }
+
+        // --------------------------------------------------------------------
+        // 処理をまとめただけ
+        // --------------------------------------------------------------------
+        private fun getSelectDirectoryPreference(): SelectDirectoryPreference {
+            return preference as SelectDirectoryPreference
 
         }
+
+
     }
 }

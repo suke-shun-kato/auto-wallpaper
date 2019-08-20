@@ -10,7 +10,7 @@
         <!--<attr name="permissionRationaleDialogText" format="string" />-->
     <!--</declare-styleable>-->
     <declare-styleable name="SelectDirectoryPreference">
-        <attr name="dialogCurrentPathId" format="integer" />
+        <attr name="dialogCurrentBucketId" format="integer" />
         <attr name="dialogFileListId" format="integer" />
     </declare-styleable>
     <declare-styleable name="TwitterOAuthPreference">

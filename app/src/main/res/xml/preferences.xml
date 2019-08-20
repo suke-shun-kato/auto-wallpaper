@@ -15,8 +15,8 @@
             android:title="@string/setting_form_dir_which_title"
             android:dialogLayout="@layout/dialog_fragment_select_directory_preference"
             android:defaultValue="DCIM"
-            custom:dialogCurrentPathId="@id/dialog_current_path"
-            custom:dialogFileListId="@id/dialog_file_list"
+            custom:dialogCurrentBucketId="@id/dialog_current_bucket"
+            custom:dialogFileListId="@id/dialog_recycler_list"
             />
         <!-- TODO ↑の実装終わったら消す -->
         <!--<xyz.goodistory.autowallpaper.preference.SelectDirectoryPreference-->
