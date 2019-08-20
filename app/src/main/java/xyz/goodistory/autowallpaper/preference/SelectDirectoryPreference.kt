@@ -83,7 +83,7 @@ class SelectDirectoryPreference : DialogPreference {
     // フィールド
     // --------------------------------------------------------------------
     /** ディレクトリパス、XMLのdefaultValueがなくて永続化してる値がないときnull */
-    private var bucketId: String? = null
+    private var bucketId: Int? = null
 
     /** XML属性の値 */
     private val dialogCurrentBucketId: Int?
@@ -93,6 +93,7 @@ class SelectDirectoryPreference : DialogPreference {
     // 定数
     // --------------------------------------------------------------------
     companion object {
+        private const val ALL_BUCKET_ID: Int = 0
         private const val ALL_BUCKET_DISPLAY_NAME: String = "ALL"
 
         /**
@@ -162,15 +163,18 @@ class SelectDirectoryPreference : DialogPreference {
      * コンストラクタの処理終了の後に呼ばれる、設定画面が表示された瞬間に呼ばれる
      * 保存された値がなくて、mDefaultValue がnullの場合は呼ばれない
      *
-     * @param defaultValue 保存された値がない場合: onGetDefaultValue()の戻り値,
-     *                      保存された値がある場合: null
+     * @param defaultValue 永続化された値がない場合: onGetDefaultValue()の戻り値,
+     *                      永続化された値がある場合: null
      */
     override fun onSetInitialValue(defaultValue: Any?) {
-        // 永続化用に値の型を加工
-        val defaultBucketId: String? = defaultValue as? String
-
         // 永続化した値を取得、ない場合はデフォルト値
-        val persistedBucketId: String = getPersistedString(defaultBucketId)
+        val persistedBucketId: Int = if (defaultValue == null) {
+        // 永続化した値がある場合
+            getPersistedInt(0)  // ここの0はセットされない
+        } else {
+        // 永続化した値がない場合
+            defaultValue as Int
+        }
 
         // 取得した値を保存したりプロパティにセットしたり
         setAndPersist(persistedBucketId)
@@ -193,7 +197,7 @@ class SelectDirectoryPreference : DialogPreference {
 
         //// 特殊処理
         if (defaultBucketDisplayName == ALL_BUCKET_DISPLAY_NAME) {
-            return ALL_BUCKET_DISPLAY_NAME  // String
+            return ALL_BUCKET_ID
         }
 
         //// 通常処理
@@ -204,7 +208,7 @@ class SelectDirectoryPreference : DialogPreference {
                     "Please chose from $displayNames")
         }
 
-        return toBucketId(defaultBucketDisplayName, displayNames).toString()   // String型をreturn
+        return toBucketId(defaultBucketDisplayName, displayNames)
     }
 
 
@@ -214,10 +218,10 @@ class SelectDirectoryPreference : DialogPreference {
     /**
      * フィールドにセット、persist、変更を知らせるを一度にする
      */
-    private fun setAndPersist(setBucketId: String) {
+    private fun setAndPersist(setBucketId: Int) {
         if (bucketId != setBucketId) {
             bucketId = setBucketId
-            persistString(setBucketId)
+            persistInt(setBucketId)
             notifyChanged()
         }
     }
@@ -266,9 +270,15 @@ class SelectDirectoryPreference : DialogPreference {
 
     /**
      * bucketIdからbucketDisplayNameを取得
-     * @return bucketDisplayName,ない場合はnull
+     * @return bucketDisplayName, ない場合はnull
      */
     private fun toBucketDisplayName(bucketId: Int): String? {
+        //// ALL のときだけ特殊処理
+        if (bucketId == ALL_BUCKET_ID) {
+            return ALL_BUCKET_DISPLAY_NAME
+        }
+
+        //// 通常処理
         val cursor: Cursor? = context.contentResolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 null,
@@ -292,30 +302,32 @@ class SelectDirectoryPreference : DialogPreference {
         return displayName
     }
 
-    private fun toBucketDisplayName(bucketId: String): String? {
-        return if (bucketId == ALL_BUCKET_DISPLAY_NAME) {
-            ""
-        } else {
-            toBucketDisplayName(bucketId.toInt())
+
+
+    // --------------------------------------------------------------------
+    // class
+    // --------------------------------------------------------------------
+    class BucketModel(val bucketId: Int, val bucketDisplayName: String) {
+
+        companion object {
+            fun createList(buckets: Map<Int, String>, addsAll: Boolean = true): List<BucketModel> {
+
+                return mutableListOf<BucketModel>().apply {
+                    if (addsAll) {
+                        add( BucketModel(ALL_BUCKET_ID, ALL_BUCKET_DISPLAY_NAME) )
+                    }
+
+                    buckets.forEach { (bucketId, bucketDisplayName) ->
+                        add( BucketModel(bucketId, bucketDisplayName) )
+                    }
+                }
+            }
         }
     }
 
     // --------------------------------------------------------------------
     // class
     // --------------------------------------------------------------------
-    class BucketModel(val bucketId: Int, val bucketDisplayName: String) {
-        companion object {
-            fun createList(buckets: Map<Int, String>): List<BucketModel> {
-                val list: MutableList<BucketModel> = mutableListOf()
-
-                buckets.forEach{ (bucketId, bucketDisplayName) ->
-                    list.add( BucketModel(bucketId, bucketDisplayName) )
-                }
-                return list
-            }
-        }
-    }
-
     class Adapter : ListAdapter<BucketModel, Adapter.ViewHolder>(DiffCallback()) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -368,7 +380,7 @@ class SelectDirectoryPreference : DialogPreference {
     // class
     // --------------------------------------------------------------------
     class Dialog: PreferenceDialogFragmentCompat() {
-        private lateinit var selectedBucketId: String
+        private var selectedBucketId: Int = ALL_BUCKET_ID
         private lateinit var bucketModels: List<BucketModel>
 
         private lateinit var recyclerView: RecyclerView
@@ -376,7 +388,7 @@ class SelectDirectoryPreference : DialogPreference {
         private lateinit var viewManager: RecyclerView.LayoutManager
 
         // --------------------------------------------------------------------
-        //
+        // companion
         // --------------------------------------------------------------------
         companion object {
 
@@ -398,7 +410,7 @@ class SelectDirectoryPreference : DialogPreference {
 
             //// フィールドにセット
             bucketModels = BucketModel.createList(preference.getImageMediaAllBuckets())
-            selectedBucketId = preference.bucketId ?: ALL_BUCKET_DISPLAY_NAME
+            selectedBucketId = preference.bucketId ?: ALL_BUCKET_ID
         }
 
 
