@@ -5,6 +5,7 @@
     <declare-styleable name="SelectImageBucketPreference">
         <attr name="dialogCurrentBucketId" format="integer" />
         <attr name="dialogFileListId" format="integer" />
+        <attr name="dialogLayoutItem" format="integer" />
     </declare-styleable>
     <declare-styleable name="TwitterOAuthPreference">
         <attr name="textCantAccessAuthPage" format="string" />

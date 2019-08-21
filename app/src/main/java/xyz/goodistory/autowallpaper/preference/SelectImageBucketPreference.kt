@@ -43,12 +43,14 @@ class SelectImageBucketPreference : DialogPreference {
         val attributes: Map<String, Int> = getCustomAttributes(context, attrs, defStyleAttr, defStyleRes)
         dialogCurrentBucketId = attributes["dialogCurrentBucketId"]
         dialogBucketListId = attributes["dialogBucketListId"]
+        dialogLayoutItem = attributes["dialogLayoutItem"]
     }
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
             : super(context, attrs, defStyleAttr) {
         val attributes: Map<String, Int> = getCustomAttributes(context, attrs, defStyleAttr)
         dialogCurrentBucketId = attributes["dialogCurrentBucketId"]
         dialogBucketListId = attributes["dialogBucketListId"]
+        dialogLayoutItem = attributes["dialogLayoutItem"]
 
     }
     constructor(context: Context, attrs: AttributeSet)
@@ -56,6 +58,7 @@ class SelectImageBucketPreference : DialogPreference {
         val attributes: Map<String, Int> = getCustomAttributes(context, attrs)
         dialogCurrentBucketId = attributes["dialogCurrentBucketId"]
         dialogBucketListId = attributes["dialogBucketListId"]
+        dialogLayoutItem = attributes["dialogLayoutItem"]
     }
 
     private fun getCustomAttributes(
@@ -71,7 +74,10 @@ class SelectImageBucketPreference : DialogPreference {
                     "dialogCurrentBucketId" to typedArray.getResourceId(
                             R.styleable.SelectImageBucketPreference_dialogCurrentBucketId, 0),
                     "dialogBucketListId" to typedArray.getResourceId(
-                            R.styleable.SelectImageBucketPreference_dialogFileListId, 0))
+                            R.styleable.SelectImageBucketPreference_dialogFileListId, 0),
+                    "dialogLayoutItem" to typedArray.getResourceId(
+                            R.styleable.SelectImageBucketPreference_dialogLayoutItem, 0)
+            )
         } finally {
             typedArray.recycle()
         }
@@ -94,6 +100,7 @@ class SelectImageBucketPreference : DialogPreference {
     /** XML属性の値 */
     private val dialogCurrentBucketId: Int?
     private val dialogBucketListId: Int?
+    private val dialogLayoutItem: Int?
 
     // --------------------------------------------------------------------
     // 定数
@@ -412,7 +419,7 @@ class SelectImageBucketPreference : DialogPreference {
     /**
      * @param selectedBucketId 選択中のbucketID、初期値
      */
-    class Adapter(var selectedBucketId: Int)
+    class Adapter(var selectedBucketId: Int, private val dialogLayoutItem: Int)
         : ListAdapter<BucketModel, Adapter.ViewHolder>(DiffCallback()) {
 
         private var beforeCheckedButton: RadioButton? = null
@@ -421,8 +428,7 @@ class SelectImageBucketPreference : DialogPreference {
 
             val itemView = LayoutInflater.from(parent.context)
                     // TODO Rをxmlから取得したい
-                    .inflate(R.layout.dialog_fragment_select_directory_preference_item,
-                            parent, false)
+                    .inflate(dialogLayoutItem, parent, false)
 
             return ViewHolder(itemView)
         }
@@ -564,7 +570,7 @@ class SelectImageBucketPreference : DialogPreference {
             val dialogBucketListId: Int = preference.dialogBucketListId ?: throw RuntimeException(
                     "The id of file list in dialog is null. Please set id in preference.")
 
-            viewAdapter = Adapter(currentBucketId).apply {
+            viewAdapter = Adapter(currentBucketId, preference.dialogLayoutItem!!).apply {
                 // リストの値を送信
                 submitList(bucketModels)
             }

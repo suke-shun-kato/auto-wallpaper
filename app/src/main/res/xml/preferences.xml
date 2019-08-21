@@ -13,8 +13,9 @@
         <xyz.goodistory.autowallpaper.preference.SelectImageBucketPreference
             android:key="@string/preference_key_select_image_bucket"
             android:title="@string/setting_form_dir_which_title"
-            android:dialogLayout="@layout/dialog_fragment_select_directory_preference"
             android:defaultValue="ALL"
+            android:dialogLayout="@layout/dialog_fragment_select_image_bucket_preference"
+            custom:dialogLayoutItem="@layout/dialog_fragment_select_image_bucket_preference_item"
             custom:dialogCurrentBucketId="@id/dialog_current_bucket"
             custom:dialogFileListId="@id/dialog_recycler_list"
             />
