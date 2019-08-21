@@ -26,6 +26,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 /**
  * ディレクトリ選択ダイアログのプリファレンス
+ * TODO 名前変えたい
  */
 class SelectDirectoryPreference : DialogPreference {
     // --------------------------------------------------------------------
@@ -36,26 +37,20 @@ class SelectDirectoryPreference : DialogPreference {
 
         val attributes: Map<String, Int> = getCustomAttributes(context, attrs, defStyleAttr, defStyleRes)
         dialogCurrentBucketId = attributes["dialogCurrentBucketId"]
-        dialogFileListId = attributes["dialogFileListId"]
+        dialogBucketListId = attributes["dialogBucketListId"]
     }
     constructor(context: Context, attrs: AttributeSet, defStyleAttr: Int)
             : super(context, attrs, defStyleAttr) {
         val attributes: Map<String, Int> = getCustomAttributes(context, attrs, defStyleAttr)
         dialogCurrentBucketId = attributes["dialogCurrentBucketId"]
-        dialogFileListId = attributes["dialogFileListId"]
+        dialogBucketListId = attributes["dialogBucketListId"]
 
     }
     constructor(context: Context, attrs: AttributeSet)
             : super(context, attrs) {
         val attributes: Map<String, Int> = getCustomAttributes(context, attrs)
         dialogCurrentBucketId = attributes["dialogCurrentBucketId"]
-        dialogFileListId = attributes["dialogFileListId"]
-    }
-
-    constructor(context: Context): super(context) {
-        // TODO ここ例外を投げたほうがいいか考える
-        dialogCurrentBucketId = null
-        dialogFileListId = null
+        dialogBucketListId = attributes["dialogBucketListId"]
     }
 
     private fun getCustomAttributes(
@@ -70,7 +65,7 @@ class SelectDirectoryPreference : DialogPreference {
             attributeValues = mapOf(
                     "dialogCurrentBucketId" to typedArray.getResourceId(
                             R.styleable.SelectDirectoryPreference_dialogCurrentBucketId, 0),
-                    "dialogFileListId" to typedArray.getResourceId(
+                    "dialogBucketListId" to typedArray.getResourceId(
                             R.styleable.SelectDirectoryPreference_dialogFileListId, 0))
             // TODO 例外の投げ方
 //        } catch (e: Exception) {
@@ -90,7 +85,7 @@ class SelectDirectoryPreference : DialogPreference {
 
     /** XML属性の値 */
     private val dialogCurrentBucketId: Int?
-    private val dialogFileListId: Int?
+    private val dialogBucketListId: Int?
 
     // --------------------------------------------------------------------
     // 定数
@@ -331,7 +326,12 @@ class SelectDirectoryPreference : DialogPreference {
     // --------------------------------------------------------------------
     // class
     // --------------------------------------------------------------------
-    class Adapter : ListAdapter<BucketModel, Adapter.ViewHolder>(DiffCallback()) {
+    /**
+     * @param selectedBucketId 選択中のbucketID、初期値
+     */
+    class Adapter(var selectedBucketId: Int)
+        : ListAdapter<BucketModel, Adapter.ViewHolder>(DiffCallback()) {
+
         private var beforeCheckedButton: RadioButton? = null
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -354,30 +354,38 @@ class SelectDirectoryPreference : DialogPreference {
         // class
         // ------------------------------
         inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
             /**
              * AdapterでのViewHolderバインド時の処理をまとめているだけ
              */
             fun bind(bucketModel: BucketModel) {
-                // item（ConstraintLayout） について設定する
+                //// item（ConstraintLayout） について設定する
                 itemView.apply {
-                    // ラジオボタン以外をクリックしたときもラジオボタンをクリックしたことにする
+                    //// ラジオボタン以外をクリックしたときもラジオボタンをクリックしたことにする
                     setOnClickListener { clicked:View ->
                         clicked.findViewById<RadioButton>(R.id.item_bucket_display_name).apply {
                             isChecked = true
                         }
                     }
 
-                    // ラジオボタンの設定をする
+                    //// ラジオボタンの設定をする
                     findViewById<RadioButton>(R.id.item_bucket_display_name).apply {
+
                         // 文章の設定
                         text = bucketModel.bucketDisplayName
 
-                        // 以前クリックしたボタンを解除
+                        // クリックしたとき、以前クリックしたボタンを解除するリスナーをセット
                         setOnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
                             if (isChecked) {
                                 beforeCheckedButton?.isChecked = false
                                 beforeCheckedButton = buttonView as RadioButton
+                                selectedBucketId = bucketModel.bucketId
                             }
+                        }
+
+                        // 選択中のbucketIdのラジオボタンだとクリックしたことにする（初期値の設定）
+                        if (selectedBucketId == bucketModel.bucketId) {
+                            performClick()
                         }
                     }
 
@@ -403,12 +411,10 @@ class SelectDirectoryPreference : DialogPreference {
     // class
     // --------------------------------------------------------------------
     class Dialog: PreferenceDialogFragmentCompat() {
-        private var selectedBucketId: Int = ALL_BUCKET_ID
         private lateinit var bucketModels: List<BucketModel>
 
         private lateinit var recyclerView: RecyclerView
         private lateinit var viewAdapter: Adapter
-        private lateinit var viewManager: RecyclerView.LayoutManager
 
         // --------------------------------------------------------------------
         // companion
@@ -433,7 +439,6 @@ class SelectDirectoryPreference : DialogPreference {
 
             //// フィールドにセット
             bucketModels = BucketModel.createList(preference.getImageMediaAllBuckets())
-            selectedBucketId = preference.bucketId ?: ALL_BUCKET_ID
         }
 
 
@@ -459,36 +464,38 @@ class SelectDirectoryPreference : DialogPreference {
 
             val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
 
+            val currentBucketId = preference.bucketId ?: ALL_BUCKET_ID
+
             // ---------------------------------
-            //
+            // dialogCurrentBucketId
             // ---------------------------------
             val dialogCurrentBucketId: Int = preference.dialogCurrentBucketId ?: throw RuntimeException(
                     "The id of current path in dialog is null. Please set id in preference.")
             val currentBucketTextView: TextView = view.findViewById(dialogCurrentBucketId)
-            currentBucketTextView.text = preference.toBucketDisplayName(selectedBucketId)
+
+            currentBucketTextView.text = preference.toBucketDisplayName(currentBucketId)
 
             // ---------------------------------
-            //
+            // dialogBucketListId
             // ---------------------------------
-            val dialogFileListId: Int = preference.dialogFileListId ?: throw RuntimeException(
+            val dialogBucketListId: Int = preference.dialogBucketListId ?: throw RuntimeException(
                     "The id of file list in dialog is null. Please set id in preference.")
 
-            recyclerView = view.findViewById(dialogFileListId)
-            viewManager = LinearLayoutManager(context)
-            viewAdapter = Adapter().apply {
+            viewAdapter = Adapter(currentBucketId).apply {
+                // リストの値を送信
                 submitList(bucketModels)
             }
 
-            recyclerView.apply {
+            recyclerView = view.findViewById<RecyclerView>(dialogBucketListId).apply {
                 setHasFixedSize(true)
-                layoutManager = viewManager
+                layoutManager = LinearLayoutManager(context)
                 adapter = viewAdapter
             }
         }
 
         override fun onDialogClosed(positiveResult: Boolean) {
             if (positiveResult) {
-                getSelectDirectoryPreference().setAndPersist(selectedBucketId)
+                getSelectDirectoryPreference().setAndPersist(viewAdapter.selectedBucketId)
             }
         }
 
