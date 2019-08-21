@@ -2,14 +2,7 @@
     <!-- callbackUrlが2つのライブラリで使われているので、ここで宣言している -->
     <attr name="callbackUrl" format="string" />
 
-    <!--TODO 戻す-->
-    <!--<declare-styleable name="SelectDirectoryPreferenceOld">-->
-        <!--<attr name="dialogTitle" format="string" />-->
-        <!--<attr name="showsPermissionDialog" format="boolean" />-->
-        <!--<attr name="permissionDialogRequestCode" format="integer" />-->
-        <!--<attr name="permissionRationaleDialogText" format="string" />-->
-    <!--</declare-styleable>-->
-    <declare-styleable name="SelectDirectoryPreference">
+    <declare-styleable name="SelectImageBucketPreference">
         <attr name="dialogCurrentBucketId" format="integer" />
         <attr name="dialogFileListId" format="integer" />
     </declare-styleable>

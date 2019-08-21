@@ -27,9 +27,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 //import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
-//import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreferenceOld;
 import xyz.goodistory.autowallpaper.preference.ResetDialogPreference;
-import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreference;
+import xyz.goodistory.autowallpaper.preference.SelectImageBucketPreference;
 import xyz.goodistory.autowallpaper.preference.TimeDialogPreference;
 import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
@@ -98,7 +97,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
     private String ERROR_MESSAGE_CANT_GET_FRAGMENT_MANAGER = "can't get fragmentManager.";
 
     //// preference key
-    private String PREFERENCE_KEY_SELECT_DIRECTORY;
+    private String PREFERENCE_KEY_SELECT_IMAGE_BUCKET;
     private String PREFERENCE_KEY_FROM_DIR;
     private String PREFERENCE_KEY_FROM_TWITTER_FAVORITES;
     private String PREFERENCE_KEY_AUTHENTICATE_TWITTER;
@@ -121,7 +120,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
 
         //// preference key の読み込み
         PREFERENCE_KEY_FROM_DIR = getString(R.string.preference_key_from_directory);
-        PREFERENCE_KEY_SELECT_DIRECTORY = getString(R.string.preference_key_select_directory);
+        PREFERENCE_KEY_SELECT_IMAGE_BUCKET = getString(R.string.preference_key_select_image_bucket);
 
         PREFERENCE_KEY_FROM_TWITTER_FAVORITES
                 = getString(R.string.preference_key_from_twitter_favorites);
@@ -211,8 +210,8 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         mSp = PreferenceManager.getDefaultSharedPreferences( getActivity() );
 
         //// 選択ディレクトリ
-        SelectDirectoryPreference fromDirPathPref
-                = (SelectDirectoryPreference)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY);
+        SelectImageBucketPreference fromDirPathPref
+                = (SelectImageBucketPreference)findPreference(PREFERENCE_KEY_SELECT_IMAGE_BUCKET);
         fromDirPathPref.setBucketToSummary();
 
         //// Twitter認証
@@ -385,9 +384,9 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
             dialog.setTargetFragment(this, 0);
             // ここのfragmentタグは↑と同じでOK、同じタイミングで表示されないから
             dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
-        } else if (preference instanceof SelectDirectoryPreference) {
-            SelectDirectoryPreference.Dialog dialog
-                    = SelectDirectoryPreference.Dialog.Companion.newInstance(preference.getKey());
+        } else if (preference instanceof SelectImageBucketPreference) {
+            SelectImageBucketPreference.Dialog dialog
+                    = SelectImageBucketPreference.Dialog.Companion.newInstance(preference.getKey());
             dialog.setTargetFragment(this, 0);
             dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
         } else {
@@ -436,7 +435,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        findPreference(PREFERENCE_KEY_SELECT_DIRECTORY);
+        findPreference(PREFERENCE_KEY_SELECT_IMAGE_BUCKET);
 
         // TODO 復活させる
 //        // SelectDirectoryPreferenceOld での onRequestPermissionsResult() を実行
@@ -473,9 +472,9 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         // 設定値をSummaryに反映
         // ----------------------------------
         //// 反映
-        if ( preferenceKey.equals(PREFERENCE_KEY_SELECT_DIRECTORY) ) {  //// ディレクトリ選択
-            SelectDirectoryPreference fromDirPathPreference
-                    = (SelectDirectoryPreference)findPreference(preferenceKey);
+        if ( preferenceKey.equals(PREFERENCE_KEY_SELECT_IMAGE_BUCKET) ) {  //// ディレクトリ選択
+            SelectImageBucketPreference fromDirPathPreference
+                    = (SelectImageBucketPreference)findPreference(preferenceKey);
             fromDirPathPreference.setBucketToSummary();
 
         } else if ( preferenceKey.equals(PREFERENCE_KEY_AUTHENTICATE_TWITTER) ) {  //// Twitter認証

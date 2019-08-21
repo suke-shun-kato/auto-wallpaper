@@ -22,13 +22,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 
 
-
-
 /**
  * ディレクトリ選択ダイアログのプリファレンス
- * TODO 名前変えたい
  */
-class SelectDirectoryPreference : DialogPreference {
+class SelectImageBucketPreference : DialogPreference {
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
@@ -58,15 +55,15 @@ class SelectDirectoryPreference : DialogPreference {
             : Map<String, Int> {
 
         val typedArray: TypedArray = context.theme.obtainStyledAttributes(
-                attrs, R.styleable.SelectDirectoryPreference, defStyleAttr, defStyleRes)
+                attrs, R.styleable.SelectImageBucketPreference, defStyleAttr, defStyleRes)
 
         val attributeValues: Map<String, Int>
         try {
             attributeValues = mapOf(
                     "dialogCurrentBucketId" to typedArray.getResourceId(
-                            R.styleable.SelectDirectoryPreference_dialogCurrentBucketId, 0),
+                            R.styleable.SelectImageBucketPreference_dialogCurrentBucketId, 0),
                     "dialogBucketListId" to typedArray.getResourceId(
-                            R.styleable.SelectDirectoryPreference_dialogFileListId, 0))
+                            R.styleable.SelectImageBucketPreference_dialogFileListId, 0))
         } finally {
             typedArray.recycle()
         }
@@ -439,7 +436,7 @@ class SelectDirectoryPreference : DialogPreference {
         // --------------------------------------------------------------------
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
+            val preference: SelectImageBucketPreference = getSelectImageBucketPreferencee()
 
             //// フィールドにセット
             bucketModels = BucketModel.createList(preference.getImageMediaAllBuckets())
@@ -466,7 +463,7 @@ class SelectDirectoryPreference : DialogPreference {
                 throw RuntimeException("context is null")
             }
 
-            val preference: SelectDirectoryPreference = getSelectDirectoryPreference()
+            val preference: SelectImageBucketPreference = getSelectImageBucketPreferencee()
 
             val currentBucketId = preference.bucketId ?: ALL_BUCKET_ID
 
@@ -499,15 +496,15 @@ class SelectDirectoryPreference : DialogPreference {
 
         override fun onDialogClosed(positiveResult: Boolean) {
             if (positiveResult) {
-                getSelectDirectoryPreference().setAndPersist(viewAdapter.selectedBucketId)
+                getSelectImageBucketPreferencee().setAndPersist(viewAdapter.selectedBucketId)
             }
         }
 
         // --------------------------------------------------------------------
         // 処理をまとめただけ
         // --------------------------------------------------------------------
-        private fun getSelectDirectoryPreference(): SelectDirectoryPreference {
-            return preference as SelectDirectoryPreference
+        private fun getSelectImageBucketPreferencee(): SelectImageBucketPreference {
+            return preference as SelectImageBucketPreference
 
         }
 

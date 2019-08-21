@@ -10,24 +10,14 @@
             android:key="@string/preference_key_from_directory"
             android:summary="@string/setting_form_dir_onoff_summary"
             android:title="@string/setting_from_dir_onoff_title" />
-        <xyz.goodistory.autowallpaper.preference.SelectDirectoryPreference
-            android:key="@string/preference_key_select_directory"
+        <xyz.goodistory.autowallpaper.preference.SelectImageBucketPreference
+            android:key="@string/preference_key_select_image_bucket"
             android:title="@string/setting_form_dir_which_title"
             android:dialogLayout="@layout/dialog_fragment_select_directory_preference"
             android:defaultValue="ALL"
             custom:dialogCurrentBucketId="@id/dialog_current_bucket"
             custom:dialogFileListId="@id/dialog_recycler_list"
             />
-        <!-- TODO ↑の実装終わったら消す -->
-        <!--<xyz.goodistory.autowallpaper.preference.SelectDirectoryPreference-->
-            <!--android:defaultValue="PICTURES"-->
-            <!--android:key="@string/preference_key_select_directory"-->
-            <!--android:title="@string/setting_form_dir_which_title"-->
-            <!--custom:dialogTitle="@string/select_dir_pref_dialog_title"-->
-            <!--custom:showsPermissionDialog="true"-->
-            <!--custom:permissionDialogRequestCode="@integer/permission_request_code_select_directory"-->
-            <!--custom:permissionRationaleDialogText="@string/reason_read_external_storage_permission_need"-->
-            <!--/>-->
         <SwitchPreferenceCompat
             android:defaultValue="false"
             android:key="@string/preference_key_from_twitter_favorites"

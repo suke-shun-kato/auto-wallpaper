@@ -44,8 +44,8 @@
     <string name="preference_key_from_directory" tools:ignore="MissingTranslation">
         from_directory
     </string>
-    <string name="preference_key_select_directory" tools:ignore="MissingTranslation">
-        select_bucket
+    <string name="preference_key_select_image_bucket" tools:ignore="MissingTranslation">
+        select_image_bucket
     </string>
 
     <string name="preference_key_from_twitter_favorites" tools:ignore="MissingTranslation">

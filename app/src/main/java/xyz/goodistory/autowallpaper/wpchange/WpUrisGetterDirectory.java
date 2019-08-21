@@ -59,7 +59,7 @@ class WpUrisGetterDirectory extends WpUrisGetter {
 
         //// 通常処理
         SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String keySelectDirectory = mContext.getString(R.string.preference_key_select_directory);
+        String keySelectDirectory = mContext.getString(R.string.preference_key_select_image_bucket);
         FileExtended imgDirFileEx = new FileExtended(
                 sp.getString(keySelectDirectory,
                         "" )
