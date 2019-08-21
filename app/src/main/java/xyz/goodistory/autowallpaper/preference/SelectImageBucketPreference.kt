@@ -1,6 +1,10 @@
 package xyz.goodistory.autowallpaper.preference
 
+import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
+import android.content.DialogInterface
+import android.content.pm.PackageManager
 import android.content.res.TypedArray
 import android.database.Cursor
 import android.os.Bundle
@@ -16,6 +20,10 @@ import android.view.ViewGroup
 import android.widget.CompoundButton
 import xyz.goodistory.autowallpaper.R
 import android.widget.RadioButton
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.FragmentActivity
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -76,6 +84,12 @@ class SelectImageBucketPreference : DialogPreference {
     // --------------------------------------------------------------------
     /** ディレクトリパス、XMLのdefaultValueがなくて永続化してる値がないときnull */
     private var bucketId: Int? = null
+
+    /** パーミッション許可のダイアログを表示するときのRequestCode、nullのときはダイアログを表示しない */
+    private var requestCodePermissionDialog: Int? = null
+    private var activity: FragmentActivity? = null
+    private var permissionRationaleDialogText: String? = null
+
 
     /** XML属性の値 */
     private val dialogCurrentBucketId: Int?
@@ -145,11 +159,61 @@ class SelectImageBucketPreference : DialogPreference {
     // override
     // --------------------------------------------------------------------
     override fun onClick() {
-        super.onClick()
+        //// パーミッション許可ダイアログの表示設定がされていない場合は、super()実行して終わり
+        if (requestCodePermissionDialog == null || activity == null) {
+            super.onClick()     //ここでonCreateDialogView()が呼ばれる
+            return
+        }
 
-        // TODO ここにパーミッション許可ダイアログの処理を書く
+        //// 既にパーミッション許可されている場合は、super()実行して終わり
+        val permission: String = Manifest.permission.READ_EXTERNAL_STORAGE
+        val permissionStatus = ContextCompat.checkSelfPermission(context, permission)
+        if (permissionStatus == PackageManager.PERMISSION_GRANTED) {
+        // パーミッション許可されている場合
+            super.onClick()     //ここでonCreateDialogView()が呼ばれる
+            return
+        }
+
+        //// 許可されていない場合
+        val shouldShowRationale: Boolean            // Rationale: 根拠
+                = ActivityCompat.shouldShowRequestPermissionRationale(activity!!, permission)
+        if (shouldShowRationale) {
+            val bundle: Bundle = Bundle().apply {
+                putString(RationaleDialogFragment.BUNDLE_KEY_TEXT, permissionRationaleDialogText)
+                putInt(RationaleDialogFragment.BUNDLE_KEY_DIALOG_REQUEST_CODE, requestCodePermissionDialog!!)
+            }
+
+            RationaleDialogFragment().apply{
+                arguments = bundle
+            }.show(activity!!.supportFragmentManager, RationaleDialogFragment.FRAGMENT_TAG_NAME)
+
+        } else {
+        // 説明理由の表示が必要でない場合、初回など
+            ActivityCompat.requestPermissions(
+                    activity!!, arrayOf(permission), requestCodePermissionDialog!!)
+        }
     }
 
+    class RationaleDialogFragment: DialogFragment() {
+        companion object {
+            const val FRAGMENT_TAG_NAME = "ffffff"
+//            val FRAGMENT_TAG_NAME: String = RationaleDialogFragment::class.simpleName
+            const val BUNDLE_KEY_TEXT = "text"
+            const val BUNDLE_KEY_DIALOG_REQUEST_CODE = "permission_code"
+        }
+
+   
+        override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
+            return AlertDialog.Builder(activity)
+                    .setMessage(arguments!!.getString(BUNDLE_KEY_TEXT))
+                    .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int ->
+                        ActivityCompat.requestPermissions(
+                                activity!!,
+                                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                                arguments!!.getInt(BUNDLE_KEY_DIALOG_REQUEST_CODE) )
+                    }.create()
+        }
+    }
 
     /**
      * コンストラクタの処理終了の後に呼ばれる、設定画面が表示された瞬間に呼ばれる
@@ -209,6 +273,24 @@ class SelectImageBucketPreference : DialogPreference {
     fun setBucketToSummary() {
         val bucketId: Int = getPersistedInt(0)
         summary = toBucketDisplayName(bucketId)
+    }
+
+    fun setShowRequestPermissionDialog(
+            setActivity: FragmentActivity, setRequestCode: Int, text: String) {
+
+        activity = setActivity
+        requestCodePermissionDialog = setRequestCode
+        permissionRationaleDialogText = text
+    }
+
+    fun onRequestPermissionsResult(permissions: Array<String>, grantResults: IntArray) {
+        if ( permissions.size == 1
+                && permissions[0] == Manifest.permission.READ_EXTERNAL_STORAGE
+                && grantResults.size == 1
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+        {  // パーミッション許可ダイアログでOKを押されたとき
+            onClick()
+        }
     }
 
     // --------------------------------------------------------------------

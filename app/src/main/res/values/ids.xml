@@ -85,12 +85,4 @@
         about
     </string>
 
-    <!-- パーミッション許可ダイアログのリクエストコード -->
-    <integer name="permission_request_code_from_directory"  tools:ignore="MissingTranslation">
-        1
-    </integer>
-    <integer name="permission_request_code_select_directory"  tools:ignore="MissingTranslation">
-        2
-    </integer>
-
 </resources>

@@ -87,6 +87,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
     //// request code
     // TODO R.integer.permission_request_code_from_directory を使うようにする
     private static final int RQ_CODE_FROM_DIR = 1;
+    private static final int RQ_CODE_SELECT_IMAGE_BUCKET = 2;
 
     /** preferenceのdialogのfragmentタグ, 公式と同じ命名規則で揃えた */
     private static final String DIALOG_FRAGMENT_TAG
@@ -212,6 +213,11 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         //// 選択ディレクトリ
         SelectImageBucketPreference fromDirPathPref
                 = (SelectImageBucketPreference)findPreference(PREFERENCE_KEY_SELECT_IMAGE_BUCKET);
+        // パーミッション許可のダイアログを表示するように設定
+        fromDirPathPref.setShowRequestPermissionDialog(
+                getActivity(),
+                RQ_CODE_SELECT_IMAGE_BUCKET,
+                getString(R.string.reason_read_external_storage_permission_need));
         fromDirPathPref.setBucketToSummary();
 
         //// Twitter認証
@@ -429,21 +435,14 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
     /************************************
      * パーミッション許可のダイアログが終わった瞬間（OKもNGもある）
      * @param requestCode パーミッション許可リクエスト時に送ったリクエストコード
-     * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
      * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
+     * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
      */
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
 
-        findPreference(PREFERENCE_KEY_SELECT_IMAGE_BUCKET);
-
-        // TODO 復活させる
-//        // SelectDirectoryPreferenceOld での onRequestPermissionsResult() を実行
-//        ((SelectDirectoryPreferenceOld)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY))
-//                .onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // TODO ↑のようにする
         switch (requestCode) {
+
             case RQ_CODE_FROM_DIR:
                 // 許可をクリックしたとき
                 if (grantResults.length > 0
@@ -455,6 +454,12 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
                     // SharedPreferenceが変更したときのイベントを発火
                     onSharedPreferenceChanged(mSp, PREFERENCE_KEY_FROM_DIR);
                 }
+                break;
+
+            case RQ_CODE_SELECT_IMAGE_BUCKET:
+                final SelectImageBucketPreference preference
+                        = (SelectImageBucketPreference)findPreference(PREFERENCE_KEY_SELECT_IMAGE_BUCKET);
+                preference.onRequestPermissionsResult(permissions, grantResults);
                 break;
         }
     }
