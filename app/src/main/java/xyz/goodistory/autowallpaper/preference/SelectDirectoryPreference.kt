@@ -67,9 +67,6 @@ class SelectDirectoryPreference : DialogPreference {
                             R.styleable.SelectDirectoryPreference_dialogCurrentBucketId, 0),
                     "dialogBucketListId" to typedArray.getResourceId(
                             R.styleable.SelectDirectoryPreference_dialogFileListId, 0))
-            // TODO 例外の投げ方
-//        } catch (e: Exception) {
-//            throw e
         } finally {
             typedArray.recycle()
         }
