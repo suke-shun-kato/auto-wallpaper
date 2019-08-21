@@ -209,6 +209,13 @@ class SelectDirectoryPreference : DialogPreference {
         return toBucketId(defaultBucketDisplayName, displayNames)
     }
 
+    // --------------------------------------------------------------------
+    // 外から使う
+    // --------------------------------------------------------------------
+    fun setBucketToSummary() {
+        val bucketId: Int = getPersistedInt(0)
+        summary = toBucketDisplayName(bucketId)
+    }
 
     // --------------------------------------------------------------------
     // 処理まとめてるだけ

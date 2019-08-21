@@ -210,13 +210,10 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         // ----------------------------------
         mSp = PreferenceManager.getDefaultSharedPreferences( getActivity() );
 
-        // TODO 復活させる
         //// 選択ディレクトリ
-//        String summaryText = mSp.getString(PREFERENCE_KEY_SELECT_DIRECTORY,
-//                getString(R.string.setting_from_dir_which_default_summary) );
-//
-//        Preference fromDirPathPref = findPreference(PREFERENCE_KEY_SELECT_DIRECTORY);
-//        fromDirPathPref.setSummary( summaryText );
+        SelectDirectoryPreference fromDirPathPref
+                = (SelectDirectoryPreference)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY);
+        fromDirPathPref.setBucketToSummary();
 
         //// Twitter認証
         TwitterOAuthPreference twitterPref
@@ -477,8 +474,9 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         // ----------------------------------
         //// 反映
         if ( preferenceKey.equals(PREFERENCE_KEY_SELECT_DIRECTORY) ) {  //// ディレクトリ選択
-            Preference fromDirPathPreference = findPreference(preferenceKey);
-            fromDirPathPreference.setSummary(sp.getString(preferenceKey, ""));
+            SelectDirectoryPreference fromDirPathPreference
+                    = (SelectDirectoryPreference)findPreference(preferenceKey);
+            fromDirPathPreference.setBucketToSummary();
 
         } else if ( preferenceKey.equals(PREFERENCE_KEY_AUTHENTICATE_TWITTER) ) {  //// Twitter認証
             Preference fromTwitterOauthPreference = findPreference(preferenceKey);
