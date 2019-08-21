@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
 import android.database.Cursor
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.AttributeSet
@@ -14,10 +15,10 @@ import android.view.View
 import android.widget.TextView
 import androidx.preference.DialogPreference
 import androidx.preference.PreferenceDialogFragmentCompat
-import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import android.widget.ImageView
 import xyz.goodistory.autowallpaper.R
 import android.widget.RadioButton
 import androidx.core.app.ActivityCompat
@@ -133,32 +134,6 @@ class SelectImageBucketPreference : DialogPreference {
 
 
 
-        private fun getThumbnails(context: Context): List<Bitmap> {
-            // cursor取得
-            val cursor: Cursor? = context.contentResolver.query(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    null, null, null, null)
-
-            // サムネイル取得
-            val bitmapThumbnails = cursor!!.run {
-                val bitmaps: MutableList<Bitmap> = mutableListOf()
-
-                while(moveToNext()) {
-
-                    val id: Long = getLong( getColumnIndex(MediaStore.Images.ImageColumns._ID) )
-                    val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail( context.contentResolver,
-                            id, MediaStore.Images.Thumbnails.MICRO_KIND, null)
-                    if (bitmap != null ) {
-                        bitmaps.add(bitmap)
-                    }
-                }
-
-                bitmaps
-            }
-
-            cursor.close()
-            return bitmapThumbnails
-        }
 
     }
 
@@ -395,20 +370,42 @@ class SelectImageBucketPreference : DialogPreference {
     // --------------------------------------------------------------------
     // class
     // --------------------------------------------------------------------
-    class BucketModel(val bucketId: Int, val bucketDisplayName: String) {
+    // TODO クラス名を考える
+    class BucketModel(var imageIds: MutableList<Long>, var bucketId: Int, var bucketDisplayName: String) {
 
         companion object {
-            fun createList(buckets: Map<Int, String>, addsAll: Boolean = true): List<BucketModel> {
+            fun createList(context: Context): List<BucketModel> {
+                val cursor: Cursor? = context.contentResolver.query(
+                        MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                        null, null, null, null)
 
-                return mutableListOf<BucketModel>().apply {
-                    if (addsAll) {
-                        add( BucketModel(ALL_BUCKET_ID, ALL_BUCKET_DISPLAY_NAME) )
-                    }
+                val models: List<BucketModel> = cursor!!.run {
+                    val models: MutableMap<Int, BucketModel> = mutableMapOf()
 
-                    buckets.forEach { (bucketId, bucketDisplayName) ->
-                        add( BucketModel(bucketId, bucketDisplayName) )
+                    models[ALL_BUCKET_ID] = BucketModel(
+                            mutableListOf(), ALL_BUCKET_ID, ALL_BUCKET_DISPLAY_NAME)
+
+                    while (moveToNext()) {
+                        val id: Long = getLong(
+                                getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID) )
+                        val bucketId: Int = getInt(getColumnIndexOrThrow(
+                                MediaStore.Images.ImageColumns.BUCKET_ID) )
+                        val bucketDisplayName: String = getString(getColumnIndexOrThrow(
+                                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME) )
+
+
+                        if ( models.containsKey(bucketId) ) {
+                            models[bucketId]!!.imageIds.add(id)
+                        } else {
+                            models[bucketId] = BucketModel(
+                                    mutableListOf(id), bucketId, bucketDisplayName )
+                        }
                     }
+                    models.values.toList()
                 }
+
+                cursor.close()
+                return models
             }
         }
     }
@@ -427,7 +424,6 @@ class SelectImageBucketPreference : DialogPreference {
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
             val itemView = LayoutInflater.from(parent.context)
-                    // TODO Rをxmlから取得したい
                     .inflate(dialogLayoutItem, parent, false)
 
             return ViewHolder(itemView)
@@ -478,6 +474,50 @@ class SelectImageBucketPreference : DialogPreference {
                         }
                     }
 
+                    //// サムネ画像の設定   // TODO ちゃんとする
+                    findViewById<ImageView>(R.id.preference_dialog_item_1).apply {
+                        val index: Int = 0
+                        if (bucketModel.imageIds.size > index) {
+                            val id: Long = bucketModel.imageIds[index]
+                            val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
+                                    context.contentResolver,
+                                    id,
+                                    MediaStore.Images.Thumbnails.MINI_KIND,
+                                    null)
+                            if (bitmap != null) {
+                                setImageBitmap(bitmap)
+                            }
+                        }
+                    }
+                    findViewById<ImageView>(R.id.preference_dialog_item_2).apply {
+                        val index: Int = 1
+                        if (bucketModel.imageIds.size > index) {
+                            val id: Long = bucketModel.imageIds[index]
+                            val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
+                                    context.contentResolver,
+                                    id,
+                                    MediaStore.Images.Thumbnails.MINI_KIND,
+                                    null)
+                            if (bitmap != null) {
+                                setImageBitmap(bitmap)
+                            }
+                        }
+                    }
+                    findViewById<ImageView>(R.id.preference_dialog_item_3).apply {
+                        val index: Int = 2
+                        if (bucketModel.imageIds.size > index) {
+                            val id: Long = bucketModel.imageIds[index]
+                            val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
+                                    context.contentResolver,
+                                    id,
+                                    MediaStore.Images.Thumbnails.MINI_KIND,
+                                    null)
+                            if (bitmap != null) {
+                                setImageBitmap(bitmap)
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -524,10 +564,9 @@ class SelectImageBucketPreference : DialogPreference {
         // --------------------------------------------------------------------
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            val preference: SelectImageBucketPreference = getSelectImageBucketPreferencee()
 
-            //// フィールドにセット
-            bucketModels = BucketModel.createList(preference.getImageMediaAllBuckets())
+            // フィールドにセット
+            bucketModels = BucketModel.createList(context!!)
         }
 
 
@@ -551,7 +590,7 @@ class SelectImageBucketPreference : DialogPreference {
                 throw RuntimeException("context is null")
             }
 
-            val preference: SelectImageBucketPreference = getSelectImageBucketPreferencee()
+            val preference: SelectImageBucketPreference = getSelectImageBucketPreference()
 
             val currentBucketId = preference.bucketId ?: ALL_BUCKET_ID
 
@@ -584,14 +623,14 @@ class SelectImageBucketPreference : DialogPreference {
 
         override fun onDialogClosed(positiveResult: Boolean) {
             if (positiveResult) {
-                getSelectImageBucketPreferencee().setAndPersist(viewAdapter.selectedBucketId)
+                getSelectImageBucketPreference().setAndPersist(viewAdapter.selectedBucketId)
             }
         }
 
         // --------------------------------------------------------------------
         // 処理をまとめただけ
         // --------------------------------------------------------------------
-        private fun getSelectImageBucketPreferencee(): SelectImageBucketPreference {
+        private fun getSelectImageBucketPreference(): SelectImageBucketPreference {
             return preference as SelectImageBucketPreference
 
         }
