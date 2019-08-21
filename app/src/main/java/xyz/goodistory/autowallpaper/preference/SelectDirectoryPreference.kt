@@ -13,12 +13,15 @@ import androidx.preference.PreferenceDialogFragmentCompat
 import android.graphics.Bitmap
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import xyz.goodistory.autowallpaper.R
 import android.widget.RadioButton
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+
+
 
 
 /**
@@ -329,6 +332,7 @@ class SelectDirectoryPreference : DialogPreference {
     // class
     // --------------------------------------------------------------------
     class Adapter : ListAdapter<BucketModel, Adapter.ViewHolder>(DiffCallback()) {
+        private var beforeCheckedButton: RadioButton? = null
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -337,7 +341,7 @@ class SelectDirectoryPreference : DialogPreference {
                     .inflate(R.layout.dialog_fragment_select_directory_preference_item,
                             parent, false)
 
-            return ViewHolder(itemView )
+            return ViewHolder(itemView)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -349,15 +353,34 @@ class SelectDirectoryPreference : DialogPreference {
         // ------------------------------
         // class
         // ------------------------------
-        class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             /**
-             * バインド時の処理、表示の設定をここに書く
+             * AdapterでのViewHolderバインド時の処理をまとめているだけ
              */
             fun bind(bucketModel: BucketModel) {
+                // item（ConstraintLayout） について設定する
                 itemView.apply {
-                    // TODO Rをxmlから取得したい
-                    val radioButton: RadioButton =  findViewById(R.id.item_bucket_display_name)
-                    radioButton.text = bucketModel.bucketDisplayName
+                    // ラジオボタン以外をクリックしたときもラジオボタンをクリックしたことにする
+                    setOnClickListener { clicked:View ->
+                        clicked.findViewById<RadioButton>(R.id.item_bucket_display_name).apply {
+                            isChecked = true
+                        }
+                    }
+
+                    // ラジオボタンの設定をする
+                    findViewById<RadioButton>(R.id.item_bucket_display_name).apply {
+                        // 文章の設定
+                        text = bucketModel.bucketDisplayName
+
+                        // 以前クリックしたボタンを解除
+                        setOnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
+                            if (isChecked) {
+                                beforeCheckedButton?.isChecked = false
+                                beforeCheckedButton = buttonView as RadioButton
+                            }
+                        }
+                    }
+
                 }
             }
         }
