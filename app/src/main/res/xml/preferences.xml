@@ -15,9 +15,7 @@
             android:title="@string/setting_form_dir_which_title"
             android:defaultValue="ALL"
             android:dialogLayout="@layout/dialog_fragment_select_image_bucket_preference"
-            custom:dialogLayoutItem="@layout/dialog_fragment_select_image_bucket_preference_item"
-            custom:dialogCurrentBucketId="@id/dialog_current_bucket"
-            custom:dialogFileListId="@id/dialog_recycler_list"
+            custom:dialogListItemLayout="@layout/dialog_fragment_select_image_bucket_preference_item"
             />
         <SwitchPreferenceCompat
             android:defaultValue="false"
