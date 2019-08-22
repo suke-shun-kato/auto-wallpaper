@@ -18,6 +18,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import xyz.goodistory.autowallpaper.R
 import android.widget.RadioButton
 import androidx.core.app.ActivityCompat
@@ -395,9 +396,10 @@ class SelectImageBucketPreference : DialogPreference {
     // --------------------------------------------------------------------
     /**
      * @param selectedBucketId 選択中のbucketID、初期値
+     * @param dialogListItemLayout
      */
-    class Adapter(var selectedBucketId: Int, private val dialogListItemLayout: Int)
-        : ListAdapter<BucketModel, Adapter.ViewHolder>(DiffCallback()) {
+    class BucketListAdapter(var selectedBucketId: Int, private val dialogListItemLayout: Int)
+        : ListAdapter<BucketModel, BucketListAdapter.ViewHolder>(DiffCallback()) {
 
         private var beforeCheckedButton: RadioButton? = null
 
@@ -424,80 +426,77 @@ class SelectImageBucketPreference : DialogPreference {
              * AdapterでのViewHolderバインド時の処理をまとめているだけ
              */
             fun bind(bucketModel: BucketModel) {
-                //// item（ConstraintLayout） について設定する
-                itemView.apply {
-                    //// ラジオボタン以外をクリックしたときもラジオボタンをクリックしたことにする
-                    setOnClickListener { clicked:View ->
-                        clicked.findViewById<RadioButton>(R.id.item_bucket_display_name).apply {
-                            isChecked = true
-                        }
-                    }
-
-                    //// ラジオボタンの設定をする
-                    findViewById<RadioButton>(R.id.item_bucket_display_name).apply {
-
-                        // 文章の設定
-                        text = bucketModel.bucketDisplayName
-
-                        // クリックしたとき、以前クリックしたボタンを解除するリスナーをセット
-                        setOnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
-                            if (isChecked) {
-                                beforeCheckedButton?.isChecked = false
-                                beforeCheckedButton = buttonView as RadioButton
-                                selectedBucketId = bucketModel.bucketId
+                //// スクロールの中をクリックしたらラジオボタンをクリックしたことにする
+                itemView.findViewById<LinearLayout>(R.id.dialog_list_item_thumbnails)
+                        .setOnClickListener {
+                            itemView.findViewById<RadioButton>(R.id.dialog_list_item_radio).apply {
+                                isChecked = true
                             }
                         }
 
-                        // 選択中のbucketIdのラジオボタンだとクリックしたことにする（初期値の設定）
-                        if (selectedBucketId == bucketModel.bucketId) {
-                            performClick()
+                //// ラジオボタンの設定をする
+                itemView.findViewById<RadioButton>(R.id.dialog_list_item_radio).apply {
+
+                    // 文章の設定
+                    text = bucketModel.bucketDisplayName
+
+                    // クリックしたとき、以前クリックしたボタンを解除するリスナーをセット
+                    setOnCheckedChangeListener { buttonView: CompoundButton, isChecked: Boolean ->
+                        if (isChecked) {
+                            beforeCheckedButton?.isChecked = false
+                            beforeCheckedButton = buttonView as RadioButton
+                            selectedBucketId = bucketModel.bucketId
                         }
                     }
 
-                    //// サムネ画像の設定   // TODO ちゃんとする
-                    findViewById<ImageView>(R.id.preference_dialog_item_1).apply {
-                        val index: Int = 0
-                        if (bucketModel.imageIds.size > index) {
-                            val id: Long = bucketModel.imageIds[index]
-                            val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
-                                    context.contentResolver,
-                                    id,
-                                    MediaStore.Images.Thumbnails.MINI_KIND,
-                                    null)
-                            if (bitmap != null) {
-                                setImageBitmap(bitmap)
-                            }
-                        }
+                    // 選択中のbucketIdのラジオボタンだとクリックしたことにする（初期値の設定）
+                    if (selectedBucketId == bucketModel.bucketId) {
+                        performClick()
                     }
-                    findViewById<ImageView>(R.id.preference_dialog_item_2).apply {
-                        val index: Int = 1
-                        if (bucketModel.imageIds.size > index) {
-                            val id: Long = bucketModel.imageIds[index]
-                            val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
-                                    context.contentResolver,
-                                    id,
-                                    MediaStore.Images.Thumbnails.MINI_KIND,
-                                    null)
-                            if (bitmap != null) {
-                                setImageBitmap(bitmap)
-                            }
-                        }
-                    }
-                    findViewById<ImageView>(R.id.preference_dialog_item_3).apply {
-                        val index: Int = 2
-                        if (bucketModel.imageIds.size > index) {
-                            val id: Long = bucketModel.imageIds[index]
-                            val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
-                                    context.contentResolver,
-                                    id,
-                                    MediaStore.Images.Thumbnails.MINI_KIND,
-                                    null)
-                            if (bitmap != null) {
-                                setImageBitmap(bitmap)
-                            }
-                        }
-                    }
+                }
 
+                //// サムネ画像の設定   // TODO ちゃんとする
+                itemView.findViewById<ImageView>(R.id.dialog_list_item_thumbnail_1).apply {
+                    val index: Int = 0
+                    if (bucketModel.imageIds.size > index) {
+                        val id: Long = bucketModel.imageIds[index]
+                        val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
+                                context.contentResolver,
+                                id,
+                                MediaStore.Images.Thumbnails.MINI_KIND,
+                                null)
+                        if (bitmap != null) {
+                            setImageBitmap(bitmap)
+                        }
+                    }
+                }
+                itemView.findViewById<ImageView>(R.id.dialog_list_item_thumbnail_2).apply {
+                    val index: Int = 1
+                    if (bucketModel.imageIds.size > index) {
+                        val id: Long = bucketModel.imageIds[index]
+                        val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
+                                context.contentResolver,
+                                id,
+                                MediaStore.Images.Thumbnails.MINI_KIND,
+                                null)
+                        if (bitmap != null) {
+                            setImageBitmap(bitmap)
+                        }
+                    }
+                }
+                itemView.findViewById<ImageView>(R.id.dialog_list_item_thumbnail_3).apply {
+                    val index: Int = 2
+                    if (bucketModel.imageIds.size > index) {
+                        val id: Long = bucketModel.imageIds[index]
+                        val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
+                                context.contentResolver,
+                                id,
+                                MediaStore.Images.Thumbnails.MINI_KIND,
+                                null)
+                        if (bitmap != null) {
+                            setImageBitmap(bitmap)
+                        }
+                    }
                 }
             }
         }
@@ -523,7 +522,7 @@ class SelectImageBucketPreference : DialogPreference {
         private lateinit var bucketModels: List<BucketModel>
 
         private lateinit var recyclerView: RecyclerView
-        private lateinit var viewAdapter: Adapter
+        private lateinit var viewAdapter: BucketListAdapter
 
         // --------------------------------------------------------------------
         // companion
@@ -577,7 +576,7 @@ class SelectImageBucketPreference : DialogPreference {
             // ---------------------------------
             // RecyclerViewのリストを設定
             // ---------------------------------
-            viewAdapter = Adapter(currentBucketId, preference.dialogListItemRLayout!!).apply {
+            viewAdapter = BucketListAdapter(currentBucketId, preference.dialogListItemRLayout!!).apply {
                 // リストの値を送信
                 submitList(bucketModels)
             }
