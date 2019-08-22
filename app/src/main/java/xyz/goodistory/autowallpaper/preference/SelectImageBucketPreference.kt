@@ -2,12 +2,12 @@ package xyz.goodistory.autowallpaper.preference
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.Context
-import android.content.DialogInterface
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.TypedArray
 import android.database.Cursor
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.AttributeSet
@@ -112,6 +112,67 @@ class SelectImageBucketPreference : DialogPreference {
             return filteredBucketIds.first()
         }
 
+        /**
+         * bucketIDを指定して画像のid複数を取得
+         */
+        @JvmStatic
+        fun getImageIdsFromSharedPreferences(
+                sp: SharedPreferences, preferenceKey: String, cr: ContentResolver): List<Long> {
+
+            //// spから取得
+            val bucketId = sp.getInt(preferenceKey, ALL_BUCKET_ID)
+
+
+            //// query実行
+            val projection: Array<String> = arrayOf(MediaStore.Images.ImageColumns._ID)
+            val selection: String?
+            val selectionArgs: Array<String>?
+            if (bucketId == ALL_BUCKET_ID) {
+                selection = null
+                selectionArgs = null
+            } else {
+                selection = MediaStore.Images.ImageColumns.BUCKET_ID + " = ?"
+                selectionArgs = arrayOf(bucketId.toString())
+            }
+            val cursor: Cursor? = cr.query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    projection, selection,selectionArgs, null)
+
+            //// _idを抜き出す
+            val imageIds = cursor!!.run {
+                val mutableImageIds: MutableList<Long> = mutableListOf()
+                while (moveToNext()) {
+                    val id: Long = getLong(getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID))
+                    mutableImageIds.add(id)
+                }
+
+                mutableImageIds
+            }
+
+            //// 後始末
+            cursor.close()
+
+            return imageIds
+        }
+
+        /**
+         * bucketIDを指定して画像のuri複数を取得
+         */
+        @JvmStatic
+        fun getUrisFromSharedPreferences(
+                sp: SharedPreferences, preferenceKey: String, cr: ContentResolver): List<Uri> {
+
+            // SharedPreference からbucketId を取得して 画像のidを複数取得
+            val imageIds: List<Long> = getImageIdsFromSharedPreferences(sp, preferenceKey, cr)
+
+            // Uriに変換
+            return mutableListOf<Uri>().apply{
+                imageIds.forEach{imageId: Long ->
+                    val uri: Uri = ContentUris.withAppendedId(
+                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI, imageId)
+                    add(uri)
+                }
+            }
+        }
     }
 
     // --------------------------------------------------------------------
