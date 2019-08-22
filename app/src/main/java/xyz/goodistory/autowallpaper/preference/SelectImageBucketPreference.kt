@@ -351,21 +351,29 @@ class SelectImageBucketPreference : DialogPreference {
     // --------------------------------------------------------------------
     // class
     // --------------------------------------------------------------------
-    // TODO クラス名を考える
-    class BucketModel(var imageIds: MutableList<Long>, var bucketId: Int, var bucketDisplayName: String) {
+    class ImageBucketModel(var imageIds: MutableList<Long>, var bucketId: Int, var bucketDisplayName: String) {
 
         companion object {
-            fun createList(context: Context): List<BucketModel> {
+            fun createList(context: Context): List<ImageBucketModel> {
                 val cursor: Cursor? = context.contentResolver.query(
                         MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                         null, null, null, null)
 
-                val models: List<BucketModel> = cursor!!.run {
-                    val models: MutableMap<Int, BucketModel> = mutableMapOf()
+                val models: List<ImageBucketModel> = cursor!!.run {
+                    val models: MutableMap<Int, ImageBucketModel> = mutableMapOf()
 
-                    models[ALL_BUCKET_ID] = BucketModel(
+                    //// ALL の処理
+                    moveToPosition(-1)
+                    models[ALL_BUCKET_ID] = ImageBucketModel(
                             mutableListOf(), ALL_BUCKET_ID, ALL_BUCKET_DISPLAY_NAME)
+                    while (moveToNext()) {
+                        val id: Long = getLong(
+                                getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID) )
+                        models[ALL_BUCKET_ID]!!.imageIds.add(id)
+                    }
 
+                    //// 各Bucketの処理
+                    moveToPosition(-1)
                     while (moveToNext()) {
                         val id: Long = getLong(
                                 getColumnIndexOrThrow(MediaStore.Images.ImageColumns._ID) )
@@ -378,10 +386,12 @@ class SelectImageBucketPreference : DialogPreference {
                         if ( models.containsKey(bucketId) ) {
                             models[bucketId]!!.imageIds.add(id)
                         } else {
-                            models[bucketId] = BucketModel(
+                            models[bucketId] = ImageBucketModel(
                                     mutableListOf(id), bucketId, bucketDisplayName )
                         }
                     }
+
+                    //// MapのvalueをListに変換
                     models.values.toList()
                 }
 
@@ -399,7 +409,7 @@ class SelectImageBucketPreference : DialogPreference {
      * @param dialogListItemLayout
      */
     class BucketListAdapter(var selectedBucketId: Int, private val dialogListItemLayout: Int)
-        : ListAdapter<BucketModel, BucketListAdapter.ViewHolder>(DiffCallback()) {
+        : ListAdapter<ImageBucketModel, BucketListAdapter.ViewHolder>(DiffCallback()) {
 
         private var beforeCheckedButton: RadioButton? = null
 
@@ -412,7 +422,7 @@ class SelectImageBucketPreference : DialogPreference {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            val itemModel: BucketModel = getItem(position)
+            val itemModel: ImageBucketModel = getItem(position)
             holder.bind(itemModel)
         }
 
@@ -425,7 +435,7 @@ class SelectImageBucketPreference : DialogPreference {
             /**
              * AdapterでのViewHolderバインド時の処理をまとめているだけ
              */
-            fun bind(bucketModel: BucketModel) {
+            fun bind(bucketModel: ImageBucketModel) {
                 //// スクロールの中をクリックしたらラジオボタンをクリックしたことにする
                 itemView.findViewById<LinearLayout>(R.id.dialog_list_item_thumbnails)
                         .setOnClickListener {
@@ -501,12 +511,12 @@ class SelectImageBucketPreference : DialogPreference {
             }
         }
 
-        class DiffCallback: DiffUtil.ItemCallback<BucketModel>() {
-            override fun areItemsTheSame(oldItem: BucketModel, newItem:BucketModel): Boolean {
+        class DiffCallback: DiffUtil.ItemCallback<ImageBucketModel>() {
+            override fun areItemsTheSame(oldItem: ImageBucketModel, newItem:ImageBucketModel): Boolean {
                 return oldItem.bucketId == newItem.bucketId
             }
 
-            override fun areContentsTheSame(oldItem: BucketModel, newItem: BucketModel): Boolean {
+            override fun areContentsTheSame(oldItem: ImageBucketModel, newItem: ImageBucketModel): Boolean {
                 return oldItem.bucketId == newItem.bucketId
                         && oldItem.bucketDisplayName == newItem.bucketDisplayName
             }
@@ -519,7 +529,7 @@ class SelectImageBucketPreference : DialogPreference {
     // class
     // --------------------------------------------------------------------
     class Dialog: PreferenceDialogFragmentCompat() {
-        private lateinit var bucketModels: List<BucketModel>
+        private lateinit var bucketModels: List<ImageBucketModel>
 
         private lateinit var recyclerView: RecyclerView
         private lateinit var viewAdapter: BucketListAdapter
@@ -545,7 +555,7 @@ class SelectImageBucketPreference : DialogPreference {
             super.onCreate(savedInstanceState)
 
             // フィールドにセット
-            bucketModels = BucketModel.createList(context!!)
+            bucketModels = ImageBucketModel.createList(context!!)
         }
 
 
