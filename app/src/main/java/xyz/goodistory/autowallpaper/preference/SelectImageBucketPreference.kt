@@ -218,10 +218,8 @@ class SelectImageBucketPreference : DialogPreference {
      * パーミッション許可ダイアログで拒否したときに表示するダイアログ
      */
     class RationaleDialogFragment: DialogFragment() {
-        // TODO FRAGMENT_TAG_NAME をちゃんとする
         companion object {
-            const val FRAGMENT_TAG_NAME = "ffffff"
-//            val FRAGMENT_TAG_NAME: String = RationaleDialogFragment::class.simpleName
+            val FRAGMENT_TAG_NAME: String = RationaleDialogFragment::class.java.simpleName
             const val BUNDLE_KEY_TEXT = "text"
             const val BUNDLE_KEY_DIALOG_REQUEST_CODE = "permission_code"
         }
