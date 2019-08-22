@@ -18,7 +18,6 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import android.widget.ImageView
-import android.widget.LinearLayout
 import xyz.goodistory.autowallpaper.R
 import android.widget.RadioButton
 import androidx.core.content.ContextCompat
@@ -404,10 +403,85 @@ class SelectImageBucketPreference : DialogPreference {
     }
 
 
+    // --------------------------------------------------------------------
+    // class 内側（サムネイル）の RecyclerView 用
+    // --------------------------------------------------------------------
+    class ThumbnailListAdapter(
+            val context: Context, val siblingRadioButton: RadioButton)
+        : ListAdapter<ThumbnailListAdapter.ImageModel, ThumbnailListAdapter.ViewHolder>(
+            DiffCallback() ) {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            // 動的に ImageView を生成
+            val imageView = ImageView(context).apply {
+                // layout_width="wrap_content", layout_height="wrap_content" に設定
+                layoutParams = ViewGroup.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+            }
+            return ViewHolder(imageView)
+        }
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val itemModel: ImageModel = getItem(position)
+            holder.bind(itemModel)
+        }
+
+        inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+
+            fun bind(imageModel: ImageModel) {
+                //// 画像をセット
+                val id: Long = imageModel.imageId
+
+                val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
+                        context.contentResolver,
+                        id,
+                        MediaStore.Images.Thumbnails.MINI_KIND,
+                        null)
+                if (bitmap != null) {
+                    (itemView as ImageView).setImageBitmap(bitmap)
+                }
+
+                //// クリックイベントをセット
+                itemView.setOnClickListener{
+                    siblingRadioButton.isChecked = true
+                }
+            }
+        }
+
+        class ImageModel(val imageId: Long) {
+            companion object {
+                fun createList(ids: List<Long>, maxElementNum: Int? = null): List<ImageModel> {
+                    val imageModels: MutableList<ImageModel> = mutableListOf()
+
+                    val maxNotNull: Int = maxElementNum ?: ids.size
+                    for ( i in 0 until maxNotNull ) {
+                        if ( i > ids.size - 1 ) {
+                            break
+                        }
+                        val imageId: Long = ids[i]
+                        imageModels.add( ImageModel(imageId) )
+                    }
+
+                    return imageModels
+                }
+            }
+        }
+
+        class DiffCallback: DiffUtil.ItemCallback<ImageModel>() {
+            override fun areItemsTheSame(oldItem: ImageModel, newItem:ImageModel): Boolean {
+                return oldItem.imageId == newItem.imageId
+            }
+
+            override fun areContentsTheSame(oldItem: ImageModel, newItem: ImageModel): Boolean {
+                return oldItem.imageId == newItem.imageId
+            }
+        }
+    }
 
     // --------------------------------------------------------------------
-    // class
+    // class 外側の RecyclerView 用
     // --------------------------------------------------------------------
+    // TODO adaperの中に入れたい
     class ImageBucketModel(var imageIds: MutableList<Long>, var bucketId: Int, var bucketDisplayName: String) {
 
         companion object {
@@ -458,9 +532,6 @@ class SelectImageBucketPreference : DialogPreference {
         }
     }
 
-    // --------------------------------------------------------------------
-    // class
-    // --------------------------------------------------------------------
     /**
      * @param selectedBucketId 選択中のbucketID、初期値
      * @param dialogListItemLayout
@@ -493,16 +564,11 @@ class SelectImageBucketPreference : DialogPreference {
              * AdapterでのViewHolderバインド時の処理をまとめているだけ
              */
             fun bind(bucketModel: ImageBucketModel) {
-                //// スクロールの中をクリックしたらラジオボタンをクリックしたことにする
-                itemView.findViewById<LinearLayout>(R.id.dialog_list_item_thumbnails)
-                        .setOnClickListener {
-                            itemView.findViewById<RadioButton>(R.id.dialog_list_item_radio).apply {
-                                isChecked = true
-                            }
-                        }
+                val radioButton: RadioButton = itemView.findViewById(R.id.dialog_list_item_radio)
+                val recyclerView: RecyclerView = itemView.findViewById(R.id.dialog_list_item_thumbnails)
 
                 //// ラジオボタンの設定をする
-                itemView.findViewById<RadioButton>(R.id.dialog_list_item_radio).apply {
+                radioButton.apply {
 
                     // 文章の設定
                     text = bucketModel.bucketDisplayName
@@ -522,49 +588,23 @@ class SelectImageBucketPreference : DialogPreference {
                     }
                 }
 
-                //// サムネ画像の設定   // TODO ちゃんとする
-                itemView.findViewById<ImageView>(R.id.dialog_list_item_thumbnail_1).apply {
-                    val index: Int = 0
-                    if (bucketModel.imageIds.size > index) {
-                        val id: Long = bucketModel.imageIds[index]
-                        val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
-                                context.contentResolver,
-                                id,
-                                MediaStore.Images.Thumbnails.MINI_KIND,
-                                null)
-                        if (bitmap != null) {
-                            setImageBitmap(bitmap)
-                        }
-                    }
+                //// サムネ画像の設定,recyclerView の設定
+                val thumbnailListAdapter = ThumbnailListAdapter(itemView.context, radioButton).apply {
+                    val models: List<ThumbnailListAdapter.ImageModel>
+                            = ThumbnailListAdapter.ImageModel.createList(bucketModel.imageIds)
+                    submitList(models)
                 }
-                itemView.findViewById<ImageView>(R.id.dialog_list_item_thumbnail_2).apply {
-                    val index: Int = 1
-                    if (bucketModel.imageIds.size > index) {
-                        val id: Long = bucketModel.imageIds[index]
-                        val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
-                                context.contentResolver,
-                                id,
-                                MediaStore.Images.Thumbnails.MINI_KIND,
-                                null)
-                        if (bitmap != null) {
-                            setImageBitmap(bitmap)
-                        }
-                    }
+
+                val linearLayoutManager = LinearLayoutManager(
+                        itemView.context, LinearLayoutManager.HORIZONTAL, false)
+
+                recyclerView.apply {
+                    setHasFixedSize(true)
+                    layoutManager = linearLayoutManager
+                    adapter = thumbnailListAdapter
                 }
-                itemView.findViewById<ImageView>(R.id.dialog_list_item_thumbnail_3).apply {
-                    val index: Int = 2
-                    if (bucketModel.imageIds.size > index) {
-                        val id: Long = bucketModel.imageIds[index]
-                        val bitmap: Bitmap? = MediaStore.Images.Thumbnails.getThumbnail(
-                                context.contentResolver,
-                                id,
-                                MediaStore.Images.Thumbnails.MINI_KIND,
-                                null)
-                        if (bitmap != null) {
-                            setImageBitmap(bitmap)
-                        }
-                    }
-                }
+
+
             }
         }
 

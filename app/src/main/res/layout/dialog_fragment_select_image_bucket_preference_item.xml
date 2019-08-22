@@ -11,41 +11,12 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         />
-    <HorizontalScrollView
-        android:layout_width="match_parent"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/dialog_list_item_thumbnails"
+        android:scrollbars="horizontal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/dialog_list_item_radio"
-        >
-        <LinearLayout
-            android:id="@+id/dialog_list_item_thumbnails"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:orientation="horizontal"
-            >
-            <ImageView
-                android:id="@+id/dialog_list_item_thumbnail_1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-
-                />
-            <ImageView
-                android:id="@+id/dialog_list_item_thumbnail_2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-
-                />
-
-            <ImageView
-                android:id="@+id/dialog_list_item_thumbnail_3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:clickable="false"
-
-                />
-        </LinearLayout>
-    </HorizontalScrollView>
+        app:layout_constraintStart_toStartOf="parent"
+        />
 </androidx.constraintlayout.widget.ConstraintLayout>
