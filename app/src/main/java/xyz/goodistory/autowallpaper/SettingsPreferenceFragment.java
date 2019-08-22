@@ -392,7 +392,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
             dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
         } else if (preference instanceof SelectImageBucketPreference) {
             SelectImageBucketPreference.Dialog dialog
-                    = SelectImageBucketPreference.Dialog.Companion.newInstance(preference.getKey());
+                    = SelectImageBucketPreference.Dialog.newInstance(preference.getKey());
             dialog.setTargetFragment(this, 0);
             dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
         } else {

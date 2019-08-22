@@ -599,7 +599,7 @@ class SelectImageBucketPreference : DialogPreference {
         // companion
         // --------------------------------------------------------------------
         companion object {
-
+            @JvmStatic
             fun newInstance(key: String): Dialog {
                 return Dialog().apply {
                     arguments = Bundle(1).apply {
