@@ -21,10 +21,9 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import xyz.goodistory.autowallpaper.R
 import android.widget.RadioButton
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.FragmentActivity
+import androidx.preference.PreferenceFragmentCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
@@ -78,7 +77,7 @@ class SelectImageBucketPreference : DialogPreference {
 
     /** パーミッション許可のダイアログを表示するときのRequestCode、nullのときはダイアログを表示しない */
     private var requestCodePermissionDialog: Int? = null
-    private var activity: FragmentActivity? = null
+    private var fragment: PreferenceFragmentCompat? = null
     private var permissionRationaleDialogText: String? = null
 
     /** XML属性の値 */
@@ -180,7 +179,7 @@ class SelectImageBucketPreference : DialogPreference {
     // --------------------------------------------------------------------
     override fun onClick() {
         //// パーミッション許可ダイアログの表示設定がされていない場合は、super()実行して終わり
-        if (requestCodePermissionDialog == null || activity == null) {
+        if (requestCodePermissionDialog == null || fragment == null) {
             super.onClick()     //ここでonCreateDialogView()が呼ばれる
             return
         }
@@ -196,7 +195,7 @@ class SelectImageBucketPreference : DialogPreference {
 
         //// 許可されていない場合
         val shouldShowRationale: Boolean            // Rationale: 根拠
-                = ActivityCompat.shouldShowRequestPermissionRationale(activity!!, permission)
+                = fragment!!.shouldShowRequestPermissionRationale(permission)
         if (shouldShowRationale) {
             val bundle: Bundle = Bundle().apply {
                 putString(RationaleDialogFragment.BUNDLE_KEY_TEXT, permissionRationaleDialogText)
@@ -205,12 +204,12 @@ class SelectImageBucketPreference : DialogPreference {
 
             RationaleDialogFragment().apply{
                 arguments = bundle
-            }.show(activity!!.supportFragmentManager, RationaleDialogFragment.FRAGMENT_TAG_NAME)
+                setTargetFragment(fragment, 0)  // requestCodeは使わないので0
+            }.show(fragment!!.fragmentManager, RationaleDialogFragment.FRAGMENT_TAG_NAME)
 
         } else {
         // 説明理由の表示が必要でない場合、初回など
-            ActivityCompat.requestPermissions(
-                    activity!!, arrayOf(permission), requestCodePermissionDialog!!)
+            fragment!!.requestPermissions(arrayOf(permission), requestCodePermissionDialog!!)
         }
     }
 
@@ -224,13 +223,12 @@ class SelectImageBucketPreference : DialogPreference {
             const val BUNDLE_KEY_DIALOG_REQUEST_CODE = "permission_code"
         }
 
-   
+        // 後ほどちゃんとする
         override fun onCreateDialog(savedInstanceState: Bundle?): android.app.Dialog {
             return AlertDialog.Builder(activity)
                     .setMessage(arguments!!.getString(BUNDLE_KEY_TEXT))
                     .setPositiveButton(android.R.string.ok) { _: DialogInterface, _: Int ->
-                        ActivityCompat.requestPermissions(
-                                activity!!,
+                        targetFragment!!.requestPermissions(
                                 arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
                                 arguments!!.getInt(BUNDLE_KEY_DIALOG_REQUEST_CODE) )
                     }.create()
@@ -298,9 +296,9 @@ class SelectImageBucketPreference : DialogPreference {
     }
 
     fun setShowRequestPermissionDialog(
-            setActivity: FragmentActivity, setRequestCode: Int, text: String) {
+            setFragment: PreferenceFragmentCompat, setRequestCode: Int, text: String) {
 
-        activity = setActivity
+        fragment = setFragment
         requestCodePermissionDialog = setRequestCode
         permissionRationaleDialogText = text
     }

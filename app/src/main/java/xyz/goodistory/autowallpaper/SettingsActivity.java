@@ -30,23 +30,6 @@ public class SettingsActivity
     // メソッド
     // --------------------------------------------------------------------
     /************************************
-     * パーミッション許可のダイアログが終わった瞬間（OKもNGもある）
-     * @param requestCode パーミッション許可リクエスト時に送ったリクエストコード
-     * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
-     * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
-     */
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
-        mSettingPreferenceFragment.onRequestPermissionsResult(
-                requestCode, permissions, grantResults);
-
-    }
-
-
-
-    /************************************
      * アクティビティが作成されたとき
      * @param savedInstanceState 開店前などに保存した値
      */

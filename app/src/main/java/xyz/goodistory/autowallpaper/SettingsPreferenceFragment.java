@@ -80,7 +80,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
             mIsServiceRunning = false;
         }
     };
-    
+
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
@@ -215,7 +215,7 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
                 = (SelectImageBucketPreference)findPreference(PREFERENCE_KEY_SELECT_IMAGE_BUCKET);
         // パーミッション許可のダイアログを表示するように設定
         fromDirPathPref.setShowRequestPermissionDialog(
-                getActivity(),
+                this,
                 RQ_CODE_SELECT_IMAGE_BUCKET,
                 getString(R.string.reason_read_external_storage_permission_need));
         fromDirPathPref.setBucketToSummary();
@@ -438,11 +438,10 @@ public class SettingsPreferenceFragment extends PreferenceFragmentCompat
      * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
      * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
      */
+    @Override
     public void onRequestPermissionsResult(
             int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-
         switch (requestCode) {
-
             case RQ_CODE_FROM_DIR:
                 // 許可をクリックしたとき
                 if (grantResults.length > 0
