@@ -7,16 +7,13 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import xyz.goodistory.autowallpaper.HistoryModel;
 import xyz.goodistory.autowallpaper.R;
-import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreference;
-import xyz.goodistory.autowallpaper.util.FileExtended;
+import xyz.goodistory.autowallpaper.preference.SelectImageBucketPreference;
 
 
 /**
@@ -27,8 +24,6 @@ class WpUrisGetterDirectory extends WpUrisGetter {
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-    private static final String[] EXTENSIONS = {"jpg", "jpeg", "png"};
-
     private final Context mContext;
 
     // --------------------------------------------------------------------
@@ -49,36 +44,25 @@ class WpUrisGetterDirectory extends WpUrisGetter {
         List<ImgGetter> getImgGetterList = new ArrayList<>();
 
         // ----------------------------------
-        // 取得対象の画像のパスリストを取得
+        // 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
         // ----------------------------------
-        //// 例外処理、ストレージアクセスパーミッションがなければ途中で切り上げ
         if (ContextCompat.checkSelfPermission(mContext, Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
             return getImgGetterList;
         }
 
-        //// 通常処理
-        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
-        String keySelectDirectory = mContext.getString(R.string.preference_key_select_directory);
-        FileExtended imgDirFileEx = new FileExtended(
-                sp.getString(keySelectDirectory,
-                        SelectDirectoryPreference.DEFAULT_DIR_PATH_WHEN_NO_DEFAULT )
-        );
-        List<String> imgPathList = imgDirFileEx.getAllFilePathList(EXTENSIONS);
-
         // ----------------------------------
-        //
+        // 取得対象の画像のパスリストを取得
         // ----------------------------------
-        for (String imgPath : imgPathList) {
-            //// ここで「file://」→「content://」へ変換する
-            Uri contentUri = FileProvider.getUriForFile(mContext,
-                    mContext.getPackageName() + ".fileprovider", new File(imgPath));
+        final SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(mContext);
+        final String keySelectDirectory = mContext.getString(R.string.preference_key_select_image_bucket);
+        final List<Uri> imageUris
+                = SelectImageBucketPreference.getUrisFromSharedPreferences(
+                        sp, keySelectDirectory, mContext.getContentResolver() );
 
-            //// Listに追加
-            getImgGetterList.add( new ImgGetter(
-                    contentUri.toString(),
-                    contentUri.toString(),
-                    HistoryModel.SOURCE_DIR) );
+        for (Uri uri: imageUris) {
+            final ImgGetter imgGetter = new ImgGetter(uri.toString(), uri.toString(), HistoryModel.SOURCE_DIR);
+            getImgGetterList.add(imgGetter);
         }
 
         return getImgGetterList;

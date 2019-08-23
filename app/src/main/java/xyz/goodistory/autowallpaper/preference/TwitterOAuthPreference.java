@@ -8,8 +8,8 @@ import android.content.SharedPreferences;
 import android.content.res.TypedArray;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.preference.Preference;
-import android.preference.PreferenceManager;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
 import androidx.annotation.Nullable;
 import android.util.AttributeSet;
 import android.widget.Toast;
@@ -65,6 +65,7 @@ public class TwitterOAuthPreference extends Preference {
     // --------------------------------------------------------------------
     // コンストラクタ
     // --------------------------------------------------------------------
+    // TODO 例外処理とか引数3,4個のコンストラクタの場合などを考慮すること
     public TwitterOAuthPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -95,6 +96,125 @@ public class TwitterOAuthPreference extends Preference {
             typedAry.recycle();
         }
     }
+
+    // --------------------------------------------------------------------
+    // getter, setter
+    // --------------------------------------------------------------------
+    /**
+     * AsyncTask内で使う用
+     * @return mOAuth1RequestToken
+     */
+    private OAuth1RequestToken getOAuth1RequestToken() {
+        return mOAuth1RequestToken;
+    }
+
+    /**
+     * * AsyncTask内で使う用
+     * @param oAuth1RequestToken oAuth1RequestToken
+     */
+    private void setOAuth1RequestToken(OAuth1RequestToken oAuth1RequestToken) {
+        mOAuth1RequestToken = oAuth1RequestToken;
+    }
+
+    // --------------------------------------------------------------------
+    // override
+    // --------------------------------------------------------------------
+    /************************************
+     * クリックしたらTwitterの認証ページをWEBプラウザで開く
+     * （アプリ内のWebViewで開くことも考えたけど、
+     * WEBプラウザなどではクッキーが使えるので敢えてWEBプラウザにした）
+     */
+    @Override
+    protected void onClick() {
+        // ----------------------------------
+        // BroadcastReceiver をセット
+        // ----------------------------------
+        //// BroadcastReceiver
+        ToGetAccessTokenBroadcastReceiver broadcastReceiver
+                = new ToGetAccessTokenBroadcastReceiver(this, mOAuth10aService,
+                mTextOauthSuccess, mTextOauthFailed);
+
+        //// intentFilter の設定
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ACTION_TO_ACCESS_TOKEN);
+
+        //// 登録
+        getContext().registerReceiver(broadcastReceiver, intentFilter);
+
+        // ----------------------------------
+        // 非同期でアクセストークン取得する
+        // ----------------------------------
+        GetRequestTokenAsyncTask getRequestTokenAsyncTask = new GetRequestTokenAsyncTask(
+                this, mOAuth10aService, mTextCantAccessAuthPage);
+
+        // requestTokenを取得 → それで認可ページを開く
+        getRequestTokenAsyncTask.execute();
+    }
+
+    // --------------------------------------------------------------------
+    // メソッド
+    // --------------------------------------------------------------------
+    /************************************
+     * 既にアクセストークンを取得すみか
+     * @return true:取得済
+     */
+    public boolean hasAccessToken() {
+        //// 値を保存していないとき
+        String accessTokenJsonStr = getPersistedString(null);
+        if (accessTokenJsonStr == null) {
+            return false;
+        }
+
+        //// 値を保存しているとき
+        try {
+            JSONObject accessTokenJson = new JSONObject(accessTokenJsonStr);
+            if ( accessTokenJson.get(JSON_KEY_TOKEN) == null
+                    || accessTokenJson.get(JSON_KEY_TOKEN_SECRET) == null) {
+                throw new JSONException("保存したJSONの値がおかしいです。");
+            }
+
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
+    }
+
+    // --------------------------------------------------------------------
+    // staticメソッド
+    // --------------------------------------------------------------------
+    /**
+     * Activity で使うメソッド
+     * 認証ボタンを押したあとのcallbackで取得したintent(verifierとrequestToken)を
+     * このクラスへbroadcastでを送る
+     * @param intent callbackで取得したintent
+     * @param context context
+     */
+    public static void sendToAccessTokenBroadcast(Intent intent, Context context) {
+        //// 引数を処理
+        String oauthToken;
+        String oauthVerifier;
+        String denied;
+        Uri uri = intent.getData();
+
+        if (uri == null) {
+            oauthToken = null;
+            oauthVerifier = null;
+            denied = null;
+        } else {
+            oauthToken = uri.getQueryParameter("oauth_token");
+            oauthVerifier = uri.getQueryParameter("oauth_verifier");
+            denied = uri.getQueryParameter("denied");
+        }
+
+        //// broadcast を送信
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(ACTION_TO_ACCESS_TOKEN);
+        sendIntent.putExtra(BUNDLE_KEY_TOKEN, oauthToken);
+        sendIntent.putExtra(BUNDLE_KEY_VERIFIER, oauthVerifier);
+        sendIntent.putExtra(BUNDLE_KEY_DENIED, denied);
+        context.sendBroadcast(sendIntent);
+    }
+
 
     // --------------------------------------------------------------------
     // 内部クラス
@@ -333,119 +453,4 @@ public class TwitterOAuthPreference extends Preference {
             }
         }
     }
-
-
-    // --------------------------------------------------------------------
-    // メソッド
-    // --------------------------------------------------------------------
-    /************************************
-     * クリックしたらTwitterの認証ページをWEBプラウザで開く
-     * （アプリ内のWebViewで開くことも考えたけど、
-     * WEBプラウザなどではクッキーが使えるので敢えてWEBプラウザにした）
-     */
-    @Override
-    protected void onClick() {
-        // ----------------------------------
-        // BroadcastReceiver をセット
-        // ----------------------------------
-        //// BroadcastReceiver
-        ToGetAccessTokenBroadcastReceiver broadcastReceiver
-                = new ToGetAccessTokenBroadcastReceiver(this, mOAuth10aService,
-                mTextOauthSuccess, mTextOauthFailed);
-
-        //// intentFilter の設定
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ACTION_TO_ACCESS_TOKEN);
-
-        //// 登録
-        getContext().registerReceiver(broadcastReceiver, intentFilter);
-
-        // ----------------------------------
-        // 非同期でアクセストークン取得する
-        // ----------------------------------
-        GetRequestTokenAsyncTask getRequestTokenAsyncTask = new GetRequestTokenAsyncTask(
-                this, mOAuth10aService, mTextCantAccessAuthPage);
-
-        // requestTokenを取得 → それで認可ページを開く
-        getRequestTokenAsyncTask.execute();
-    }
-
-    /**
-     * AsyncTask内で使う用
-     * @return mOAuth1RequestToken
-     */
-    private OAuth1RequestToken getOAuth1RequestToken() {
-        return mOAuth1RequestToken;
-    }
-
-    /**
-     * * AsyncTask内で使う用
-     * @param oAuth1RequestToken oAuth1RequestToken
-     */
-    private void setOAuth1RequestToken(OAuth1RequestToken oAuth1RequestToken) {
-        mOAuth1RequestToken = oAuth1RequestToken;
-    }
-
-
-    /************************************
-     * 既にアクセストークンを取得すみか
-     * @return true:取得済
-     */
-    public boolean hasAccessToken() {
-        //// 値を保存していないとき
-        String accessTokenJsonStr = getPersistedString(null);
-        if (accessTokenJsonStr == null) {
-            return false;
-        }
-
-        //// 値を保存しているとき
-        try {
-            JSONObject accessTokenJson = new JSONObject(accessTokenJsonStr);
-            if ( accessTokenJson.get(JSON_KEY_TOKEN) == null
-                    || accessTokenJson.get(JSON_KEY_TOKEN_SECRET) == null) {
-                throw new JSONException("保存したJSONの値がおかしいです。");
-            }
-
-            return true;
-        } catch (JSONException e) {
-            return false;
-        }
-    }
-
-    // --------------------------------------------------------------------
-    // メソッド, static
-    // --------------------------------------------------------------------
-    /**
-     * Activity で使うメソッド
-     * 認証ボタンを押したあとのcallbackで取得したintent(verifierとrequestToken)を
-     * このクラスへbroadcastでを送る
-     * @param intent callbackで取得したintent
-     * @param context context
-     */
-    public static void sendToAccessTokenBroadcast(Intent intent, Context context) {
-        //// 引数を処理
-        String oauthToken;
-        String oauthVerifier;
-        String denied;
-        Uri uri = intent.getData();
-
-        if (uri == null) {
-            oauthToken = null;
-            oauthVerifier = null;
-            denied = null;
-        } else {
-            oauthToken = uri.getQueryParameter("oauth_token");
-            oauthVerifier = uri.getQueryParameter("oauth_verifier");
-            denied = uri.getQueryParameter("denied");
-        }
-
-        //// broadcast を送信
-        Intent sendIntent = new Intent();
-        sendIntent.setAction(ACTION_TO_ACCESS_TOKEN);
-        sendIntent.putExtra(BUNDLE_KEY_TOKEN, oauthToken);
-        sendIntent.putExtra(BUNDLE_KEY_VERIFIER, oauthVerifier);
-        sendIntent.putExtra(BUNDLE_KEY_DENIED, denied);
-        context.sendBroadcast(sendIntent);
-    }
-
 }

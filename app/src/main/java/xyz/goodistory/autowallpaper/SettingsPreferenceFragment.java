@@ -10,30 +10,34 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceManager;
-import android.preference.SwitchPreference;
+
+import androidx.fragment.app.FragmentManager;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreferenceCompat;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
-import android.util.Log;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceScreen;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
-import xyz.goodistory.autowallpaper.preference.SelectDirectoryPreference;
+//import xyz.goodistory.autowallpaper.preference.InstagramOAuthPreference;
+import xyz.goodistory.autowallpaper.preference.ResetDialogPreference;
+import xyz.goodistory.autowallpaper.preference.SelectImageBucketPreference;
+import xyz.goodistory.autowallpaper.preference.TimeDialogPreference;
 import xyz.goodistory.autowallpaper.preference.TwitterOAuthPreference;
 import xyz.goodistory.autowallpaper.service.MainService;
 
 /**
  * 設定画面のフラグメント、
  * サービスへのバインドはフラグメントで行う方が良い（違うアクティビティにアタッチされるかもしれないので）
- * Created by k-shunsuke on 2017/12/08.
  */
-public class SettingsFragment extends PreferenceFragment
+public class SettingsPreferenceFragment extends PreferenceFragmentCompat
         implements SharedPreferences.OnSharedPreferenceChangeListener {
 
     // --------------------------------------------------------------------
@@ -43,8 +47,8 @@ public class SettingsFragment extends PreferenceFragment
     private MainService mainService;
 
     /** バインドされた状態か */
-    private boolean isBound = false;
-    private boolean isServiceRunning = false;
+    private boolean mIsBound = false;
+    private boolean mIsServiceRunning = false;
 
     private SharedPreferences mSp;
 
@@ -59,11 +63,9 @@ public class SettingsFragment extends PreferenceFragment
          */
         @Override
         public void onServiceConnected(ComponentName serviceClassName, IBinder service) {
-            Log.d("○SettingsFragment" + this.getClass().getSimpleName(), "onServiceConnected() 呼ばれた: サービスとバインド成立だよ、サービス名→ "+serviceClassName);
-
             MainService.MainServiceBinder serviceBinder = (MainService.MainServiceBinder) service;
             mainService = serviceBinder.getService();
-            isServiceRunning = true;
+            mIsServiceRunning = true;
 
         }
 
@@ -74,27 +76,36 @@ public class SettingsFragment extends PreferenceFragment
          */
         @Override
         public void onServiceDisconnected(ComponentName serviceClassName) {
-            Log.d("○" + this.getClass().getSimpleName(), "onServiceDisconnected() 呼ばれた: サービスがクラッシュしたよ");
-            isBound = false;
-            isServiceRunning = false;
+            mIsBound = false;
+            mIsServiceRunning = false;
         }
     };
-    
+
     // --------------------------------------------------------------------
     // 定数
     // --------------------------------------------------------------------
     //// request code
     // TODO R.integer.permission_request_code_from_directory を使うようにする
     private static final int RQ_CODE_FROM_DIR = 1;
+    private static final int RQ_CODE_SELECT_IMAGE_BUCKET = 2;
+
+    /** preferenceのdialogのfragmentタグ, 公式と同じ命名規則で揃えた */
+    private static final String DIALOG_FRAGMENT_TAG
+            = SettingsPreferenceFragment.class.getName() + ".DIALOG";
+
+    /** PreferenceのDialogを表示するときにfragmentManagerが取得できないときのエラーメッセージ */
+    @SuppressWarnings("FieldCanBeLocal")
+    private String ERROR_MESSAGE_CANT_GET_FRAGMENT_MANAGER = "can't get fragmentManager.";
 
     //// preference key
-    // TODO リソースから取得するようにする
-    private String PREFERENCE_KEY_SELECT_DIRECTORY;
+    private String PREFERENCE_KEY_SELECT_IMAGE_BUCKET;
     private String PREFERENCE_KEY_FROM_DIR;
     private String PREFERENCE_KEY_FROM_TWITTER_FAVORITES;
     private String PREFERENCE_KEY_AUTHENTICATE_TWITTER;
     private String PREFERENCE_KEY_FROM_INSTAGRAM_USER_RECENT;// TODO インスタ復活したら使う
     private String PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM;
+
+    private String PREFERENCE_KEY_START_TIME;
     private String PREFERENCE_KEY_ABOUT;
 
     // --------------------------------------------------------------------
@@ -110,7 +121,7 @@ public class SettingsFragment extends PreferenceFragment
 
         //// preference key の読み込み
         PREFERENCE_KEY_FROM_DIR = getString(R.string.preference_key_from_directory);
-        PREFERENCE_KEY_SELECT_DIRECTORY = getString(R.string.preference_key_select_directory);
+        PREFERENCE_KEY_SELECT_IMAGE_BUCKET = getString(R.string.preference_key_select_image_bucket);
 
         PREFERENCE_KEY_FROM_TWITTER_FAVORITES
                 = getString(R.string.preference_key_from_twitter_favorites);
@@ -122,10 +133,10 @@ public class SettingsFragment extends PreferenceFragment
         PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM
                 = getString(R.string.preference_key_authenticate_instagram);
 
-        PREFERENCE_KEY_ABOUT = getString(R.string.preference_key_about);
 
-        //// 設定xmlを読み込む
-        addPreferencesFromResource(R.xml.preferences);
+        PREFERENCE_KEY_START_TIME = getString(R.string.preference_key_start_time);
+
+        PREFERENCE_KEY_ABOUT = getString(R.string.preference_key_about);
     }
 
     /************************************
@@ -139,11 +150,10 @@ public class SettingsFragment extends PreferenceFragment
         // ↓公式でonStart()のタイミングでバインドしている（Activityだけど）のでこの場所
         // https://developer.android.com/guide/components/bound-services.html?hl=ja
         // ----------------------------------
-        Activity attachedActivity = this.getActivity();
+        Activity attachedActivity = getActivity();
         Intent intent = new Intent(attachedActivity, MainService.class);
 
-//        attachedActivity.bindService(intent, this.myConnection, Context.BIND_AUTO_CREATE);
-        this.isBound  = attachedActivity.bindService(intent, this.myConnection, 0);
+        mIsBound = attachedActivity.bindService(intent, myConnection, 0);
     }
 
 
@@ -158,10 +168,26 @@ public class SettingsFragment extends PreferenceFragment
         // ----------------------------------
         // サービスへのバインドをやめる
         // ----------------------------------
-        if (this.isBound) {
-            this.getActivity().unbindService(this.myConnection);
-            this.isBound = false;
+        if (mIsBound) {
+            getActivity().unbindService(myConnection);
+            mIsBound = false;
         }
+    }
+
+
+    /**
+     * Called during {@link #onCreate(Bundle)} to supply the preferences for this fragment.
+     * Subclasses are expected to call {@link #setPreferenceScreen(PreferenceScreen)} either
+     * directly or via helper methods such as {@link #addPreferencesFromResource(int)}.
+     *
+     * @param savedInstanceState If the fragment is being re-created from
+     *                           a previous saved state, this is the state.
+     * @param rootKey            If non-null, this preference fragment should be rooted at the
+     *                           {@link PreferenceScreen} with this key.
+     */
+    @Override
+    public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
+        setPreferencesFromResource(R.xml.preferences, rootKey);
     }
 
     /************************************
@@ -179,18 +205,20 @@ public class SettingsFragment extends PreferenceFragment
                 String.format( getString(R.string.setting_other_about_title), getString(R.string.app_name) )
         );
 
-
         // ----------------------------------
         // サマリーの表示の設定
         // ----------------------------------
         mSp = PreferenceManager.getDefaultSharedPreferences( getActivity() );
 
         //// 選択ディレクトリ
-        String summaryText = mSp.getString(PREFERENCE_KEY_SELECT_DIRECTORY,
-                getString(R.string.setting_from_dir_which_default_summary) );
-
-        Preference fromDirPathPref = findPreference(PREFERENCE_KEY_SELECT_DIRECTORY);
-        fromDirPathPref.setSummary( summaryText );
+        SelectImageBucketPreference fromDirPathPref
+                = (SelectImageBucketPreference)findPreference(PREFERENCE_KEY_SELECT_IMAGE_BUCKET);
+        // パーミッション許可のダイアログを表示するように設定
+        fromDirPathPref.setShowRequestPermissionDialog(
+                this,
+                RQ_CODE_SELECT_IMAGE_BUCKET,
+                getString(R.string.reason_read_external_storage_permission_need));
+        fromDirPathPref.setBucketToSummary();
 
         //// Twitter認証
         TwitterOAuthPreference twitterPref
@@ -208,6 +236,11 @@ public class SettingsFragment extends PreferenceFragment
 //                = (InstagramOAuthPreference)findPreference(PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM);
 //        // サマリーを更新
 //        instagramOAuthPreference.updateSummary();
+
+
+        TimeDialogPreference startTimePreference
+                = (TimeDialogPreference)findPreference(PREFERENCE_KEY_START_TIME);
+        startTimePreference.setSummaryFromPersistedValue();
 
 
         // ----------------------------------
@@ -231,17 +264,17 @@ public class SettingsFragment extends PreferenceFragment
                 //// 設定がONになるとき、かつAndroid6.0のとき、かつストレージアクセスの許可を得ていないとき、
                 if ( (boolean)newValue  //設定がOFF→ONになるとき
                   &&  ContextCompat.checkSelfPermission(
-                                SettingsFragment.this.getActivity(),
+                                SettingsPreferenceFragment.this.getActivity(),
                                 Manifest.permission.READ_EXTERNAL_STORAGE
                        )
                         != PackageManager.PERMISSION_GRANTED
                 ) {
                     PermissionManager.showRequestDialog(getActivity(), RQ_CODE_FROM_DIR);
 //                    // パーミッション必要な理由を表示
-//                    toastIfShould(SettingsFragment.this);
+//                    toastIfShould(SettingsPreferenceFragment.this);
 //
 //                    // アクセス許可を要求（ダイアログを表示）
-//                    SettingsFragment.this.requestPermissions(
+//                    SettingsPreferenceFragment.this.requestPermissions(
 //                            new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
 //                            RQ_CODE_FROM_DIR
 //                    );
@@ -330,6 +363,44 @@ public class SettingsFragment extends PreferenceFragment
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
+    /**
+     * PreferenceのDialogを表示する直前に呼ばれる
+     * dialogPreference をshow()するためのメソッド
+     * @param preference The Preference object requesting the dialog.
+     */
+    @Override
+    public void onDisplayPreferenceDialog(Preference preference) {
+        FragmentManager fragmentManager = getFragmentManager();
+        if (fragmentManager == null) {
+        // おそらくここのif文には入らないが、lintで警告が出ていたので一応記述
+            Toast.makeText(getContext(), ERROR_MESSAGE_CANT_GET_FRAGMENT_MANAGER, Toast.LENGTH_LONG)
+                    .show();
+            return;
+        }
+
+        if (preference instanceof TimeDialogPreference) {
+            // ダイアログを表示する、super.onDisplayPreferenceDialog() と同じように実装している
+            TimeDialogPreference.Dialog dialog
+                    = TimeDialogPreference.Dialog.newInstance(preference.getKey());
+            dialog.setTargetFragment(this, 0);
+            dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
+        } else if (preference instanceof ResetDialogPreference) {
+            ResetDialogPreference.Dialog dialog
+                    = ResetDialogPreference.Dialog.newInstance(preference.getKey());
+            dialog.setTargetFragment(this, 0);
+            // ここのfragmentタグは↑と同じでOK、同じタイミングで表示されないから
+            dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
+        } else if (preference instanceof SelectImageBucketPreference) {
+            SelectImageBucketPreference.Dialog dialog
+                    = SelectImageBucketPreference.Dialog.newInstance(preference.getKey());
+            dialog.setTargetFragment(this, 0);
+            dialog.show(fragmentManager, DIALOG_FRAGMENT_TAG);
+        } else {
+            super.onDisplayPreferenceDialog(preference);
+        }
+    }
+
+
     // --------------------------------------------------------------------
     // メソッド、設定の変更感知用
     // --------------------------------------------------------------------
@@ -342,7 +413,7 @@ public class SettingsFragment extends PreferenceFragment
         super.onResume();
 
         //// 設定変更リスナーを設置
-        this.getPreferenceScreen()
+        getPreferenceScreen()
                 .getSharedPreferences()
                 .registerOnSharedPreferenceChangeListener(this);
     }
@@ -353,7 +424,7 @@ public class SettingsFragment extends PreferenceFragment
     @Override
     public void onPause() {
         super.onPause();
-        this.getPreferenceScreen()
+        getPreferenceScreen()
                 .getSharedPreferences()
                 .unregisterOnSharedPreferenceChangeListener(this);
     }
@@ -364,17 +435,12 @@ public class SettingsFragment extends PreferenceFragment
     /************************************
      * パーミッション許可のダイアログが終わった瞬間（OKもNGもある）
      * @param requestCode パーミッション許可リクエスト時に送ったリクエストコード
-     * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
      * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
+     * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
      */
+    @Override
     public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions,  @NonNull int[] grantResults) {
-
-        // SelectDirectoryPreference での onRequestPermissionsResult() を実行
-        ((SelectDirectoryPreference)findPreference(PREFERENCE_KEY_SELECT_DIRECTORY))
-                .onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        // TODO ↑のようにする
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case RQ_CODE_FROM_DIR:
                 // 許可をクリックしたとき
@@ -383,10 +449,16 @@ public class SettingsFragment extends PreferenceFragment
                         && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
                     // ディレクトリから の設定をONにする
-                    ((SwitchPreference) findPreference(PREFERENCE_KEY_FROM_DIR)).setChecked(true);
+                    ((SwitchPreferenceCompat) findPreference(PREFERENCE_KEY_FROM_DIR)).setChecked(true);
                     // SharedPreferenceが変更したときのイベントを発火
-                    this.onSharedPreferenceChanged(mSp, PREFERENCE_KEY_FROM_DIR);
+                    onSharedPreferenceChanged(mSp, PREFERENCE_KEY_FROM_DIR);
                 }
+                break;
+
+            case RQ_CODE_SELECT_IMAGE_BUCKET:
+                final SelectImageBucketPreference preference
+                        = (SelectImageBucketPreference)findPreference(PREFERENCE_KEY_SELECT_IMAGE_BUCKET);
+                preference.onRequestPermissionsResult(permissions, grantResults);
                 break;
         }
     }
@@ -404,24 +476,32 @@ public class SettingsFragment extends PreferenceFragment
         // 設定値をSummaryに反映
         // ----------------------------------
         //// 反映
-        if ( preferenceKey.equals(PREFERENCE_KEY_SELECT_DIRECTORY) ) {  //// ディレクトリ選択
-            Preference fromDirPathPreference = findPreference(preferenceKey);
-            fromDirPathPreference.setSummary(sp.getString(preferenceKey, ""));
+        if ( preferenceKey.equals(PREFERENCE_KEY_SELECT_IMAGE_BUCKET) ) {  //// ディレクトリ選択
+            SelectImageBucketPreference fromDirPathPreference
+                    = (SelectImageBucketPreference)findPreference(preferenceKey);
+            fromDirPathPreference.setBucketToSummary();
 
         } else if ( preferenceKey.equals(PREFERENCE_KEY_AUTHENTICATE_TWITTER) ) {  //// Twitter認証
             Preference fromTwitterOauthPreference = findPreference(preferenceKey);
             fromTwitterOauthPreference.setSummary(R.string.setting_summary_oauth_done);
 
-        } else if ( preferenceKey.equals(PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM) ) {
-        //// インスタグラム認証
-            ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
+        }
+//        else if ( preferenceKey.equals(PREFERENCE_KEY_AUTHENTICATE_INSTAGRAM) ) {
+//        //// インスタグラム認証
+//            ((InstagramOAuthPreference)findPreference(preferenceKey)).updateSummary();
+//        }
+
+        else if ( preferenceKey.equals(PREFERENCE_KEY_START_TIME) ) {
+            TimeDialogPreference startTimePreference
+                    = (TimeDialogPreference) findPreference(preferenceKey);
+            startTimePreference.setSummaryFromPersistedValue();
         }
 
         // ----------------------------------
         // ボタンが切り替わったことをサービスに伝える
         // ----------------------------------
-        if (this.isServiceRunning) {
-            this.mainService.onSPChanged(preferenceKey);
+        if (mIsServiceRunning) {
+            mainService.onSPChanged(preferenceKey);
         }
 
     }

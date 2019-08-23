@@ -23,48 +23,38 @@ public class SettingsActivity
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-    private SettingsFragment settingFragment;
+    private SettingsPreferenceFragment mSettingPreferenceFragment;
 
 
     // --------------------------------------------------------------------
     // メソッド
     // --------------------------------------------------------------------
     /************************************
-     * パーミッション許可のダイアログが終わった瞬間（OKもNGもある）
-     * @param requestCode パーミッション許可リクエスト時に送ったリクエストコード
-     * @param grantResults パーミッション許可リクエスト時に要求したパーミッション
-     * @param permissions 許可の結果、PackageManager.PERMISSION_GRANTED or PERMISSION_DENIED
-     */
-    @Override
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults
-    ) {
-        settingFragment.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-    }
-
-
-
-    /************************************
      * アクティビティが作成されたとき
-     * @param savedInstanceState
+     * @param savedInstanceState 開店前などに保存した値
      */
-    @SuppressWarnings("JavaDoc")
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         // ----------------------------------
-        // 
+        // 基本処理
         // ----------------------------------
         super.onCreate(savedInstanceState);
-        this.setContentView(R.layout.activity_settings);
 
+        // レイアウトXMLから画面を作成する
+        // SettingsPreferenceFragment はXMLのname属性で定義しているで、
+        // ↓下記のようなコードで作成する必要はない
+        // getSupportFragmentManager().beginTransaction().replace().commit();
+        setContentView(R.layout.activity_settings);
+
+        mSettingPreferenceFragment = (SettingsPreferenceFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.setting_preference_fragment);
 
         // ----------------------------------
         // アクションバーの設定
         // ----------------------------------
         //// ツールバーをアクションバーとして表示
         Toolbar myToolbar = findViewById(R.id.my_toolbar);
-        this.setSupportActionBar(myToolbar);
+        setSupportActionBar(myToolbar);
 
         //// アクションバーに「←」ボタンを表示
         // 詳しくはHistoryActivity.javaを参照
@@ -72,12 +62,6 @@ public class SettingsActivity
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-
-        // ----------------------------------
-        //
-        // ----------------------------------
-        this.settingFragment = (SettingsFragment)this.getFragmentManager().findFragmentById(R.id.setting_fragment);
-
     }
 
     /**

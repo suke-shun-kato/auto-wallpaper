@@ -8,7 +8,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.appcompat.app.AppCompatActivity;
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements ProgressBcastRece
             // パーミッション許可ダイアログを表示
             // ----------
 //            if ( isServiceRunning //サービスが起動中
-//                    && mSp.getBoolean(SettingsFragment.KEY_FROM_DIR, false) //ディレクトリからがON
+//                    && mSp.getBoolean(SettingsPreferenceFragment.KEY_FROM_DIR, false) //ディレクトリからがON
 //                    && ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
 //                    != PackageManager.PERMISSION_GRANTED    //パーミッション許可がNG
 //                    ) {
