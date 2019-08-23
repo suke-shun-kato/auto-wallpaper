@@ -68,7 +68,7 @@ dependencies {
     // -------------------------------------
     // 広告（add）
     // -------------------------------------
-    implementation 'com.google.android.gms:play-services-ads:18.1.0'
+    implementation 'com.google.android.gms:play-services-ads:18.1.1'
 
 
     // -------------------------------------
