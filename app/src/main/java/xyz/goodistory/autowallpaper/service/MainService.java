@@ -34,7 +34,7 @@ public class MainService extends Service {
     private boolean mIsStarted = false;
 
     /** 画面がOFFになったときブロードキャストを受信して壁紙を変更するブロードキャストレシーバー */
-    private final ScreenOnOffWPChangeBcastReceiver mOnOffWPChangeReceiver = new ScreenOnOffWPChangeBcastReceiver();
+    private final ScreenOffBroadcastReceiver mOnOffWPChangeReceiver = new ScreenOffBroadcastReceiver();
 
     /** SharedPreference */
     private SharedPreferences mSp;
@@ -43,7 +43,7 @@ public class MainService extends Service {
     PendingIntent mWpChangePdIntent;
 
     //// preference key
-    private String PREFERENCE_KEY_WHEN_SCREEN_ON;
+    private String PREFERENCE_KEY_WHEN_SCREEN_OFF;
     private String PREFERENCE_KEY_WHEN_TIMER_CALLS;
     private String PREFERENCE_KEY_START_TIME;
     private String PREFERENCE_KEY_TIMER_INTERVAL;
@@ -85,7 +85,7 @@ public class MainService extends Service {
         mSp = PreferenceManager.getDefaultSharedPreferences(this);
 
         //// preference key
-        PREFERENCE_KEY_WHEN_SCREEN_ON = getString(R.string.preference_key_when_screen_on);
+        PREFERENCE_KEY_WHEN_SCREEN_OFF = getString(R.string.preference_key_when_screen_off);
         PREFERENCE_KEY_WHEN_TIMER_CALLS =  getString(R.string.preference_key_when_timer_calls);
         PREFERENCE_KEY_START_TIME =  getString(R.string.preference_key_start_time);
         PREFERENCE_KEY_TIMER_INTERVAL =  getString(R.string.preference_key_timer_interval);
@@ -113,7 +113,7 @@ public class MainService extends Service {
         // ----------------------------------
         //
         // ----------------------------------
-        if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_ON, false) ) {
+        if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false) ) {
             this.unsetScreenOnListener();
         }
         if (mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false)) {
@@ -203,8 +203,8 @@ public class MainService extends Service {
         //
         // ----------------------------------
         //// 通常の場合
-        if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_ON, false) ) {
-            this.setScreenOnListener();
+        if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false) ) {
+            setScreenOnListener();
         }
         if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false) ) {
             this.setTimerListener();
@@ -244,9 +244,9 @@ public class MainService extends Service {
         // ----------------------------------
         // 通常処理
         // ----------------------------------
-        if (preferenceKey.equals(PREFERENCE_KEY_WHEN_SCREEN_ON)) {
-            // 電源ON設定がONのとき設定
-            if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_ON, false) ) {
+        if (preferenceKey.equals(PREFERENCE_KEY_WHEN_SCREEN_OFF)) {
+            // 変更のタイミング -> 電源OFF時 がONのとき
+            if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false) ) {
                 setScreenOnListener();
             } else {
                 unsetScreenOnListener();
@@ -274,20 +274,21 @@ public class MainService extends Service {
     // --------------------------------------------------------------------
     // 自作リスナー登録
     // --------------------------------------------------------------------
-    /************************************
+    /**
      * 画面ON時壁紙変更のイベントリスナーを登録
+     * TODO 名前変えたい
      */
     private void setScreenOnListener() {
         IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        this.registerReceiver(this.mOnOffWPChangeReceiver, intentFilter);
+        registerReceiver(mOnOffWPChangeReceiver, intentFilter);
     }
-    /************************************
+    /**
      * 画面ON時壁紙変更のイベントリスナー削除
+     * TODO 名前変えたい
      */
     private void unsetScreenOnListener() {
-        this.unregisterReceiver(this.mOnOffWPChangeReceiver);
+        unregisterReceiver(mOnOffWPChangeReceiver);
     }
 
 
