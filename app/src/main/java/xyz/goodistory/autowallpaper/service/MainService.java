@@ -114,7 +114,7 @@ public class MainService extends Service {
         //
         // ----------------------------------
         if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false) ) {
-            this.unsetScreenOnListener();
+            unregisterReceiver(mOnOffWPChangeReceiver);
         }
         if (mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false)) {
             this.unsetTimerListener();
@@ -204,7 +204,7 @@ public class MainService extends Service {
         // ----------------------------------
         //// 通常の場合
         if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false) ) {
-            setScreenOnListener();
+            ScreenOffBroadcastReceiver.registerReceiver(this, mOnOffWPChangeReceiver);
         }
         if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false) ) {
             this.setTimerListener();
@@ -247,9 +247,9 @@ public class MainService extends Service {
         if (preferenceKey.equals(PREFERENCE_KEY_WHEN_SCREEN_OFF)) {
             // 変更のタイミング -> 電源OFF時 がONのとき
             if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false) ) {
-                setScreenOnListener();
+                ScreenOffBroadcastReceiver.registerReceiver(this, mOnOffWPChangeReceiver);
             } else {
-                unsetScreenOnListener();
+                unregisterReceiver(mOnOffWPChangeReceiver);
             }
 
         } else if ( preferenceKey.equals(PREFERENCE_KEY_WHEN_TIMER_CALLS) ) {
@@ -274,24 +274,6 @@ public class MainService extends Service {
     // --------------------------------------------------------------------
     // 自作リスナー登録
     // --------------------------------------------------------------------
-    /**
-     * 画面ON時壁紙変更のイベントリスナーを登録
-     * TODO 名前変えたい
-     */
-    private void setScreenOnListener() {
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        registerReceiver(mOnOffWPChangeReceiver, intentFilter);
-    }
-    /**
-     * 画面ON時壁紙変更のイベントリスナー削除
-     * TODO 名前変えたい
-     */
-    private void unsetScreenOnListener() {
-        unregisterReceiver(mOnOffWPChangeReceiver);
-    }
-
-
     /**
      * 時間で壁紙チェンジのリスナーをセット
      */

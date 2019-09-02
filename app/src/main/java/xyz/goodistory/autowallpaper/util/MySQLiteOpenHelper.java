@@ -14,12 +14,12 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     //
     // --------------------------------------------------------------------
     // If you change the database schema, you must increment the database version.
-    @SuppressWarnings("WeakerAccess")
-    private static final int DATABASE_VERSION = 28;
-    private static final Integer DEBUG_SET_VERSION = null;
+    private static final int DATABASE_VERSION = 29;
 
-    @SuppressWarnings("WeakerAccess")
-    public static final String DATABASE_NAME = "master.sqlite3";
+    /** デバッグ用のデータベースのバージョン、onUpgrade()のoldVersionの値になる */
+    private static final Integer DATABASE_OLD_VERSION_FOR_DEBUG = null;
+
+    private static final String DATABASE_NAME = "master.sqlite3";
 
     private static MySQLiteOpenHelper sMySQLiteOpenHelper = null;
 
@@ -41,33 +41,16 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
     // --------------------------------------------------------------------
     // オーバーライド
     // --------------------------------------------------------------------
-
-
     /**
-     * Called when the database connection is being configured, to enable features such as
-     * write-ahead logging or foreign key support.
-     * <p>
-     * This method is called before {@link #onCreate}, {@link #onUpgrade}, {@link #onDowngrade}, or
-     * {@link #onOpen} are called. It should not modify the database except to configure the
-     * database connection as required.
-     * </p>
-     * <p>
-     * This method should only call methods that configure the parameters of the database
-     * connection, such as {@link SQLiteDatabase#enableWriteAheadLogging}
-     * {@link SQLiteDatabase#setForeignKeyConstraintsEnabled}, {@link SQLiteDatabase#setLocale},
-     * {@link SQLiteDatabase#setMaximumSize}, or executing PRAGMA statements.
-     * </p>
-     *
      * @param db The database.
      */
-    @SuppressWarnings("ConstantConditions")
     @Override
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
 
-        //// デバッグ用にバージョンをセットする
-        if (DEBUG_SET_VERSION != null) {
-            db.setVersion(DEBUG_SET_VERSION);
+        //// デバッグ用にバージョンをセットする、onUpgrade()のoldVersionの値になる
+        if (DATABASE_OLD_VERSION_FOR_DEBUG != null) {
+            db.setVersion(DATABASE_OLD_VERSION_FOR_DEBUG);
         }
     }
 
@@ -128,6 +111,14 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
         if (oldVersion <= 27 && newVersion >= 28) {
             // device_img_uri カラムを作成
             db.execSQL("ALTER TABLE histories ADD COLUMN device_img_uri TEXT;");
+        }
+
+        //// 14～28 → 29
+        if (oldVersion <= 28 && newVersion >= 29) {
+            db.execSQL("DROP TABLE IF EXISTS screen_off_histories");
+            db.execSQL("CREATE TABLE screen_off_histories ( " +
+                    "`_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                    "`created_at` TEXT NOT NULL)");
         }
     }
 

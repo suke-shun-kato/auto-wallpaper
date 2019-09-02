@@ -1,14 +1,26 @@
 package xyz.goodistory.autowallpaper.service
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.SharedPreferences
+import android.content.*
 import android.preference.PreferenceManager
 import xyz.goodistory.autowallpaper.R
 import xyz.goodistory.autowallpaper.wpchange.WpManagerService
 
 class ScreenOffBroadcastReceiver : BroadcastReceiver() {
+
+    companion object {
+        /**
+         * Context側でのregisterReceiver()時の処理をまとめただけ
+         */
+        @JvmStatic
+        fun registerReceiver(context: Context, broadcastReceiver: ScreenOffBroadcastReceiver) {
+            val intentFilter = IntentFilter().apply{
+                addAction(Intent.ACTION_SCREEN_OFF)
+            }
+            context.registerReceiver(broadcastReceiver, intentFilter)
+            broadcastReceiver.onRegister(context)
+        }
+    }
+
     /**
      * ブロードキャスト受信のタイミングで実行されるコールバック
      * ※別スレッドでブロードキャストレシーバーを登録しても、
@@ -37,8 +49,22 @@ class ScreenOffBroadcastReceiver : BroadcastReceiver() {
         }
 
         //// 壁紙変更実行
-        // TODO DBの値をインクリメント
-        WpManagerService.changeWpRandom(context)
+        val screenOffHistoryModel = ScreenOffHistoriesModel(context)
+        val countInterval: Long = 3 // TODO 10は暫定
+        if ( screenOffHistoryModel.getCount() % countInterval == countInterval - 1 ) {  // 10は暫定
+            // count
+            WpManagerService.changeWpRandom(context)
+        }
 
+        // TODO db.close() のタイミングをちゃんとする
+        screenOffHistoryModel.countUp()
+
+    }
+
+    /**
+     * Contextでregisterのときにこれ呼ぶようにする
+     */
+    fun onRegister(context: Context) {
+        ScreenOffHistoriesModel(context).reset()
     }
 }
