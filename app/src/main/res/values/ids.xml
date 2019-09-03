@@ -63,9 +63,8 @@
     </string>
 
     <string name="preference_key_when_screen_off" tools:ignore="MissingTranslation">when_turn_on</string>
-    <string name="preference_key_when_timer_calls" tools:ignore="MissingTranslation">
-        when_timer_calls
-    </string>
+    <string name="preference_key_when_screen_off_count" tools:ignore="MissingTranslation">when_screen_off_count</string>
+    <string name="preference_key_when_timer_calls" tools:ignore="MissingTranslation">when_timer_calls</string>
     <string name="preference_key_start_time" tools:ignore="MissingTranslation">
         start_time
     </string>

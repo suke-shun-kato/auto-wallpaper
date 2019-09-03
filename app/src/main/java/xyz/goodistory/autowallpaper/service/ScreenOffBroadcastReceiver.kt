@@ -50,8 +50,11 @@ class ScreenOffBroadcastReceiver : BroadcastReceiver() {
 
         //// 壁紙変更実行
         val screenOffHistoryModel = ScreenOffHistoriesModel(context)
-        val countInterval: Long = 3 // TODO 10は暫定
-        if ( screenOffHistoryModel.getCount() % countInterval == countInterval - 1 ) {  // 10は暫定
+        val intervalCount: Long = sp.getString(
+                context.getString(R.string.preference_key_when_screen_off_count), "")!!
+                .toLong()
+        // TODO ここおちる
+        if ( screenOffHistoryModel.getCount() % intervalCount == intervalCount - 1 ) {  // 10は暫定
             // count
             WpManagerService.changeWpRandom(context)
         }

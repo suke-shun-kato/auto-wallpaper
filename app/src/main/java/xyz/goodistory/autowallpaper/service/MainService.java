@@ -8,7 +8,6 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Build;
@@ -45,6 +44,7 @@ public class MainService extends Service {
     //// preference key
     private String PREFERENCE_KEY_WHEN_SCREEN_OFF;
     private String PREFERENCE_KEY_WHEN_TIMER_CALLS;
+    private String PREFERENCE_KEY_WHEN_SCREEN_OFF_COUNT;
     private String PREFERENCE_KEY_START_TIME;
     private String PREFERENCE_KEY_TIMER_INTERVAL;
 
@@ -87,6 +87,7 @@ public class MainService extends Service {
         //// preference key
         PREFERENCE_KEY_WHEN_SCREEN_OFF = getString(R.string.preference_key_when_screen_off);
         PREFERENCE_KEY_WHEN_TIMER_CALLS =  getString(R.string.preference_key_when_timer_calls);
+        PREFERENCE_KEY_WHEN_SCREEN_OFF_COUNT =  getString(R.string.preference_key_when_screen_off_count);
         PREFERENCE_KEY_START_TIME =  getString(R.string.preference_key_start_time);
         PREFERENCE_KEY_TIMER_INTERVAL =  getString(R.string.preference_key_timer_interval);
 
@@ -244,14 +245,20 @@ public class MainService extends Service {
         // ----------------------------------
         // 通常処理
         // ----------------------------------
+
+
         if (preferenceKey.equals(PREFERENCE_KEY_WHEN_SCREEN_OFF)) {
             // 変更のタイミング -> 電源OFF時 がONのとき
-            if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false) ) {
+            if (mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false)) {
                 ScreenOffBroadcastReceiver.registerReceiver(this, mOnOffWPChangeReceiver);
             } else {
                 unregisterReceiver(mOnOffWPChangeReceiver);
             }
-
+        } else if (preferenceKey.equals(PREFERENCE_KEY_WHEN_SCREEN_OFF_COUNT)) {
+            if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false) ) {
+                unregisterReceiver(mOnOffWPChangeReceiver);
+                ScreenOffBroadcastReceiver.registerReceiver(this, mOnOffWPChangeReceiver);
+            }
         } else if ( preferenceKey.equals(PREFERENCE_KEY_WHEN_TIMER_CALLS) ) {
             // 時間設定
             if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false) ) {
