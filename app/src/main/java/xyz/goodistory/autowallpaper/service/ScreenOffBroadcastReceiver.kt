@@ -3,9 +3,11 @@ package xyz.goodistory.autowallpaper.service
 import android.content.*
 import android.preference.PreferenceManager
 import xyz.goodistory.autowallpaper.R
+import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper
 import xyz.goodistory.autowallpaper.wpchange.WpManagerService
 
-class ScreenOffBroadcastReceiver : BroadcastReceiver() {
+class ScreenOffBroadcastReceiver(private val dbHelper: MySQLiteOpenHelper)
+    : BroadcastReceiver() {
 
     companion object {
         /**
@@ -17,7 +19,7 @@ class ScreenOffBroadcastReceiver : BroadcastReceiver() {
                 addAction(Intent.ACTION_SCREEN_OFF)
             }
             context.registerReceiver(broadcastReceiver, intentFilter)
-            broadcastReceiver.onRegister(context)
+            broadcastReceiver.onRegister()
         }
     }
 
@@ -49,17 +51,16 @@ class ScreenOffBroadcastReceiver : BroadcastReceiver() {
         }
 
         //// 壁紙変更実行
-        val screenOffHistoryModel = ScreenOffHistoriesModel(context)
+        val screenOffHistoryModel = ScreenOffHistoriesModel(dbHelper)
         val intervalCount: Long = sp.getString(
                 context.getString(R.string.preference_key_when_screen_off_count), "")!!
                 .toLong()
-        // TODO ここおちる
-        if ( screenOffHistoryModel.getCount() % intervalCount == intervalCount - 1 ) {  // 10は暫定
+
+        if ( screenOffHistoryModel.getCount() % intervalCount == intervalCount - 1 ) {
             // count
             WpManagerService.changeWpRandom(context)
         }
 
-        // TODO db.close() のタイミングをちゃんとする
         screenOffHistoryModel.countUp()
 
     }
@@ -67,7 +68,7 @@ class ScreenOffBroadcastReceiver : BroadcastReceiver() {
     /**
      * Contextでregisterのときにこれ呼ぶようにする
      */
-    fun onRegister(context: Context) {
-        ScreenOffHistoriesModel(context).reset()
+    fun onRegister() {
+        ScreenOffHistoriesModel(dbHelper).reset()
     }
 }

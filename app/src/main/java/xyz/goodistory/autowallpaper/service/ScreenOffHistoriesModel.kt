@@ -1,50 +1,38 @@
 package xyz.goodistory.autowallpaper.service
 
-import android.content.Context
 import android.database.DatabaseUtils
-import android.database.sqlite.SQLiteDatabase
+import android.provider.BaseColumns
 import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper
 
 /**
- * TODO 下記を使ったほうがよいかもしれない
- * https://developer.android.com/training/data-storage/room#kotlin
+ * 下記を参考に実装
+ * https://developer.android.com/training/data-storage/sqlite
+ * ※Room Persistence Library は使わない
  */
-class ScreenOffHistoriesModel(context: Context) {
-    private val dbReadable: SQLiteDatabase
-    val dbWritable: SQLiteDatabase
-
-    init {
-        val dbHelper: MySQLiteOpenHelper = MySQLiteOpenHelper.getInstance(context)
-        dbReadable = dbHelper.readableDatabase
-        dbWritable = dbHelper.writableDatabase
-    }
-
-
+class ScreenOffHistoriesModel(private val dbHelper: MySQLiteOpenHelper) {
     companion object {
         const val TABLE_NAME: String = "screen_off_histories"
-        val PROJECTION: Array<String> = arrayOf(
-                "_id",
-                "created_at"
-        )
+    }
+
+    object Columns : BaseColumns {
+        const val CREATED_AT: String = "created_at"
     }
 
     fun getCount(): Long {
-        return DatabaseUtils.queryNumEntries(dbReadable, TABLE_NAME)
+        return DatabaseUtils.queryNumEntries(dbHelper.readableDatabase, TABLE_NAME)
     }
 
     fun countUp() {
         // dbWritable.insert() だと datetime('now') ができない
-        dbWritable.execSQL(
-                "INSERT INTO $TABLE_NAME (created_at) VALUES (datetime('now'))")
+        dbHelper.writableDatabase.execSQL(
+                "INSERT INTO $TABLE_NAME (${Columns.CREATED_AT}) " +
+                        "VALUES (datetime('now'))")
     }
 
+    /**
+     * 全て削除
+     */
     fun reset() {
-        dbWritable.delete(TABLE_NAME, null, null)
+        dbHelper.writableDatabase.delete(TABLE_NAME, null, null)
     }
-
-    fun dbClose() {
-        dbReadable.close()
-        dbWritable.close()
-    }
-
 }

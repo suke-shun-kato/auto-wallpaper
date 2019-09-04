@@ -20,6 +20,7 @@ import xyz.goodistory.autowallpaper.TimerWpChangeReceiver;
 import xyz.goodistory.autowallpaper.MainActivity;
 import xyz.goodistory.autowallpaper.PendingIntentRequestCode;
 import xyz.goodistory.autowallpaper.R;
+import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper;
 
 /**
  * 裏で壁紙を変更するサービス
@@ -33,10 +34,12 @@ public class MainService extends Service {
     private boolean mIsStarted = false;
 
     /** 画面がOFFになったときブロードキャストを受信して壁紙を変更するブロードキャストレシーバー */
-    private final ScreenOffBroadcastReceiver mOnOffWPChangeReceiver = new ScreenOffBroadcastReceiver();
+    private final ScreenOffBroadcastReceiver mOnOffWPChangeReceiver;
 
     /** SharedPreference */
     private SharedPreferences mSp;
+
+    private final MySQLiteOpenHelper mDbHelper = MySQLiteOpenHelper.getInstance(this);
 
     /** 指定時間に壁紙がランダムチェンジする */
     PendingIntent mWpChangePdIntent;
@@ -73,6 +76,13 @@ public class MainService extends Service {
     }
 
     // --------------------------------------------------------------------
+    // コンストラクタ
+    // --------------------------------------------------------------------
+    public MainService() {
+        mOnOffWPChangeReceiver = new ScreenOffBroadcastReceiver(mDbHelper);
+    }
+
+    // --------------------------------------------------------------------
     // メソッド（通常、バインド両方）
     // --------------------------------------------------------------------
     /************************************
@@ -102,12 +112,13 @@ public class MainService extends Service {
      */
     @Override
     public void onDestroy() {
+        mDbHelper.close();
         super.onDestroy();
 
         // ----------------------------------
         // 途中で切り上げ
         // ----------------------------------
-        if ( !this.mIsStarted) {
+        if ( !mIsStarted ) {
             return;
         }
 
@@ -117,11 +128,11 @@ public class MainService extends Service {
         if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_SCREEN_OFF, false) ) {
             unregisterReceiver(mOnOffWPChangeReceiver);
         }
-        if (mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false)) {
-            this.unsetTimerListener();
+        if ( mSp.getBoolean(PREFERENCE_KEY_WHEN_TIMER_CALLS, false) ) {
+            unsetTimerListener();
         }
 
-        this.mIsStarted = false;
+        mIsStarted = false;
 
     }
     // --------------------------------------------------------------------

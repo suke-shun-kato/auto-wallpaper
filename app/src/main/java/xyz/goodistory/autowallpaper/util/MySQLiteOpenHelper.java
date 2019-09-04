@@ -4,6 +4,8 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import xyz.goodistory.autowallpaper.service.ScreenOffHistoriesModel;
+
 /**
  * Created by k-shunsuke on 2018/02/04.
  * データベースヘルパークラス
@@ -115,10 +117,10 @@ public class MySQLiteOpenHelper extends SQLiteOpenHelper {
 
         //// 14～28 → 29
         if (oldVersion <= 28 && newVersion >= 29) {
-            db.execSQL("DROP TABLE IF EXISTS screen_off_histories");
-            db.execSQL("CREATE TABLE screen_off_histories ( " +
-                    "`_id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
-                    "`created_at` TEXT NOT NULL)");
+            db.execSQL("DROP TABLE IF EXISTS " + ScreenOffHistoriesModel.TABLE_NAME);
+            db.execSQL("CREATE TABLE " + ScreenOffHistoriesModel.TABLE_NAME + " ( " +
+                    "`" + ScreenOffHistoriesModel.Columns._ID + "` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+                    "`" + ScreenOffHistoriesModel.Columns.CREATED_AT + "` TEXT NOT NULL)");
         }
     }
 

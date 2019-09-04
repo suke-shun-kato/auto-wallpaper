@@ -31,6 +31,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
 
 import xyz.goodistory.autowallpaper.util.DisplaySizeCheck;
+import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper;
 import xyz.goodistory.autowallpaper.util.ProgressBcastReceiver;
 import xyz.goodistory.autowallpaper.wpchange.WpManagerService;
 
@@ -47,11 +48,11 @@ public class HistoryActivity
     // --------------------------------------------------------------------
     // フィールド
     // --------------------------------------------------------------------
-//    private AdView mAdView;
-
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private HistoryListAdapter mAdapter = null;
     private LoaderManager mLoaderManager;
+
+    private final MySQLiteOpenHelper mDbHelper = MySQLiteOpenHelper.getInstance(this);
 
     // 壁紙変更状態を検知するブロードキャストレシーバー
     private ProgressBcastReceiver mProgressBcastReceiver;
@@ -67,8 +68,8 @@ public class HistoryActivity
     public static final int MAX_RECORD_STORE = 100;
 
     // --------------------------------------------------------------------
-    // --------------------------------------------------------------------
     // メソッド（オーバーライド）
+    // --------------------------------------------------------------------
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,6 +196,10 @@ public class HistoryActivity
         //// 壁紙セット状態を検知するBroadcastReceiverを解除
         unregisterReceiver(mProgressBcastReceiver);
 
+        //// DB接続解除
+        mDbHelper.close();
+
+
         super.onDestroy();
     }
 
@@ -239,7 +244,7 @@ public class HistoryActivity
      * @return jump可能かどうか
      */
     private boolean canJumpToSource(long history_id) {
-        HistoryModel history_mdl = new HistoryModel(this);
+        HistoryModel history_mdl = new HistoryModel(this, mDbHelper);
         Cursor cursor = history_mdl.getHistoryById(history_id);
 
         boolean hasGotCursor = cursor.moveToFirst();
@@ -264,7 +269,7 @@ public class HistoryActivity
         // ----------------------------------
         String intentUriStr;
         try {
-            HistoryModel historyModel = new HistoryModel(this);
+            HistoryModel historyModel = new HistoryModel(this, mDbHelper);
             Cursor cursor = historyModel.getHistoryById(id);
             boolean canGetCursor = cursor.moveToFirst();
             if (!canGetCursor) {
@@ -399,7 +404,7 @@ public class HistoryActivity
                 break;
 
             case R.id.histories_contextMenu_item_wpSet:
-                HistoryModel historyModel = new HistoryModel(this);
+                HistoryModel historyModel = new HistoryModel(this, mDbHelper);
                 Cursor cursor = historyModel.getHistoryById(info.id);
                 boolean canGetCursor = cursor.moveToFirst();
                 if (!canGetCursor) {
@@ -420,7 +425,7 @@ public class HistoryActivity
 
             case R.id.histories_contextMenu_item_delete:
                 try {
-                    HistoryModel historyModel2 = new HistoryModel(this);
+                    HistoryModel historyModel2 = new HistoryModel(this, mDbHelper);
                     int numDeletedRows = historyModel2.deleteHistories(info.id);
 
                     if (numDeletedRows >= 1) {
@@ -464,7 +469,7 @@ public class HistoryActivity
      */
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new HistoryCursorLoader(this);
+        return new HistoryCursorLoader(this, mDbHelper);
     }
 
     /**
