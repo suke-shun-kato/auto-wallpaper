@@ -115,4 +115,6 @@
     <string name="about_version">バージョン %s</string>
     <string name="about_license_title">オープンソースライセンス</string>
     <string name="mainService_notification_text">起動中</string>
+    <string name="preference_category_notification_title">通知</string>
+    <string name="preference_notification_title">壁紙変更時に通知する</string>
 </resources>

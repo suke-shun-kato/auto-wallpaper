@@ -119,6 +119,10 @@
     <string name="setting_image_title">Image</string>
     <string name="setting_image_autoRotation_title">Auto Rotation ON/OFF</string>
 
+    <string name="preference_category_notification_title">Notification</string>
+    <string name="preference_notification_title">Notifies when the wallpaper is changed</string>
+
+
     <string name="setting_other_title">Other</string>
     <string name="setting_other_resetBtn_title">Resets to default values.</string>
     <string name="setting_other_resetBtn_resultText">Preferences have been reset to default values.</string>

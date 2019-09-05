@@ -95,6 +95,14 @@
             android:title="@string/setting_image_autoRotation_title" />
     </PreferenceCategory>
     <PreferenceCategory
+        android:key="@string/preference_key_category_notification"
+        android:title="@string/preference_category_notification_title">
+        <SwitchPreferenceCompat
+            android:defaultValue="true"
+            android:key="@string/preference_key_notification"
+            android:title="@string/preference_notification_title" />
+    </PreferenceCategory>
+    <PreferenceCategory
         android:key="@string/preference_key_category_other"
         android:title="@string/setting_other_title">
         <xyz.goodistory.autowallpaper.preference.ResetDialogPreference
