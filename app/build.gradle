@@ -12,8 +12,8 @@ android {
         applicationId "xyz.goodistory.autowallpaper"
         minSdkVersion 19    //Android 4.4
         targetSdkVersion 28 // Android 9.0 Pie
-        versionCode 19
-        versionName "0.1.18" //ここはversionCodeとは1ずれる
+        versionCode 20
+        versionName "0.1.19" //ここはversionCodeとは1ずれる
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
