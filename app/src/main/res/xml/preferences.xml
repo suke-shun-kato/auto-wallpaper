@@ -53,10 +53,20 @@
         android:key="@string/preference_key_category_when"
         android:title="@string/setting_when">
         <SwitchPreferenceCompat
-            android:key="@string/preference_key_when_screen_on"
+            android:key="@string/preference_key_when_screen_off"
             android:defaultValue="true"
             android:title="@string/setting_when_turnOn_title"
             android:summary="@string/setting_when_turnOn_summary" />
+
+        <ListPreference
+            android:key="@string/preference_key_when_screen_off_count"
+            android:title="@string/setting_count_screen_off_title"
+            android:entries="@array/setting_count_screen_off_entries"
+            android:entryValues="@array/setting_count_screen_off_values"
+            android:defaultValue="@string/setting_count_screen_default_value"
+            android:summary="%s"
+            />
+
         <SwitchPreferenceCompat
             android:key="@string/preference_key_when_timer_calls"
             android:defaultValue="false"

@@ -54,8 +54,24 @@
         認証に成功しました
     </string>
     <string name="setting_when">変更のタイミング</string>
-    <string name="setting_when_turnOn_title">画面ON時</string>
-    <string name="setting_when_turnOn_summary">画面がONになるタイミングで壁紙が変更されます</string>
+    <string name="setting_when_turnOn_title">画面OFF時</string>
+    <string name="setting_when_turnOn_summary">画面がOFFになるタイミングで指定間隔ごとに壁紙が変更されます</string>
+    <string name="setting_count_screen_off_title">間隔（画面OFF）</string>
+    <string-array name="setting_count_screen_off_entries">
+        <item>毎回</item>
+        <item>2 回</item>
+        <item>3 回</item>
+        <item>4 回</item>
+        <item>5 回</item>
+        <item>10 回</item>
+        <item>20 回</item>
+        <item>30 回</item>
+        <item>40 回</item>
+        <item>50 回</item>
+        <item>75 回</item>
+        <item>100 回</item>
+    </string-array>
+
     <string name="setting_when_timer_title">指定時間時</string>
     <string name="setting_when_timer_summary">↓で設定した時間で壁紙がセットされます（ただし、スクリーンOFF時は1回限定）</string>
     <string name="setting_when_timer_start_time">開始時間</string>

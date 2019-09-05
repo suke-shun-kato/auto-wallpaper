@@ -2,10 +2,11 @@ package xyz.goodistory.autowallpaper;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.provider.BaseColumns;
+
 import androidx.annotation.Nullable;
 
 import java.io.File;
@@ -21,24 +22,48 @@ import java.util.TimeZone;
 
 import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper;
 
-@SuppressWarnings("WeakerAccess")
 public class HistoryModel {
     // --------------------------------------------------------------------
     //
     // --------------------------------------------------------------------
-    private final SQLiteDatabase mDbReadable;
-    private final SQLiteDatabase mDbWritable;
     private final Context mContext;
+    private final MySQLiteOpenHelper mDbHelper;
 
     public static final String TABLE_NAME = "histories";
-    public static final String[] PROJECTION = new String[] {
-            "_id",
-            "source_kind",
-            "img_uri",
-            "intent_action_uri",
-            "created_at",
-            "device_img_uri"
-    };
+
+    // TODO 今はカラム名をベタ書きしているが、メソッド改修時などに修正する
+    public static class Columns implements BaseColumns {
+        public static final String SOURCE_KIND = "source_kind";
+        public static final String IMG_URI = "img_uri";
+        public static final String INTENT_ACTION_URI = "intent_action_uri";
+        @SuppressWarnings("WeakerAccess")
+        public static final String CREATED_AT = "created_at";
+        public static final String DEVICE_IMG_URI = "device_img_uri";
+        @SuppressWarnings("WeakerAccess")
+        public static final String[] NAMES = new String[] {
+            Columns._ID,
+            Columns.SOURCE_KIND,
+            Columns.IMG_URI,
+            Columns.INTENT_ACTION_URI,
+            Columns.CREATED_AT,
+            Columns.DEVICE_IMG_URI
+        };
+    }
+
+    public static final String SQL_CREATE_ENTRIES
+            = "CREATE TABLE " + TABLE_NAME + " (" +
+            "    `" + Columns._ID + "` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+            "    `" + Columns.SOURCE_KIND + "` TEXT NOT NULL, " +
+            "    `" + Columns.IMG_URI + "` TEXT NOT NULL, " +
+            "    `" + Columns.INTENT_ACTION_URI + "` TEXT, " +
+            "    `" + Columns.CREATED_AT + "` TEXT NOT NULL, " +
+            "    `" + Columns.DEVICE_IMG_URI + "` TEXT NOT NULL" +
+            ") ";
+    public static final String SQL_CREATE_INDEX
+            = "CREATE INDEX " + HistoryModel.Columns.CREATED_AT
+            + " ON " + TABLE_NAME + "(" + Columns.CREATED_AT + ")";
+
+    public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     public static final String SOURCE_TW = "ImgGetterTw";
     public static final String SOURCE_DIR = "ImgGetterDir";
@@ -63,18 +88,11 @@ public class HistoryModel {
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
-    public HistoryModel(Context context) {
+    public HistoryModel(Context context, MySQLiteOpenHelper dbHelper) {
         mContext = context;
-
-        MySQLiteOpenHelper dbHelper = MySQLiteOpenHelper.getInstance(context);
-        mDbReadable = dbHelper.getReadableDatabase();
-        mDbWritable = dbHelper.getWritableDatabase();
+        mDbHelper = dbHelper;
     }
 
-    public void close() {
-        mDbReadable.close();
-        mDbWritable.close();
-    }
     // --------------------------------------------------------------------
     // 
     // --------------------------------------------------------------------
@@ -84,9 +102,9 @@ public class HistoryModel {
      * @return cursor
      */
     public Cursor getHistoryById(long id) {
-        return mDbReadable.query(
+        return mDbHelper.getReadableDatabase().query(
                 TABLE_NAME,
-                PROJECTION,
+                Columns.NAMES,
                 "_id=?",
                 new String[] {String.valueOf(id)},
                 null, null, null);
@@ -97,9 +115,9 @@ public class HistoryModel {
      * @return 履歴データ
      */
     public Cursor getAllHistories() {
-        return mDbReadable.query(
+        return mDbHelper.getReadableDatabase().query(
                 TABLE_NAME,
-                PROJECTION,
+                Columns.NAMES,
                 null, null, null, null,
                 "created_at DESC",
                 String.valueOf(HistoryActivity.MAX_RECORD_STORE));
@@ -112,7 +130,7 @@ public class HistoryModel {
      * @return 保存したファイルのFileオブジェクト
      * @throws Exception FileNotFountException, IOException
      */
-    public File saveImg(Bitmap bitmap, String fileName) throws Exception {
+    private File saveImg(Bitmap bitmap, String fileName) throws Exception {
         //// ファイルの拡張子がpngかどうかチェック
         int i = fileName.lastIndexOf('.');
         if (i < 0 || !fileName.substring(i + 1).equals("png")) {
@@ -147,7 +165,7 @@ public class HistoryModel {
      * @return 削除が成功したかどうか
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Map<String, Boolean> deleteImgs(String[] fileNames) {
+    private Map<String, Boolean> deleteImgs(String[] fileNames) {
         Map<String, Boolean> areDeleted = new HashMap<>();
 
         for (String fileName: fileNames) {
@@ -160,13 +178,13 @@ public class HistoryModel {
      * 壁紙の履歴をDBに登録する
      * @param insertParams 登録対象
      */
-    public void insert(Map<String, String> insertParams) {
+    private void insert(Map<String, String> insertParams) {
         // ----------------------------------
         // INSERT
         // ----------------------------------
         //// コード準備
 
-        SQLiteStatement dbStt = mDbWritable.compileStatement("" +
+        SQLiteStatement dbStt = mDbHelper.getWritableDatabase().compileStatement("" +
                 "INSERT INTO histories (" +
                 "source_kind, img_uri, intent_action_uri, created_at, device_img_uri" +
                 ") VALUES ( ?, ?, ?, datetime('now'), ? );");
@@ -209,7 +227,7 @@ public class HistoryModel {
      * @return 削除したレコード数
      */
     public int deleteHistories(long id) {
-        return mDbWritable.delete(TABLE_NAME, "_id = ?", new String[] {String.valueOf(id)});
+        return mDbHelper.getWritableDatabase().delete(TABLE_NAME, "_id = ?", new String[] {String.valueOf(id)});
 
     }
 
@@ -223,7 +241,7 @@ public class HistoryModel {
         // ----------------------------------
         // 全体のレコード数を取得
         // ----------------------------------
-        Cursor countCursor = mDbWritable.rawQuery(
+        Cursor countCursor = mDbHelper.getWritableDatabase().rawQuery(
                 "SELECT count(*) AS count FROM histories", null);
 
         if ( !countCursor.moveToFirst() ) {
@@ -245,7 +263,7 @@ public class HistoryModel {
         //  DELETE
         // ----------------------------------
         //// 削除情報取得
-        Cursor delCursor = mDbReadable.query(TABLE_NAME, PROJECTION, null,
+        Cursor delCursor = mDbHelper.getReadableDatabase().query(TABLE_NAME, Columns.NAMES, null,
                 null,null, null, "created_at ASC",
                 String.valueOf(allCount - maxNum));
 
@@ -281,7 +299,7 @@ public class HistoryModel {
      * @return 削除数
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deleteByIds(int[] historyIds) {
+    private int deleteByIds(int[] historyIds) {
         //// string 型に変換
         String[] historyIdsStr = new String[historyIds.length];
         for (int i=0; i<historyIds.length; i++) {
@@ -292,7 +310,7 @@ public class HistoryModel {
         String placeholderStr = HistoryModel.makePlaceholderStr(historyIds.length);
 
         //// 削除
-        int deletedNum = mDbWritable.delete(
+        int deletedNum = mDbHelper.getWritableDatabase().delete(
                 TABLE_NAME,
                 "_id IN (" + placeholderStr + ")",
                 historyIdsStr);

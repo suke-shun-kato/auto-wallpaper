@@ -42,6 +42,7 @@ public class WpManager {
     // --------------------------------------------------------------------
     private final Context mContext;
     private final SharedPreferences mSp;
+    private final MySQLiteOpenHelper mDbHelper;
 
     // --------------------------------------------------------------------
     // コンストラクタ
@@ -49,6 +50,7 @@ public class WpManager {
     public WpManager(Context context) {
         mContext = context;
         mSp = PreferenceManager.getDefaultSharedPreferences(context);
+        mDbHelper = MySQLiteOpenHelper.getInstance(context);
     }
 
     // --------------------------------------------------------------------
@@ -189,7 +191,7 @@ public class WpManager {
         //// 変数の準備
         Map<String, String> paramsHistoryMap = imgGetter.getAll();
 
-        HistoryModel historyMdl = new HistoryModel(mContext);
+        HistoryModel historyMdl = new HistoryModel(mContext, mDbHelper);
         SQLiteDatabase db = MySQLiteOpenHelper.getInstance(mContext).getWritableDatabase();
 
         //// DBに書き込み
@@ -208,7 +210,6 @@ public class WpManager {
             throw e; // ここでthrow してもfinallyは実行される
         } finally {
             db.endTransaction();
-            historyMdl.close();
         }
 
         // ----------------------------------

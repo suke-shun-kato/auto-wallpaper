@@ -54,8 +54,41 @@
         Success authorization
     </string>
     <string name="setting_when">WHEN</string>
-    <string name="setting_when_turnOn_title">Screen turns on</string>
-    <string name="setting_when_turnOn_summary">When screen turns on, wallpaper changes.</string>
+    <string name="setting_when_turnOn_title">When turns off screen</string>
+    <string name="setting_when_turnOn_summary">When turn off screen, wallpaper changes at a specified frequency.</string>
+    <string name="setting_count_screen_off_title">How often (when turn off screen</string>
+    <string-array name="setting_count_screen_off_entries">
+        <item>Every time</item>
+        <item>Every 2 times</item>
+        <item>Every 3 times</item>
+        <item>Every 4 times</item>
+        <item>Every 5 times</item>
+        <item>Every 10 times</item>
+        <item>Every 20 times</item>
+        <item>Every 30 times</item>
+        <item>Every 40 times</item>
+        <item>Every 50 times</item>
+        <item>Every 75 times</item>
+        <item>Every 100 times</item>
+    </string-array>
+    <!-- ↓ListPreference は integer-arrayにはできない -->
+    <string-array name="setting_count_screen_off_values" tools:ignore="MissingTranslation">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+        <item>10</item>
+        <item>20</item>
+        <item>30</item>
+        <item>40</item>
+        <item>50</item>
+        <item>75</item>
+        <item>100</item>
+    </string-array>
+    <string name="setting_count_screen_default_value" tools:ignore="MissingTranslation">1</string>
+
+
     <string name="setting_when_timer_title">Set time</string>
     <string name="setting_when_timer_summary">will set at set time.</string>
     <string name="setting_when_timer_start_time">Start Time</string>
@@ -70,7 +103,7 @@
         <item>12 hours</item>
         <item>1 day</item>
     </string-array>
-    <!-- ↓はPreferenceで読み込んでいるのでinteger-arrayにはできない -->
+    <!-- ↓はListPreference は integer-arrayにはできない -->
     <string-array name="setting_when_timer_interval_values" tools:ignore="MissingTranslation">
         <item>60000</item>  <!-- 1*60*1000 -->
         <item>300000</item>  <!-- 5*60*1000 -->
