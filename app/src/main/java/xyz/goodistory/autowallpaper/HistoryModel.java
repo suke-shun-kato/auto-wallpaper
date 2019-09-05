@@ -22,7 +22,6 @@ import java.util.TimeZone;
 
 import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper;
 
-@SuppressWarnings("WeakerAccess")
 public class HistoryModel {
     // --------------------------------------------------------------------
     //
@@ -37,8 +36,10 @@ public class HistoryModel {
         public static final String SOURCE_KIND = "source_kind";
         public static final String IMG_URI = "img_uri";
         public static final String INTENT_ACTION_URI = "intent_action_uri";
+        @SuppressWarnings("WeakerAccess")
         public static final String CREATED_AT = "created_at";
         public static final String DEVICE_IMG_URI = "device_img_uri";
+        @SuppressWarnings("WeakerAccess")
         public static final String[] NAMES = new String[] {
             Columns._ID,
             Columns.SOURCE_KIND,
@@ -48,6 +49,21 @@ public class HistoryModel {
             Columns.DEVICE_IMG_URI
         };
     }
+
+    public static final String SQL_CREATE_ENTRIES
+            = "CREATE TABLE " + TABLE_NAME + " (" +
+            "    `" + Columns._ID + "` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, " +
+            "    `" + Columns.SOURCE_KIND + "` TEXT NOT NULL, " +
+            "    `" + Columns.IMG_URI + "` TEXT NOT NULL, " +
+            "    `" + Columns.INTENT_ACTION_URI + "` TEXT, " +
+            "    `" + Columns.CREATED_AT + "` TEXT NOT NULL, " +
+            "    `" + Columns.DEVICE_IMG_URI + "` TEXT NOT NULL" +
+            ") ";
+    public static final String SQL_CREATE_INDEX
+            = "CREATE INDEX " + HistoryModel.Columns.CREATED_AT
+            + " ON " + TABLE_NAME + "(" + Columns.CREATED_AT + ")";
+
+    public static final String SQL_DELETE_ENTRIES = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
     public static final String SOURCE_TW = "ImgGetterTw";
     public static final String SOURCE_DIR = "ImgGetterDir";
@@ -114,7 +130,7 @@ public class HistoryModel {
      * @return 保存したファイルのFileオブジェクト
      * @throws Exception FileNotFountException, IOException
      */
-    public File saveImg(Bitmap bitmap, String fileName) throws Exception {
+    private File saveImg(Bitmap bitmap, String fileName) throws Exception {
         //// ファイルの拡張子がpngかどうかチェック
         int i = fileName.lastIndexOf('.');
         if (i < 0 || !fileName.substring(i + 1).equals("png")) {
@@ -149,7 +165,7 @@ public class HistoryModel {
      * @return 削除が成功したかどうか
      */
     @SuppressWarnings("UnusedReturnValue")
-    public Map<String, Boolean> deleteImgs(String[] fileNames) {
+    private Map<String, Boolean> deleteImgs(String[] fileNames) {
         Map<String, Boolean> areDeleted = new HashMap<>();
 
         for (String fileName: fileNames) {
@@ -162,7 +178,7 @@ public class HistoryModel {
      * 壁紙の履歴をDBに登録する
      * @param insertParams 登録対象
      */
-    public void insert(Map<String, String> insertParams) {
+    private void insert(Map<String, String> insertParams) {
         // ----------------------------------
         // INSERT
         // ----------------------------------
@@ -283,7 +299,7 @@ public class HistoryModel {
      * @return 削除数
      */
     @SuppressWarnings("UnusedReturnValue")
-    public int deleteByIds(int[] historyIds) {
+    private int deleteByIds(int[] historyIds) {
         //// string 型に変換
         String[] historyIdsStr = new String[historyIds.length];
         for (int i=0; i<historyIds.length; i++) {

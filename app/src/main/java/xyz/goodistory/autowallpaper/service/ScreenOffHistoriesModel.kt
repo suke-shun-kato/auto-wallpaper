@@ -12,9 +12,18 @@ import xyz.goodistory.autowallpaper.util.MySQLiteOpenHelper
 class ScreenOffHistoriesModel(private val dbHelper: MySQLiteOpenHelper) {
     companion object {
         const val TABLE_NAME: String = "screen_off_histories"
+
+        const val SQL_CREATE_ENTRIES: String = """
+CREATE TABLE $TABLE_NAME (
+    `${Columns.ID}` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    `${Columns.CREATED_AT}` TEXT NOT NULL
+)            
+"""
+        const val SQL_DELETE_ENTRIES  = "DROP TABLE IF EXISTS $TABLE_NAME"
     }
 
-    object Columns : BaseColumns {
+    object Columns {
+        const val ID: String = BaseColumns._ID
         const val CREATED_AT: String = "created_at"
     }
 
