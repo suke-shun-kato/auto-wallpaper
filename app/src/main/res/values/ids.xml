@@ -1,85 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <integer name="id_loader_histories">1</integer>
 
     <integer name="id_notification_wallpaperChanged">1</integer>
     <integer name="id_notification_runningService">2</integer>
 
-    <string  name="id_notificationChannel_runningMainService" tools:ignore="MissingTranslation">running_main_service</string>
-    <string  name="id_notificationChannel_wallpaperChanged" tools:ignore="MissingTranslation">wallpaper_changed</string>
+    <string  name="id_notificationChannel_runningMainService" translatable="false">running_main_service</string>
+    <string  name="id_notificationChannel_wallpaperChanged" translatable="false">wallpaper_changed</string>
 
-    <string name="twitter_consumer_key" tools:ignore="MissingTranslation">HdQuB3nqjm7zd1HLuWBkTNvG3</string>
-    <string name="twitter_consumer_secret" tools:ignore="MissingTranslation">skdss5Khh2WoJgEvPK1sbaCZcoJCOnWU6T6eq2DnxVorbbWcjy</string>
-    <string name="twitter_callback_url" tools:ignore="MissingTranslation">xyzgisautowallpaper://</string>
+    <string name="twitter_consumer_key" translatable="false">HdQuB3nqjm7zd1HLuWBkTNvG3</string>
+    <string name="twitter_consumer_secret" translatable="false">skdss5Khh2WoJgEvPK1sbaCZcoJCOnWU6T6eq2DnxVorbbWcjy</string>
+    <string name="twitter_callback_url" translatable="false">xyzgisautowallpaper://</string>
 
-    <string name="instagram_client_id" tools:ignore="MissingTranslation">ab75e33d627c433eb067274b73624f82</string>
-    <string name="instagram_client_secret" tools:ignore="MissingTranslation">5c842572552644778e1215d41ba69db3</string>
-    <string name="instagram_callback_url" tools:ignore="MissingTranslation">
+    <string name="instagram_client_id" translatable="false">ab75e33d627c433eb067274b73624f82</string>
+    <string name="instagram_client_secret" translatable="false">5c842572552644778e1215d41ba69db3</string>
+    <string name="instagram_callback_url" translatable="false">
         http://autowallpaper.goodistory.xyz/instagram/authorization
     </string>
 
 
 
-    <string name="id_adMob_appId" tools:ignore="MissingTranslation">ca-app-pub-3825411425825554~7421942600</string>
+    <string name="id_adMob_appId" translatable="false">ca-app-pub-3825411425825554~7421942600</string>
     <!-- ↓本番用、デバッグ用は別ファイルにある -->
-    <string name="id_adMob_addUnitId" tools:ignore="MissingTranslation">ca-app-pub-3825411425825554/7968737514</string>
-
-
+    <string name="id_adMob_addUnitId" translatable="false">ca-app-pub-3825411425825554/7968737514</string>
 
     <!-- preference_key -->
-    <string name="preference_key_category_from" tools:ignore="MissingTranslation">
-        category_from
-    </string>
-    <string name="preference_key_category_when" tools:ignore="MissingTranslation">
-        category_when
-    </string>
-    <string name="preference_key_category_image" tools:ignore="MissingTranslation">
-        category_image
-    </string>
-    <string name="preference_key_category_other" tools:ignore="MissingTranslation">
-        category_other
-    </string>
+    <string name="preference_key_category_from" translatable="false">category_from</string>
+    <string name="preference_key_category_when" translatable="false">category_when</string>
+    <string name="preference_key_category_image" translatable="false">category_image</string>
+    <string name="preference_key_category_other" translatable="false">category_other</string>
+    <string name="preference_key_category_notification" translatable="false">category_notification</string>
 
+    <string name="preference_key_from_directory" translatable="false">from_directory</string>
+    <string name="preference_key_select_image_bucket" translatable="false">select_image_bucket</string>
 
-    <string name="preference_key_from_directory" tools:ignore="MissingTranslation">
-        from_directory
-    </string>
-    <string name="preference_key_select_image_bucket" tools:ignore="MissingTranslation">
-        select_image_bucket
-    </string>
+    <string name="preference_key_from_twitter_favorites" translatable="false">from_twitter_favorites</string>
+    <string name="preference_key_authenticate_twitter" translatable="false">authenticate_twitter</string>
 
-    <string name="preference_key_from_twitter_favorites" tools:ignore="MissingTranslation">
-        from_twitter_favorites
-    </string>
-    <string name="preference_key_authenticate_twitter" tools:ignore="MissingTranslation">
-        authenticate_twitter
-    </string>
+    <string name="preference_key_from_instagram_user_recent" translatable="false">from_user_recent</string>
+    <string name="preference_key_authenticate_instagram" translatable="false">authenticate_instagram</string>
 
-    <string name="preference_key_from_instagram_user_recent" tools:ignore="MissingTranslation">
-        from_user_recent
-    </string>
-    <string name="preference_key_authenticate_instagram" tools:ignore="MissingTranslation">
-        authenticate_instagram
-    </string>
+    <string name="preference_key_when_screen_off" translatable="false">when_turn_on</string>
+    <string name="preference_key_when_screen_off_count" translatable="false">when_screen_off_count</string>
+    <string name="preference_key_when_timer_calls" translatable="false">when_timer_calls</string>
+    <string name="preference_key_start_time" translatable="false">start_time</string>
+    <string name="preference_key_timer_interval" translatable="false">timer_interval</string>
 
-    <string name="preference_key_when_screen_off" tools:ignore="MissingTranslation">when_turn_on</string>
-    <string name="preference_key_when_screen_off_count" tools:ignore="MissingTranslation">when_screen_off_count</string>
-    <string name="preference_key_when_timer_calls" tools:ignore="MissingTranslation">when_timer_calls</string>
-    <string name="preference_key_start_time" tools:ignore="MissingTranslation">
-        start_time
-    </string>
-    <string name="preference_key_timer_interval" tools:ignore="MissingTranslation">
-        timer_interval
-    </string>
+    <string name="preference_key_auto_rotation" translatable="false">auto_rotation</string>
 
-    <string name="preference_key_auto_rotation" tools:ignore="MissingTranslation">
-        auto_rotation
-    </string>
-    <string name="preference_key_reset" tools:ignore="MissingTranslation">
-        reset
-    </string>
-    <string name="preference_key_about" tools:ignore="MissingTranslation">
-        about
-    </string>
+    <string name="preference_key_notification" translatable="false">notification</string>
 
+    <string name="preference_key_reset" translatable="false">reset</string>
+    <string name="preference_key_about" translatable="false">about</string>
 </resources>
