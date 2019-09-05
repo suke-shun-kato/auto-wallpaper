@@ -215,7 +215,10 @@ public class WpManager {
         // ----------------------------------
         // 通知を作成
         // ----------------------------------
-        this.sendNotification();
+        final String keyNotification = mContext.getString(R.string.preference_key_notification);
+        if ( mSp.getBoolean(keyNotification, true)) {
+            sendNotification();
+        }
     }
 
 
