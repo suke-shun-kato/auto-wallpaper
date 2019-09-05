@@ -72,7 +72,7 @@
         <item>Every 100 times</item>
     </string-array>
     <!-- ↓ListPreference は integer-arrayにはできない -->
-    <string-array name="setting_count_screen_off_values" tools:ignore="MissingTranslation">
+    <string-array name="setting_count_screen_off_values" translatable="false">
         <item>1</item>
         <item>2</item>
         <item>3</item>
@@ -86,7 +86,7 @@
         <item>75</item>
         <item>100</item>
     </string-array>
-    <string name="setting_count_screen_default_value" tools:ignore="MissingTranslation">1</string>
+    <string name="setting_count_screen_default_value" translatable="false">1</string>
 
 
     <string name="setting_when_timer_title">Set time</string>
@@ -104,7 +104,7 @@
         <item>1 day</item>
     </string-array>
     <!-- ↓はListPreference は integer-arrayにはできない -->
-    <string-array name="setting_when_timer_interval_values" tools:ignore="MissingTranslation">
+    <string-array name="setting_when_timer_interval_values" translatable="false">
         <item>60000</item>  <!-- 1*60*1000 -->
         <item>300000</item>  <!-- 5*60*1000 -->
         <item>1800000</item> <!-- 30*60*1000 -->
@@ -114,7 +114,7 @@
         <item>43200000</item><!-- 12*60*60*1000 -->
         <item>86400000</item><!-- 1*24*60*60*1000 -->
     </string-array>
-    <string name="setting_when_timer_interval_values_default" tools:ignore="MissingTranslation">30000</string>
+    <string name="setting_when_timer_interval_values_default" translatable="false">30000</string>
 
     <string name="setting_image_title">Image</string>
     <string name="setting_image_autoRotation_title">Auto Rotation ON/OFF</string>
@@ -144,7 +144,7 @@
     <string name="about_toolbar">About %s</string>
     <string name="about_version">Version %s</string>
     <string name="about_license_title">Open source license</string>
-    <string-array name="about_license_bodies" tools:ignore="MissingTranslation">
+    <string-array name="about_license_bodies" translatable="false">
         <item>
 Universal Image Loader\n
 \n
